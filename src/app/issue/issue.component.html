@@ -1,0 +1,541 @@
+<div class="pallet-page">
+    <div class="page-hero">
+      <div>
+        <div class="eyebrow">Finish Goods Label System</div>
+        <h2>Issue Pallet Label</h2>
+        <p>Scan WOS QR Code, generate pallet label and move to FG area.</p>
+      </div>
+  
+      <div class="hero-status" *ngIf="header">
+        <div class="status-label">Current ID Pallet</div>
+        <div class="status-value">{{ header.idPallet }}</div>
+      </div>
+    </div>
+  
+    <div class="layout-grid">
+      <!-- ================= LEFT ================= -->
+      <div class="left-panel">
+        <!-- Loading -->
+        <div class="loading-card" *ngIf="isLoadingHeader">
+          <i class="fas fa-spinner fa-spin"></i>
+          Loading current pallet...
+        </div>
+  
+        <!-- ================= HEADER SUMMARY ================= -->
+        <section class="summary-card" *ngIf="header && !showHeaderForm">
+          <div class="section-head">
+            <div>
+              <h3>Header Saved</h3>
+              <span>Ready for QR scanning</span>
+            </div>
+  
+            <div class="head-actions">
+              <button type="button" class="btn ghost danger" (click)="onDeleteHeaderTemp()">
+                <i class="fas fa-trash-alt"></i>
+                Delete
+              </button>
+  
+              <button type="button" class="btn ghost" (click)="onEditHeader()">
+                <i class="fas fa-pen"></i>
+                Edit
+              </button>
+            </div>
+          </div>
+  
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span>Date</span>
+              <b>{{ form.issueDate }}</b>
+            </div>
+  
+            <div class="summary-item">
+              <span>Shift</span>
+              <b>{{ header.shift }}</b>
+            </div>
+  
+            <div class="summary-item">
+              <span>Group</span>
+              <b>{{ groupName(header.groupId) }}</b>
+            </div>
+  
+            <div class="summary-item">
+              <span>Control Lot OQC</span>
+              <b>{{ controlLotName(header.controlLotId) }}</b>
+            </div>
+  
+            <div class="summary-item wide">
+              <span>Item</span>
+              <b>{{ header.itemNo }} / {{ header.itemName }}</b>
+            </div>
+  
+            <div class="summary-item wide">
+              <span>Location FG</span>
+              <b>{{ locationName(header.locationId) }}</b>
+            </div>
+  
+            <div class="summary-item">
+              <span>Movement</span>
+              <b>{{ header.movementMonth }}</b>
+            </div>
+  
+            <div class="summary-item">
+              <span>Total QTY BOX</span>
+              <b>{{ header.totalQtyBox }}</b>
+            </div>
+          </div>
+        </section>
+  
+        <!-- ================= HEADER FORM ================= -->
+        <section class="form-card" *ngIf="showHeaderForm">
+          <div class="section-head">
+            <div>
+              <h3>Input Label Pallet Stock Finish Goods</h3>
+              <span>Create header before scan QR Code</span>
+            </div>
+          </div>
+  
+          <form class="header-form" autocomplete="off">
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Date</label>
+                <input
+                  class="control"
+                  type="date"
+                  name="issueDate"
+                  [(ngModel)]="form.issueDate"
+                  [disabled]="isSavingHeader"
+                />
+              </div>
+  
+              <div class="form-field">
+                <label>Shift</label>
+                <select
+                  class="control"
+                  name="shift"
+                  [(ngModel)]="form.shift"
+                  [disabled]="isSavingHeader"
+                >
+                  <option value="" disabled>Select Shift</option>
+                  <option value="A">Shift A</option>
+                  <option value="B">Shift B</option>
+                  <option value="C">Shift C</option>
+                </select>
+              </div>
+  
+              <div class="form-field">
+                <label>Select Group</label>
+                <select
+                  class="control"
+                  name="groupId"
+                  [(ngModel)]="form.groupId"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                >
+                  <option [ngValue]="null" disabled>Select Group</option>
+                  <option *ngFor="let g of groups" [ngValue]="g.id">
+                    {{ g.name }}
+                  </option>
+                </select>
+              </div>
+  
+              <div class="form-field item-search">
+                <label>Auto Item No.</label>
+                <input
+                  class="control"
+                  type="text"
+                  name="itemKeyword"
+                  placeholder="Search Item No. / Item Name"
+                  [(ngModel)]="itemKeyword"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                  (focus)="showItemDrop = true; filterItems()"
+                  (input)="filterItems()"
+                  (blur)="onItemBlur()"
+                />
+  
+                <div class="item-drop" *ngIf="showItemDrop && filteredItems.length">
+                  <button
+                    type="button"
+                    class="item-option"
+                    *ngFor="let it of filteredItems"
+                    (mousedown)="selectItem(it)"
+                  >
+                    <b>{{ it.itemNo }}</b>
+                    <span>{{ it.itemName }}</span>
+                  </button>
+                </div>
+              </div>
+  
+              <div class="form-field">
+                <label>Auto Item Name</label>
+                <input
+                  class="control readonly"
+                  type="text"
+                  name="itemName"
+                  [(ngModel)]="form.itemName"
+                  readonly
+                />
+              </div>
+  
+              <div class="form-field">
+                <label>Select Control Lot OQC</label>
+                <select
+                  class="control"
+                  name="controlLotId"
+                  [(ngModel)]="form.controlLotId"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                >
+                  <option [ngValue]="null" disabled>Select Control Lot</option>
+                  <option *ngFor="let c of controlLots" [ngValue]="c.id">
+                    {{ c.name }}
+                  </option>
+                </select>
+              </div>
+  
+              <div class="form-field">
+                <label>Location FG</label>
+                <select
+                  class="control"
+                  name="locationId"
+                  [(ngModel)]="form.locationId"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                >
+                  <option [ngValue]="null" disabled>Select Location</option>
+                  <option *ngFor="let l of locations" [ngValue]="l.id">
+                    {{ l.locationNo }} {{ l.name ? '- ' + l.name : '' }}
+                  </option>
+                </select>
+              </div>
+  
+              <div class="form-field">
+                <label>Movement within 3 month</label>
+                <select
+                  class="control"
+                  name="movementMonth"
+                  [(ngModel)]="form.movementMonth"
+                  [disabled]="isSavingHeader"
+                >
+                  <option value="" disabled>Select Month</option>
+                  <option value="Jul-26">Jul-26</option>
+                  <option value="Aug-26">Aug-26</option>
+                  <option value="Sep-26">Sep-26</option>
+                  <option value="Oct-26">Oct-26</option>
+                  <option value="Nov-26">Nov-26</option>
+                  <option value="Dec-26">Dec-26</option>
+                </select>
+              </div>
+  
+              <div class="form-field">
+                <label>Total QTY BOX</label>
+                <input
+                  class="control"
+                  type="number"
+                  name="totalQtyBox"
+                  placeholder="Max 42 Box / ครั้ง"
+                  [(ngModel)]="form.totalQtyBox"
+                  [disabled]="isSavingHeader"
+                />
+              </div>
+            </div>
+  
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn primary"
+                (click)="onSaveHeader()"
+                [disabled]="isSavingHeader"
+              >
+                <i class="fas fa-save"></i>
+                {{ isSavingHeader ? 'Saving...' : 'Save Header' }}
+              </button>
+  
+              <button
+                type="button"
+                class="btn ghost"
+                *ngIf="header"
+                (click)="onCancelEditHeader()"
+                [disabled]="isSavingHeader"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </section>
+  
+        <!-- ================= SCAN CARD ================= -->
+        <section class="scan-card">
+          <div class="section-head">
+            <div>
+              <h3>Scan QR Code</h3>
+              <span>Scan WOS / Part Plating QR Code</span>
+            </div>
+  
+            <span class="scan-badge" [class.full]="isBoxFull">
+              {{ scanCount }} / {{ header?.totalQtyBox || 0 }} Box
+            </span>
+          </div>
+  
+          <div class="qr-box" [class.disabled]="!header || isEditingHeader || isBoxFull">
+            <div class="qr-icon">
+              <i class="fas fa-qrcode"></i>
+            </div>
+  
+            <input
+              #qrInput
+              class="qr-input"
+              type="text"
+              name="qrText"
+              placeholder="Click here and scan QR Code"
+              [(ngModel)]="qrText"
+              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+              (keydown.enter)="onQrEnter($event)"
+            />
+  
+            <button
+              type="button"
+              class="btn scan"
+              (click)="parseQrText()"
+              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+            >
+              Scan
+            </button>
+          </div>
+  
+          <div class="manual-grid">
+            <div class="form-field">
+              <label>Item No.</label>
+              <input
+                #scanItemNo
+                class="control"
+                type="text"
+                name="scan_itemNo"
+                [(ngModel)]="scanForm.itemNo"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('itemNo')"
+              />
+            </div>
+  
+            <div class="form-field">
+              <label>Item Name</label>
+              <input
+                class="control"
+                type="text"
+                name="scan_itemName"
+                [(ngModel)]="scanForm.itemName"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('itemName')"
+              />
+            </div>
+  
+            <div class="form-field">
+              <label>WOS NO</label>
+              <input
+                #scanWosNo
+                class="control"
+                type="text"
+                name="scan_wosNo"
+                [(ngModel)]="scanForm.wosNo"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('wosNo')"
+              />
+            </div>
+  
+            <div class="form-field">
+              <label>DIE NO</label>
+              <input
+                class="control"
+                type="text"
+                name="scan_dieNo"
+                [(ngModel)]="scanForm.dieNo"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('dieNo')"
+              />
+            </div>
+  
+            <div class="form-field">
+              <label>LOT NO</label>
+              <input
+                class="control"
+                type="text"
+                name="scan_lotNo"
+                [(ngModel)]="scanForm.lotNo"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('lotNo')"
+              />
+            </div>
+  
+            <div class="form-field">
+              <label>QTY</label>
+              <input
+                class="control"
+                type="number"
+                name="scan_qty"
+                [(ngModel)]="scanForm.qty"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onManualEnter('qty')"
+              />
+            </div>
+          </div>
+  
+          <div class="scan-actions">
+            <button
+              type="button"
+              class="btn primary"
+              (click)="onConfirmScan()"
+              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+            >
+              <i class="fas fa-check"></i>
+              Confirm Scan
+            </button>
+  
+            <button
+              type="button"
+              class="btn ghost danger"
+              (click)="clearScanForm()"
+              [disabled]="isSavingScan"
+            >
+              Clear
+            </button>
+          </div>
+  
+          <div class="note-box">
+            <b>Scan Rule:</b>
+            ต้อง Save Header ก่อน Scan / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
+          </div>
+        </section>
+      </div>
+  
+      <!-- ================= RIGHT ================= -->
+      <div class="right-panel">
+        <!-- PALLET PREVIEW -->
+        <section class="preview-card">
+          <div class="preview-top">
+            <div>
+              <span class="preview-label">Label Preview</span>
+              <h3>Pallet FG</h3>
+            </div>
+            <div class="mini-qr"></div>
+          </div>
+  
+          <div class="label-preview">
+            <div class="label-row">
+              <span>Item No.</span>
+              <b>{{ header?.itemNo || form.itemNo || '-' }}</b>
+            </div>
+  
+            <div class="label-row">
+              <span>Item Name</span>
+              <b>{{ header?.itemName || form.itemName || '-' }}</b>
+            </div>
+  
+            <div class="label-row">
+              <span>ID Pallet</span>
+              <b>{{ header?.idPallet || 'Auto' }}</b>
+            </div>
+  
+            <div class="label-row">
+              <span>Die No.</span>
+              <b>{{ savedRows[0]?.dieNo || '-' }}</b>
+            </div>
+  
+            <div class="label-row">
+              <span>Total Qty</span>
+              <b>{{ totalScanQty | number }}</b>
+            </div>
+  
+            <div class="label-row">
+              <span>Lot OQC</span>
+              <b>{{ header ? controlLotName(header.controlLotId) : '-' }}</b>
+            </div>
+  
+            <div class="label-row wide">
+              <span>Location</span>
+              <b>{{ header ? locationName(header.locationId) : '-' }}</b>
+            </div>
+          </div>
+  
+          <div class="progress-box">
+            <div class="progress-head">
+              <span>Scan Progress</span>
+              <b>{{ progressPercent }}%</b>
+            </div>
+  
+            <div class="progress-track">
+              <div class="progress-fill" [style.width.%]="progressPercent"></div>
+            </div>
+          </div>
+  
+          <button
+            type="button"
+            class="btn issue"
+            (click)="onIssuePallet()"
+            [disabled]="!canIssue || isIssuing"
+          >
+            <i class="fas fa-print"></i>
+            {{ isIssuing ? 'Issuing...' : 'Issue & Print Label' }}
+          </button>
+        </section>
+  
+        <!-- SAVED TABLE -->
+        <section class="table-card">
+          <div class="section-head compact">
+            <div>
+              <h3>Scanned WOS List</h3>
+              <span>{{ savedRows.length }} records</span>
+            </div>
+  
+            <button
+              type="button"
+              class="btn ghost danger"
+              (click)="onClearAllScan()"
+              [disabled]="!header || savedRows.length === 0 || isClearing"
+            >
+              Clear All
+            </button>
+          </div>
+  
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>WOS NO</th>
+                  <th>LOT NO</th>
+                  <th>DIE</th>
+                  <th class="text-end">QTY</th>
+                  <th></th>
+                </tr>
+              </thead>
+  
+              <tbody>
+                <tr *ngIf="isLoadingRows">
+                  <td colspan="6" class="empty">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading...
+                  </td>
+                </tr>
+  
+                <tr *ngIf="!isLoadingRows && savedRows.length === 0">
+                  <td colspan="6" class="empty">No scan data</td>
+                </tr>
+  
+                <tr *ngFor="let r of savedRows; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <b>{{ r.wosNo }}</b>
+                    <small>{{ r.itemNo }}</small>
+                  </td>
+                  <td>{{ r.lotNo }}</td>
+                  <td>{{ r.dieNo }}</td>
+                  <td class="text-end">{{ r.qty | number }}</td>
+                  <td class="text-center">
+                    <button type="button" class="row-delete" (click)="onDeleteRow(r)">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,16 @@
+<div class="wrapper">
+  @if (token != '')
+  {
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+  <div class="content-wrapper">
+    <section class="content">
+      <div class="container-fluid ">
+        <router-outlet></router-outlet>
+      </div>
+    </section>
+  </div>
+  } @else {
+  <app-sign-in></app-sign-in>
+  }
+</div>

@@ -1,0 +1,211 @@
+<div class="login-container">
+  @if (token == undefined) {
+  <div class="login-card">
+    <div class="card-header">
+      <h4 class="text-center mb-0">
+        <i class="fas fa-shield-alt me-2"></i>Sign In
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <!-- RFID Login Section -->
+      <div class="login-section">
+        <div class="section-title">
+          <span class="line"></span>
+          <span>RFID Login</span>
+          <span class="line"></span>
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-id-card"></i>
+          </span>
+          <input
+            #rfidInput
+            type="password"
+            class="form-control"
+            placeholder="Scan your RFID card"
+            autocomplete="off"
+            [disabled]="isLoading"
+            (input)="onRFIDInput($event)"
+          />
+        </div>
+        @if (isLoading) {
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            <i class="fas fa-spinner fa-spin me-1"></i>กำลังตรวจสอบ...
+          </small>
+        </div>
+        }
+      </div>
+
+      <div class="divider">
+        <span class="divider-text">OR</span>
+      </div>
+
+      <!-- Employee Login Section -->
+      <div class="login-section">
+        <div class="section-title">
+          <span class="line"></span>
+          <span>Employee Login</span>
+          <span class="line"></span>
+        </div>
+
+        <div class="input-group mb-2">
+          <span class="input-group-text">
+            <i class="fas fa-user"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Employee No."
+            [(ngModel)]="empNo"
+            [disabled]="isLoading"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            [(ngModel)]="password"
+            [disabled]="isLoading"
+            (keyup.enter)="signIn()"
+          />
+        </div>
+
+        <button
+          class="btn btn-primary w-100"
+          (click)="signIn()"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+          <i class="fas fa-spinner fa-spin me-2"></i>
+          Processing... } @else {
+          <i class="fas fa-sign-in-alt me-2"></i>
+          Sign In }
+        </button>
+        <button class="btn btn-warning w-100 mt-3" (click)="clearInputs()">
+          @if (isLoading) {
+          <i class="fas fa-spinner fa-spin me-2"></i>
+          Processing... } @else {
+          <i class="fas fa-times me-2"></i>
+          Clear }
+        </button>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="welcome-screen">
+    <div class="welcome-header">
+      <i class="fas fa-check-circle welcome-icon mb-3"></i>
+      <h4 class="mb-4">Welcome to PRESS-LPB</h4>
+    </div>
+
+    <!-- @if(empNo == 'LC115'){} -->
+    <!-- Inventory Management Section -->
+    <div class="section-container mt-4">
+      <h5 class="section-title">Inventory Management</h5>
+      <div class="menu-grid">
+        <!-- Input Production -->
+        <a class="menu-item" [routerLink]="['/input-production']">
+          <div class="menu-icon ">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <span class="menu-label">Input Production</span>
+        </a>
+
+        <!-- Move Part -->
+        <a class="menu-item" [routerLink]="['/move-by-wos']">
+          <div class="menu-icon ">
+            <i class="fas fa-route"></i>
+          </div>
+          <span class="menu-label">Move Part</span>
+        </a>
+        <!-- Close WOS -->
+        <a class="menu-item" [routerLink]="['/close-wos']">
+          <div class="menu-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <span class="menu-label">Close WOS</span>
+        </a>
+
+        <!-- Shipment -->
+        <a class="menu-item" [routerLink]="['/shipment']">
+          <div class="menu-icon">
+            <i class="fas fa-truck"></i>
+          </div>
+          <span class="menu-label">Shipment</span>
+        </a>
+
+        <!-- Hold/Reject -->
+        <a class="menu-item" [routerLink]="['/hold-by-wos']">
+          <div class="menu-icon ">
+            <i class="fas fa-store-slash"></i>
+          </div>
+          <span class="menu-label">Hold/Reject</span>
+        </a>
+
+        <!-- Inventory Report -->
+        <a class="menu-item" [routerLink]="['/inventory-report']">
+          <div class="menu-icon ">
+            <i class="fas fa-warehouse"></i>
+          </div>
+          <span class="menu-label">Inventory Report</span>
+        </a>
+
+        <!-- Production Output Report -->
+        <a class="menu-item" [routerLink]="['/machine-output']">
+          <div class="menu-icon ">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <span class="menu-label">Production Output</span>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- Scrap Management Section -->
+    <div class="section-container">
+      <h5 class="section-title">Scrap Management</h5>
+      <div class="menu-grid">
+        <!-- Dashboard -->
+        <a class="menu-item" [routerLink]="['/dashboard']">
+          <div class="menu-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <span class="menu-label">Dashboard</span>
+        </a>
+
+        <!-- Input Scrap -->
+        <a class="menu-item" [routerLink]="['/input-scrap']">
+          <div class="menu-icon">
+            <i class="fa fa-edit"></i>
+          </div>
+          <span class="menu-label">Input Scrap</span>
+        </a>
+
+        <!-- Scrap Report -->
+        <a class="menu-item" [routerLink]="['/scrap-report']">
+          <div class="menu-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <span class="menu-label">Scrap Report</span>
+        </a>
+
+        <!-- Empty slot for future menu item -->
+        <a class="menu-item" href="https://forms.gle/B9g8bHywYfvYLAqW6"target="_blank" rel="noopener noreferrer">
+          <div class="menu-icon">
+            <i class="fas fa-eraser"></i>
+          </div>
+          <span class="menu-label">Request Delete scrap</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  }
+</div>

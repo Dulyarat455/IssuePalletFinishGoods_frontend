@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* เพิ่มค่า z-index ให้กับ cdk-overlay-container */
+.cdk-overlay-container {
+    z-index: 2000 !important;
+  }
+  
+  /* เพิ่ม z-index ให้ cdk-overlay-pane เพื่อให้ overlay อยู่ด้านบน */
+  .cdk-overlay-pane {
+    z-index: 2001 !important;
+  }
+  

@@ -1,0 +1,132 @@
+/* Sidebar Styles */
+.main-sidebar {
+    background: #1e1e2d;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .brand-link {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .brand-text h3 {
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  /* User Panel */
+  .user-panel .image img {
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .user-panel .image img:hover {
+    border-color: #fff;
+  }
+  
+  /* Search Bar */
+  .form-control {
+    height: 40px;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+  }
+  
+  .form-control:focus {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    box-shadow: none;
+  }
+  
+  /* Navigation */
+  .nav-sidebar .nav-item {
+    margin-bottom: 2px;
+  }
+  
+  .nav-sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    color: #a2a3b7 !important;
+    border-radius: 0.475rem;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-sidebar .nav-link:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .nav-sidebar .nav-link.active {
+    color: #fff !important;
+    background: #0d6efd;
+  }
+  
+  .nav-sidebar .nav-link .nav-icon {
+    color: inherit;
+    font-size: 1.15rem;
+    width: 1.75rem;
+    margin-right: 0.25rem;
+  }
+  
+  /* Treeview */
+  .nav-treeview {
+    padding: 0.5rem;
+    margin-left: 1.75rem;
+    border-left: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .nav-treeview .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Admin Section */
+  .sidebar-heading {
+    letter-spacing: 0.05rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  
+  /* Custom Scrollbar */
+  .sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+  }
+  
+  /* Sign Out Button */
+  .btn-danger {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    border: none;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(255, 65, 108, 0.2);
+  }
+  
+  /* Active States */
+  .nav-link.active {
+    background: linear-gradient(to right, #0143a3, #0053c3);
+    box-shadow: 0 2px 4px rgba(1, 67, 163, 0.2);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .brand-text h3 {
+      font-size: 1.25rem;
+    }
+    
+    .nav-sidebar .nav-link {
+      padding: 0.5rem 0.75rem;
+    }
+  }
