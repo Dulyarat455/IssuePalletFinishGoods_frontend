@@ -13,8 +13,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "baseHref": "/ScrapPress/",
-            "deployUrl": "/ScrapPress/",
+            "baseHref": "/FinishGoodsPress/",
+            "deployUrl": "/FinishGoodsPress/",
             "outputPath": "dist/app",
             "index": "src/index.html",
             "browser": "src/main.ts",

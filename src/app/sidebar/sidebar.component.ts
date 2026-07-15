@@ -33,7 +33,7 @@ export class SidebarComponent {
     // if (!this.name) {
     //   // เปลี่ยนเส้นทางไปที่หน้า LoginPage ก่อน
     //   this.router.navigate(['/']).then(() => {
-    //     // this.router.navigate(['/ScrapPress']).then(() => {
+    //     // this.router.navigate(['/FinishGoods']).then(() => {
     //     // แสดง Swal หลังจากเปลี่ยนหน้าเรียบร้อยแล้ว
     //     Swal.fire({
     //       title: 'กรุณาเข้าสู่ระบบ',
@@ -65,7 +65,7 @@ export class SidebarComponent {
 
       // location.reload();
       this.router.navigate(['/signIn']);
-      // window.location.href = '/ScrapPress';
+      // window.location.href = '/FinishGoods';
     }
   }
 

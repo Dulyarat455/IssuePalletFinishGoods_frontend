@@ -47,7 +47,7 @@ export class AuthService {
     localStorage.removeItem('angular_id');
     localStorage.removeItem('angular_empNo');
     this.authStatus.next(false);
-    window.location.href = '/ScrapPress';
+    window.location.href = '/FinishGoods';
     // this.refreshComponents.next(true); // แจ้ง components ให้ refresh
     // this.router.navigate(['/']);
   }
