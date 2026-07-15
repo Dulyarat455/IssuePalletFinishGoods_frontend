@@ -29,24 +29,12 @@ export class SidebarComponent {
   empNo: string = '';
 
   ngOnInit() {
-    this.authService.refreshComponents$.subscribe(() => {
-      this.loadUserData();
-    });
+    // this.authService.refreshComponents$.subscribe(() => {
+    //   this.loadUserData();
+    // });
     this.name = localStorage.getItem('angular_name')!;
     this.empNo = localStorage.getItem('angular_empNo')!;
-    if (!this.name) {
-      // เปลี่ยนเส้นทางไปที่หน้า LoginPage ก่อน
-      this.router.navigate(['/']).then(() => {
-        // this.router.navigate(['/ScrapPress']).then(() => {
-        // แสดง Swal หลังจากเปลี่ยนหน้าเรียบร้อยแล้ว
-        Swal.fire({
-          title: 'กรุณาเข้าสู่ระบบ',
-          text: 'คุณยังไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบก่อนดำเนินการ',
-          icon: 'warning',
-          confirmButtonText: 'ตกลง',
-        });
-      });
-    }
+   
     this.getLevelFromToken();
   }
 

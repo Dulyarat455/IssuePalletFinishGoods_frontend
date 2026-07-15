@@ -433,7 +433,7 @@
   
             <div class="label-row">
               <span>Die No.</span>
-              <b>{{ savedRows[0]?.dieNo || '-' }}</b>
+              <b>{{ savedRows.length > 0 ? savedRows[0].dieNo : '-' }}</b>
             </div>
   
             <div class="label-row">
