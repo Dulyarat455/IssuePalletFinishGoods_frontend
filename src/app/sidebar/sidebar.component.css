@@ -1,90 +1,56 @@
-/* Sidebar Styles */
-.main-sidebar {
-    background: #1e1e2d;
-    border-right: 1px solid rgba(255,255,255,0.1);
+/* =========================
+   Sidebar Theme - Web Ticket
+   AdminLTE Safe Styling
+   ========================= */
+
+   .main-sidebar {
+    background:
+      radial-gradient(circle at 20% 8%, rgba(37, 99, 235, 0.18), transparent 30%),
+      linear-gradient(180deg, #070d22 0%, #111827 48%, #0b1020 100%);
+    border-right: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 16px 0 38px rgba(15, 23, 42, 0.18);
   }
   
+  /* =========================
+     Brand Logo
+     ========================= */
+  
   .brand-link {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    min-height: 72px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .brand-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  
+  .brand-image {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover;
+
+    padding: 2px;
+   
   }
   
   .brand-text h3 {
-    font-weight: 600;
-    color: #fff;
+    margin: 0;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 950;
+    letter-spacing: 0.3px;
+    line-height: 1;
   }
   
-  /* User Panel */
-  .user-panel .image img {
-    border: 2px solid rgba(255,255,255,0.2);
-    transition: all 0.3s ease;
+  /* =========================
+     Sidebar Body
+     ========================= */
+  
+  .sidebar {
+    padding: 12px 9px 20px;
   }
   
-  .user-panel .image img:hover {
-    border-color: #fff;
-  }
-  
-  /* Search Bar */
-  .form-control {
-    height: 40px;
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-  }
-  
-  .form-control:focus {
-    background: rgba(255,255,255,0.1) !important;
-    border-color: rgba(255,255,255,0.2) !important;
-    box-shadow: none;
-  }
-  
-  /* Navigation */
-  .nav-sidebar .nav-item {
-    margin-bottom: 2px;
-  }
-  
-  .nav-sidebar .nav-link {
-    padding: 0.75rem 1rem;
-    color: #a2a3b7 !important;
-    border-radius: 0.475rem;
-    transition: all 0.3s ease;
-  }
-  
-  .nav-sidebar .nav-link:hover {
-    color: #fff !important;
-    background: rgba(255,255,255,0.1);
-  }
-  
-  .nav-sidebar .nav-link.active {
-    color: #fff !important;
-    background: #0d6efd;
-  }
-  
-  .nav-sidebar .nav-link .nav-icon {
-    color: inherit;
-    font-size: 1.15rem;
-    width: 1.75rem;
-    margin-right: 0.25rem;
-  }
-  
-  /* Treeview */
-  .nav-treeview {
-    padding: 0.5rem;
-    margin-left: 1.75rem;
-    border-left: 1px solid rgba(255,255,255,0.1);
-  }
-  
-  .nav-treeview .nav-link {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-  
-  /* Admin Section */
-  .sidebar-heading {
-    letter-spacing: 0.05rem;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-  }
-  
-  /* Custom Scrollbar */
   .sidebar::-webkit-scrollbar {
     width: 6px;
   }
@@ -94,39 +60,278 @@
   }
   
   .sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.2);
-    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 999px;
   }
   
   .sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(148, 163, 184, 0.45);
   }
   
-  /* Sign Out Button */
+  /* =========================
+     User Panel
+     ========================= */
+  
+  .user-panel {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  
+  .user-panel .d-flex {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .user-panel .image img {
+    width: 46px !important;
+    height: 46px !important;
+    object-fit: cover;
+    border: 2px solid rgba(125, 211, 252, 0.45);
+    background: #e0f2fe;
+    transition: 0.2s ease;
+  }
+  
+  .user-panel .image img:hover {
+    border-color: #38bdf8;
+    transform: translateY(-1px);
+  }
+  
+  .user-panel .info h5 {
+    color: #ffffff !important;
+    font-size: 15px;
+    font-weight: 950;
+    letter-spacing: 0.3px;
+  }
+  
+  .user-panel .info small {
+    color: #cbd5e1 !important;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  
+  /* =========================
+     Sign Out Button
+     ========================= */
+  
   .btn-danger {
-    background: linear-gradient(to right, #ff416c, #ff4b2b);
-    border: none;
-    transition: all 0.3s ease;
+    min-height: 42px;
+    border: none !important;
+    border-radius: 14px !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #fb3f62 0%, #f97316 100%) !important;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    box-shadow: 0 12px 22px rgba(248, 113, 113, 0.22);
+    transition: 0.18s ease;
   }
   
   .btn-danger:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(255, 65, 108, 0.2);
+    box-shadow: 0 16px 28px rgba(248, 113, 113, 0.3);
   }
   
-  /* Active States */
-  .nav-link.active {
-    background: linear-gradient(to right, #0143a3, #0053c3);
-    box-shadow: 0 2px 4px rgba(1, 67, 163, 0.2);
+  .btn-danger:active {
+    transform: translateY(0);
   }
   
-  /* Responsive Adjustments */
+  /* =========================
+     Section Heading
+     ========================= */
+  
+  .sidebar-heading {
+    margin-top: 18px;
+    margin-bottom: 8px !important;
+    color: #93c5fd !important;
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    opacity: 1;
+  }
+  
+  .sidebar-heading span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .sidebar-heading span::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #38bdf8;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+  }
+  
+  /* =========================
+     Main Nav
+     ========================= */
+  
+  .nav-sidebar {
+    gap: 4px;
+  }
+  
+  .nav-sidebar .nav-item {
+    margin-bottom: 4px;
+  }
+  
+  .nav-sidebar .nav-link {
+    min-height: 44px;
+    padding: 0.72rem 0.88rem !important;
+    color: #cbd5e1 !important;
+    border-radius: 15px !important;
+    display: flex;
+    align-items: center;
+    transition: 0.18s ease;
+    border: 1px solid transparent;
+  }
+  
+  .nav-sidebar .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(96, 165, 250, 0.16);
+    transform: translateX(2px);
+  }
+  
+  .nav-sidebar .nav-link.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%) !important;
+    border-color: rgba(147, 197, 253, 0.26);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
+  }
+  
+  .nav-sidebar .nav-link .nav-icon {
+    width: 28px !important;
+    min-width: 28px;
+    margin-right: 6px !important;
+    color: inherit;
+    font-size: 16px;
+    text-align: center;
+    opacity: 0.95;
+  }
+  
+  .nav-sidebar .nav-link p {
+    margin: 0;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 850;
+    letter-spacing: 0.15px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .nav-sidebar .nav-link .fa-angle-right {
+    margin-left: auto !important;
+    font-size: 13px;
+    opacity: 0.75;
+    transition: 0.18s ease;
+  }
+  
+  .nav-sidebar .menu-open > .nav-link .fa-angle-right {
+    transform: rotate(90deg);
+  }
+  
+  /* =========================
+     Treeview Menu
+     ========================= */
+  
+  .nav-treeview {
+    margin: 6px 8px 10px 18px !important;
+    padding: 8px 6px !important;
+    border-left: 1px solid rgba(96, 165, 250, 0.22);
+    border-radius: 16px !important;
+    background: rgba(15, 23, 42, 0.46) !important;
+  }
+  
+  .nav-treeview .nav-item {
+    margin-bottom: 3px;
+  }
+  
+  .nav-treeview .nav-link {
+    min-height: 38px;
+    padding: 0.55rem 0.7rem !important;
+    border-radius: 12px !important;
+    color: #b6c2d4 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  
+  .nav-treeview .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    transform: translateX(2px);
+  }
+  
+  .nav-treeview .nav-link.active {
+    color: #ffffff !important;
+    background: rgba(37, 99, 235, 0.28) !important;
+    border-color: rgba(96, 165, 250, 0.18);
+    box-shadow: inset 3px 0 0 #38bdf8 !important;
+  }
+  
+  .nav-treeview .nav-link .nav-icon {
+    width: 24px !important;
+    min-width: 24px;
+    font-size: 14px;
+  }
+  
+  .nav-treeview .nav-link p {
+    font-size: 13px;
+    font-weight: 800;
+  }
+  
+  /* =========================
+     Fix wrong / duplicated icon class look
+     ========================= */
+  
+  .nav-icon {
+    opacity: 0.9;
+  }
+  
+  /* =========================
+     AdminLTE Sidebar Mini Safe
+     ตอน collapse แบบ mini ให้ icon ยังดูดี
+     ========================= */
+  
+  body.sidebar-mini.sidebar-collapse .main-sidebar:hover {
+    overflow: visible;
+  }
+  
+  body.sidebar-mini.sidebar-collapse .main-sidebar .brand-text,
+  body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p,
+  body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-heading,
+  body.sidebar-mini.sidebar-collapse .main-sidebar .user-panel .info,
+  body.sidebar-mini.sidebar-collapse .main-sidebar .btn-danger {
+    transition: opacity 0.2s ease;
+  }
+  
+  body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link {
+    justify-content: center;
+  }
+  
+  body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-icon {
+    margin-right: 0 !important;
+  }
+  
+  /* =========================
+     Responsive
+     ========================= */
+  
   @media (max-width: 992px) {
     .brand-text h3 {
-      font-size: 1.25rem;
+      font-size: 22px;
     }
-    
+  
     .nav-sidebar .nav-link {
-      padding: 0.5rem 0.75rem;
+      min-height: 40px;
+      padding: 0.62rem 0.75rem !important;
+    }
+  
+    .nav-sidebar .nav-link p {
+      font-size: 13px;
     }
   }

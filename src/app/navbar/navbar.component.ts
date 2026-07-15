@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
@@ -13,12 +13,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   formattedDate: string = '';
   formattedTime: string = '';
   private timeInterval: any;
+  token: string | undefined = '';
+
 
   ngOnInit() {
-    // Initial update
+    this.token = localStorage.getItem('ticketPress_token') || '';
+
     this.updateDateTime();
 
-    // Update time every second
     this.timeInterval = setInterval(() => {
       this.updateDateTime();
     }, 1000);

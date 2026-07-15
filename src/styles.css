@@ -12,4 +12,116 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .cdk-overlay-pane {
     z-index: 2001 !important;
   }
+
+
+
+
+  /* ===============================
+   AdminLTE Sidebar Full Collapse
+   กดปิด sidebar แล้วให้หายสนิท
+   =============================== */
+
+body.sidebar-collapse .main-sidebar {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+body.sidebar-collapse .main-sidebar .brand-link,
+body.sidebar-collapse .main-sidebar .sidebar {
+  display: none !important;
+}
+
+body.sidebar-collapse .content-wrapper,
+body.sidebar-collapse .main-header,
+body.sidebar-collapse .main-footer {
+  margin-left: 0 !important;
+}
   
+
+
+
+/* ===============================
+   Fix AdminLTE collapsed sidebar gap
+   =============================== */
+
+   body.sidebar-collapse .main-sidebar {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  body.sidebar-collapse .main-sidebar .brand-link,
+  body.sidebar-collapse .main-sidebar .sidebar {
+    display: none !important;
+  }
+  
+  body.sidebar-collapse .content-wrapper,
+  body.sidebar-collapse .main-header,
+  body.sidebar-collapse .main-footer {
+    margin-left: 0 !important;
+  }
+  
+  /* สำคัญ: กัน layout ยังเว้นพื้นที่ sidebar-mini */
+  body.sidebar-collapse.sidebar-mini .content-wrapper,
+  body.sidebar-collapse.sidebar-mini .main-header,
+  body.sidebar-collapse.sidebar-mini .main-footer {
+    margin-left: 0 !important;
+  }
+  
+  /* ถ้า AdminLTE ใส่ transition แล้วค้างระยะ */
+  body.sidebar-collapse .content-wrapper {
+    width: 100% !important;
+  }
+
+
+
+
+
+
+
+
+
+  
+
+  /* ===============================
+   Public layout: no sidebar
+   =============================== */
+
+.no-sidebar .main-header,
+body:not(.sidebar-mini) .main-header {
+  margin-left: 0 !important;
+}
+
+.public-wrapper {
+  margin-left: 0 !important;
+}
+
+/* ===============================
+   AdminLTE sidebar collapse fix
+   =============================== */
+
+body.sidebar-collapse .main-sidebar {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
+}
+
+body.sidebar-collapse .main-sidebar .brand-link,
+body.sidebar-collapse .main-sidebar .sidebar {
+  display: none !important;
+}
+
+body.sidebar-collapse .content-wrapper,
+body.sidebar-collapse .main-header,
+body.sidebar-collapse .main-footer {
+  margin-left: 0 !important;
+}
+
+body.sidebar-collapse.sidebar-mini .content-wrapper,
+body.sidebar-collapse.sidebar-mini .main-header,
+body.sidebar-collapse.sidebar-mini .main-footer {
+  margin-left: 0 !important;
+}
