@@ -1,1 +1,473 @@
-<p>dashboard works!</p>
+<div class="fg-dash-page">
+    <!-- HERO -->
+    <section class="dash-hero">
+      <div>
+        <div class="hero-label">Finish Goods Pallet Dashboard</div>
+        <h2>Issue / Closed Pallet Lots</h2>
+        <p>Monitor issued pallet labels, closed pallets, partial close boxes and label preview.</p>
+      </div>
+  
+      <div class="hero-chip">
+        <i class="fas fa-boxes-stacked"></i>
+        <span>FG Pallet Control</span>
+      </div>
+    </section>
+  
+    <!-- SUMMARY -->
+    <section class="summary-grid">
+      <div class="summary-card issue">
+        <div class="summary-icon"><i class="fas fa-qrcode"></i></div>
+        <div>
+          <span>Issued Pallet</span>
+          <b>{{ totalIssuedPallet }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card open">
+        <div class="summary-icon"><i class="far fa-clock"></i></div>
+        <div>
+          <span>Open Pallet</span>
+          <b>{{ totalOpenPallet }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card partial">
+        <div class="summary-icon"><i class="fas fa-box-open"></i></div>
+        <div>
+          <span>Partial Closed</span>
+          <b>{{ totalPartialPallet }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card closed">
+        <div class="summary-icon"><i class="fas fa-check-circle"></i></div>
+        <div>
+          <span>Closed Pallet</span>
+          <b>{{ totalClosedPallet }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card qty">
+        <div class="summary-icon"><i class="fas fa-cubes"></i></div>
+        <div>
+          <span>Issued Box</span>
+          <b>{{ totalIssuedBox }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card qty2">
+        <div class="summary-icon"><i class="fas fa-dolly"></i></div>
+        <div>
+          <span>Closed Box</span>
+          <b>{{ totalClosedBox }}</b>
+        </div>
+      </div>
+    </section>
+  
+    <!-- FILTER -->
+    <section class="dash-card filter-card">
+      <div class="card-head">
+        <div>
+          <h3>Filter</h3>
+          <span>Search by date, ID Pallet, Issue No, Close No, Item or Lot OQC</span>
+        </div>
+  
+        <button type="button" class="btn soft" (click)="resetFilters()">
+          <i class="fas fa-rotate-left"></i>
+          Reset
+        </button>
+      </div>
+  
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label>Date From</label>
+          <input type="date" [(ngModel)]="filters.dateFrom" />
+        </div>
+  
+        <div class="filter-field">
+          <label>Date To</label>
+          <input type="date" [(ngModel)]="filters.dateTo" />
+        </div>
+  
+        <div class="filter-field wide">
+          <label>Keyword</label>
+          <input
+            type="text"
+            placeholder="Issue No / Close No / ID Pallet / Item / Lot OQC"
+            [(ngModel)]="filters.itemKeyword"
+          />
+        </div>
+  
+        <div class="filter-field">
+          <label>Issue Status</label>
+          <select [(ngModel)]="filters.status">
+            <option value="All">All</option>
+            <option value="Open">Open</option>
+            <option value="Partial Closed">Partial Closed</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+  
+        <div class="filter-field">
+          <label>Close Type</label>
+          <select [(ngModel)]="filters.closeType">
+            <option value="All">All</option>
+            <option value="Full Pallet">Full Pallet</option>
+            <option value="Partial Box">Partial Box</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  
+    <!-- MAIN GRID -->
+    <section class="dashboard-main-grid">
+      <!-- LEFT: ISSUED / CLOSED TABLE -->
+      <div class="left-zone">
+        <!-- ISSUED PALLET LOT -->
+        <section class="dash-card">
+          <div class="section-title issue-title">
+            <div>
+              <h3>Issued Pallet Lots</h3>
+              <span>Lot ที่ทำการ Issue และ Print Label แล้ว</span>
+            </div>
+  
+            <div class="count-pill issue">{{ issuedLots.length }} Lots</div>
+          </div>
+  
+          <div class="table-wrap">
+            <table class="lot-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Date/Time</th>
+                  <th>Issue No</th>
+                  <th>ID Pallet</th>
+                  <th>Item</th>
+                  <th>Lot OQC</th>
+                  <th class="text-center">Box</th>
+                  <th class="text-end">Qty</th>
+                  <th>Status</th>
+                  <th class="text-center">Label</th>
+                </tr>
+              </thead>
+  
+              <tbody>
+                <ng-container *ngFor="let lot of issuedLots">
+                  <tr>
+                    <td class="text-center">
+                      <button class="icon-btn" type="button" (click)="toggleIssue(lot.issueNo)">
+                        <i
+                          class="fas"
+                          [ngClass]="isIssueExpanded(lot.issueNo) ? 'fa-chevron-up' : 'fa-chevron-down'"
+                        ></i>
+                      </button>
+                    </td>
+  
+                    <td>
+                      <b>{{ lot.issueDate }}</b>
+                      <small>{{ lot.issueTime }}</small>
+                    </td>
+  
+                    <td class="mono">{{ lot.issueNo }}</td>
+                    <td class="mono strong">{{ lot.idPallet }}</td>
+  
+                    <td>
+                      <b>{{ lot.itemNo }}</b>
+                      <small>{{ lot.itemName }}</small>
+                    </td>
+  
+                    <td class="mono">{{ lot.lotOqc }}</td>
+  
+                    <td class="text-center">
+                      <span class="box-badge">
+                        {{ lot.closedBox }}/{{ lot.totalBox }}
+                      </span>
+                    </td>
+  
+                    <td class="text-end mono">{{ lot.totalQty | number }}</td>
+  
+                    <td>
+                      <span
+                        class="status-badge"
+                        [ngClass]="{
+                          'open': lot.status === 'Open',
+                          'partial': lot.status === 'Partial Closed',
+                          'closed': lot.status === 'Closed'
+                        }"
+                      >
+                        {{ lot.status }}
+                      </span>
+                    </td>
+  
+                    <td class="text-center">
+                      <button class="label-btn" type="button" (click)="selectPreview(lot)">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+  
+                  <tr class="detail-row" *ngIf="isIssueExpanded(lot.issueNo)">
+                    <td colspan="10">
+                      <div class="detail-card">
+                        <div class="detail-head">
+                          <b>Box / WOS in {{ lot.idPallet }}</b>
+                          <span>{{ lot.boxes.length }} records</span>
+                        </div>
+  
+                        <div class="box-table-wrap">
+                          <table class="box-table">
+                            <thead>
+                              <tr>
+                                <th>WOS NO</th>
+                                <th>Item No</th>
+                                <th>Item Name</th>
+                                <th>Die</th>
+                                <th>Lot</th>
+                                <th class="text-end">QTY</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+  
+                            <tbody>
+                              <tr *ngFor="let b of lot.boxes">
+                                <td class="mono">{{ b.wosNo }}</td>
+                                <td class="mono">{{ b.itemNo }}</td>
+                                <td>{{ b.itemName }}</td>
+                                <td>{{ b.dieNo }}</td>
+                                <td class="mono">{{ b.lotNo }}</td>
+                                <td class="text-end mono">{{ b.qty | number }}</td>
+                                <td>
+                                  <span
+                                    class="box-status"
+                                    [ngClass]="b.boxStatus === 'Closed' ? 'closed' : 'open'"
+                                  >
+                                    {{ b.boxStatus }}
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+  
+                <tr *ngIf="issuedLots.length === 0">
+                  <td colspan="10" class="empty-row">No issued pallet lot</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+  
+        <!-- CLOSED PALLET LOT -->
+        <section class="dash-card">
+          <div class="section-title closed-title">
+            <div>
+              <h3>Closed Pallet Lots</h3>
+              <span>Lot ที่ทำการ Close ออกไปแล้ว ทั้งแบบ Full Pallet และ Partial Box</span>
+            </div>
+  
+            <div class="count-pill closed">{{ closedLots.length }} Lots</div>
+          </div>
+  
+          <div class="table-wrap">
+            <table class="lot-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Date/Time</th>
+                  <th>Close No</th>
+                  <th>Issue No</th>
+                  <th>ID Pallet</th>
+                  <th>Close Type</th>
+                  <th>Item</th>
+                  <th class="text-center">Box</th>
+                  <th class="text-end">Qty</th>
+                  <th class="text-center">Detail</th>
+                </tr>
+              </thead>
+  
+              <tbody>
+                <ng-container *ngFor="let lot of closedLots">
+                  <tr>
+                    <td class="text-center">
+                      <button class="icon-btn" type="button" (click)="toggleClose(lot.closeNo)">
+                        <i
+                          class="fas"
+                          [ngClass]="isCloseExpanded(lot.closeNo) ? 'fa-chevron-up' : 'fa-chevron-down'"
+                        ></i>
+                      </button>
+                    </td>
+  
+                    <td>
+                      <b>{{ lot.closeDate }}</b>
+                      <small>{{ lot.closeTime }}</small>
+                    </td>
+  
+                    <td class="mono strong">{{ lot.closeNo }}</td>
+                    <td class="mono">{{ lot.issueNo }}</td>
+                    <td class="mono">{{ lot.idPallet }}</td>
+  
+                    <td>
+                      <span
+                        class="close-type"
+                        [ngClass]="lot.closeType === 'Full Pallet' ? 'full' : 'partial'"
+                      >
+                        {{ lot.closeType }}
+                      </span>
+                    </td>
+  
+                    <td>
+                      <b>{{ lot.itemNo }}</b>
+                      <small>{{ lot.itemName }}</small>
+                    </td>
+  
+                    <td class="text-center">
+                      <span class="box-badge closed">{{ lot.totalCloseBox }}</span>
+                    </td>
+  
+                    <td class="text-end mono">{{ lot.totalCloseQty | number }}</td>
+  
+                    <td class="text-center">
+                      <button class="label-btn teal" type="button" (click)="showCloseDetail(lot)">
+                        <i class="fas fa-bars"></i>
+                      </button>
+                    </td>
+                  </tr>
+  
+                  <tr class="detail-row" *ngIf="isCloseExpanded(lot.closeNo)">
+                    <td colspan="10">
+                      <div class="detail-card closed">
+                        <div class="detail-head">
+                          <b>Closed Box / WOS in {{ lot.closeNo }}</b>
+                          <span>{{ lot.boxes.length }} records</span>
+                        </div>
+  
+                        <div class="box-table-wrap">
+                          <table class="box-table">
+                            <thead>
+                              <tr>
+                                <th>WOS NO</th>
+                                <th>Item No</th>
+                                <th>Item Name</th>
+                                <th>Die</th>
+                                <th>Lot</th>
+                                <th class="text-end">QTY</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+  
+                            <tbody>
+                              <tr *ngFor="let b of lot.boxes">
+                                <td class="mono">{{ b.wosNo }}</td>
+                                <td class="mono">{{ b.itemNo }}</td>
+                                <td>{{ b.itemName }}</td>
+                                <td>{{ b.dieNo }}</td>
+                                <td class="mono">{{ b.lotNo }}</td>
+                                <td class="text-end mono">{{ b.qty | number }}</td>
+                                <td>
+                                  <span class="box-status closed">{{ b.boxStatus }}</span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+  
+                <tr *ngIf="closedLots.length === 0">
+                  <td colspan="10" class="empty-row">No closed pallet lot</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+  
+      <!-- RIGHT: LABEL PREVIEW -->
+      <aside class="right-zone">
+        <section class="dash-card preview-card">
+          <div class="preview-top">
+            <div>
+              <span>Label Preview</span>
+              <h3>Pallet FG</h3>
+            </div>
+            <div class="mini-qr"></div>
+          </div>
+  
+          <ng-container *ngIf="currentPreview as p; else noPreview">
+            <div class="label-preview">
+              <div class="label-row">
+                <span>Item No.</span>
+                <b>{{ p.itemNo }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Item Name</span>
+                <b>{{ p.itemName }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>ID Pallet</span>
+                <b>{{ p.idPallet }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Die No.</span>
+                <b>{{ p.dieNo }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Total Qty</span>
+                <b>{{ p.totalQty | number }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Lot OQC</span>
+                <b>{{ p.lotOqc }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Location</span>
+                <b>{{ p.location }}</b>
+              </div>
+  
+              <div class="label-row">
+                <span>Movement</span>
+                <b>{{ p.movement }}</b>
+              </div>
+  
+              <div class="label-row wide">
+                <span>Issue No.</span>
+                <b>{{ p.issueNo }}</b>
+              </div>
+            </div>
+  
+            <div class="preview-progress">
+              <div class="progress-head">
+                <span>Closed Progress</span>
+                <b>{{ p.closedBox }}/{{ p.totalBox }} Box</b>
+              </div>
+  
+              <div class="progress-track">
+                <div
+                  class="progress-fill"
+                  [style.width.%]="p.totalBox > 0 ? (p.closedBox / p.totalBox) * 100 : 0"
+                ></div>
+              </div>
+            </div>
+          </ng-container>
+  
+          <ng-template #noPreview>
+            <div class="empty-preview">
+              No label preview
+            </div>
+          </ng-template>
+        </section>
+      </aside>
+    </section>
+  </div>

@@ -1,54 +1,55 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-primary elevation-4 fg-sidebar">
   <!-- Brand Logo -->
-  <a
-    routerLink="/"
-    class="brand-link d-flex align-items-center"
-    style="text-decoration: none; padding: 1rem"
-  >
-    <img
-    src="dist/img/product2.png"
-    alt="AdminLTE Logo"
-    class="brand-image"
-   />
-    <span class="brand-text ms-2">
-      <h5 class="mb-0">Finish Good</h5>
+  <a routerLink="/" class="brand-link fg-brand-link">
+    <div class="brand-logo-wrap">
+      <img
+        src="dist/img/product2.png"
+        alt="Finish Goods Logo"
+        class="brand-image fg-brand-image"
+      />
+    </div>
+
+    <span class="brand-text fg-brand-text">
+      <span class="brand-small">FG PALLET</span>
+      <span class="brand-title">Finish Goods</span>
     </span>
   </a>
 
   <!-- Sidebar -->
-  <div class="sidebar">
+  <div class="sidebar fg-sidebar-body">
     <!-- User Panel -->
     @if (name != undefined) {
-    <div class="user-panel mt-3 pb-3 mb-3">
-      <div class="d-flex align-items-center p-3 mb-3 bg-dark rounded">
-        <div class="image">
-          <img
-            src="dist/img/employee.png"
-            class="img-circle elevation-2"
-            alt="User Image"
-            style="width: 45px; height: 45px; object-fit: cover"
-          />
+      <div class="user-panel fg-user-panel">
+        <div class="fg-user-card">
+          <div class="image fg-user-avatar">
+            <img
+              src="dist/img/employee.png"
+              class="img-circle"
+              alt="User Image"
+            />
+          </div>
+
+          <div class="info fg-user-info">
+            <h5>{{ empNo || 'Operator' }}</h5>
+            <small>{{ level || 'Finish Goods User' }}</small>
+          </div>
         </div>
-        <div class="info ms-3">
-          <h5 class="text-white mb-1">{{ empNo }}</h5>
-          <small class="text-light opacity-75">{{ level }}</small>
-        </div>
+
+        <button class="btn fg-signout-btn w-100" (click)="signout()">
+          <i class="fas fa-sign-out-alt me-2"></i>
+          Sign Out
+        </button>
       </div>
-      <button class="btn btn-danger w-100" (click)="signout()">
-        <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-      </button>
-    </div>
     }
 
     <!-- Menu -->
     <nav class="mt-2">
       <ul
-        class="nav nav-pills nav-sidebar flex-column"
+        class="nav nav-pills nav-sidebar flex-column fg-nav"
         data-widget="treeview"
         role="menu"
         style="padding-bottom: 60px"
       >
-        <!-- เพิ่ม padding-bottom -->
         <!-- Main Menu -->
         <li class="nav-item mb-1">
           <a routerLink="/" class="nav-link" routerLinkActive="active">
@@ -57,61 +58,68 @@
           </a>
         </li>
 
-        <!-- Inventory Menu -->
-        <!-- @if (level == 'Admin') {} -->
+        <!-- Issue Pallet -->
+        <li class="nav-item mb-1">
+          <a routerLink="/issue" class="nav-link" routerLinkActive="active">
+            <i class="nav-icon fas fa-qrcode"></i>
+            <p class="ms-2">Issue Pallet</p>
+          </a>
+        </li>
+
+        <!-- Data Master -->
         <li class="nav-item">
-          <h6
-            class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-light"
-          >
-            <span><b>Data Master</b></span>
+          <h6 class="sidebar-heading fg-sidebar-heading">
+            <span>Data Master</span>
           </h6>
+
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-warehouse"></i>
+            <i class="nav-icon fas fa-database"></i>
             <p class="ms-2">
               Master
               <i class="fas fa-angle-right ms-auto"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview bg-dark bg-opacity-50 rounded mx-2 mt-1">
-           
+
+          <ul class="nav nav-treeview fg-treeview">
             <li class="nav-item">
               <a
                 routerLink="/project"
                 class="nav-link"
                 routerLinkActive="active"
               >
-                <i class="fas fa-warehouse nav-icon"></i>
+                <i class="fas fa-boxes-stacked nav-icon"></i>
                 <p class="ms-2">Add Project</p>
               </a>
             </li>
+
             <li class="nav-item">
               <a
                 routerLink="/machine-output"
                 class="nav-link"
                 routerLinkActive="active"
               >
-                <i class="fas fa-chart-bar nav-icon"></i>
+                <i class="fas fa-layer-group nav-icon"></i>
                 <p class="ms-2">Add Impact</p>
               </a>
             </li>
           </ul>
         </li>
 
-        <!-- Scrap Menu -->
+        <!-- Report Views -->
         <li class="nav-item">
-          <h6
-            class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-light"
-          >
-            <span><b>Report Views</b></span>
+          <h6 class="sidebar-heading fg-sidebar-heading">
+            <span>Report Views</span>
           </h6>
+
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-cart-arrow-down"></i>
+            <i class="nav-icon fas fa-chart-pie"></i>
             <p class="ms-2">
               Reports
               <i class="fas fa-angle-right ms-auto"></i>
             </p>
           </a>
-          <ul class="nav nav-treeview bg-dark bg-opacity-50 rounded mx-2 mt-1">
+
+          <ul class="nav nav-treeview fg-treeview">
             <li class="nav-item mb-1">
               <a
                 routerLink="/dashboard"
@@ -123,20 +131,18 @@
               </a>
             </li>
 
-           
             <li class="nav-item mb-1">
               <a
                 routerLink="/scrap-report"
                 class="nav-link"
                 routerLinkActive="active"
               >
-                <i class="nav-icon fas fa-file-alt"></i>
-                <p class="ms-2">Scrap Report</p>
+                <i class="nav-icon fas fa-file-lines"></i>
+                <p class="ms-2">FG Report</p>
               </a>
             </li>
           </ul>
         </li>
-      
       </ul>
     </nav>
   </div>
