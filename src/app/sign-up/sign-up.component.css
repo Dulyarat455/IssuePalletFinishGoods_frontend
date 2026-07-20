@@ -1,0 +1,512 @@
+/* =========================
+   Sign Up / Member Management
+   Finish Goods Theme
+========================= */
+
+.member-page {
+    min-height: 100vh;
+    width: 100%;
+    padding: 22px;
+    background: #f4f7fb;
+    color: #172033;
+    overflow-x: hidden;
+  }
+  
+  .member-page *,
+  .member-page *::before,
+  .member-page *::after {
+    box-sizing: border-box;
+  }
+  
+  /* =========================
+     Hero
+  ========================= */
+  
+  .member-hero {
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    box-shadow: 0 8px 22px rgba(15, 118, 110, 0.18);
+  }
+  
+  .hero-label {
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    opacity: 0.92;
+  }
+  
+  .member-hero h2 {
+    margin: 6px 0 4px;
+    font-size: 30px;
+    font-weight: 950;
+    letter-spacing: -0.5px;
+  }
+  
+  .member-hero p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.92;
+  }
+  
+  .btn-add {
+    min-height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 15px;
+    background: #ffffff;
+    color: #047857;
+    font-size: 14px;
+    font-weight: 950;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  }
+  
+  .btn-add:hover {
+    background: #ecfdf5;
+  }
+  
+  /* =========================
+     Summary
+  ========================= */
+  
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  
+  .summary-card {
+    min-width: 0;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+  
+  .summary-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    flex: 0 0 auto;
+  }
+  
+  .summary-card span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+  
+  .summary-card b {
+    display: block;
+    margin-top: 4px;
+    color: #0f172a;
+    font-size: 26px;
+    font-weight: 950;
+  }
+  
+  .summary-card.total .summary-icon {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+  }
+  
+  .summary-card.admin .summary-icon {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  }
+  
+  .summary-card.user .summary-icon {
+    background: linear-gradient(135deg, #3b82f6, #0891b2);
+  }
+  
+  .summary-card.group .summary-icon {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+  }
+  
+  /* =========================
+     Cards
+  ========================= */
+  
+  .member-card {
+    width: 100%;
+    min-width: 0;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    padding: 18px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  
+  .card-head,
+  .table-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .card-head h3,
+  .table-head h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 950;
+  }
+  
+  .card-head span,
+  .table-head span {
+    display: block;
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  
+  .btn-soft,
+  .btn-refresh {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid #dbe4ea;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 950;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  
+  .btn-soft:hover,
+  .btn-refresh:hover {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #bbf7d0;
+  }
+  
+  /* =========================
+     Filter
+  ========================= */
+  
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .filter-field {
+    min-width: 0;
+  }
+  
+  .filter-field.wide {
+    grid-column: span 2;
+  }
+  
+  .filter-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  
+  .filter-field input,
+  .filter-field select {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #d8e3e6;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #172033;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-weight: 800;
+    outline: none;
+  }
+  
+  .filter-field input:focus,
+  .filter-field select:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.13);
+  }
+  
+  /* =========================
+     Table
+  ========================= */
+  
+  .table-wrap {
+    width: 100%;
+    max-height: 620px;
+    overflow: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+  }
+  
+  .member-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+  }
+  
+  .member-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 13px 12px;
+    background: #f0fdfa;
+    color: #0f766e;
+    border-bottom: 1px solid #ccfbf1;
+    font-size: 12px;
+    font-weight: 950;
+    text-align: left;
+    white-space: nowrap;
+  }
+  
+  .member-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #eef2f7;
+    color: #172033;
+    font-size: 13px;
+    font-weight: 750;
+    vertical-align: middle;
+  }
+  
+  .member-table tbody tr:hover {
+    background: #f8fffb;
+  }
+  
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  
+  .avatar-mini {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-weight: 950;
+    flex: 0 0 auto;
+  }
+  
+  .user-cell b {
+    display: block;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 950;
+  }
+  
+  .user-cell small {
+    display: block;
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  
+  .mono {
+    font-family: Consolas, 'Courier New', monospace;
+  }
+  
+  .strong {
+    font-weight: 950;
+  }
+  
+  .rfid-chip,
+  .role-chip,
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+  }
+  
+  .rfid-chip {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+  }
+  
+  .role-chip.admin {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+  }
+  
+  .role-chip.user {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #bbf7d0;
+  }
+  
+  .status-chip {
+    background: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid #ccfbf1;
+  }
+  
+  .empty-row {
+    text-align: center;
+    padding: 28px !important;
+    color: #64748b;
+    font-weight: 900;
+  }
+  
+  /* =========================
+     SweetAlert Form
+     ใช้ ::ng-deep เพื่อ style modal ที่อยู่นอก component
+  ========================= */
+  
+  :host ::ng-deep .swal-member-form {
+    text-align: left;
+  }
+  
+  :host ::ng-deep .swal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+  
+  :host ::ng-deep .swal-field {
+    min-width: 0;
+  }
+  
+  :host ::ng-deep .swal-field.swal-wide {
+    grid-column: 1 / -1;
+  }
+  
+  :host ::ng-deep .swal-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+  
+  :host ::ng-deep .fg-swal-input,
+  :host ::ng-deep .fg-swal-select {
+    width: 100% !important;
+    height: 44px !important;
+    margin: 0 !important;
+    border: 1px solid #d8e3e6 !important;
+    border-radius: 14px !important;
+    background: #ffffff !important;
+    color: #172033 !important;
+    padding: 9px 12px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  :host ::ng-deep .fg-swal-input:focus,
+  :host ::ng-deep .fg-swal-select:focus {
+    border-color: #14b8a6 !important;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.13) !important;
+  }
+  
+  /* =========================
+     Responsive
+  ========================= */
+  
+  @media (max-width: 1200px) {
+    .summary-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  
+    .filter-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  
+    .filter-field.wide {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .member-page {
+      padding: 14px;
+    }
+  
+    .member-hero {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px;
+    }
+  
+    .member-hero h2 {
+      font-size: 24px;
+    }
+  
+    .btn-add {
+      width: 100%;
+    }
+  
+    .summary-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  
+    .card-head,
+    .table-head {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .btn-soft,
+    .btn-refresh {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .filter-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  
+    :host ::ng-deep .swal-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  
+    :host ::ng-deep .swal-field.swal-wide {
+      grid-column: auto;
+    }
+  }

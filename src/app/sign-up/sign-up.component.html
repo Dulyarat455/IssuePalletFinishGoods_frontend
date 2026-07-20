@@ -1,0 +1,200 @@
+<div class="member-page">
+    <!-- HERO -->
+    <section class="member-hero">
+      <div>
+        <div class="hero-label">Finish Goods Control</div>
+        <h2>Member Management</h2>
+        <p>Manage user accounts, RFID login, role, group and section permission.</p>
+      </div>
+  
+      <button type="button" class="btn-add" (click)="openCreateUserModal()">
+        <i class="fas fa-user-plus"></i>
+        Add Member
+      </button>
+    </section>
+  
+    <!-- SUMMARY -->
+    <section class="summary-grid">
+      <div class="summary-card total">
+        <div class="summary-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div>
+          <span>Total Member</span>
+          <b>{{ totalUsers }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card admin">
+        <div class="summary-icon">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <div>
+          <span>Admin</span>
+          <b>{{ adminCount }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card user">
+        <div class="summary-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <div>
+          <span>User</span>
+          <b>{{ userCount }}</b>
+        </div>
+      </div>
+  
+      <div class="summary-card group">
+        <div class="summary-icon">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div>
+          <span>Active Group</span>
+          <b>{{ groupCount }}</b>
+        </div>
+      </div>
+    </section>
+  
+    <!-- FILTER -->
+    <section class="member-card filter-card">
+      <div class="card-head">
+        <div>
+          <h3>User List</h3>
+          <span>Search and filter member information</span>
+        </div>
+  
+        <button type="button" class="btn-soft" (click)="resetFilters()">
+          <i class="fas fa-rotate-left"></i>
+          Reset
+        </button>
+      </div>
+  
+      <div class="filter-grid">
+        <div class="filter-field wide">
+          <label>Search</label>
+          <input
+            type="text"
+            placeholder="Search name / emp no / RFID / role / group / section"
+            [(ngModel)]="keyword"
+          />
+        </div>
+  
+        <div class="filter-field">
+          <label>Role</label>
+          <select [(ngModel)]="roleFilter">
+            <option value="All">All</option>
+            <option value="admin">admin</option>
+            <option value="user">user</option>
+          </select>
+        </div>
+  
+        <div class="filter-field">
+          <label>Group</label>
+          <select [(ngModel)]="groupFilter">
+            <option value="All">All</option>
+            <option *ngFor="let g of groups" [value]="g.id">
+              {{ g.name }}
+            </option>
+          </select>
+        </div>
+  
+        <div class="filter-field">
+          <label>Section</label>
+          <select [(ngModel)]="sectionFilter">
+            <option value="All">All</option>
+            <option *ngFor="let s of sections" [value]="s.id">
+              {{ s.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </section>
+  
+    <!-- TABLE -->
+    <section class="member-card table-card">
+      <div class="table-head">
+        <div>
+          <h3>Members</h3>
+          <span>{{ filteredUsers.length }} records</span>
+        </div>
+  
+        <button type="button" class="btn-refresh" (click)="fetchUsers()">
+          <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i>
+          Refresh
+        </button>
+      </div>
+  
+      <div class="table-wrap">
+        <table class="member-table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">#</th>
+              <th>Name</th>
+              <th>Emp No.</th>
+              <th>RFID</th>
+              <th>Role</th>
+              <th>Group</th>
+              <th>Section</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngIf="isLoading">
+              <td colspan="8" class="empty-row">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading members...
+              </td>
+            </tr>
+  
+            <tr *ngIf="!isLoading && filteredUsers.length === 0">
+              <td colspan="8" class="empty-row">
+                No member data
+              </td>
+            </tr>
+  
+            <tr *ngFor="let u of filteredUsers; let i = index">
+              <td class="mono">{{ i + 1 }}</td>
+  
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-mini">
+                    {{ u.name ? u.name.charAt(0).toUpperCase() : 'U' }}
+                  </div>
+                  <div>
+                    <b>{{ u.name }}</b>
+                    <small>ID: {{ u.id }}</small>
+                  </div>
+                </div>
+              </td>
+  
+              <td class="mono strong">{{ u.empNo }}</td>
+  
+              <td>
+                <span class="rfid-chip">
+                  <i class="fas fa-id-card"></i>
+                  {{ u.rfId }}
+                </span>
+              </td>
+  
+              <td>
+                <span class="role-chip" [ngClass]="u.role === 'admin' ? 'admin' : 'user'">
+                  {{ u.role }}
+                </span>
+              </td>
+  
+              <td>{{ u.groupName || '-' }}</td>
+              <td>{{ u.sectionName || '-' }}</td>
+  
+              <td>
+                <span class="status-chip">
+                  {{ u.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
