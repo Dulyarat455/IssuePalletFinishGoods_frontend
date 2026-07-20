@@ -136,7 +136,7 @@
               <th>Role</th>
               <th>Group</th>
               <th>Section</th>
-              <th>Status</th>
+              <th>Detail</th>
             </tr>
           </thead>
   
@@ -164,7 +164,7 @@
                   </div>
                   <div>
                     <b>{{ u.name }}</b>
-                    <small>ID: {{ u.id }}</small>
+                    
                   </div>
                 </div>
               </td>
@@ -187,10 +187,11 @@
               <td>{{ u.groupName || '-' }}</td>
               <td>{{ u.sectionName || '-' }}</td>
   
-              <td>
-                <span class="status-chip">
-                  {{ u.status }}
-                </span>
+              <td >
+                <button type="button" class="btn-detail" (click)="openUserDetailModal(u)">
+                  <i class="fas fa-eye"></i>
+                  Detail
+                </button>
               </td>
             </tr>
           </tbody>

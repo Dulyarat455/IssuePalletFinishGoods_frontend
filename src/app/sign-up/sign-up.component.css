@@ -510,3 +510,31 @@
       grid-column: auto;
     }
   }
+
+
+
+
+  .text-center {
+    text-align: center;
+  }
+  
+  .btn-detail {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 12px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 950;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    border: 1px solid #bbf7d0;
+  }
+  
+  .btn-detail:hover {
+    background: #d1fae5;
+  }
