@@ -148,8 +148,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.fetchMasters();
-    this.fetchHeader();
+      this.fetchGroups();
+      this.fetchItems();
+      this.fetchControlLots();
+      this.fetchLocations();
+
+      this.fetchHeader();
   }
 
   ngAfterViewInit(): void {
@@ -286,33 +290,121 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /* =======================
-     Master Data
-  ======================= */
+    /* =======================
+      Master Data
+    ======================= */
 
-  fetchMasters() {
-    this.isLoadingMaster = true;
+    fetchGroups() {
+      this.isLoadingMaster = true;
 
-    Promise.all([
-      this.http.get<any>(config.apiServer + '/api/group/list').toPromise(),
-      this.http.get<any>(config.apiServer + '/api/item/list').toPromise(),
-      this.http.get<any>(config.apiServer + '/api/controlLot/list').toPromise(),
-      this.http.get<any>(config.apiServer + '/api/location/list').toPromise(),
-    ])
-      .then(([g, i, c, l]) => {
-        this.groups = g?.results || [];
-        this.items = i?.results || [];
-        this.filteredItems = [...this.items];
-        this.controlLots = c?.results || [];
-        this.locations = l?.results || [];
-        this.isLoadingMaster = false;
-      })
-      .catch((err) => {
-        console.error(err);
-        this.isLoadingMaster = false;
-        Swal.fire('Error', 'Load master data fail', 'error');
+      this.http.get(config.apiServer + '/api/group/list').subscribe({
+        next: (res: any) => {
+          this.groups = (res.results || []).map((r: any) => ({
+            id: r.id,
+            name: r.name,
+          }));
+
+          this.checkMasterLoadingDone();
+        },
+        error: (err) => {
+          console.error(err);
+          this.checkMasterLoadingDone();
+
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load group fail',
+            icon: 'error',
+          });
+        },
       });
-  }
+    }
+
+    fetchItems() {
+      this.isLoadingMaster = true;
+
+      this.http.get(config.apiServer + '/api/item/list').subscribe({
+        next: (res: any) => {
+          this.items = (res.results || []).map((r: any) => ({
+            id: r.id,
+            itemNo: r.itemNo,
+            itemName: r.itemName,
+            dieNo: r.dieNo,
+          }));
+
+          this.filteredItems = [...this.items];
+
+          this.checkMasterLoadingDone();
+        },
+        error: (err) => {
+          console.error(err);
+          this.checkMasterLoadingDone();
+
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load item master fail',
+            icon: 'error',
+          });
+        },
+      });
+    }
+
+    fetchControlLots() {
+      this.isLoadingMaster = true;
+
+      this.http.get(config.apiServer + '/api/controlLot/list').subscribe({
+        next: (res: any) => {
+          this.controlLots = (res.results || []).map((r: any) => ({
+            id: r.id,
+            name: r.name,
+            code: r.code,
+          }));
+
+          this.checkMasterLoadingDone();
+        },
+        error: (err) => {
+          console.error(err);
+          this.checkMasterLoadingDone();
+
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load control lot fail',
+            icon: 'error',
+          });
+        },
+      });
+    }
+
+    fetchLocations() {
+      this.isLoadingMaster = true;
+
+      this.http.get(config.apiServer + '/api/location/list').subscribe({
+        next: (res: any) => {
+          this.locations = (res.results || []).map((r: any) => ({
+            id: r.id,
+            locationNo: r.locationNo || r.name,
+            name: r.name,
+          }));
+
+          this.checkMasterLoadingDone();
+        },
+        error: (err) => {
+          console.error(err);
+          this.checkMasterLoadingDone();
+
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load location fail',
+            icon: 'error',
+          });
+        },
+      });
+    }
+
+    private checkMasterLoadingDone() {
+      this.isLoadingMaster = false;
+    }
+
+
 
   /* =======================
      Item Search
@@ -364,7 +456,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.isLoadingHeader = true;
 
     this.http
-      .post<FetchHeaderResp>(config.apiServer + '/api/issuePallet/fetchHeaderTempByUser', {
+      .post<FetchHeaderResp>(config.apiServer + '/api/issue/fetchHeaderTemp', {
         userId: this.userId,
       })
       .subscribe({
