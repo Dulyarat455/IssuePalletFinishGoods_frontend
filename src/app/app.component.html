@@ -1,23 +1,24 @@
 <div class="wrapper">
-  @if (token && token.trim().length > 0) 
-  {
-  <app-navbar></app-navbar>
-  <app-sidebar></app-sidebar>
-  <div class="content-wrapper">
-    <section class="content">
-      <div class="container-fluid ">
-        <router-outlet></router-outlet>
-      </div>
-    </section>
-  </div>
-  } @else {
+  @if (token && token.trim().length > 0) {
     <app-navbar></app-navbar>
+    <app-sidebar></app-sidebar>
+
     <div class="content-wrapper">
       <section class="content">
-        <div class="container-fluid ">
+        <div class="container-fluid">
           <router-outlet></router-outlet>
         </div>
       </section>
-  </div>
+    </div>
+  } @else {
+    <app-navbar class="no-sidebar"></app-navbar>
+
+    <div class="public-wrapper">
+      <section class="content">
+        <div class="container-fluid">
+          <router-outlet></router-outlet>
+        </div>
+      </section>
+    </div>
   }
 </div>

@@ -1,11 +1,13 @@
 <nav class="main-header navbar navbar-expand navbar-white navbar-light ticket-navbar">
   <!-- Left navbar links -->
   <ul class="navbar-nav navbar-left-area">
-    <li class="nav-item">
-      <a class="nav-link nav-menu-btn" data-widget="pushmenu" href="#" role="button">
-        <i class="fas fa-bars"></i>
-      </a>
-    </li>
+    @if (isLoggedIn()) {
+      <li class="nav-item">
+        <a class="nav-link nav-menu-btn" data-widget="pushmenu" href="#" role="button">
+          <i class="fas fa-bars"></i>
+        </a>
+      </li>
+    }
 
    
   </ul>
@@ -28,7 +30,7 @@
       </a>
     </li>
   
-    @if (!token || token.trim() === '') {
+    @if (!isLoggedIn()) {
       <li class="nav-item d-none d-sm-inline-block">
         <a
           [routerLink]="['/signIn']"
@@ -40,16 +42,17 @@
       </li>
     }
   
-    @if (token && token.trim().length > 0) {
+    @if (isLoggedIn()) {
       <li class="nav-item d-none d-sm-inline-block">
         <a
-          [routerLink]="['/myTicket']"
+          [routerLink]="['/issue']"
           routerLinkActive="active"
           class="nav-link nav-normal-link"
         >
-          MyTicket
+          Issue
         </a>
       </li>
+  
     }
   </ul>
 

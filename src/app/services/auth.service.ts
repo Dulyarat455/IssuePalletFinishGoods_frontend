@@ -37,25 +37,35 @@ export class AuthService {
   constructor(private router: Router, private http: HttpClient) {}
 
   login(userData: any) {
-    //เปลี่ยนชื่อ token ตาม Project ที่ทำด้วย
     localStorage.setItem('finish_goods_token', userData.token);
     localStorage.setItem('finish_goods_name', userData.name);
-    localStorage.setItem('finish_goods_id', userData.id);
+    localStorage.setItem('finish_goods_userId', userData.id);
     localStorage.setItem('finish_goods_empNo', userData.empNo);
-
+    localStorage.setItem('finish_goods_groupId', userData.groupId);
+    localStorage.setItem('finish_goods_groupName', userData.groupName);
+    localStorage.setItem('finish_goods_sectionId', userData.sectionId); 
+    localStorage.setItem('finish_goods_sectionName', userData.sectionName); 
+  
     this.authStatus.next(true);
+    this.loggedIn$.next(true);
     this.refreshComponents.next(true);
   }
 
   logout() {
     localStorage.removeItem('finish_goods_token');
     localStorage.removeItem('finish_goods_name');
-    localStorage.removeItem('finish_goods_id');
+    localStorage.removeItem('finish_goods_userId');
     localStorage.removeItem('finish_goods_empNo');
+    localStorage.removeItem('finish_goods_groupId');
+    localStorage.removeItem('finish_goods_groupName');
+    localStorage.removeItem('finish_goods_sectionId');
+    localStorage.removeItem('finish_goods_sectionName');
+
     this.authStatus.next(false);
-    window.location.href = '/FinishGoodsPress';
-    // this.refreshComponents.next(true); // แจ้ง components ให้ refresh
-    // this.router.navigate(['/']);
+    this.loggedIn$.next(false);
+    this.refreshComponents.next(true);
+  
+    this.router.navigate(['/signIn']);
   }
 
   getUserLevel() {

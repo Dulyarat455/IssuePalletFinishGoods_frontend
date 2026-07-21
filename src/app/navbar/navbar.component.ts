@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,23 +15,51 @@ export class NavbarComponent implements OnInit, OnDestroy {
   formattedDate: string = '';
   formattedTime: string = '';
   private timeInterval: any;
-  token: string | undefined = '';
+  private routerSub?: Subscription;
+  private authSub?: Subscription;
 
+  token: string = '';
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.token = localStorage.getItem('ticketPress_token') || '';
+    this.refreshToken();
 
     this.updateDateTime();
 
     this.timeInterval = setInterval(() => {
       this.updateDateTime();
     }, 1000);
+
+    this.routerSub = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => {
+        this.refreshToken();
+      });
+
+    this.authSub = this.authService.authStatus$.subscribe(() => {
+      this.refreshToken();
+    });
   }
 
   ngOnDestroy() {
     if (this.timeInterval) {
       clearInterval(this.timeInterval);
     }
+
+    this.routerSub?.unsubscribe();
+    this.authSub?.unsubscribe();
+  }
+
+  refreshToken() {
+    this.token = localStorage.getItem('finish_goods_token') || '';
+  }
+
+  isLoggedIn(): boolean {
+    return this.token.trim().length > 0;
   }
 
   private updateDateTime() {

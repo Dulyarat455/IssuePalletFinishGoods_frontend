@@ -141,7 +141,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.userId = Number(localStorage.getItem('userId')) || null;
+    this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
 
     if (!this.userId) {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');

@@ -56,16 +56,7 @@ export class SidebarComponent {
     });
 
     if (button.isConfirmed) {
-      // localStorage.removeItem('angular_token');
-      // localStorage.removeItem('angular_name');
-      // localStorage.removeItem('angular_id');
-      // localStorage.removeItem('angular_empNo');
       this.authService.logout();
-      // localStorage.removeItem('angular_level');
-
-      // location.reload();
-      this.router.navigate(['/signIn']);
-      // window.location.href = '/FinishGoods';
     }
   }
 
