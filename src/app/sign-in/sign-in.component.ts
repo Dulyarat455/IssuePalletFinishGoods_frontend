@@ -188,7 +188,7 @@ export class SignInComponent {
     };
 
     try {
-      this.http.post(config.apiServer + '/api/user/signin', payload).subscribe({
+      this.http.post(config.apiServer + '/api/user/signIn', payload).subscribe({
         next: (res: any) => {
           if (res.message === 'unauthorized') {
             this.isLoading = false;
