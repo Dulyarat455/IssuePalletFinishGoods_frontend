@@ -60,7 +60,7 @@
   
             <div class="summary-item">
               <span>Control Lot OQC</span>
-              <b>{{ controlLotName(header.controlLotId) }}</b>
+              <b>{{ controlLotDisplayName(header.controlLotId) }}</b>
             </div>
   
             <div class="summary-item wide">
@@ -185,14 +185,7 @@
                 >
                   <option [ngValue]="null" disabled>Select Control Lot</option>
                   <option *ngFor="let c of controlLots" [ngValue]="c.id">
-                    {{
-                      c.id === 2 ? 'Stator, HAL' :
-                      c.id === 3 ? 'Front platate, General' :
-                      c.id === 4 ? 'Part MA' :
-                      c.id === 5 ? 'Part IM' :
-                      c.id === 6 ? 'Part HB' :
-                      c.name
-                    }}
+                    {{ controlLotDisplayName(c.id) }}
                   </option>
                 </select>
               </div>
@@ -447,18 +440,9 @@
   
             <div class="label-row">
               <span>Lot OQC</span>
-              <b>
-                {{
-                  header?.controlLotId === 2 ? 'Stator, HAL' :
-                  header?.controlLotId === 3 ? 'Front platate, General' :
-                  header?.controlLotId === 4 ? 'Part MA' :
-                  header?.controlLotId === 5 ? 'Part IM' :
-                  header?.controlLotId === 6 ? 'Part HB' :
-                  header ? controlLotName(header.controlLotId) : '-'
-                }}
-              </b>
+              <b>{{ header ? controlLotDisplayName(header.controlLotId) : '-' }}</b>
             </div>
-  
+            
             <div class="label-row wide">
               <span>Location</span>
               <b>{{ header ? locationName(header.locationId) : '-' }}</b>

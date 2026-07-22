@@ -143,19 +143,20 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
-
+  
     if (!this.userId) {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');
       return;
     }
-      this.generateMovementMonthOptions();
-
-      this.fetchGroups();
-      this.fetchItems();
-      this.fetchControlLots();
-      this.fetchLocations();
-
-      this.fetchHeader();
+  
+    this.generateMovementMonthOptions();
+  
+    this.fetchGroups();
+    this.fetchItems();
+    this.fetchControlLots();
+    this.fetchLocations();
+  
+    this.fetchHeader();
   }
 
   ngAfterViewInit(): void {
@@ -255,9 +256,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   locationName(id?: number | null): string {
     if (!id) return '-';
-    const loc = this.locations.find((x) => x.id === id);
+
+    const loc = this.locations.find((x) => x.id === Number(id));
     if (!loc) return '-';
-    return loc.name ? `${loc.locationNo} - ${loc.name}` : loc.locationNo;
+
+    return loc.name || loc.locationNo || '-';
   }
 
 
@@ -265,15 +268,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!raw) return null;
   
     return {
-      id: raw.id,
+      id: Number(raw.id),
+  
       issueDate: raw.issueDate || raw.dateIssue,
-      shift: raw.shift,
+      shift: raw.shift || '',
   
       groupId: Number(raw.groupId),
       groupName: raw.groupName,
   
-      itemNo: raw.itemNo,
-      itemName: raw.itemName,
+      itemNo: raw.itemNo || '',
+      itemName: raw.itemName || '',
   
       controlLotId: Number(raw.controlLotId),
       controlLotName: raw.controlLotName,
@@ -281,18 +285,38 @@ export class IssueComponent implements OnInit, AfterViewInit {
       locationId: Number(raw.locationId),
       locationNo: raw.locationNo,
   
-      movementMonth: raw.movementMonth || raw.moveMentThreeMonth,
+      movementMonth: raw.movementMonth || raw.moveMentThreeMonth || '-',
   
-      totalQtyBox: Number(raw.totalQtyBox || raw.totalBox || 0),
+      totalQtyBox: Number(raw.totalQtyBox ?? raw.totalBox ?? 0),
   
-      // Backend ปัจจุบันยังไม่ได้สร้าง idPallet ใน createHeaderTemp
-      // เลยให้โชว์ Auto หรือ Temp ID ไปก่อน
-      idPallet: raw.idPallet || `TEMP-${raw.id}`,
+      // Temp ยังไม่ต้องมี ID Pallet จริง
+      idPallet: raw.idPallet || 'Auto',
   
       userId: Number(raw.userId),
-      status: raw.status,
+      status: raw.status || 'use',
     };
   }
+
+
+  controlLotDisplayName(id?: number | null): string {
+    if (!id) return '-';
+  
+    switch (Number(id)) {
+      case 2:
+        return 'Stator, HAL';
+      case 3:
+        return 'Front platate, General';
+      case 4:
+        return 'Part MA';
+      case 5:
+        return 'Part IM';
+      case 6:
+        return 'Part HB';
+      default:
+        return this.controlLotName(id);
+    }
+  }
+
 
   private mapHeaderToForm(h: HeaderIssuePalletTemp): HeaderForm {
     return {
@@ -506,14 +530,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
   /* =======================
      Header Temp
   ======================= */
-
   fetchHeader() {
     if (!this.userId) return;
   
     this.isLoadingHeader = true;
   
     this.http
-      .post<FetchHeaderResp>(config.apiServer + '/api/issue/fetchHeaderTemp', {
+      .post<any>(config.apiServer + '/api/issue/fetchHeaderTemp', {
         userId: this.userId,
       })
       .subscribe({
@@ -525,9 +548,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.itemKeyword = this.form.itemNo;
             this.isEditingHeader = false;
   
-            // ถ้ายังไม่มี API WOS Temp ตอนนี้ ให้ comment ไว้ก่อนได้
-            this.fetchWosTemp();
+            // ถ้า API WOS Temp ยังไม่พร้อม ให้ comment บรรทัดนี้ไว้ก่อน
+            // this.fetchWosTemp();
           } else {
+            this.header = null;
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
             this.savedRows = [];
@@ -572,27 +596,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.isSavingHeader = true;
   
     const payload = {
-      userId: this.userId,
-  
-      // Backend ใช้ dateIssue
+      userId: Number(this.userId),
       dateIssue: new Date(this.form.issueDate).toISOString(),
-  
       itemNo: this.form.itemNo,
       itemName: this.form.itemName,
-  
-      // Backend require qtyBox ด้วย
-      // ตอนนี้ใช้ค่าเดียวกับ totalBox ไปก่อน
       qtyBox: Number(this.form.totalQtyBox),
-  
       shift: this.form.shift,
       groupId: Number(this.form.groupId),
       controlLotId: Number(this.form.controlLotId),
       locationId: Number(this.form.locationId),
-  
-      // Backend ใช้ totalBox
       totalBox: Number(this.form.totalQtyBox),
-  
-      // Backend ใช้ moveMentThreeMonth
       moveMentThreeMonth: this.form.movementMonth,
     };
   
@@ -612,8 +625,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
           this.toast('success', 'Save Header Success');
   
-          // ถ้ายังไม่มี API scan WOS temp จริง ๆ ให้ comment บรรทัดนี้ไว้ก่อนได้
-          this.fetchWosTemp();
+          // ถ้า API WOS Temp ยังไม่พร้อม ให้ comment ไว้ก่อน
+          // this.fetchWosTemp();
   
           this.focusQr();
         },
