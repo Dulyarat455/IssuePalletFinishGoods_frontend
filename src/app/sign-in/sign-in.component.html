@@ -1,45 +1,77 @@
 <div class="fg-login-page">
   @if (token == undefined) {
     <div class="login-shell">
+      <!-- LEFT HERO -->
       <section class="login-hero">
+        <div class="hero-pattern hero-pattern-one"></div>
+        <div class="hero-pattern hero-pattern-two"></div>
+
         <div class="hero-badge">
-          <i class="fas fa-boxes-stacked"></i>
+          <i class="fas fa-pallet"></i>
         </div>
 
         <div class="hero-label">Finish Goods Control</div>
-        <h1>Issue Pallet Finish Goods</h1>
+
+        <h1>
+          Issue Pallet
+          <span>Finish Goods</span>
+        </h1>
+
         <p>
-          Sign in with RFID card or employee account to manage pallet labels,
-          WOS scan, issue and closed pallet lots.
+          Manage FG pallet labels, WOS scanning, issue labels and closed pallet lots
+          with a simple and traceable workflow.
         </p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <b>42</b>
+            <span>Max Box / Pallet</span>
+          </div>
+
+          <div class="hero-stat">
+            <b>QR</b>
+            <span>WOS Scan</span>
+          </div>
+
+          <div class="hero-stat">
+            <b>FG</b>
+            <span>Stock Control</span>
+          </div>
+        </div>
 
         <div class="hero-points">
           <div>
             <i class="fas fa-qrcode"></i>
             <span>QR / RFID Login</span>
           </div>
+
           <div>
             <i class="fas fa-print"></i>
             <span>Pallet Label</span>
           </div>
+
           <div>
             <i class="fas fa-warehouse"></i>
-            <span>FG Control</span>
+            <span>Finish Goods Area</span>
           </div>
         </div>
       </section>
 
+      <!-- RIGHT LOGIN -->
       <section class="login-card">
         <div class="card-top">
           <div>
             <span>Welcome back</span>
             <h2>Sign In</h2>
+            <p>Use RFID card or employee account.</p>
           </div>
+
           <div class="card-icon">
             <i class="fas fa-shield-alt"></i>
           </div>
         </div>
 
+        <!-- RFID LOGIN -->
         <div class="login-section">
           <div class="section-heading">
             <span></span>
@@ -70,6 +102,7 @@
           <span>OR</span>
         </div>
 
+        <!-- EMPLOYEE LOGIN -->
         <div class="login-section">
           <div class="section-heading">
             <span></span>
@@ -124,6 +157,11 @@
               Clear
             </button>
           </div>
+        </div>
+
+        <div class="login-footer-note">
+          <i class="fas fa-circle-info"></i>
+          <span>For Finish Goods pallet label operation only.</span>
         </div>
       </section>
     </div>

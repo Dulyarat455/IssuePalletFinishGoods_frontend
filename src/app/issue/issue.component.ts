@@ -258,6 +258,40 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return loc.name ? `${loc.locationNo} - ${loc.name}` : loc.locationNo;
   }
 
+
+  private normalizeHeader(raw: any): HeaderIssuePalletTemp | null {
+    if (!raw) return null;
+  
+    return {
+      id: raw.id,
+      issueDate: raw.issueDate || raw.dateIssue,
+      shift: raw.shift,
+  
+      groupId: Number(raw.groupId),
+      groupName: raw.groupName,
+  
+      itemNo: raw.itemNo,
+      itemName: raw.itemName,
+  
+      controlLotId: Number(raw.controlLotId),
+      controlLotName: raw.controlLotName,
+  
+      locationId: Number(raw.locationId),
+      locationNo: raw.locationNo,
+  
+      movementMonth: raw.movementMonth || raw.moveMentThreeMonth,
+  
+      totalQtyBox: Number(raw.totalQtyBox || raw.totalBox || 0),
+  
+      // Backend ปัจจุบันยังไม่ได้สร้าง idPallet ใน createHeaderTemp
+      // เลยให้โชว์ Auto หรือ Temp ID ไปก่อน
+      idPallet: raw.idPallet || `TEMP-${raw.id}`,
+  
+      userId: Number(raw.userId),
+      status: raw.status,
+    };
+  }
+
   private mapHeaderToForm(h: HeaderIssuePalletTemp): HeaderForm {
     return {
       issueDate: this.toYmd(h.issueDate),
@@ -320,32 +354,32 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
 
     fetchItems() {
-      this.isLoadingMaster = true;
+      // this.isLoadingMaster = true;
 
-      this.http.get(config.apiServer + '/api/item/list').subscribe({
-        next: (res: any) => {
-          this.items = (res.results || []).map((r: any) => ({
-            id: r.id,
-            itemNo: r.itemNo,
-            itemName: r.itemName,
-            dieNo: r.dieNo,
-          }));
+      // this.http.get(config.apiServer + '/api/item/list').subscribe({
+      //   next: (res: any) => {
+      //     this.items = (res.results || []).map((r: any) => ({
+      //       id: r.id,
+      //       itemNo: r.itemNo,
+      //       itemName: r.itemName,
+      //       dieNo: r.dieNo,
+      //     }));
 
-          this.filteredItems = [...this.items];
+      //     this.filteredItems = [...this.items];
 
-          this.checkMasterLoadingDone();
-        },
-        error: (err) => {
-          console.error(err);
-          this.checkMasterLoadingDone();
+      //     this.checkMasterLoadingDone();
+      //   },
+      //   error: (err) => {
+      //     console.error(err);
+      //     this.checkMasterLoadingDone();
 
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load item master fail',
-            icon: 'error',
-          });
-        },
-      });
+      //     Swal.fire({
+      //       title: 'Error',
+      //       text: err?.error?.message || err.message || 'Load item master fail',
+      //       icon: 'error',
+      //     });
+      //   },
+      // });
     }
 
     fetchControlLots() {
@@ -452,21 +486,23 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   fetchHeader() {
     if (!this.userId) return;
-
+  
     this.isLoadingHeader = true;
-
+  
     this.http
       .post<FetchHeaderResp>(config.apiServer + '/api/issue/fetchHeaderTemp', {
         userId: this.userId,
       })
       .subscribe({
-        next: (res) => {
-          this.header = res.results || null;
-
+        next: (res: any) => {
+          this.header = this.normalizeHeader(res.results);
+  
           if (this.header) {
             this.form = this.mapHeaderToForm(this.header);
             this.itemKeyword = this.form.itemNo;
             this.isEditingHeader = false;
+  
+            // ถ้ายังไม่มี API WOS Temp ตอนนี้ ให้ comment ไว้ก่อนได้
             this.fetchWosTemp();
           } else {
             this.form = this.createEmptyHeaderForm();
@@ -474,14 +510,19 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.savedRows = [];
             this.isEditingHeader = true;
           }
-
+  
           this.isLoadingHeader = false;
           this.focusQr();
         },
         error: (err) => {
           console.error(err);
           this.isLoadingHeader = false;
-          Swal.fire('Error', 'Load Header fail', 'error');
+  
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load Header fail',
+            icon: 'error',
+          });
         },
       });
   }
@@ -496,52 +537,82 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.form.controlLotId) return this.toast('warning', 'เลือก Control Lot OQC');
     if (!this.form.locationId) return this.toast('warning', 'เลือก Location FG');
     if (!this.form.movementMonth) return this.toast('warning', 'เลือก Movement within 3 month');
+  
     if (!this.form.totalQtyBox || this.form.totalQtyBox <= 0) {
       return this.toast('warning', 'กรอก Total QTY BOX');
     }
-
+  
     if (this.form.totalQtyBox > 42) {
       return this.toast('warning', 'Total QTY BOX ห้ามเกิน 42 Box/ครั้ง');
     }
-
+  
     this.isSavingHeader = true;
-
-    const payload: any = {
+  
+    const payload = {
       userId: this.userId,
-      issueDate: new Date(this.form.issueDate).toISOString(),
-      shift: this.form.shift,
-      groupId: this.form.groupId,
+  
+      // Backend ใช้ dateIssue
+      dateIssue: new Date(this.form.issueDate).toISOString(),
+  
       itemNo: this.form.itemNo,
       itemName: this.form.itemName,
-      controlLotId: this.form.controlLotId,
-      locationId: this.form.locationId,
-      movementMonth: this.form.movementMonth,
-      totalQtyBox: this.form.totalQtyBox,
+  
+      // Backend require qtyBox ด้วย
+      // ตอนนี้ใช้ค่าเดียวกับ totalBox ไปก่อน
+      qtyBox: Number(this.form.totalQtyBox),
+  
+      shift: this.form.shift,
+      groupId: Number(this.form.groupId),
+      controlLotId: Number(this.form.controlLotId),
+      locationId: Number(this.form.locationId),
+  
+      // Backend ใช้ totalBox
+      totalBox: Number(this.form.totalQtyBox),
+  
+      // Backend ใช้ moveMentThreeMonth
+      moveMentThreeMonth: this.form.movementMonth,
     };
-
-    const isEdit = !!this.header && this.isEditingHeader;
-    const url = isEdit
-      ? '/api/issuePallet/updateHeaderTemp'
-      : '/api/issuePallet/createHeaderTemp';
-
-    if (isEdit) payload.headerTempId = this.header!.id;
-
-    this.http.post<any>(config.apiServer + url, payload).subscribe({
-      next: (res) => {
-        this.header = res.data;
-        this.form = this.mapHeaderToForm(this.header!);
-        this.itemKeyword = this.form.itemNo;
-        this.isEditingHeader = false;
-        this.isSavingHeader = false;
-        this.toast('success', 'Save Header Success');
-        this.fetchWosTemp();
-      },
-      error: (err) => {
-        console.error(err);
-        this.isSavingHeader = false;
-        Swal.fire('Error', err?.error?.message || 'Save Header fail', 'error');
-      },
-    });
+  
+    this.http
+      .post<any>(config.apiServer + '/api/issue/createHeaderTemp', payload)
+      .subscribe({
+        next: (res) => {
+          this.header = this.normalizeHeader(res.data);
+  
+          if (this.header) {
+            this.form = this.mapHeaderToForm(this.header);
+            this.itemKeyword = this.form.itemNo;
+          }
+  
+          this.isEditingHeader = false;
+          this.isSavingHeader = false;
+  
+          this.toast('success', 'Save Header Success');
+  
+          // ถ้ายังไม่มี API scan WOS temp จริง ๆ ให้ comment บรรทัดนี้ไว้ก่อนได้
+          this.fetchWosTemp();
+  
+          this.focusQr();
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingHeader = false;
+  
+          const msg = err?.error?.message || err.message || 'Save Header fail';
+  
+          if (msg === 'missing_required_fields') {
+            Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
+            return;
+          }
+  
+          if (msg === 'invalid_dateIssue') {
+            Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
+            return;
+          }
+  
+          Swal.fire('Error', msg, 'error');
+        },
+      });
   }
 
   onEditHeader() {
