@@ -25,7 +25,6 @@ type ItemMasterRow = {
   id: number;
   itemNo: string;
   itemName: string;
-  dieNo?: string;
 };
 
 type ControlLotRow = {
@@ -123,6 +122,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   locations: LocationRow[] = [];
   savedRows: WosTempRow[] = [];
 
+  movementMonthOptions: string[] = [];
+
   itemKeyword = '';
   filteredItems: ItemMasterRow[] = [];
   showItemDrop = false;
@@ -147,6 +148,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');
       return;
     }
+      this.generateMovementMonthOptions();
 
       this.fetchGroups();
       this.fetchItems();
@@ -324,6 +326,28 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+
+  private generateMovementMonthOptions() {
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+  
+    const now = new Date();
+    const options: string[] = ['-'];
+  
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const month = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+  
+      options.push(`${month}-${year}`);
+    }
+  
+    this.movementMonthOptions = options;
+  }
+
     /* =======================
       Master Data
     ======================= */
@@ -354,32 +378,31 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
 
     fetchItems() {
-      // this.isLoadingMaster = true;
-
-      // this.http.get(config.apiServer + '/api/item/list').subscribe({
-      //   next: (res: any) => {
-      //     this.items = (res.results || []).map((r: any) => ({
-      //       id: r.id,
-      //       itemNo: r.itemNo,
-      //       itemName: r.itemName,
-      //       dieNo: r.dieNo,
-      //     }));
-
-      //     this.filteredItems = [...this.items];
-
-      //     this.checkMasterLoadingDone();
-      //   },
-      //   error: (err) => {
-      //     console.error(err);
-      //     this.checkMasterLoadingDone();
-
-      //     Swal.fire({
-      //       title: 'Error',
-      //       text: err?.error?.message || err.message || 'Load item master fail',
-      //       icon: 'error',
-      //     });
-      //   },
-      // });
+      this.isLoadingMaster = true;
+    
+      this.http.get(config.apiServer + '/api/partMaster/list').subscribe({
+        next: (res: any) => {
+          this.items = (res.results || []).map((r: any) => ({
+            id: r.id,
+            itemNo: r.itemNo,
+            itemName: r.itemName,
+          }));
+    
+          this.filteredItems = [...this.items];
+    
+          this.checkMasterLoadingDone();
+        },
+        error: (err) => {
+          console.error(err);
+          this.checkMasterLoadingDone();
+    
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load Part Master fail',
+            icon: 'error',
+          });
+        },
+      });
     }
 
     fetchControlLots() {

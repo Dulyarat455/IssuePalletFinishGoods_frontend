@@ -185,7 +185,14 @@
                 >
                   <option [ngValue]="null" disabled>Select Control Lot</option>
                   <option *ngFor="let c of controlLots" [ngValue]="c.id">
-                    {{ c.name }}
+                    {{
+                      c.id === 2 ? 'Stator, HAL' :
+                      c.id === 3 ? 'Front platate, General' :
+                      c.id === 4 ? 'Part MA' :
+                      c.id === 5 ? 'Part IM' :
+                      c.id === 6 ? 'Part HB' :
+                      c.name
+                    }}
                   </option>
                 </select>
               </div>
@@ -200,7 +207,7 @@
                 >
                   <option [ngValue]="null" disabled>Select Location</option>
                   <option *ngFor="let l of locations" [ngValue]="l.id">
-                    {{ l.locationNo }} {{ l.name ? '- ' + l.name : '' }}
+                     {{ l.name ? l.name : '' }}
                   </option>
                 </select>
               </div>
@@ -213,13 +220,10 @@
                   [(ngModel)]="form.movementMonth"
                   [disabled]="isSavingHeader"
                 >
-                  <option value="" disabled>Select Month</option>
-                  <option value="Jul-26">Jul-26</option>
-                  <option value="Aug-26">Aug-26</option>
-                  <option value="Sep-26">Sep-26</option>
-                  <option value="Oct-26">Oct-26</option>
-                  <option value="Nov-26">Nov-26</option>
-                  <option value="Dec-26">Dec-26</option>
+                 <option value="" disabled>Select Month</option>
+                 <option *ngFor="let m of movementMonthOptions" [value]="m">
+                   {{ m }}
+                 </option>
                 </select>
               </div>
   
@@ -443,7 +447,16 @@
   
             <div class="label-row">
               <span>Lot OQC</span>
-              <b>{{ header ? controlLotName(header.controlLotId) : '-' }}</b>
+              <b>
+                {{
+                  header?.controlLotId === 2 ? 'Stator, HAL' :
+                  header?.controlLotId === 3 ? 'Front platate, General' :
+                  header?.controlLotId === 4 ? 'Part MA' :
+                  header?.controlLotId === 5 ? 'Part IM' :
+                  header?.controlLotId === 6 ? 'Part HB' :
+                  header ? controlLotName(header.controlLotId) : '-'
+                }}
+              </b>
             </div>
   
             <div class="label-row wide">
