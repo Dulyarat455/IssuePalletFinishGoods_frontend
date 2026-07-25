@@ -261,8 +261,8 @@
         <section class="scan-card">
           <div class="section-head">
             <div>
-              <h3>Scan QR Code</h3>
-              <span>Scan WOS / Part Plating QR Code</span>
+              <h3>Scan WOS Data</h3>
+              <span>Start scanning at Item No. and press Enter to continue</span>
             </div>
   
             <span class="scan-badge" [class.full]="isBoxFull">
@@ -270,31 +270,7 @@
             </span>
           </div>
   
-          <div class="qr-box" [class.disabled]="!header || isEditingHeader || isBoxFull">
-            <div class="qr-icon">
-              <i class="fas fa-qrcode"></i>
-            </div>
-  
-            <input
-              #qrInput
-              class="qr-input"
-              type="text"
-              name="qrText"
-              placeholder="Click here and scan QR Code"
-              [(ngModel)]="qrText"
-              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-              (keydown.enter)="onQrEnter($event)"
-            />
-  
-            <button
-              type="button"
-              class="btn scan"
-              (click)="parseQrText()"
-              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-            >
-              Scan
-            </button>
-          </div>
+        
   
           <div class="manual-grid">
             <div class="form-field">
