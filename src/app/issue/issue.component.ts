@@ -74,6 +74,7 @@ type WosScanForm = {
   itemNo: string;
   itemName: string;
   wosNo: string;
+  dwg: string;
   dieNo: string;
   lotNo: string;
   qty: number | null;
@@ -85,6 +86,7 @@ type WosTempRow = {
   itemNo: string;
   itemName: string;
   wosNo: string;
+  dwg: string;
   dieNo: string;
   lotNo: string;
   qty: number;
@@ -106,9 +108,13 @@ type FetchWosTempResp = {
   styleUrl: './issue.component.css',
 })
 export class IssueComponent implements OnInit, AfterViewInit {
-  @ViewChild('qrInput') qrInput!: ElementRef<HTMLInputElement>;
   @ViewChild('scanItemNo') scanItemNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('scanItemName') scanItemName!: ElementRef<HTMLInputElement>;
   @ViewChild('scanWosNo') scanWosNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('scanDwg') scanDwg!: ElementRef<HTMLInputElement>;
+  @ViewChild('scanDieNo') scanDieNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('scanLotNo') scanLotNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('scanQty') scanQty!: ElementRef<HTMLInputElement>;
 
   userId: number | null = null;
 
@@ -128,7 +134,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
   filteredItems: ItemMasterRow[] = [];
   showItemDrop = false;
 
-  qrText = '';
 
   isLoadingHeader = false;
   isSavingHeader = false;
@@ -219,6 +224,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       itemNo: '',
       itemName: '',
       wosNo: '',
+      dwg: '',
       dieNo: '',
       lotNo: '',
       qty: null,
@@ -229,12 +235,32 @@ export class IssueComponent implements OnInit, AfterViewInit {
      Helper
   ======================= */
 
-  private focusQr() {
+  private focusEl(ref?: ElementRef<HTMLInputElement>) {
     setTimeout(() => {
-      if (!this.header || this.isEditingHeader || this.isBoxFull) return;
-      this.qrInput?.nativeElement?.focus();
-      this.qrInput?.nativeElement?.select();
-    }, 120);
+      const el = ref?.nativeElement;
+      if (!el) return;
+  
+      el.focus();
+      el.select();
+    }, 0);
+  }
+  
+  private focusScanFirst() {
+    if (!this.header || this.isEditingHeader) return;
+    if (this.isBoxFull) return;
+  
+    this.focusEl(this.scanItemNo);
+  }
+  
+  private focusQr() {
+    this.focusScanFirst();
+  }
+  
+  loopFocusToFirst(ev: any) {
+    if (!this.header || this.isEditingHeader) return;
+  
+    if (ev?.key === 'Tab') ev.preventDefault();
+    this.focusScanFirst();
   }
 
   private focusItemNo() {
@@ -701,7 +727,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.header = null;
             this.savedRows = [];
             this.scanForm = this.createEmptyScanForm();
-            this.qrText = '';
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
             this.isEditingHeader = true;
@@ -720,168 +745,150 @@ export class IssueComponent implements OnInit, AfterViewInit {
      QR Scan
   ======================= */
 
-  onQrEnter(ev?: Event) {
-    ev?.preventDefault();
-    this.parseQrText();
-  }
+  
 
-  parseQrText() {
-    if (!this.header || this.isEditingHeader) {
-      return this.toast('warning', 'กรุณา Save Header ก่อน Scan QR');
+  onScanEnter(
+    field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
+    ev: any
+  ) {
+    if (ev?.key === 'Enter') ev.preventDefault();
+  
+    if (
+      !this.header ||
+      this.isEditingHeader ||
+      this.isSavingScan ||
+      this.isBoxFull
+    ) {
+      return;
     }
-
-    if (this.isBoxFull) {
-      return this.toast('info', 'จำนวน Box ครบแล้ว');
-    }
-
-    const raw = (this.qrText || '').trim();
-    if (!raw) return;
-
-    const parsed = this.parseQr(raw);
-
-    this.scanForm = {
-      itemNo: parsed.itemNo || '',
-      itemName: parsed.itemName || '',
-      wosNo: parsed.wosNo || '',
-      dieNo: parsed.dieNo || '',
-      lotNo: parsed.lotNo || '',
-      qty: parsed.qty || null,
-    };
-
-    this.qrText = '';
-    this.onConfirmScan();
-  }
-
-  private parseQr(raw: string): Partial<WosScanForm> {
-    /*
-      รองรับ QR หลายแบบ:
-      1) JSON: {"itemNo":"1000","itemName":"YOKE#1","wosNo":"JB...","dieNo":"D8","lotNo":"L...","qty":4000}
-      2) Text มี key: Item No:1000, WOS NO:JB...
-      3) Text คั่นด้วย tab/comma/pipe/newline ตามลำดับ:
-         itemNo, itemName, wosNo, dieNo, lotNo, qty
-    */
-
-    try {
-      const json = JSON.parse(raw);
-      return {
-        itemNo: json.itemNo || json.ItemNo || json['Item No'] || '',
-        itemName: json.itemName || json.ItemName || json['Item Name'] || '',
-        wosNo: json.wosNo || json.WosNo || json['WOS NO'] || '',
-        dieNo: json.dieNo || json.DieNo || json['DIE NO'] || '',
-        lotNo: json.lotNo || json.LotNo || json['LOT NO'] || '',
-        qty: Number(json.qty || json.QTY || 0) || null,
-      };
-    } catch (_) {}
-
-    const getByKey = (keys: string[]) => {
-      for (const k of keys) {
-        const reg = new RegExp(`${k}\\s*[:=]\\s*([^\\n\\r,|]+)`, 'i');
-        const m = raw.match(reg);
-        if (m?.[1]) return m[1].trim();
-      }
-      return '';
-    };
-
-    const byKey = {
-      itemNo: getByKey(['Item No', 'ItemNo', 'ITEM']),
-      itemName: getByKey(['Item Name', 'ItemName']),
-      wosNo: getByKey(['WOS NO', 'WOS', 'WosNo']),
-      dieNo: getByKey(['DIE NO', 'DIE', 'DieNo']),
-      lotNo: getByKey(['LOT NO', 'LOT', 'LotNo']),
-      qty: Number(getByKey(['QTY', 'Quantity'])) || null,
-    };
-
-    if (byKey.itemNo || byKey.wosNo) return byKey;
-
-    const parts = raw
-      .split(/\t|\||,|\r?\n/g)
-      .map((x) => x.trim())
-      .filter(Boolean);
-
-    return {
-      itemNo: parts[0] || '',
-      itemName: parts[1] || '',
-      wosNo: parts[2] || '',
-      dieNo: parts[3] || '',
-      lotNo: parts[4] || '',
-      qty: Number(parts[5] || 0) || null,
-    };
-  }
-
-  onManualEnter(field: 'itemNo' | 'itemName' | 'wosNo' | 'dieNo' | 'lotNo' | 'qty') {
-    if (field === 'qty') {
-      this.onConfirmScan();
+  
+    const requiredOk =
+      !!this.scanForm.itemNo &&
+      !!this.scanForm.itemName &&
+      !!this.scanForm.wosNo &&
+      !!this.scanForm.dwg &&
+      !!this.scanForm.dieNo &&
+      !!this.scanForm.lotNo &&
+      this.scanForm.qty != null &&
+      this.scanForm.qty > 0;
+  
+    switch (field) {
+      case 'itemNo':
+        if (!this.scanForm.itemNo) return;
+        return this.focusEl(this.scanItemName);
+  
+      case 'itemName':
+        if (!this.scanForm.itemName) return;
+        return this.focusEl(this.scanWosNo);
+  
+      case 'wosNo':
+        if (!this.scanForm.wosNo) return;
+        return this.focusEl(this.scanDwg);
+  
+      case 'dwg':
+        if (!this.scanForm.dwg) return;
+        return this.focusEl(this.scanDieNo);
+  
+      case 'dieNo':
+        if (!this.scanForm.dieNo) return;
+        return this.focusEl(this.scanLotNo);
+  
+      case 'lotNo':
+        if (!this.scanForm.lotNo) return;
+        return this.focusEl(this.scanQty);
+  
+      case 'qty':
+        if (!requiredOk) return;
+        return this.onConfirmScan();
     }
   }
 
   onConfirmScan() {
     if (!this.header || this.isEditingHeader) {
-      return this.toast('warning', 'กรุณา Save Header ก่อน');
+      return this.toast('warning', 'กรุณาบันทึก Header ให้เสร็จก่อน');
     }
-
+  
     if (this.isBoxFull) {
-      return this.toast('info', 'จำนวน Box ครบแล้ว');
+      return this.toast('info', 'ครบจำนวน BOX แล้ว');
     }
-
-    if (!this.scanForm.itemNo) return this.toast('warning', 'ไม่พบ Item No.');
-    if (!this.scanForm.itemName) return this.toast('warning', 'ไม่พบ Item Name');
-    if (!this.scanForm.wosNo) return this.toast('warning', 'ไม่พบ WOS No.');
-    if (!this.scanForm.dieNo) return this.toast('warning', 'ไม่พบ Die No.');
-    if (!this.scanForm.lotNo) return this.toast('warning', 'ไม่พบ Lot No.');
-    if (!this.scanForm.qty || this.scanForm.qty <= 0) return this.toast('warning', 'QTY ไม่ถูกต้อง');
-
-    if (this.scanForm.itemNo !== this.header.itemNo) {
-      return Swal.fire({
-        icon: 'warning',
-        title: 'Item No. ไม่ตรงกับ Header',
-        text: `Header: ${this.header.itemNo}, Scan: ${this.scanForm.itemNo}`,
-      });
+  
+    this.scanForm.itemNo = (this.scanForm.itemNo || '').trim();
+    this.scanForm.itemName = (this.scanForm.itemName || '').trim();
+    this.scanForm.wosNo = (this.scanForm.wosNo || '').trim();
+    this.scanForm.dwg = (this.scanForm.dwg || '').trim();
+    this.scanForm.dieNo = (this.scanForm.dieNo || '').trim();
+    this.scanForm.lotNo = (this.scanForm.lotNo || '').trim();
+  
+    if (!this.scanForm.itemNo) return this.toast('warning', 'กรุณากรอก Item No.');
+    if (!this.scanForm.itemName) return this.toast('warning', 'กรุณากรอก Item Name');
+    if (!this.scanForm.wosNo) return this.toast('warning', 'กรุณากรอก WOS No.');
+    if (!this.scanForm.dwg) return this.toast('warning', 'กรุณากรอก DWG');
+    if (!this.scanForm.dieNo) return this.toast('warning', 'กรุณากรอก Die No.');
+    if (!this.scanForm.lotNo) return this.toast('warning', 'กรุณากรอก Lot No.');
+  
+    if (this.scanForm.qty == null || this.scanForm.qty <= 0) {
+      return this.toast('warning', 'กรุณากรอก QTY');
     }
-
-    const duplicate = this.savedRows.some((x) => x.wosNo === this.scanForm.wosNo);
-    if (duplicate) {
-      return Swal.fire({
-        icon: 'warning',
-        title: 'Scan QR ซ้ำ',
-        text: `WOS No. ${this.scanForm.wosNo} ถูก Scan ไปแล้ว`,
-      }).then(() => {
-        this.clearScanForm();
-      });
-    }
-
+  
     this.isSavingScan = true;
-
+  
     const payload = {
-      headerTempId: this.header.id,
+      headTempId: this.header.id,
       itemNo: this.scanForm.itemNo,
       itemName: this.scanForm.itemName,
       wosNo: this.scanForm.wosNo,
+      dwg: this.scanForm.dwg,
       dieNo: this.scanForm.dieNo,
       lotNo: this.scanForm.lotNo,
       qty: this.scanForm.qty,
     };
-
-    this.http.post<any>(config.apiServer + '/api/issuePallet/createWosTemp', payload).subscribe({
-      next: () => {
-        this.isSavingScan = false;
-        this.toast('success', 'Scan Success');
-        this.clearScanForm();
-        this.fetchWosTemp();
-      },
-      error: (err) => {
-        console.error(err);
-        this.isSavingScan = false;
-        Swal.fire('Error', err?.error?.message || 'Save scan fail', 'error').then(() => {
-          this.clearScanForm();
-        });
-      },
-    });
+  
+    this.http
+      .post<any>(config.apiServer + '/api/issue/createBoxTemp', payload)
+      .subscribe({
+        next: (res: any) => {
+          const row = res.data;
+  
+          this.savedRows = [
+            ...this.savedRows,
+            {
+              id: row.id,
+              headerId: row.headerId,
+              itemNo: row.itemNo,
+              itemName: row.itemName,
+              wosNo: row.wosNo,
+              dwg: row.dwg,
+              dieNo: row.dieNo,
+              lotNo: row.lotNo,
+              qty: Number(row.qty || 0),
+            },
+          ];
+  
+          this.toast('success', 'Scan สำเร็จ');
+  
+          this.scanForm = this.createEmptyScanForm();
+          this.isSavingScan = false;
+          this.focusScanFirst();
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingScan = false;
+  
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err?.message || 'Confirm Scan ไม่สำเร็จ',
+            icon: 'error',
+          }).then(() => {
+            this.scanForm = this.createEmptyScanForm();
+            this.focusScanFirst();
+          });
+        },
+      });
   }
 
   clearScanForm() {
-    this.qrText = '';
     this.scanForm = this.createEmptyScanForm();
-    this.focusQr();
+    this.focusScanFirst();
   }
 
   /* =======================

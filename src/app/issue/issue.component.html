@@ -282,22 +282,23 @@
                 name="scan_itemNo"
                 [(ngModel)]="scanForm.itemNo"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('itemNo')"
+                (keydown.enter)="onScanEnter('itemNo', $event)"
               />
             </div>
-  
+          
             <div class="form-field">
               <label>Item Name</label>
               <input
+                #scanItemName
                 class="control"
                 type="text"
                 name="scan_itemName"
                 [(ngModel)]="scanForm.itemName"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('itemName')"
+                (keydown.enter)="onScanEnter('itemName', $event)"
               />
             </div>
-  
+          
             <div class="form-field">
               <label>WOS NO</label>
               <input
@@ -307,43 +308,60 @@
                 name="scan_wosNo"
                 [(ngModel)]="scanForm.wosNo"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('wosNo')"
+                (keydown.enter)="onScanEnter('wosNo', $event)"
               />
             </div>
-  
+          
+            <div class="form-field">
+              <label>DWG</label>
+              <input
+                #scanDwg
+                class="control"
+                type="text"
+                name="scan_dwg"
+                [(ngModel)]="scanForm.dwg"
+                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                (keydown.enter)="onScanEnter('dwg', $event)"
+              />
+            </div>
+          
             <div class="form-field">
               <label>DIE NO</label>
               <input
+                #scanDieNo
                 class="control"
                 type="text"
                 name="scan_dieNo"
                 [(ngModel)]="scanForm.dieNo"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('dieNo')"
+                (keydown.enter)="onScanEnter('dieNo', $event)"
               />
             </div>
-  
+          
             <div class="form-field">
               <label>LOT NO</label>
               <input
+                #scanLotNo
                 class="control"
                 type="text"
                 name="scan_lotNo"
                 [(ngModel)]="scanForm.lotNo"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('lotNo')"
+                (keydown.enter)="onScanEnter('lotNo', $event)"
               />
             </div>
-  
+          
             <div class="form-field">
               <label>QTY</label>
               <input
+                #scanQty
                 class="control"
                 type="number"
                 name="scan_qty"
                 [(ngModel)]="scanForm.qty"
                 [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
-                (keydown.enter)="onManualEnter('qty')"
+                (keydown.enter)="onScanEnter('qty', $event)"
+                (keydown.tab)="loopFocusToFirst($event)"
               />
             </div>
           </div>
