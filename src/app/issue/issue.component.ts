@@ -574,8 +574,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.itemKeyword = this.form.itemNo;
             this.isEditingHeader = false;
   
-            // ถ้า API WOS Temp ยังไม่พร้อม ให้ comment บรรทัดนี้ไว้ก่อน
-            // this.fetchWosTemp();
+            // โหลดรายการ Box Temp ของ Header นี้
+            this.fetchWosTemp();
           } else {
             this.header = null;
             this.form = this.createEmptyHeaderForm();
@@ -651,8 +651,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
           this.toast('success', 'Save Header Success');
   
-          // ถ้า API WOS Temp ยังไม่พร้อม ให้ comment ไว้ก่อน
-          // this.fetchWosTemp();
+         // โหลดรายการ scan temp ของ header นี้
+          this.fetchWosTemp();
   
           this.focusQr();
         },
@@ -830,6 +830,43 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return this.toast('warning', 'กรุณากรอก QTY');
     }
   
+    // เช็ค Item No. ที่ scan ว่าตรงกับ Header ไหม ก่อนส่ง backend
+    const headerItemNo = String(this.header.itemNo || '').trim();
+    const scanItemNo = String(this.scanForm.itemNo || '').trim();
+  
+    if (scanItemNo !== headerItemNo) {
+      document.activeElement instanceof HTMLElement && document.activeElement.blur();
+    
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Item No. ไม่ตรงกับ Header',
+        html: `
+          <div style="text-align:left">
+            <div><b>Item No. จาก Header:</b> ${headerItemNo}</div>
+            <div><b>Item No. ที่ Scan:</b> ${scanItemNo}</div>
+    
+            <div style="margin-top:10px;color:#b91c1c">
+              ข้อมูลที่สแกนเข้ามาไม่ใช่ Item No. เดียวกับ Header ที่เปิดอยู่
+            </div>
+    
+            <div style="margin-top:6px;color:#64748b">
+              กรุณาตรวจสอบชิ้นงาน หรือเริ่ม Scan ใหม่อีกครั้ง
+            </div>
+          </div>
+        `,
+        confirmButtonText: 'Scan ใหม่',
+        confirmButtonColor: '#dc2626',
+        returnFocus: false,
+        focusConfirm: true,
+      }).then(() => {
+        this.scanForm = this.createEmptyScanForm();
+    
+        setTimeout(() => {
+          this.focusScanFirst();
+        }, 200);
+      });
+    }
+  
     this.isSavingScan = true;
   
     const payload = {
@@ -846,29 +883,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.http
       .post<any>(config.apiServer + '/api/issue/createBoxTemp', payload)
       .subscribe({
-        next: (res: any) => {
-          const row = res.data;
-  
-          this.savedRows = [
-            ...this.savedRows,
-            {
-              id: row.id,
-              headerId: row.headerId,
-              itemNo: row.itemNo,
-              itemName: row.itemName,
-              wosNo: row.wosNo,
-              dwg: row.dwg,
-              dieNo: row.dieNo,
-              lotNo: row.lotNo,
-              qty: Number(row.qty || 0),
-            },
-          ];
-  
+        next: () => {
           this.toast('success', 'Scan สำเร็จ');
   
           this.scanForm = this.createEmptyScanForm();
           this.isSavingScan = false;
-          this.focusScanFirst();
+  
+          // ดึงจาก backend ใหม่ เพื่อให้ข้อมูลตรงกับ database แน่นอน
+          this.fetchWosTemp();
         },
         error: (err) => {
           console.error(err);
@@ -900,12 +922,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
       this.savedRows = [];
       return;
     }
-
+  
     this.isLoadingRows = true;
-
+  
     this.http
-      .post<FetchWosTempResp>(config.apiServer + '/api/issuePallet/fetchWosTempByHeader', {
-        headerTempId: this.header.id,
+      .post<FetchWosTempResp>(config.apiServer + '/api/issue/fetchBoxTempByHeadId', {
+        headerId: this.header.id,
       })
       .subscribe({
         next: (res) => {
@@ -917,7 +939,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
           console.error(err);
           this.savedRows = [];
           this.isLoadingRows = false;
-          Swal.fire('Error', err?.error?.message || 'Load WOS fail', 'error');
+  
+          Swal.fire({
+            title: 'Error',
+            text: err?.error?.message || err.message || 'Load Box Temp fail',
+            icon: 'error',
+          });
         },
       });
   }
