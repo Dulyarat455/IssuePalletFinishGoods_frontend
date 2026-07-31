@@ -257,21 +257,57 @@
           </form>
         </section>
   
-        <!-- ================= SCAN CARD ================= -->
-        <section class="scan-card">
-          <div class="section-head">
-            <div>
-              <h3>Scan WOS Data</h3>
-              <span>Start scanning at Item No. and press Enter to continue</span>
-            </div>
-  
-            <span class="scan-badge" [class.full]="isBoxFull">
-              {{ scanCount }} / {{ header?.totalQtyBox || 0 }} Box
+      <!-- ================= SCAN CARD ================= -->
+      <section class="scan-card">
+        <div class="section-head">
+          <div>
+            <h3>Scan WOS Data</h3>
+
+            <span *ngIf="!isBoxFull">
+              Start scanning at Item No. and press Enter to continue
+            </span>
+
+            <span *ngIf="isBoxFull">
+              Scan completed according to Header QTY BOX
             </span>
           </div>
-  
-        
-  
+
+          <span class="scan-badge" [class.full]="isBoxFull">
+            {{ scanCount }} / {{ header?.totalQtyBox || 0 }} Box
+          </span>
+        </div>
+
+        <!-- ===== Scan Complete Message ===== -->
+        <div class="scan-complete-card" *ngIf="isBoxFull">
+          <div class="complete-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+
+          <div>
+            <h3>Scan Completed</h3>
+
+            <p>
+              สแกนครบตามจำนวน QTY BOX ที่กำหนดใน Header แล้ว
+            </p>
+
+            <div class="complete-summary">
+              <span>
+                Scanned:
+                <b>{{ scanCount }}</b>
+                Box
+              </span>
+
+              <span>
+                Required:
+                <b>{{ header?.totalQtyBox || 0 }}</b>
+                Box
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Scan Form ===== -->
+        <ng-container *ngIf="!isBoxFull">
           <div class="manual-grid">
             <div class="form-field">
               <label>Item No.</label>
@@ -281,11 +317,11 @@
                 type="text"
                 name="scan_itemNo"
                 [(ngModel)]="scanForm.itemNo"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('itemNo', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>Item Name</label>
               <input
@@ -294,11 +330,11 @@
                 type="text"
                 name="scan_itemName"
                 [(ngModel)]="scanForm.itemName"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('itemName', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>WOS NO</label>
               <input
@@ -307,11 +343,11 @@
                 type="text"
                 name="scan_wosNo"
                 [(ngModel)]="scanForm.wosNo"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('wosNo', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>DWG</label>
               <input
@@ -320,11 +356,11 @@
                 type="text"
                 name="scan_dwg"
                 [(ngModel)]="scanForm.dwg"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('dwg', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>DIE NO</label>
               <input
@@ -333,11 +369,11 @@
                 type="text"
                 name="scan_dieNo"
                 [(ngModel)]="scanForm.dieNo"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('dieNo', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>LOT NO</label>
               <input
@@ -346,11 +382,11 @@
                 type="text"
                 name="scan_lotNo"
                 [(ngModel)]="scanForm.lotNo"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('lotNo', $event)"
               />
             </div>
-          
+
             <div class="form-field">
               <label>QTY</label>
               <input
@@ -359,24 +395,24 @@
                 type="number"
                 name="scan_qty"
                 [(ngModel)]="scanForm.qty"
-                [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+                [disabled]="!header || isEditingHeader || isSavingScan"
                 (keydown.enter)="onScanEnter('qty', $event)"
                 (keydown.tab)="loopFocusToFirst($event)"
               />
             </div>
           </div>
-  
+
           <div class="scan-actions">
             <button
               type="button"
               class="btn primary"
               (click)="onConfirmScan()"
-              [disabled]="!header || isEditingHeader || isSavingScan || isBoxFull"
+              [disabled]="!header || isEditingHeader || isSavingScan"
             >
               <i class="fas fa-check"></i>
               Confirm Scan
             </button>
-  
+
             <button
               type="button"
               class="btn ghost danger"
@@ -386,12 +422,287 @@
               Clear
             </button>
           </div>
-  
+
           <div class="note-box">
             <b>Scan Rule:</b>
             ต้อง Save Header ก่อน Scan / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
           </div>
+        </ng-container>
+      </section>
+
+        <!-- ================= FRACTION BOX SCAN ================= -->
+        <section
+        class="fraction-toggle-card"
+        *ngIf="header && !isEditingHeader"
+        >
+        <div class="fraction-toggle-head">
+          <div>
+            <h3>
+              <i class="fas fa-box-open"></i>
+              Box เศษ / Fraction Box
+            </h3>
+
+            <span>
+              เปิด Header แยกสำหรับ Scan Box เศษของ Pallet นี้
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="fraction-toggle"
+            [class.active]="showFractionSection"
+            (click)="toggleFractionSection()"
+          >
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+
+            {{ showFractionSection ? 'เปิดอยู่' : 'เพิ่ม Box เศษ' }}
+          </button>
+        </div>
         </section>
+
+        <section
+        class="fraction-card"
+        *ngIf="header && !isEditingHeader && showFractionSection"
+        >
+        <div class="section-head">
+          <div>
+            <h3>Header Box เศษ</h3>
+            <span>กำหนดจำนวน Box เศษที่ต้องการ Scan</span>
+          </div>
+
+          <span class="fraction-status" *ngIf="fractionHeader">
+            Header เศษ #{{ fractionHeader.id }}
+          </span>
+        </div>
+
+        <div class="fraction-header-row">
+          <div class="form-field">
+            <label>QTY BOX เศษ</label>
+
+            <input
+              class="control"
+              type="number"
+              name="fractionQtyBox"
+              min="1"
+              max="42"
+              placeholder="เช่น 2"
+              [(ngModel)]="fractionQtyBox"
+              [disabled]="isSavingFractionHeader || isSavingFractionScan"
+            />
+          </div>
+
+          <button
+            type="button"
+            class="btn fraction-save"
+            (click)="onSaveFractionHeader()"
+            [disabled]="isSavingFractionHeader || isSavingFractionScan"
+          >
+            <i class="fas fa-save"></i>
+
+            {{
+              isSavingFractionHeader
+                ? 'Saving...'
+                : fractionHeader
+                  ? 'Update Header เศษ'
+                  : 'Create Header เศษ'
+            }}
+          </button>
+        </div>
+
+        <ng-container *ngIf="fractionHeader">
+          <div class="fraction-divider"></div>
+
+          <div class="section-head compact">
+            <div>
+              <h3>Scan Box เศษ</h3>
+              <span>Scan เหมือน Box ปกติ และ Auto Save หลัง QTY</span>
+            </div>
+
+            <span
+              class="scan-badge fraction"
+              [class.full]="isFractionFull"
+            >
+              {{ fractionScanCount }} /
+              {{ fractionHeader.qtyBox }} Box
+            </span>
+          </div>
+
+          <div class="fraction-complete" *ngIf="isFractionFull">
+            <i class="fas fa-check-circle"></i>
+            Scan Box เศษครบแล้ว
+          </div>
+
+          <div class="manual-grid">
+            <div class="form-field">
+              <label>Item No.</label>
+              <input
+                #fractionItemNo
+                class="control"
+                type="text"
+                name="fraction_itemNo"
+                [(ngModel)]="fractionScanForm.itemNo"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('itemNo', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>Item Name</label>
+              <input
+                #fractionItemName
+                class="control"
+                type="text"
+                name="fraction_itemName"
+                [(ngModel)]="fractionScanForm.itemName"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('itemName', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>WOS NO</label>
+              <input
+                #fractionWosNo
+                class="control"
+                type="text"
+                name="fraction_wosNo"
+                [(ngModel)]="fractionScanForm.wosNo"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('wosNo', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>DWG</label>
+              <input
+                #fractionDwg
+                class="control"
+                type="text"
+                name="fraction_dwg"
+                [(ngModel)]="fractionScanForm.dwg"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('dwg', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>DIE NO</label>
+              <input
+                #fractionDieNo
+                class="control"
+                type="text"
+                name="fraction_dieNo"
+                [(ngModel)]="fractionScanForm.dieNo"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('dieNo', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>LOT NO</label>
+              <input
+                #fractionLotNo
+                class="control"
+                type="text"
+                name="fraction_lotNo"
+                [(ngModel)]="fractionScanForm.lotNo"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('lotNo', $event)"
+              />
+            </div>
+
+            <div class="form-field">
+              <label>QTY</label>
+              <input
+                #fractionQty
+                class="control"
+                type="number"
+                name="fraction_qty"
+                [(ngModel)]="fractionScanForm.qty"
+                [disabled]="isSavingFractionScan || isFractionFull"
+                (keydown.enter)="onFractionScanEnter('qty', $event)"
+                (keydown.tab)="loopFractionFocusToFirst($event)"
+              />
+            </div>
+          </div>
+
+          <div class="scan-actions">
+            <button
+              type="button"
+              class="btn fraction-save"
+              (click)="onConfirmFractionScan()"
+              [disabled]="isSavingFractionScan || isFractionFull"
+            >
+              <i class="fas fa-check"></i>
+              {{ isSavingFractionScan ? 'Saving...' : 'Confirm Box เศษ' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn ghost danger"
+              (click)="clearFractionScanForm()"
+              [disabled]="isSavingFractionScan"
+            >
+              Clear
+            </button>
+          </div>
+
+          <div class="fraction-list-head">
+            <div>
+              <b>Scanned Box เศษ</b>
+              <span>
+                {{ fractionRows.length }} records /
+                Total QTY {{ fractionTotalQty | number }}
+              </span>
+            </div>
+          </div>
+
+          <div class="table-wrap fraction-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>WOS NO</th>
+                  <th>LOT NO</th>
+                  <th>DIE</th>
+                  <th class="text-end">QTY</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngIf="isLoadingFractionRows">
+                  <td colspan="5" class="empty">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading...
+                  </td>
+                </tr>
+
+                <tr *ngIf="!isLoadingFractionRows && fractionRows.length === 0">
+                  <td colspan="5" class="empty">
+                    No Box เศษ
+                  </td>
+                </tr>
+
+                <tr *ngFor="let row of fractionRows; let i = index">
+                  <td>{{ i + 1 }}</td>
+
+                  <td>
+                    <b>{{ row.wosNo }}</b>
+                    <small>{{ row.itemNo }}</small>
+                  </td>
+
+                  <td>{{ row.lotNo }}</td>
+                  <td>{{ row.dieNo }}</td>
+                  <td class="text-end">{{ row.qty | number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        </section>
+
       </div>
   
       <!-- ================= RIGHT ================= -->
@@ -466,61 +777,90 @@
         </section>
   
         <!-- SAVED TABLE -->
-        <section class="table-card">
-          <div class="section-head compact">
+        <section class="scan-list-card">
+          <div class="scan-list-header">
             <div>
-              <h3>Scanned WOS List</h3>
-              <span>{{ savedRows.length }} records</span>
+              <div class="scan-list-title">Scanned WOS List</div>
+              <div class="scan-list-subtitle">{{ savedRows.length }} records</div>
             </div>
-  
+        
             <button
               type="button"
-              class="btn ghost danger"
+              class="clear-all-btn"
               (click)="onClearAllScan()"
-              [disabled]="!header || savedRows.length === 0 || isClearing"
+              [disabled]="!savedRows.length"
             >
               Clear All
             </button>
           </div>
-  
-          <div class="table-wrap">
-            <table>
+        
+          <div class="scan-list-table-wrap">
+            <table class="scan-list-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>WOS NO</th>
-                  <th>LOT NO</th>
-                  <th>DIE</th>
-                  <th class="text-end">QTY</th>
-                  <th></th>
+                  <th class="col-index">#</th>
+                  <th class="col-wos">WOS NO<br><span class="th-sub">ITEM NO</span></th>
+                  <th class="col-lot">LOT NO<br><span class="th-sub">ITEM NAME</span></th>
+                  <th class="col-die">DIE NO<br><span class="th-sub">DWG</span></th>
+                  <th class="col-qty">QTY</th>
+                  <th class="col-action"></th>
                 </tr>
               </thead>
-  
-              <tbody>
-                <tr *ngIf="isLoadingRows">
-                  <td colspan="6" class="empty">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    Loading...
-                  </td>
-                </tr>
-  
-                <tr *ngIf="!isLoadingRows && savedRows.length === 0">
-                  <td colspan="6" class="empty">No scan data</td>
-                </tr>
-  
+        
+              <tbody *ngIf="savedRows.length > 0">
                 <tr *ngFor="let r of savedRows; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>
-                    <b>{{ r.wosNo }}</b>
-                    <small>{{ r.itemNo }}</small>
+                  <td class="cell-index">
+                    {{ i + 1 }}
                   </td>
-                  <td>{{ r.lotNo }}</td>
-                  <td>{{ r.dieNo }}</td>
-                  <td class="text-end">{{ r.qty | number }}</td>
-                  <td class="text-center">
-                    <button type="button" class="row-delete" (click)="onDeleteRow(r)">
+        
+                  <td class="cell-stack">
+                    <div class="cell-main">
+                      {{ r.wosNo || '-' }}
+                    </div>
+                    <div class="cell-sub">
+                      {{ r.itemNo || '-' }}
+                    </div>
+                  </td>
+        
+                  <td class="cell-stack">
+                    <div class="cell-main">
+                      {{ r.lotNo || '-' }}
+                    </div>
+                    <div class="cell-sub cell-sub-name">
+                      {{ r.itemName || '-' }}
+                    </div>
+                  </td>
+        
+                  <td class="cell-stack">
+                    <div class="cell-main">
+                      {{ r.dieNo || '-' }}
+                    </div>
+                    <div class="cell-sub">
+                      {{ r.dwg || '-' }}
+                    </div>
+                  </td>
+        
+                  <td class="cell-qty">
+                    {{ r.qty | number }}
+                  </td>
+        
+                  <td class="cell-action">
+                    <button
+                      type="button"
+                      class="delete-row-btn"
+                      (click)="onDeleteRow(r)"
+                      title="Delete row"
+                    >
                       <i class="fas fa-times"></i>
                     </button>
+                  </td>
+                </tr>
+              </tbody>
+        
+              <tbody *ngIf="savedRows.length === 0">
+                <tr>
+                  <td colspan="6" class="empty-cell">
+                    No scanned data
                   </td>
                 </tr>
               </tbody>

@@ -92,6 +92,31 @@ type WosTempRow = {
   qty: number;
 };
 
+
+
+type HeaderTempFraction = {
+  id: number;
+  headerId: number;
+  qtyBox: number;
+  timeStmp?: string;
+  status: string;
+};
+
+
+
+type FractionTempRow = WosTempRow & {
+  mapId?: number;
+  headerFractionId?: number;
+  boxId?: number;
+};
+
+type FractionTempListResp = {
+  message?: string;
+  headerFraction: HeaderTempFraction | null;
+  results: FractionTempRow[];
+};
+
+
 type FetchHeaderResp = {
   results: HeaderIssuePalletTemp | null;
 };
@@ -116,6 +141,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
   @ViewChild('scanLotNo') scanLotNo!: ElementRef<HTMLInputElement>;
   @ViewChild('scanQty') scanQty!: ElementRef<HTMLInputElement>;
 
+
+  @ViewChild('fractionItemNo') fractionItemNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionItemName') fractionItemName!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionWosNo') fractionWosNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionDwg') fractionDwg!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionDieNo') fractionDieNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionLotNo') fractionLotNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionQty') fractionQty!: ElementRef<HTMLInputElement>;
+
   userId: number | null = null;
 
   header: HeaderIssuePalletTemp | null = null;
@@ -127,6 +161,20 @@ export class IssueComponent implements OnInit, AfterViewInit {
   controlLots: ControlLotRow[] = [];
   locations: LocationRow[] = [];
   savedRows: WosTempRow[] = [];
+
+
+  showFractionSection = false;
+
+  fractionHeader: HeaderTempFraction | null = null;
+  fractionQtyBox: number | null = null;
+
+  fractionScanForm: WosScanForm = this.createEmptyScanForm();
+  fractionRows: FractionTempRow[] = [];
+
+  isSavingFractionHeader = false;
+  isSavingFractionScan = false;
+  isLoadingFractionRows = false;
+
 
   movementMonthOptions: string[] = [];
 
@@ -198,6 +246,26 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return !!this.header && !this.isEditingHeader && this.scanCount > 0;
   }
 
+
+  get fractionScanCount(): number {
+    return this.fractionRows.length;
+  }
+  
+  get isFractionFull(): boolean {
+    if (!this.fractionHeader) return false;
+  
+    return this.fractionScanCount >= Number(this.fractionHeader.qtyBox || 0);
+  }
+  
+  get fractionTotalQty(): number {
+    return this.fractionRows.reduce((sum, row) => {
+      return sum + Number(row.qty || 0);
+    }, 0);
+  }
+
+
+
+
   /* =======================
      Create Empty
   ======================= */
@@ -254,6 +322,24 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
   private focusQr() {
     this.focusScanFirst();
+  }
+
+
+  private focusFractionFirst() {
+    if (!this.header || this.isEditingHeader) return;
+    if (!this.showFractionSection) return;
+    if (!this.fractionHeader) return;
+    if (this.isFractionFull) return;
+  
+    this.focusEl(this.fractionItemNo);
+  }
+  
+  loopFractionFocusToFirst(ev: any) {
+    if (ev?.key === 'Tab') {
+      ev.preventDefault();
+    }
+  
+    this.focusFractionFirst();
   }
   
   loopFocusToFirst(ev: any) {
@@ -576,12 +662,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
             // โหลดรายการ Box Temp ของ Header นี้
             this.fetchWosTemp();
+            this.fetchFractionTempList();
           } else {
             this.header = null;
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
             this.savedRows = [];
             this.isEditingHeader = true;
+            this.showFractionSection = false;
+            this.fractionHeader = null;
+            this.fractionQtyBox = null;
+            this.fractionRows = [];
+            this.fractionScanForm = this.createEmptyScanForm();
           }
   
           this.isLoadingHeader = false;
@@ -615,8 +707,19 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return this.toast('warning', 'กรอก Total QTY BOX');
     }
   
-    if (this.form.totalQtyBox > 42) {
-      return this.toast('warning', 'Total QTY BOX ห้ามเกิน 42 Box/ครั้ง');
+  
+    if (
+      this.header &&
+      this.isEditingHeader &&
+      this.scanCount > Number(this.form.totalQtyBox)
+    ) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Total QTY BOX น้อยกว่าจำนวนที่ Scan แล้ว',
+        text:
+          `ตอนนี้ Scan แล้ว ${this.scanCount} Box ` +
+          `ไม่สามารถแก้ Total QTY BOX เป็น ${this.form.totalQtyBox} ได้`,
+      });
     }
   
     this.isSavingHeader = true;
@@ -635,46 +738,69 @@ export class IssueComponent implements OnInit, AfterViewInit {
       moveMentThreeMonth: this.form.movementMonth,
     };
   
-    this.http
-      .post<any>(config.apiServer + '/api/issue/createHeaderTemp', payload)
-      .subscribe({
-        next: (res) => {
-          this.header = this.normalizeHeader(res.data);
+    const isEditMode = !!this.header && this.isEditingHeader;
   
-          if (this.header) {
-            this.form = this.mapHeaderToForm(this.header);
-            this.itemKeyword = this.form.itemNo;
-          }
+    const url = isEditMode
+      ? config.apiServer + '/api/issue/editHeaderTemp'
+      : config.apiServer + '/api/issue/createHeaderTemp';
   
-          this.isEditingHeader = false;
-          this.isSavingHeader = false;
+    const finalPayload = isEditMode
+      ? {
+          ...payload,
+          headTempId: this.header!.id,
+        }
+      : payload;
   
-          this.toast('success', 'Save Header Success');
+    this.http.post<any>(url, finalPayload).subscribe({
+      next: (res) => {
+        this.header = this.normalizeHeader(res.data);
   
-         // โหลดรายการ scan temp ของ header นี้
-          this.fetchWosTemp();
+        if (this.header) {
+          this.form = this.mapHeaderToForm(this.header);
+          this.itemKeyword = this.form.itemNo;
+        }
   
-          this.focusQr();
-        },
-        error: (err) => {
-          console.error(err);
-          this.isSavingHeader = false;
+        this.isEditingHeader = false;
+        this.isSavingHeader = false;
   
-          const msg = err?.error?.message || err.message || 'Save Header fail';
+        this.toast(
+          'success',
+          isEditMode ? 'Edit Header Success' : 'Save Header Success'
+        );
   
-          if (msg === 'missing_required_fields') {
-            Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
-            return;
-          }
+        this.fetchWosTemp();
+        this.fetchFractionTempList();
   
-          if (msg === 'invalid_dateIssue') {
-            Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
-            return;
-          }
+        this.focusQr();
+      },
+      error: (err) => {
+        console.error(err);
+        this.isSavingHeader = false;
   
-          Swal.fire('Error', msg, 'error');
-        },
-      });
+        const msg =
+          err?.error?.message ||
+          err?.error?.error ||
+          err.message ||
+          'Save Header fail';
+  
+        if (msg === 'missing_required_fields') {
+          Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
+          return;
+        }
+  
+        if (msg === 'invalid_dateIssue') {
+          Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
+          return;
+        }
+  
+        if (msg === 'header_issueTemp_notFound') {
+          Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
+          return;
+        }
+  
+        Swal.fire('Error', msg, 'error');
+      },
+    });
   }
 
   onEditHeader() {
@@ -730,6 +856,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
             this.isEditingHeader = true;
+            this.showFractionSection = false;
+            this.fractionHeader = null;
+            this.fractionQtyBox = null;
+            this.fractionRows = [];
+            this.fractionScanForm = this.createEmptyScanForm();
             this.toast('success', 'Delete Header Success');
           },
           error: (err) => {
@@ -739,6 +870,139 @@ export class IssueComponent implements OnInit, AfterViewInit {
           },
         });
     });
+  }
+
+
+  fetchFractionTempList() {
+    if (!this.header) {
+      this.fractionHeader = null;
+      this.fractionQtyBox = null;
+      this.fractionRows = [];
+      this.isLoadingFractionRows = false;
+      return;
+    }
+  
+    this.isLoadingFractionRows = true;
+  
+    this.http
+      .post<FractionTempListResp>(
+        config.apiServer + '/api/issue/fractionTempListByHeaderTempId',
+        {
+          headTempId: this.header.id,
+        }
+      )
+      .subscribe({
+        next: (res) => {
+          this.fractionHeader = res.headerFraction || null;
+          this.fractionRows = res.results || [];
+  
+          if (this.fractionHeader) {
+            this.fractionQtyBox = Number(this.fractionHeader.qtyBox);
+            this.showFractionSection = true;
+          } else {
+            this.fractionQtyBox = null;
+            this.fractionRows = [];
+          }
+  
+          this.isLoadingFractionRows = false;
+        },
+        error: (err) => {
+          console.error(err);
+  
+          this.fractionHeader = null;
+          this.fractionQtyBox = null;
+          this.fractionRows = [];
+          this.isLoadingFractionRows = false;
+        },
+      });
+  }
+
+
+  toggleFractionSection() {
+    if (!this.header || this.isEditingHeader) {
+      return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
+    }
+  
+    this.showFractionSection = !this.showFractionSection;
+  
+    if (this.showFractionSection && this.fractionHeader) {
+      setTimeout(() => {
+        this.focusFractionFirst();
+      }, 150);
+    }
+  }
+
+
+
+  onSaveFractionHeader() {
+    if (!this.header || this.isEditingHeader) {
+      return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
+    }
+  
+    if (this.fractionHeader) {
+      return Swal.fire({
+        icon: 'info',
+        title: 'มี Header Box เศษอยู่แล้ว',
+        text: 'ถ้าต้องการแก้จำนวน QTY BOX เศษ ต้องทำ API Update Header เศษเพิ่ม',
+        confirmButtonText: 'OK',
+      });
+    }
+  
+    if (this.fractionQtyBox == null || Number(this.fractionQtyBox) <= 0) {
+      return this.toast('warning', 'กรุณากรอก QTY BOX เศษ');
+    }
+  
+    if (Number(this.fractionQtyBox) > 42) {
+      return this.toast('warning', 'QTY BOX เศษห้ามเกิน 42 Box');
+    }
+  
+    this.isSavingFractionHeader = true;
+  
+    this.http
+      .post<any>(
+        config.apiServer + '/api/issue/createHeaderTempFraction',
+        {
+          headTempId: this.header.id,
+          qtyBox: Number(this.fractionQtyBox),
+        }
+      )
+      .subscribe({
+        next: (res) => {
+          this.fractionHeader = {
+            id: Number(res.data.id),
+            headerId: Number(res.data.headerId ?? this.header!.id),
+            qtyBox: Number(res.data.qtyBox),
+            timeStmp: res.data.timeStmp,
+            status: res.data.status || 'use',
+          };
+  
+          this.fractionQtyBox = this.fractionHeader.qtyBox;
+          this.isSavingFractionHeader = false;
+  
+          this.toast('success', 'สร้าง Header Box เศษสำเร็จ');
+  
+          // โหลดใหม่จาก backend ให้ state ตรงกับ database
+          this.fetchFractionTempList();
+  
+          setTimeout(() => {
+            this.focusFractionFirst();
+          }, 150);
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingFractionHeader = false;
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'สร้าง Header Box เศษไม่สำเร็จ',
+            text:
+              err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Create Header Temp Fraction fail',
+          });
+        },
+      });
   }
 
   /* =======================
@@ -801,6 +1065,188 @@ export class IssueComponent implements OnInit, AfterViewInit {
         if (!requiredOk) return;
         return this.onConfirmScan();
     }
+  }
+
+
+  onFractionScanEnter(
+    field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
+    ev: any
+  ) {
+    if (ev?.key === 'Enter') {
+      ev.preventDefault();
+    }
+  
+    if (
+      !this.header ||
+      this.isEditingHeader ||
+      !this.fractionHeader ||
+      this.isSavingFractionScan ||
+      this.isFractionFull
+    ) {
+      return;
+    }
+  
+    const requiredOk =
+      !!this.fractionScanForm.itemNo &&
+      !!this.fractionScanForm.itemName &&
+      !!this.fractionScanForm.wosNo &&
+      !!this.fractionScanForm.dwg &&
+      !!this.fractionScanForm.dieNo &&
+      !!this.fractionScanForm.lotNo &&
+      this.fractionScanForm.qty != null &&
+      Number(this.fractionScanForm.qty) > 0;
+  
+    switch (field) {
+      case 'itemNo':
+        if (!this.fractionScanForm.itemNo) return;
+        return this.focusEl(this.fractionItemName);
+  
+      case 'itemName':
+        if (!this.fractionScanForm.itemName) return;
+        return this.focusEl(this.fractionWosNo);
+  
+      case 'wosNo':
+        if (!this.fractionScanForm.wosNo) return;
+        return this.focusEl(this.fractionDwg);
+  
+      case 'dwg':
+        if (!this.fractionScanForm.dwg) return;
+        return this.focusEl(this.fractionDieNo);
+  
+      case 'dieNo':
+        if (!this.fractionScanForm.dieNo) return;
+        return this.focusEl(this.fractionLotNo);
+  
+      case 'lotNo':
+        if (!this.fractionScanForm.lotNo) return;
+        return this.focusEl(this.fractionQty);
+  
+      case 'qty':
+        if (!requiredOk) return;
+        return this.onConfirmFractionScan();
+    }
+  }
+
+
+  onConfirmFractionScan() {
+    if (!this.header || this.isEditingHeader) {
+      return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
+    }
+  
+    if (!this.fractionHeader) {
+      return this.toast('warning', 'กรุณาสร้าง Header Box เศษก่อน');
+    }
+  
+    if (this.isFractionFull) {
+      return this.toast('info', 'จำนวน Box เศษครบแล้ว');
+    }
+  
+    const data = {
+      itemNo: String(this.fractionScanForm.itemNo || '').trim(),
+      itemName: String(this.fractionScanForm.itemName || '').trim(),
+      wosNo: String(this.fractionScanForm.wosNo || '').trim(),
+      dwg: String(this.fractionScanForm.dwg || '').trim(),
+      dieNo: String(this.fractionScanForm.dieNo || '').trim(),
+      lotNo: String(this.fractionScanForm.lotNo || '').trim(),
+      qty: Number(this.fractionScanForm.qty),
+    };
+  
+    if (!data.itemNo) return this.toast('warning', 'กรุณากรอก Item No.');
+    if (!data.itemName) return this.toast('warning', 'กรุณากรอก Item Name');
+    if (!data.wosNo) return this.toast('warning', 'กรุณากรอก WOS No.');
+    if (!data.dwg) return this.toast('warning', 'กรุณากรอก DWG');
+    if (!data.dieNo) return this.toast('warning', 'กรุณากรอก Die No.');
+    if (!data.lotNo) return this.toast('warning', 'กรุณากรอก Lot No.');
+  
+    if (!Number.isFinite(data.qty) || data.qty <= 0) {
+      return this.toast('warning', 'กรุณากรอก QTY');
+    }
+  
+    const headerItemNo = String(this.header.itemNo || '').trim();
+  
+    if (data.itemNo !== headerItemNo) {
+      document.activeElement instanceof HTMLElement &&
+        document.activeElement.blur();
+  
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Item No. ของ Box เศษไม่ตรงกับ Header',
+        html: `
+          <div style="text-align:left">
+            <div><b>Item No. จาก Header:</b> ${headerItemNo}</div>
+            <div><b>Item No. ที่ Scan:</b> ${data.itemNo}</div>
+  
+            <div style="margin-top:10px;color:#b91c1c">
+              Box เศษที่ Scan ไม่ใช่ Item No. เดียวกับ Header หลัก
+            </div>
+  
+            <div style="margin-top:6px;color:#64748b">
+              กรุณาตรวจสอบชิ้นงาน และเริ่ม Scan ใหม่อีกครั้ง
+            </div>
+          </div>
+        `,
+        confirmButtonText: 'Scan ใหม่',
+        confirmButtonColor: '#dc2626',
+        returnFocus: false,
+        focusConfirm: true,
+      }).then(() => {
+        this.fractionScanForm = this.createEmptyScanForm();
+  
+        setTimeout(() => {
+          this.focusFractionFirst();
+        }, 150);
+      });
+    }
+  
+    this.isSavingFractionScan = true;
+  
+    this.http
+      .post<any>(
+        config.apiServer + '/api/issue/mapFractionTemp',
+        {
+          headTempId: this.header.id,
+          headFractionId: this.fractionHeader.id,
+          itemNo: data.itemNo,
+          itemName: data.itemName,
+          wosNo: data.wosNo,
+          dwg: data.dwg,
+          dieNo: data.dieNo,
+          lotNo: data.lotNo,
+          qty: data.qty,
+        }
+      )
+      .subscribe({
+        next: (res) => {
+          this.fractionScanForm = this.createEmptyScanForm();
+          this.isSavingFractionScan = false;
+
+          this.toast('success', 'Scan Box เศษสำเร็จ');
+
+          // ดึงรายการ Box เศษจาก backend ใหม่
+          this.fetchFractionTempList();
+
+          setTimeout(() => {
+            this.focusFractionFirst();
+          }, 150);
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingFractionScan = false;
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'Scan Box เศษไม่สำเร็จ',
+            text:
+              err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Map Fraction Temp fail',
+          }).then(() => {
+            this.fractionScanForm = this.createEmptyScanForm();
+            this.focusFractionFirst();
+          });
+        },
+      });
   }
 
   onConfirmScan() {
@@ -1017,6 +1463,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
         });
     });
   }
+
+  clearFractionScanForm() {
+    this.fractionScanForm = this.createEmptyScanForm();
+    this.focusFractionFirst();
+  }
+
+
 
   /* =======================
      Issue / Print Label
