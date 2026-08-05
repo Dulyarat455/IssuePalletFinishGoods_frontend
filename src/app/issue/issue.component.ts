@@ -108,7 +108,12 @@ type FractionTempRow = WosTempRow & {
   mapId?: number;
   headerFractionId?: number;
   boxId?: number;
+
+  editQty?: number | null;
+  isUpdatingQty?: boolean;
 };
+
+
 
 type FractionTempListResp = {
   message?: string;
@@ -894,7 +899,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res) => {
           this.fractionHeader = res.headerFraction || null;
-          this.fractionRows = res.results || [];
+          this.fractionRows = (res.results || []).map((row) => ({
+            ...row,
+            editQty: Number(row.qty || 0),
+            isUpdatingQty: false,
+          }));
   
           if (this.fractionHeader) {
             this.fractionQtyBox = Number(this.fractionHeader.qtyBox);
@@ -939,15 +948,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
   
-    if (this.fractionHeader) {
-      return Swal.fire({
-        icon: 'info',
-        title: 'มี Header Box เศษอยู่แล้ว',
-        text: 'ถ้าต้องการแก้จำนวน QTY BOX เศษ ต้องทำ API Update Header เศษเพิ่ม',
-        confirmButtonText: 'OK',
-      });
-    }
-  
     if (this.fractionQtyBox == null || Number(this.fractionQtyBox) <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY BOX เศษ');
     }
@@ -956,53 +956,193 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return this.toast('warning', 'QTY BOX เศษห้ามเกิน 42 Box');
     }
   
+    if (
+      this.fractionHeader &&
+      this.fractionScanCount > Number(this.fractionQtyBox)
+    ) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'QTY BOX เศษน้อยกว่าจำนวนที่ Scan แล้ว',
+        text:
+          `ตอนนี้ Scan แล้ว ${this.fractionScanCount} Box ` +
+          `จึงไม่สามารถแก้เป็น ${this.fractionQtyBox} Box ได้`,
+      });
+    }
+  
+    const isEditMode = !!this.fractionHeader;
+  
     this.isSavingFractionHeader = true;
+  
+    const url = isEditMode
+      ? config.apiServer + '/api/issue/editFractionTemp'
+      : config.apiServer + '/api/issue/createHeaderTempFraction';
+  
+    const payload = isEditMode
+      ? {
+          headFractionTempId: this.fractionHeader!.id,
+          headTempId: this.header.id,
+          qtyBox: Number(this.fractionQtyBox),
+        }
+      : {
+          headTempId: this.header.id,
+          qtyBox: Number(this.fractionQtyBox),
+        };
+  
+    this.http.post<any>(url, payload).subscribe({
+      next: (res) => {
+        this.fractionHeader = {
+          id: Number(res.data.id),
+          headerId: Number(res.data.headerId ?? this.header!.id),
+          qtyBox: Number(res.data.qtyBox),
+          timeStmp: res.data.timeStmp,
+          status: res.data.status || 'use',
+        };
+  
+        this.fractionQtyBox = this.fractionHeader.qtyBox;
+        this.isSavingFractionHeader = false;
+  
+        this.toast(
+          'success',
+          isEditMode
+            ? 'แก้ไข Header Box เศษสำเร็จ'
+            : 'สร้าง Header Box เศษสำเร็จ'
+        );
+  
+        this.fetchFractionTempList();
+  
+        setTimeout(() => {
+          this.focusFractionFirst();
+        }, 150);
+      },
+      error: (err) => {
+        console.error(err);
+        this.isSavingFractionHeader = false;
+  
+        const msg =
+          err?.error?.message ||
+          err?.error?.error ||
+          err?.message ||
+          'Save Header Fraction fail';
+  
+        if (msg === 'qtyBox_less_than_scanned_box') {
+          Swal.fire(
+            'Warning',
+            'QTY BOX เศษน้อยกว่าจำนวน Box ที่ Scan แล้ว',
+            'warning'
+          );
+          return;
+        }
+  
+        if (msg === 'header_issueTemp_fraction_notFound') {
+          Swal.fire(
+            'Warning',
+            'ไม่พบ Header Box เศษนี้ในระบบ',
+            'warning'
+          );
+          return;
+        }
+  
+        Swal.fire({
+          icon: 'error',
+          title: isEditMode
+            ? 'แก้ไข Header Box เศษไม่สำเร็จ'
+            : 'สร้าง Header Box เศษไม่สำเร็จ',
+          text: msg,
+        });
+      },
+    });
+  }
+
+
+
+
+  onUpdateFractionBoxQty(row: FractionTempRow) {
+    if (!this.header || !this.fractionHeader) {
+      return this.toast('warning', 'ไม่พบ Header Box เศษ');
+    }
+  
+    const boxTempId = Number(row.boxId || row.id);
+    const qty = Number(row.editQty);
+  
+    if (!boxTempId) {
+      return this.toast('warning', 'ไม่พบ Box Temp ID');
+    }
+  
+    if (!Number.isFinite(qty) || qty <= 0) {
+      row.editQty = row.qty;
+  
+      return Swal.fire({
+        icon: 'warning',
+        title: 'QTY ไม่ถูกต้อง',
+        text: 'กรุณากรอก QTY มากกว่า 0',
+      });
+    }
+  
+    if (qty === Number(row.qty)) {
+      return this.toast('info', 'QTY ไม่มีการเปลี่ยนแปลง');
+    }
+  
+    row.isUpdatingQty = true;
   
     this.http
       .post<any>(
-        config.apiServer + '/api/issue/createHeaderTempFraction',
+        config.apiServer + '/api/issue/editFractionBoxTemp',
         {
+          headFractionTempId: this.fractionHeader.id,
           headTempId: this.header.id,
-          qtyBox: Number(this.fractionQtyBox),
+          boxTempId,
+          qty,
         }
       )
       .subscribe({
         next: (res) => {
-          this.fractionHeader = {
-            id: Number(res.data.id),
-            headerId: Number(res.data.headerId ?? this.header!.id),
-            qtyBox: Number(res.data.qtyBox),
-            timeStmp: res.data.timeStmp,
-            status: res.data.status || 'use',
-          };
+          row.qty = Number(res.data.qty);
+          row.editQty = Number(res.data.qty);
+          row.isUpdatingQty = false;
   
-          this.fractionQtyBox = this.fractionHeader.qtyBox;
-          this.isSavingFractionHeader = false;
-  
-          this.toast('success', 'สร้าง Header Box เศษสำเร็จ');
-  
-          // โหลดใหม่จาก backend ให้ state ตรงกับ database
-          this.fetchFractionTempList();
-  
-          setTimeout(() => {
-            this.focusFractionFirst();
-          }, 150);
+          this.toast('success', 'แก้ไข QTY Box เศษสำเร็จ');
         },
         error: (err) => {
           console.error(err);
-          this.isSavingFractionHeader = false;
+  
+          row.editQty = row.qty;
+          row.isUpdatingQty = false;
+  
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Update Fraction Box Qty fail';
+  
+          if (msg === 'map_header_issueFractionTemp_notFound') {
+            Swal.fire(
+              'Warning',
+              'ไม่พบข้อมูล Map ของ Box เศษนี้',
+              'warning'
+            );
+            return;
+          }
+  
+          if (msg === 'box_issueTemp_notFound') {
+            Swal.fire(
+              'Warning',
+              'ไม่พบ Box เศษนี้ในระบบ',
+              'warning'
+            );
+            return;
+          }
   
           Swal.fire({
             icon: 'error',
-            title: 'สร้าง Header Box เศษไม่สำเร็จ',
-            text:
-              err?.error?.message ||
-              err?.error?.error ||
-              err?.message ||
-              'Create Header Temp Fraction fail',
+            title: 'แก้ไข QTY Box เศษไม่สำเร็จ',
+            text: msg,
           });
         },
       });
+  }
+
+  resetFractionBoxQty(row: FractionTempRow) {
+    row.editQty = row.qty;
   }
 
   /* =======================

@@ -1348,3 +1348,1341 @@ td small {
 
 
 
+
+
+
+/* =========================================================
+   FRACTION BOX FULL WIDTH
+   Layout: Left Scan / Right List
+========================================================= */
+
+.fraction-full-row {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 18px;
+}
+
+/* ---------- Toggle ---------- */
+.fraction-wide-toggle {
+  width: 100%;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border: 1px solid #fed7aa;
+  box-shadow: 0 8px 18px rgba(154, 52, 18, 0.06);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fraction-wide-toggle h3 {
+  margin: 0;
+  color: #9a3412;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.fraction-wide-toggle h3 i {
+  margin-right: 8px;
+}
+
+.fraction-wide-toggle span {
+  display: block;
+  margin-top: 6px;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ---------- Main 2 Columns ---------- */
+.fraction-wide-layout {
+  width: 100%;
+  margin-top: 18px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.fraction-scan-card-wide,
+.fraction-list-card-wide {
+  width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(249, 115, 22, 0.28);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.055);
+  padding: 20px;
+}
+
+/* ---------- Left Scan Card ---------- */
+.fraction-card-title,
+.fraction-scan-top,
+.fraction-list-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+}
+
+.fraction-card-title {
+  margin-bottom: 16px;
+}
+
+.fraction-card-title h3,
+.fraction-scan-top h4,
+.fraction-list-title h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.fraction-card-title span,
+.fraction-scan-top span,
+.fraction-list-title span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.fraction-status {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #c2410c !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.fraction-header-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 14px;
+  align-items: end;
+
+  padding: 16px;
+  border-radius: 18px;
+  background: #fffaf5;
+  border: 1px solid #ffedd5;
+}
+
+.fraction-divider {
+  height: 1px;
+  background: #ffedd5;
+  margin: 18px 0;
+}
+
+.fraction-empty-state {
+  min-height: 180px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #fff7ed;
+  border: 1px dashed #fdba74;
+  color: #9a3412;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fraction-empty-state i {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: #f97316;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.fraction-empty-state b {
+  display: block;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.fraction-empty-state span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 750;
+  color: #9a3412;
+}
+
+.fraction-scan-top {
+  margin-bottom: 16px;
+}
+
+.fraction-scan-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fraction-qty-field {
+  grid-column: 1 / 2;
+}
+
+/* Complete */
+.fraction-complete-wide {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fraction-complete-wide i {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: #10b981;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 22px;
+}
+
+.fraction-complete-wide b {
+  display: block;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.fraction-complete-wide span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* ---------- Right List Card ---------- */
+.fraction-list-card-wide {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.fraction-list-title {
+  margin-bottom: 14px;
+}
+
+.fraction-list-title h3 {
+  color: #9a3412;
+}
+
+.fraction-count-pill,
+.scan-badge.fraction {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #c2410c;
+  font-size: 13px;
+  font-weight: 950;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.fraction-count-pill.full,
+.scan-badge.fraction.full {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #86efac;
+}
+
+.fraction-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.fraction-summary-box {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #fffaf5;
+  border: 1px solid #ffedd5;
+}
+
+.fraction-summary-box span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fraction-summary-box b {
+  display: block;
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.fraction-table-wide {
+  flex: 1;
+  min-height: 0;
+  max-height: 520px;
+  overflow: auto;
+  border-radius: 18px;
+  border: 1px solid #fed7aa;
+  background: #ffffff;
+}
+
+.fraction-table-wide table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.fraction-table-wide thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 950;
+  padding: 12px;
+  border-bottom: 1px solid #fdba74;
+  white-space: nowrap;
+}
+
+.fraction-table-wide tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.fraction-table-wide tbody tr:hover {
+  background: #fffaf5;
+}
+
+.fraction-table-wide td b {
+  display: block;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.fraction-table-wide td small {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* ---------- Buttons ---------- */
+.fraction-save {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1280px) {
+  .fraction-wide-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fraction-list-card-wide {
+    min-height: auto;
+  }
+
+  .fraction-table-wide {
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fraction-wide-toggle,
+  .fraction-card-title,
+  .fraction-scan-top,
+  .fraction-list-title,
+  .fraction-empty-state,
+  .fraction-complete-wide {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fraction-header-box,
+  .fraction-scan-form-grid,
+  .fraction-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fraction-qty-field {
+    grid-column: auto;
+  }
+
+  .fraction-table-wide table {
+    min-width: 560px;
+  }
+}
+
+
+
+
+
+/* =========================================================
+   FRACTION BOX FULL WIDTH - MATCH NORMAL SCAN/LIST WIDTH
+   Left = Scan Box เศษ / Right = Box เศษ List
+========================================================= */
+
+.fraction-full-row {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 18px;
+}
+
+/* ใช้หัว toggle เต็มแถว */
+.fraction-wide-toggle {
+  width: 100%;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border: 1px solid #fed7aa;
+  box-shadow: 0 8px 18px rgba(154, 52, 18, 0.06);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fraction-wide-toggle h3 {
+  margin: 0;
+  color: #9a3412;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.fraction-wide-toggle h3 i {
+  margin-right: 8px;
+}
+
+.fraction-wide-toggle span {
+  display: block;
+  margin-top: 6px;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* 
+   สำคัญ:
+   ให้ใช้สัดส่วนเดียวกับ layout หลัก
+   left-panel = 1.05fr
+   right-panel = 0.95fr
+*/
+.fraction-wide-layout {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 18px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* ให้กล่อง Scan Box เศษหน้าตาและความกว้างใกล้ scan-card */
+.fraction-scan-card-wide {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+  overflow: hidden;
+}
+
+/* ให้กล่อง List Box เศษหน้าตาและความกว้างใกล้ scan-list-card */
+.fraction-list-card-wide {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #e6edf5;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Fraction Scan Header ---------- */
+
+.fraction-card-title,
+.fraction-scan-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+}
+
+.fraction-card-title {
+  margin-bottom: 16px;
+}
+
+.fraction-card-title h3,
+.fraction-scan-top h4 {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.fraction-card-title span,
+.fraction-scan-top span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fraction-status {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #c2410c !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.fraction-header-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 14px;
+  align-items: end;
+
+  padding: 16px;
+  border-radius: 18px;
+  background: #fffaf5;
+  border: 1px solid #ffedd5;
+}
+
+.fraction-divider {
+  height: 1px;
+  background: #ffedd5;
+  margin: 18px 0;
+}
+
+.fraction-empty-state {
+  min-height: 180px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #fff7ed;
+  border: 1px dashed #fdba74;
+  color: #9a3412;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fraction-empty-state i {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: #f97316;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.fraction-empty-state b {
+  display: block;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.fraction-empty-state span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 750;
+  color: #9a3412;
+}
+
+.fraction-scan-top {
+  margin-bottom: 16px;
+}
+
+.fraction-scan-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fraction-qty-field {
+  grid-column: 1 / 2;
+}
+
+/* ---------- Complete ---------- */
+
+.fraction-complete-wide {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fraction-complete-wide i {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: #10b981;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 22px;
+}
+
+.fraction-complete-wide b {
+  display: block;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.fraction-complete-wide span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* ---------- List Header ให้เหมือน Scanned WOS List ---------- */
+
+.fraction-list-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.fraction-list-title h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.fraction-list-title span {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fraction-count-pill,
+.scan-badge.fraction {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #c2410c;
+  font-size: 13px;
+  font-weight: 950;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.fraction-count-pill.full,
+.scan-badge.fraction.full {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #86efac;
+}
+
+/* Summary box ด้านบนของ list */
+.fraction-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 18px;
+}
+
+.fraction-summary-box {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #fffaf5;
+  border: 1px solid #ffedd5;
+}
+
+.fraction-summary-box span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fraction-summary-box b {
+  display: block;
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+/* ---------- Fraction List Table: Show 7 Fields ---------- */
+
+.fraction-table-wide {
+  max-height: 460px;
+  overflow: auto;
+}
+
+.fraction-list-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.fraction-list-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff7ed;
+  color: #c2410c;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 14px 12px;
+  border-bottom: 1px solid #fdba74;
+  white-space: nowrap;
+}
+
+.fraction-list-table thead th:first-child {
+  border-top-left-radius: 14px;
+}
+
+.fraction-list-table thead th:last-child {
+  border-top-right-radius: 14px;
+}
+
+.fraction-list-table .th-sub {
+  font-size: 10px;
+  font-weight: 800;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+}
+
+.fraction-list-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #edf2f7;
+  vertical-align: top;
+  background: #ffffff;
+}
+
+.fraction-list-table tbody tr:hover td {
+  background: #fffaf5;
+}
+
+.fraction-list-table .col-index {
+  width: 56px;
+  text-align: center;
+}
+
+.fraction-list-table .col-wos {
+  width: 200px;
+}
+
+.fraction-list-table .col-lot {
+  width: 290px;
+}
+
+.fraction-list-table .col-die {
+  width: 180px;
+}
+
+.fraction-list-table .col-qty {
+  width: 110px;
+  text-align: right;
+}
+
+.fraction-list-table .cell-index {
+  text-align: center;
+  color: #475569;
+  font-weight: 900;
+}
+
+.fraction-list-table .cell-stack {
+  min-width: 0;
+}
+
+.fraction-list-table .cell-main {
+  color: #0f172a;
+  font-weight: 950;
+  font-size: 14px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.fraction-list-table .cell-sub {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.fraction-list-table .cell-sub-name {
+  max-width: 260px;
+}
+
+.fraction-list-table .cell-qty {
+  text-align: right;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.fraction-list-table .empty-cell {
+  text-align: center;
+  padding: 32px 16px;
+  color: #64748b;
+  font-weight: 900;
+}
+
+/* ---------- Buttons ---------- */
+
+.fraction-save {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1499px) {
+  .fraction-wide-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fraction-table-wide {
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fraction-wide-toggle,
+  .fraction-card-title,
+  .fraction-scan-top,
+  .fraction-list-title,
+  .fraction-empty-state,
+  .fraction-complete-wide {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fraction-header-box,
+  .fraction-scan-form-grid,
+  .fraction-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fraction-qty-field {
+    grid-column: auto;
+  }
+
+  .fraction-list-table {
+    min-width: 780px;
+  }
+}
+
+
+
+/* =========================================================
+   FIX: Fraction Box List - Compact WOS to LOT spacing
+   ลดช่องว่างระหว่าง column 1, 2, 3
+========================================================= */
+
+.fraction-table-wide {
+  width: 100%;
+  max-width: 100%;
+  max-height: 460px;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  border-radius: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ลด min-width ลงอีก เพื่อให้ LOT และ DIE ขยับมาทางซ้าย */
+.fraction-list-table {
+  width: 100% !important;
+  min-width: 600px !important;
+  table-layout: fixed !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* ห้ามขึ้นบรรทัดใหม่ */
+.fraction-list-table thead th,
+.fraction-list-table tbody td,
+.fraction-list-table .cell-main,
+.fraction-list-table .cell-sub {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+/* ลด padding ซ้าย/ขวา */
+.fraction-list-table thead th {
+  padding: 13px 6px !important;
+}
+
+.fraction-list-table tbody td {
+  padding: 12px 6px !important;
+}
+
+/* column width ใหม่ */
+.fraction-list-table .col-index {
+  width: 42px !important;
+  min-width: 42px !important;
+  text-align: center;
+}
+
+.fraction-list-table .col-wos {
+  width: 190px !important;
+  min-width: 190px !important;
+}
+
+.fraction-list-table .col-lot {
+  width: 190px !important;
+  min-width: 190px !important;
+}
+
+.fraction-list-table .col-die {
+  width: 150px !important;
+  min-width: 150px !important;
+}
+
+.fraction-list-table .col-qty {
+  width: 80px !important;
+  min-width: 80px !important;
+  text-align: right;
+}
+
+/* cell alignment */
+.fraction-list-table .cell-index {
+  width: 42px !important;
+  min-width: 42px !important;
+  text-align: center;
+}
+
+.fraction-list-table .cell-qty {
+  width: 80px !important;
+  min-width: 80px !important;
+  text-align: right;
+}
+
+/* ไม่ให้ item name บังคับช่อง LOT กว้าง */
+.fraction-list-table .cell-sub-name {
+  max-width: none !important;
+}
+
+/* font */
+.fraction-list-table .cell-main {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.fraction-list-table .cell-sub {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* scrollbar */
+.fraction-table-wide::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-track {
+  background: #fff7ed;
+  border-radius: 999px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-thumb {
+  background: #fdba74;
+  border-radius: 999px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+
+
+
+/* =========================================================
+   Normal Scanned WOS Summary
+   Records / Total QTY
+========================================================= */
+
+.normal-scan-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.normal-scan-summary-box {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fffb;
+  border: 1px solid rgba(20, 184, 166, 0.18);
+}
+
+.normal-scan-summary-box span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.normal-scan-summary-box b {
+  display: block;
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .normal-scan-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+
+
+
+
+/* =========================================================
+   FIX: Fraction Count Badge ให้เหมือนรูปตัวอย่างที่ 2
+   ใช้กับทั้ง Scan Box เศษ และ Box เศษ List
+========================================================= */
+
+.scan-badge.fraction,
+.fraction-count-pill {
+  min-width: 92px !important;
+  height: 46px !important;
+  padding: 0 18px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  background: #f0fdfa !important;
+  border: 1px solid #99f6e4 !important;
+  color: #64748b !important;
+
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+
+  box-shadow: none !important;
+}
+
+/* ตอน scan ครบ ก็ยังใช้ style นุ่ม ๆ แบบเดียวกับรูปตัวอย่าง */
+.scan-badge.fraction.full,
+.fraction-count-pill.full {
+  background: #ecfdf5 !important;
+  border-color: #86efac !important;
+  color: #64748b !important;
+}
+
+/* กัน style ของ .scan-badge.full เดิมมา override */
+.scan-badge.full.fraction {
+  background: #ecfdf5 !important;
+  border-color: #86efac !important;
+  color: #64748b !important;
+}
+
+
+
+
+
+
+/* =========================================================
+   Fraction Box Qty Edit
+========================================================= */
+
+.fraction-edit-qty-cell {
+  min-width: 130px;
+}
+
+.fraction-edit-qty-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+}
+
+.fraction-edit-qty-input {
+  width: 82px;
+  height: 34px;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: right;
+  outline: none;
+}
+
+.fraction-edit-qty-input:focus {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.18);
+}
+
+.fraction-edit-save-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff7ed;
+  color: #ea580c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.fraction-edit-save-btn:hover:not(:disabled) {
+  background: #fed7aa;
+}
+
+.fraction-edit-save-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+
+
+
+
+/* =========================================================
+   FIX: Fraction Box List Column Spacing
+   - ขยับ LOT NO เข้ามาใกล้ WOS NO
+   - เพิ่มพื้นที่ให้ DIE NO กับ QTY ไม่ชิดกันเกินไป
+========================================================= */
+
+.fraction-table-wide {
+  width: 100%;
+  max-width: 100%;
+  max-height: 460px;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ใช้ fixed layout เพื่อคุม column ให้ตรง */
+.fraction-list-table {
+  width: 100% !important;
+  min-width: 700px !important;
+  table-layout: fixed !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* ไม่ให้ข้อมูลตัดบรรทัด */
+.fraction-list-table thead th,
+.fraction-list-table tbody td,
+.fraction-list-table .cell-main,
+.fraction-list-table .cell-sub {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+/* ลด padding นิดนึงเพื่อให้พื้นที่แน่นขึ้น */
+.fraction-list-table thead th {
+  padding: 13px 8px !important;
+}
+
+.fraction-list-table tbody td {
+  padding: 12px 8px !important;
+}
+
+/* # */
+.fraction-list-table .col-index,
+.fraction-list-table .cell-index {
+  width: 42px !important;
+  min-width: 42px !important;
+  text-align: center !important;
+}
+
+/* WOS NO: บีบลง เพื่อให้ LOT ขยับมาทางซ้าย */
+.fraction-list-table .col-wos {
+  width: 170px !important;
+  min-width: 170px !important;
+}
+
+/* LOT NO: ขยับซ้ายและไม่กว้างเกิน */
+.fraction-list-table .col-lot {
+  width: 200px !important;
+  min-width: 200px !important;
+}
+
+/* DIE NO: ให้มีพื้นที่พอ ไม่ชิดกับ QTY */
+.fraction-list-table .col-die {
+  width: 170px !important;
+  min-width: 170px !important;
+}
+
+/* QTY: เผื่อพื้นที่ input + save button */
+.fraction-list-table .col-qty,
+.fraction-list-table .cell-qty {
+  width: 135px !important;
+  min-width: 135px !important;
+  text-align: right !important;
+}
+
+/* ช่องแก้ QTY */
+.fraction-edit-qty-cell {
+  width: 135px !important;
+  min-width: 135px !important;
+}
+
+.fraction-edit-qty-wrap {
+  justify-content: flex-end !important;
+  gap: 6px !important;
+}
+
+.fraction-edit-qty-input {
+  width: 78px !important;
+}
+
+/* กัน itemName ดัน column ให้กว้าง */
+.fraction-list-table .cell-sub-name {
+  max-width: none !important;
+}
+
+/* Scrollbar */
+.fraction-table-wide::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-track {
+  background: #fff7ed;
+  border-radius: 999px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-thumb {
+  background: #fdba74;
+  border-radius: 999px;
+}
+
+.fraction-table-wide::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+
+
+
+/* =========================================================
+   FIX: Fraction QTY Header Align With Input
+========================================================= */
+
+/* หัวข้อ QTY ให้ตรงกับช่อง input + save button */
+.fraction-list-table .col-qty {
+  text-align: center !important;
+  padding-right: 8px !important;
+}
+
+/* cell QTY ให้จัดกลางภายใน column */
+.fraction-list-table .cell-qty,
+.fraction-list-table .fraction-edit-qty-cell {
+  text-align: center !important;
+  padding-right: 8px !important;
+}
+
+/* กล่อง input + save button ให้อยู่กลาง column */
+.fraction-edit-qty-wrap {
+  justify-content: center !important;
+}
+
+/* input QTY ให้อยู่ตรงกลาง */
+.fraction-edit-qty-input {
+  text-align: center !important;
+}
