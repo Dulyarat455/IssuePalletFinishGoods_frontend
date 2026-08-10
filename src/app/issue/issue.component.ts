@@ -53,9 +53,14 @@ type HeaderIssuePalletTemp = {
   locationNo?: string;
   movementMonth: string;
   totalQtyBox: number;
+
+  normalQty?: number | null;
+
   idPallet: string;
   userId: number;
   status: string;
+
+
 };
 
 type HeaderForm = {
@@ -257,9 +262,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return Math.min(100, Math.round((this.scanCount / this.header.totalQtyBox) * 100));
   }
 
+  get normalRequiredBoxQty(): number {
+    return Number(this.fullBoxTagQty || this.header?.normalQty || 0);
+  }
+  
   get isBoxFull(): boolean {
     if (!this.header) return false;
-    return this.scanCount >= this.header.totalQtyBox;
+    if (!this.hasNormalBoxQty) return false;
+  
+    return this.scanCount >= this.normalRequiredBoxQty;
   }
 
   get canIssue(): boolean {
@@ -281,6 +292,74 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.fractionRows.reduce((sum, row) => {
       return sum + Number(row.qty || 0);
     }, 0);
+  }
+
+
+
+  get normalQtyValue(): number {
+    return Number(this.fullBoxTagQty || 0);
+  }
+  
+  get fractionQtyBoxValue(): number {
+    return Number(this.fractionQtyBox || this.fractionHeader?.qtyBox || 0);
+  }
+  
+  get totalPlanBoxQty(): number {
+    return this.normalQtyValue + this.fractionQtyBoxValue;
+  }
+
+
+  get hasNormalBoxQty(): boolean {
+    return Number(this.fullBoxTagQty || this.header?.normalQty || 0) > 0;
+  }
+
+
+  get isFullBoxTagChanged(): boolean {
+    if (!this.header) return false;
+  
+    const savedQty = Number(this.header.normalQty || 0);
+    const currentQty = Number(this.fullBoxTagQty || 0);
+  
+    return currentQty > 0 && currentQty !== savedQty;
+  }
+
+
+
+
+  get isFractionHeaderQtyChanged(): boolean {
+    if (!this.fractionHeader) return false;
+  
+    const savedQty = Number(this.fractionHeader.qtyBox || 0);
+    const currentQty = Number(this.fractionQtyBox || 0);
+  
+    return currentQty > 0 && currentQty !== savedQty;
+  }
+
+
+  
+  private showBoxQtyOverLimitAlert(normalQty: number, fractionQty: number) {
+    const totalBox = Number(this.header?.totalQtyBox || 0);
+    const totalPlan = normalQty + fractionQty;
+  
+    return Swal.fire({
+      icon: 'warning',
+      title: 'จำนวน Box เกิน Header',
+      html: `
+        <div style="text-align:left">
+          <div><b>QTY Box รวมจาก Header:</b> ${totalBox} Box</div>
+          <div><b>QTY Box เต็ม:</b> ${normalQty} Box</div>
+          <div><b>QTY Box เศษ:</b> ${fractionQty} Box</div>
+          <hr />
+          <div><b>รวมที่กำหนด:</b> ${totalPlan} Box</div>
+  
+          <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+            จำนวน Box เต็ม + Box เศษ ต้องไม่เกิน QTY Box รวมของ Header
+          </div>
+        </div>
+      `,
+      confirmButtonText: 'ตรวจสอบใหม่',
+      confirmButtonColor: '#dc2626',
+    });
   }
 
 
@@ -420,7 +499,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
       movementMonth: raw.movementMonth || raw.moveMentThreeMonth || '-',
   
       totalQtyBox: Number(raw.totalQtyBox ?? raw.totalBox ?? 0),
-  
+      
+      normalQty:
+      raw.normalQty == null
+        ? null
+        : Number(raw.normalQty),
+
       // Temp ยังไม่ต้องมี ID Pallet จริง
       idPallet: raw.idPallet || 'Auto',
   
@@ -679,7 +763,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.form = this.mapHeaderToForm(this.header);
             this.itemKeyword = this.form.itemNo;
             this.isEditingHeader = false;
-  
+            
+            this.fullBoxTagQty = this.header.normalQty ?? null;
+
             // โหลดรายการ Box Temp ของ Header นี้
             this.fetchWosTemp();
             this.fetchFractionTempList();
@@ -694,6 +780,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.fractionQtyBox = null;
             this.fractionRows = [];
             this.fractionScanForm = this.createEmptyScanForm();
+            this.fullBoxTagQty = null;
           }
   
           this.isLoadingHeader = false;
@@ -879,7 +966,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
             this.savedRows = [];
             this.scanForm = this.createEmptyScanForm();
-  
+            
+            // clear QTY Box เต็ม
+            this.fullBoxTagQty = null;
+            this.isSavingFullBoxTag = false;
+
             this.showFractionSection = false;
             this.fractionHeader = null;
             this.fractionQtyBox = null;
@@ -1165,13 +1256,39 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
+
+
+    if (!this.hasNormalBoxQty) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'กรุณาระบุ QTY Box เต็มก่อน',
+        html: `
+          <div style="text-align:left">
+            <div>
+              ก่อนสร้าง Header Box เศษ ต้องระบุจำนวน <b>QTY Box เต็ม</b> ก่อน
+            </div>
+    
+            <div style="margin-top:10px;color:#64748b">
+              กรุณากรอก QTY Box เต็ม แล้วกด <b>Save Tag</b>
+            </div>
+          </div>
+        `,
+        confirmButtonText: 'ตกลง',
+        confirmButtonColor: '#dc2626',
+      });
+    }
   
     if (this.fractionQtyBox == null || Number(this.fractionQtyBox) <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY BOX เศษ');
     }
   
-    if (Number(this.fractionQtyBox) > 42) {
-      return this.toast('warning', 'QTY BOX เศษห้ามเกิน 42 Box');
+
+    const normalQty = Number(this.fullBoxTagQty || this.header.normalQty || 0);
+    const fractionQty = Number(this.fractionQtyBox || 0);
+    const totalHeaderQty = Number(this.header.totalQtyBox || 0);
+
+    if (normalQty + fractionQty > totalHeaderQty) {
+      return this.showBoxQtyOverLimitAlert(normalQty, fractionQty);
     }
   
     if (
@@ -1719,16 +1836,94 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
 
   onSaveFullBoxTag() {
+    if (!this.header || this.isEditingHeader) {
+      return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
+    }
+  
     if (this.fullBoxTagQty == null || Number(this.fullBoxTagQty) <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY Box เต็ม');
     }
   
-    if (Number(this.fullBoxTagQty) > 42) {
-      return this.toast('warning', 'QTY Box เต็มห้ามเกิน 42 Box');
+    const normalQty = Number(this.fullBoxTagQty);
+    const fractionQty = Number(this.fractionQtyBox || this.fractionHeader?.qtyBox || 0);
+    const totalHeaderQty = Number(this.header.totalQtyBox || 0);
+  
+    if (!Number.isFinite(normalQty) || normalQty <= 0) {
+      return this.toast('warning', 'QTY Box เต็มไม่ถูกต้อง');
     }
   
-    // รอ API จริงในอนาคต
-    this.toast('success', 'บันทึก QTY Box เต็มไว้ชั่วคราวแล้ว');
+  
+    if (this.scanCount > normalQty) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'QTY Box เต็มน้อยกว่าจำนวนที่ Scan แล้ว',
+        html: `
+          <div style="text-align:left">
+            <div><b>Scan Box ปกติแล้ว:</b> ${this.scanCount} Box</div>
+            <div><b>QTY Box เต็มที่กรอก:</b> ${normalQty} Box</div>
+  
+            <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+              ไม่สามารถกำหนด QTY Box เต็มให้น้อยกว่าจำนวน Box ปกติที่ Scan แล้ว
+            </div>
+          </div>
+        `,
+        confirmButtonText: 'ตรวจสอบใหม่',
+        confirmButtonColor: '#dc2626',
+      });
+    }
+  
+    if (normalQty + fractionQty > totalHeaderQty) {
+      return this.showBoxQtyOverLimitAlert(normalQty, fractionQty);
+    }
+  
+    this.isSavingFullBoxTag = true;
+  
+    this.http
+      .post<any>(config.apiServer + '/api/issue/addNormalQty', {
+        headTempId: this.header.id,
+        normalQty,
+      })
+      .subscribe({
+        next: (res) => {
+          this.isSavingFullBoxTag = false;
+  
+          const updatedNormalQty = Number(res?.data?.normalQty ?? normalQty);
+  
+          this.fullBoxTagQty = updatedNormalQty;
+  
+          this.header = {
+            ...this.header!,
+            normalQty: updatedNormalQty,
+          };
+  
+          this.toast('success', 'บันทึก QTY Box เต็มสำเร็จ');
+
+          setTimeout(() => {
+            this.focusScanFirst();
+          }, 150);
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingFullBoxTag = false;
+  
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Save Normal QTY fail';
+  
+          if (msg === 'header_issueTemp_notFound') {
+            Swal.fire('Warning', 'ไม่พบ Header นี้ในระบบ', 'warning');
+            return;
+          }
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'บันทึก QTY Box เต็มไม่สำเร็จ',
+            text: msg,
+          });
+        },
+      });
   }
 
   /* =======================

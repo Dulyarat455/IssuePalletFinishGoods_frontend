@@ -289,7 +289,7 @@
 
             <div
               class="full-box-tag-box"
-              *ngIf="!isBoxFull"
+              *ngIf="header && !isEditingHeader"
             >
               <div class="full-box-tag-info">
                 <div class="full-box-tag-icon">
@@ -314,12 +314,13 @@
                   [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
                 />
 
-                <button
+                  <button
                   type="button"
                   class="full-box-tag-save-btn"
+                  *ngIf="isFullBoxTagChanged"
                   (click)="onSaveFullBoxTag()"
                   [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
-                >
+                  >
                   <i
                     class="fas"
                     [class.fa-save]="!isSavingFullBoxTag"
@@ -327,18 +328,46 @@
                     [class.fa-spin]="isSavingFullBoxTag"
                   ></i>
 
-                  Save Tag
-                </button>
+                  {{ isSavingFullBoxTag ? 'Saving...' : 'Save Tag' }}
+                  </button>
+
+                  <div
+                  class="full-box-tag-saved-pill"
+                  *ngIf="hasNormalBoxQty && !isFullBoxTagChanged"
+                  >
+                  <i class="fas fa-check-circle"></i>
+                  Saved
+                  </div>
+              </div>
+
+              <div
+                class="full-box-tag-summary"
+                [class.over]="totalPlanBoxQty > (header.totalQtyBox || 0)"
+              >
+                <span>
+                  Normal:
+                  <b>{{ fullBoxTagQty || 0 }}</b>
+                </span>
+
+                <span>
+                  Fraction:
+                  <b>{{ fractionQtyBox || fractionHeader?.qtyBox || 0 }}</b>
+                </span>
+
+                <span>
+                  Header Total:
+                  <b>{{ header.totalQtyBox || 0 }}</b>
+                </span>
               </div>
             </div>
 
             <span *ngIf="isBoxFull">
-              Scan completed according to Header QTY BOX
+              Scan completed according to QTY Box เต็ม
             </span>
           </div>
 
           <span class="scan-badge" [class.full]="isBoxFull">
-            {{ scanCount }} / {{ header?.totalQtyBox || 0 }} Box
+            {{ scanCount }} / {{ normalRequiredBoxQty }} Box
           </span>
         </div>
 
@@ -347,24 +376,24 @@
           <div class="complete-icon">
             <i class="fas fa-check-circle"></i>
           </div>
-
+        
           <div>
-            <h3>Scan Completed</h3>
-
+            <h3>Normal Box Completed</h3>
+        
             <p>
-              สแกนครบตามจำนวน QTY BOX ที่กำหนดใน Header แล้ว
+              สแกน Box ปกติครบตามจำนวน QTY Box เต็มแล้ว
             </p>
-
+        
             <div class="complete-summary">
               <span>
                 Scanned:
                 <b>{{ scanCount }}</b>
                 Box
               </span>
-
+        
               <span>
                 Required:
-                <b>{{ header?.totalQtyBox || 0 }}</b>
+                <b>{{ normalRequiredBoxQty }}</b>
                 Box
               </span>
             </div>
@@ -372,130 +401,146 @@
         </div>
 
         <!-- ===== Scan Form ===== -->
-        <ng-container *ngIf="!isBoxFull">
-          <div class="manual-grid">
-            <div class="form-field">
-              <label>Item No.</label>
-              <input
-                #scanItemNo
-                class="control"
-                type="text"
-                name="scan_itemNo"
-                [(ngModel)]="scanForm.itemNo"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('itemNo', $event)"
-              />
-            </div>
+       <!-- ===== ยังไม่ได้กำหนด QTY Box เต็ม ===== -->
+      <div
+      class="normal-scan-locked-state"
+      *ngIf="!isBoxFull && !hasNormalBoxQty"
+      >
+      <div class="normal-scan-locked-icon">
+        <i class="fas fa-tags"></i>
+      </div>
 
-            <div class="form-field">
-              <label>Item Name</label>
-              <input
-                #scanItemName
-                class="control"
-                type="text"
-                name="scan_itemName"
-                [(ngModel)]="scanForm.itemName"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('itemName', $event)"
-              />
-            </div>
+      <div>
+        <b>กรุณากำหนด QTY Box เต็มก่อนเริ่ม Scan</b>
+        <span>
+          กรอกจำนวน QTY Box เต็ม แล้วกด Save Tag เพื่อเปิดการ Scan Box ปกติ
+        </span>
+      </div>
+      </div>
 
-            <div class="form-field">
-              <label>WOS NO</label>
-              <input
-                #scanWosNo
-                class="control"
-                type="text"
-                name="scan_wosNo"
-                [(ngModel)]="scanForm.wosNo"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('wosNo', $event)"
-              />
-            </div>
+      <!-- ===== Scan Form ===== -->
+      <ng-container *ngIf="!isBoxFull && hasNormalBoxQty">
+      <div class="manual-grid">
+        <div class="form-field">
+          <label>Item No.</label>
+          <input
+            #scanItemNo
+            class="control"
+            type="text"
+            name="scan_itemNo"
+            [(ngModel)]="scanForm.itemNo"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('itemNo', $event)"
+          />
+        </div>
 
-            <div class="form-field">
-              <label>DWG</label>
-              <input
-                #scanDwg
-                class="control"
-                type="text"
-                name="scan_dwg"
-                [(ngModel)]="scanForm.dwg"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('dwg', $event)"
-              />
-            </div>
+        <div class="form-field">
+          <label>Item Name</label>
+          <input
+            #scanItemName
+            class="control"
+            type="text"
+            name="scan_itemName"
+            [(ngModel)]="scanForm.itemName"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('itemName', $event)"
+          />
+        </div>
 
-            <div class="form-field">
-              <label>DIE NO</label>
-              <input
-                #scanDieNo
-                class="control"
-                type="text"
-                name="scan_dieNo"
-                [(ngModel)]="scanForm.dieNo"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('dieNo', $event)"
-              />
-            </div>
+        <div class="form-field">
+          <label>WOS NO</label>
+          <input
+            #scanWosNo
+            class="control"
+            type="text"
+            name="scan_wosNo"
+            [(ngModel)]="scanForm.wosNo"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('wosNo', $event)"
+          />
+        </div>
 
-            <div class="form-field">
-              <label>LOT NO</label>
-              <input
-                #scanLotNo
-                class="control"
-                type="text"
-                name="scan_lotNo"
-                [(ngModel)]="scanForm.lotNo"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('lotNo', $event)"
-              />
-            </div>
+        <div class="form-field">
+          <label>DWG</label>
+          <input
+            #scanDwg
+            class="control"
+            type="text"
+            name="scan_dwg"
+            [(ngModel)]="scanForm.dwg"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('dwg', $event)"
+          />
+        </div>
 
-            <div class="form-field">
-              <label>QTY</label>
-              <input
-                #scanQty
-                class="control"
-                type="number"
-                name="scan_qty"
-                [(ngModel)]="scanForm.qty"
-                [disabled]="!header || isEditingHeader || isSavingScan"
-                (keydown.enter)="onScanEnter('qty', $event)"
-                (keydown.tab)="loopFocusToFirst($event)"
-              />
-            </div>
-          </div>
+        <div class="form-field">
+          <label>DIE NO</label>
+          <input
+            #scanDieNo
+            class="control"
+            type="text"
+            name="scan_dieNo"
+            [(ngModel)]="scanForm.dieNo"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('dieNo', $event)"
+          />
+        </div>
 
-          <div class="scan-actions">
-            <button
-              type="button"
-              class="btn primary"
-              (click)="onConfirmScan()"
-              [disabled]="!header || isEditingHeader || isSavingScan"
-            >
-              <i class="fas fa-check"></i>
-              Confirm Scan
-            </button>
+        <div class="form-field">
+          <label>LOT NO</label>
+          <input
+            #scanLotNo
+            class="control"
+            type="text"
+            name="scan_lotNo"
+            [(ngModel)]="scanForm.lotNo"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('lotNo', $event)"
+          />
+        </div>
 
-            <button
-              type="button"
-              class="btn ghost danger"
-              (click)="clearScanForm()"
-              [disabled]="isSavingScan"
-            >
-              Clear
-            </button>
-          </div>
+        <div class="form-field">
+          <label>QTY</label>
+          <input
+            #scanQty
+            class="control"
+            type="number"
+            name="scan_qty"
+            [(ngModel)]="scanForm.qty"
+            [disabled]="!header || isEditingHeader || isSavingScan"
+            (keydown.enter)="onScanEnter('qty', $event)"
+            (keydown.tab)="loopFocusToFirst($event)"
+          />
+        </div>
+      </div>
 
-          <div class="note-box">
-            <b>Scan Rule:</b>
-            ต้อง Save Header ก่อน Scan / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
-          </div>
-        </ng-container>
+      <div class="scan-actions">
+        <button
+          type="button"
+          class="btn primary"
+          (click)="onConfirmScan()"
+          [disabled]="!header || isEditingHeader || isSavingScan"
+        >
+          <i class="fas fa-check"></i>
+          Confirm Scan
+        </button>
+
+        <button
+          type="button"
+          class="btn ghost danger"
+          (click)="clearScanForm()"
+          [disabled]="isSavingScan"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div class="note-box">
+        <b>Scan Rule:</b>
+        ต้อง Save Header ก่อน Scan / ต้องกำหนด QTY Box เต็มก่อน / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
+      </div>
+      </ng-container>
       </section>
-
-      
 
       </div>
   
@@ -782,11 +827,17 @@
             
               <div class="fraction-header-actions">
                 <button
-                  type="button"
-                  class="btn fraction-save"
-                  (click)="onSaveFractionHeader()"
-                  [disabled]="isSavingFractionHeader || isSavingFractionScan || isDeletingFractionHeader"
-                >
+                type="button"
+                class="btn fraction-save"
+                *ngIf="!fractionHeader || isFractionHeaderQtyChanged"
+                (click)="onSaveFractionHeader()"
+                [disabled]="
+                  !hasNormalBoxQty ||
+                  isSavingFractionHeader ||
+                  isSavingFractionScan ||
+                  isDeletingFractionHeader
+                "
+              >
                   <i
                     class="fas"
                     [class.fa-save]="!isSavingFractionHeader"
@@ -802,6 +853,14 @@
                         : 'Create Header เศษ'
                   }}
                 </button>
+
+                <div
+                  class="fraction-header-saved-pill"
+                  *ngIf="fractionHeader && !isFractionHeaderQtyChanged"
+                >
+                  <i class="fas fa-check-circle"></i>
+                  Saved
+                </div>
             
                 <button
                   type="button"
@@ -826,18 +885,30 @@
 
             <!-- ยังไม่มี Header เศษ -->
             <div
-              class="fraction-empty-state"
-              *ngIf="!fractionHeader"
-            >
-              <i class="fas fa-arrow-up"></i>
-              <div>
-                <b>กรุณาสร้าง Header Box เศษก่อน</b>
-                <span>ระบุ QTY BOX เศษ แล้วกด Create Header เศษ เพื่อเริ่ม Scan</span>
-              </div>
+            class="fraction-empty-state"
+            *ngIf="!fractionHeader"
+          >
+            <i
+              class="fas"
+              [class.fa-tags]="!hasNormalBoxQty"
+              [class.fa-arrow-up]="hasNormalBoxQty"
+            ></i>
+          
+            <div *ngIf="!hasNormalBoxQty">
+              <b>กรุณาระบุ QTY Box เต็มก่อน</b>
+              <span>
+                กรุณากรอกจำนวน QTY Box เต็ม ที่กล่อง Scan WOS Data แล้วกด Save Tag ก่อนเริ่มสร้าง Header Box เศษ
+              </span>
             </div>
+          
+            <div *ngIf="hasNormalBoxQty">
+              <b>กรุณาสร้าง Header Box เศษก่อน</b>
+              <span>ระบุ QTY BOX เศษ แล้วกด Create Header เศษ เพื่อเริ่ม Scan</span>
+            </div>
+          </div>
 
             <!-- Scan Form -->
-            <ng-container *ngIf="fractionHeader">
+            <ng-container *ngIf="fractionHeader && hasNormalBoxQty">
               <div class="fraction-scan-top">
                 <div>
                   <h4>Scan Data</h4>
