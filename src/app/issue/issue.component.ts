@@ -90,6 +90,9 @@ type WosTempRow = {
   dieNo: string;
   lotNo: string;
   qty: number;
+
+  editQty?: number | null;
+  isUpdatingQty?: boolean;
 };
 
 
@@ -196,6 +199,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
   isLoadingRows = false;
   isIssuing = false;
   isClearing = false;
+
+  isDeletingBox = false;
+  isDeletingHeader = false;
+
+  isDeletingFractionHeader = false;
+  isClearingFractionBoxes = false;
+
+
+  isDeletingFractionBox = false;
 
   constructor(private http: HttpClient) {}
 
@@ -825,16 +837,216 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   onDeleteHeaderTemp() {
     if (!this.header) return;
-
+  
     Swal.fire({
-      title: 'Delete current pallet?',
+      title: 'Delete current Header?',
       html: `
         <div style="text-align:left">
           <div><b>ID Pallet:</b> ${this.header.idPallet}</div>
           <div><b>Item:</b> ${this.header.itemNo} - ${this.header.itemName}</div>
-          <div><b>Scanned:</b> ${this.scanCount} WOS</div>
-          <div style="margin-top:8px;color:#b91c1c">
-            Temp data ของ Pallet นี้จะถูกลบทั้งหมด
+          <div><b>Normal Box:</b> ${this.scanCount}</div>
+          <div><b>Fraction Box:</b> ${this.fractionScanCount}</div>
+  
+          <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+            จะลบ Header นี้ พร้อม Box ปกติ, Header Box เศษ และ Box เศษทั้งหมด
+          </div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete All',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc2626',
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+  
+      this.isDeletingHeader = true;
+  
+      this.http
+        .post<any>(config.apiServer + '/api/issue/deleteheaderTemp', {
+          headerTempId: this.header!.id,
+        })
+        .subscribe({
+          next: () => {
+            this.isDeletingHeader = false;
+  
+            this.header = null;
+            this.form = this.createEmptyHeaderForm();
+            this.itemKeyword = '';
+  
+            this.savedRows = [];
+            this.scanForm = this.createEmptyScanForm();
+  
+            this.showFractionSection = false;
+            this.fractionHeader = null;
+            this.fractionQtyBox = null;
+            this.fractionRows = [];
+            this.fractionScanForm = this.createEmptyScanForm();
+  
+            this.isEditingHeader = true;
+  
+            this.toast('success', 'Delete Header Success');
+            this.focusQr();
+          },
+          error: (err) => {
+            console.error(err);
+            this.isDeletingHeader = false;
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Delete Header fail',
+              'error'
+            );
+          },
+        });
+    });
+  }
+
+
+  onDeleteFractionHeaderTemp() {
+    if (!this.fractionHeader) {
+      return this.toast('warning', 'ยังไม่มี Header Box เศษ');
+    }
+  
+    Swal.fire({
+      title: 'Delete Header Box เศษ?',
+      html: `
+        <div style="text-align:left">
+          <div><b>Header Fraction ID:</b> ${this.fractionHeader.id}</div>
+          <div><b>QTY BOX เศษ:</b> ${this.fractionHeader.qtyBox}</div>
+          <div><b>Scanned Box เศษ:</b> ${this.fractionScanCount}</div>
+  
+          <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+            จะลบ Header Box เศษนี้ และ Box เศษทั้งหมดที่อยู่ภายใน
+          </div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete Header เศษ',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc2626',
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+  
+      this.isDeletingFractionHeader = true;
+  
+      this.http
+        .post<any>(config.apiServer + '/api/issue/deleteheaderFractionTemp', {
+          headerFractionTempId: this.fractionHeader!.id,
+        })
+        .subscribe({
+          next: () => {
+            this.isDeletingFractionHeader = false;
+  
+            this.fractionHeader = null;
+            this.fractionQtyBox = null;
+            this.fractionRows = [];
+            this.fractionScanForm = this.createEmptyScanForm();
+  
+            this.toast('success', 'Delete Header Box เศษ Success');
+  
+            this.fetchWosTemp();
+          },
+          error: (err) => {
+            console.error(err);
+            this.isDeletingFractionHeader = false;
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Delete Header Fraction fail',
+              'error'
+            );
+          },
+        });
+    });
+  }
+
+
+  onClearAllFractionBoxTemp() {
+    if (!this.fractionHeader || this.fractionRows.length === 0) return;
+  
+    Swal.fire({
+      title: 'Clear All Box เศษ?',
+      html: `
+        <div style="text-align:left">
+          <div>ต้องการลบ Box เศษทั้งหมด <b>${this.fractionRows.length}</b> รายการใช่ไหม</div>
+          <div style="margin-top:8px;color:#64748b">
+            Header Box เศษจะยังอยู่ แต่รายการ Box เศษทั้งหมดจะถูกลบ
+          </div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Clear All Box เศษ',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc2626',
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+  
+      this.isClearingFractionBoxes = true;
+  
+      this.http
+        .post<any>(config.apiServer + '/api/issue/deleteAllFractionBoxTemp', {
+          headerFractionId: this.fractionHeader!.id,
+        })
+        .subscribe({
+          next: () => {
+            this.isClearingFractionBoxes = false;
+  
+            this.fractionRows = [];
+            this.fractionScanForm = this.createEmptyScanForm();
+  
+            this.toast('success', 'Clear Box เศษ Success');
+  
+            this.fetchFractionTempList();
+            this.fetchWosTemp();
+            this.focusFractionFirst();
+          },
+          error: (err) => {
+            console.error(err);
+            this.isClearingFractionBoxes = false;
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Clear Fraction Box fail',
+              'error'
+            );
+          },
+        });
+    });
+  }
+
+
+  onDeleteFractionBoxTemp(row: FractionTempRow) {
+    if (!row) return;
+  
+    const boxId = Number(row.boxId || row.id);
+  
+    if (!boxId) {
+      return this.toast('warning', 'ไม่พบ Box ID');
+    }
+  
+    Swal.fire({
+      title: 'Delete Box เศษ?',
+      html: `
+        <div style="text-align:left">
+          <div><b>WOS:</b> ${row.wosNo || '-'}</div>
+          <div><b>Lot:</b> ${row.lotNo || '-'}</div>
+          <div><b>Die:</b> ${row.dieNo || '-'}</div>
+          <div><b>QTY:</b> ${row.qty || 0}</div>
+  
+          <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+            รายการ Box เศษนี้จะถูกลบออกจากระบบ
           </div>
         </div>
       `,
@@ -845,37 +1057,40 @@ export class IssueComponent implements OnInit, AfterViewInit {
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-
-      this.isClearing = true;
-
+  
+      this.isDeletingFractionBox = true;
+  
       this.http
-        .post<any>(config.apiServer + '/api/issuePallet/deleteHeaderTemp', {
-          headerTempId: this.header!.id,
+        .post<any>(config.apiServer + '/api/issue/deleteFractionBoxTemp', {
+          boxId,
         })
         .subscribe({
           next: () => {
-            this.isClearing = false;
-            this.header = null;
-            this.savedRows = [];
-            this.scanForm = this.createEmptyScanForm();
-            this.form = this.createEmptyHeaderForm();
-            this.itemKeyword = '';
-            this.isEditingHeader = true;
-            this.showFractionSection = false;
-            this.fractionHeader = null;
-            this.fractionQtyBox = null;
-            this.fractionRows = [];
-            this.fractionScanForm = this.createEmptyScanForm();
-            this.toast('success', 'Delete Header Success');
+            this.isDeletingFractionBox = false;
+  
+            this.toast('success', 'Delete Box เศษ Success');
+  
+            this.fetchFractionTempList();
+            this.fetchWosTemp();
+            this.focusFractionFirst();
           },
           error: (err) => {
             console.error(err);
-            this.isClearing = false;
-            Swal.fire('Error', err?.error?.message || 'Delete fail', 'error');
+            this.isDeletingFractionBox = false;
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Delete Box เศษ fail',
+              'error'
+            );
           },
         });
     });
   }
+
 
 
   fetchFractionTempList() {
@@ -1517,7 +1732,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
       })
       .subscribe({
         next: (res) => {
-          this.savedRows = res.results || [];
+          this.savedRows = (res.results || []).map((row) => ({
+            ...row,
+            editQty: Number(row.qty || 0),
+            isUpdatingQty: false,
+          }));
           this.isLoadingRows = false;
           this.focusQr();
         },
@@ -1536,6 +1755,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   onDeleteRow(row: WosTempRow) {
+    if (!row?.id) return;
+  
     Swal.fire({
       title: 'Delete WOS?',
       html: `
@@ -1543,66 +1764,186 @@ export class IssueComponent implements OnInit, AfterViewInit {
           <div><b>WOS:</b> ${row.wosNo}</div>
           <div><b>Lot:</b> ${row.lotNo}</div>
           <div><b>QTY:</b> ${row.qty}</div>
+          <div style="margin-top:8px;color:#b91c1c">
+            รายการนี้จะถูกลบออกจาก Box ปกติ
+          </div>
         </div>
       `,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-
+  
+      this.isDeletingBox = true;
+  
       this.http
-        .post<any>(config.apiServer + '/api/issuePallet/deleteWosTemp', {
-          wosTempId: row.id,
+        .post<any>(config.apiServer + '/api/issue/deleteBoxTempIssue', {
+          boxTempId: row.id,
         })
         .subscribe({
           next: () => {
-            this.toast('success', 'Delete Success');
+            this.isDeletingBox = false;
+            this.toast('success', 'Delete Box Success');
+  
             this.fetchWosTemp();
+            this.focusQr();
           },
           error: (err) => {
             console.error(err);
-            Swal.fire('Error', err?.error?.message || 'Delete fail', 'error');
+            this.isDeletingBox = false;
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Delete Box fail',
+              'error'
+            );
           },
         });
     });
   }
 
+
+
+
+  onUpdateBoxIssueTempQty(row: WosTempRow) {
+    if (!this.header) {
+      return this.toast('warning', 'ไม่พบ Header');
+    }
+  
+    const boxTempId = Number(row.id);
+    const qty = Number(row.editQty);
+  
+    if (!boxTempId) {
+      return this.toast('warning', 'ไม่พบ Box Temp ID');
+    }
+  
+    if (!Number.isFinite(qty) || qty <= 0) {
+      row.editQty = row.qty;
+  
+      return Swal.fire({
+        icon: 'warning',
+        title: 'QTY ไม่ถูกต้อง',
+        text: 'กรุณากรอก QTY มากกว่า 0',
+      });
+    }
+  
+    if (qty === Number(row.qty)) {
+      return this.toast('info', 'QTY ไม่มีการเปลี่ยนแปลง');
+    }
+  
+    row.isUpdatingQty = true;
+  
+    this.http
+      .post<any>(config.apiServer + '/api/issue/editBoxIssueTemp', {
+        headTempId: this.header.id,
+        boxTempId,
+        qty,
+      })
+      .subscribe({
+        next: (res) => {
+          row.qty = Number(res.data.qty);
+          row.editQty = Number(res.data.qty);
+          row.isUpdatingQty = false;
+  
+          this.toast('success', 'แก้ไข QTY Box ปกติสำเร็จ');
+        },
+        error: (err) => {
+          console.error(err);
+  
+          row.editQty = row.qty;
+          row.isUpdatingQty = false;
+  
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Update Box Qty fail';
+  
+          if (msg === 'box_issueTemp_notFound') {
+            Swal.fire('Warning', 'ไม่พบ Box ปกตินี้ในระบบ', 'warning');
+            return;
+          }
+  
+          if (msg === 'invalid_qty') {
+            Swal.fire('Warning', 'QTY ต้องมากกว่า 0', 'warning');
+            return;
+          }
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'แก้ไข QTY Box ปกติไม่สำเร็จ',
+            text: msg,
+          });
+        },
+      });
+  }
+
+  resetBoxIssueTempQty(row: WosTempRow) {
+    row.editQty = row.qty;
+  }
+
+
+
   onClearAllScan() {
     if (!this.header || this.savedRows.length === 0) return;
-
+  
     Swal.fire({
-      title: 'Clear All Scan?',
-      text: `ต้องการลบรายการ Scan ทั้งหมด ${this.savedRows.length} รายการใช่ไหม`,
+      title: 'Clear All Normal Box?',
+      html: `
+        <div style="text-align:left">
+          <div>ต้องการลบ Box ปกติทั้งหมด <b>${this.savedRows.length}</b> รายการใช่ไหม</div>
+          <div style="margin-top:8px;color:#64748b">
+            ระบบจะไม่ลบ Box ที่ถูกย้ายไปอยู่ใน Box เศษ
+          </div>
+        </div>
+      `,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Clear',
+      confirmButtonText: 'Clear All',
+      cancelButtonText: 'Cancel',
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-
+  
       this.isClearing = true;
-
+  
       this.http
-        .post<any>(config.apiServer + '/api/issuePallet/deleteWosTempAll', {
+        .post<any>(config.apiServer + '/api/issue/deleteAllBoxTempIssue', {
           headerTempId: this.header!.id,
         })
         .subscribe({
           next: () => {
             this.isClearing = false;
-            this.savedRows = [];
-            this.toast('success', 'Clear Success');
+            this.toast('success', 'Clear Normal Box Success');
+  
+            this.fetchWosTemp();
+            this.fetchFractionTempList();
             this.focusQr();
           },
           error: (err) => {
             console.error(err);
             this.isClearing = false;
-            Swal.fire('Error', err?.error?.message || 'Clear fail', 'error');
+  
+            Swal.fire(
+              'Error',
+              err?.error?.message ||
+                err?.error?.error ||
+                err?.message ||
+                'Clear Normal Box fail',
+              'error'
+            );
           },
         });
     });
   }
+
+
 
   clearFractionScanForm() {
     this.fractionScanForm = this.createEmptyScanForm();

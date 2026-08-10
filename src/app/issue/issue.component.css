@@ -2686,3 +2686,281 @@ td small {
 .fraction-edit-qty-input {
   text-align: center !important;
 }
+
+
+
+
+
+/* =========================================================
+   Delete Buttons - Normal / Fraction
+========================================================= */
+
+.clear-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.delete-row-btn:disabled,
+.clear-all-btn:disabled,
+.fraction-clear-btn:disabled,
+.fraction-delete-header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Fraction list action buttons */
+.fraction-list-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fraction-clear-btn,
+.fraction-delete-header-btn {
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.fraction-clear-btn {
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.fraction-clear-btn:hover:not(:disabled) {
+  background: #ffedd5;
+}
+
+.fraction-delete-header-btn {
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+  color: #dc2626;
+}
+
+.fraction-delete-header-btn:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .fraction-list-actions {
+    justify-content: flex-start;
+  }
+
+  .fraction-clear-btn,
+  .fraction-delete-header-btn,
+  .fraction-count-pill {
+    width: 100%;
+  }
+}
+
+
+
+
+/* =========================================================
+   Fraction Header Actions
+========================================================= */
+
+.fraction-header-actions {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fraction-header-actions .fraction-save {
+  min-width: 170px;
+}
+
+.fraction-header-actions .fraction-delete-header-btn {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+  color: #dc2626;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.fraction-header-actions .fraction-delete-header-btn:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.fraction-header-actions .fraction-delete-header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ให้กล่อง Header Box เศษ รองรับ 2 ปุ่ม */
+.fraction-header-box {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+@media (max-width: 768px) {
+  .fraction-header-box {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .fraction-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fraction-header-actions .fraction-save,
+  .fraction-header-actions .fraction-delete-header-btn {
+    width: 100%;
+  }
+}
+
+
+
+
+/* =========================================================
+   Fraction Box Row Delete
+========================================================= */
+
+.fraction-list-table .col-action,
+.fraction-list-table .cell-action {
+  width: 80px !important;
+  min-width: 80px !important;
+  text-align: center !important;
+}
+
+.fraction-row-delete-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #dc2626;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.fraction-row-delete-btn:hover:not(:disabled) {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.fraction-row-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* เพิ่มความกว้าง table เพราะมี column Action เพิ่ม */
+.fraction-list-table {
+  min-width: 780px !important;
+}
+
+
+
+
+/* =========================================================
+   Normal Box List - Edit QTY
+========================================================= */
+
+.scan-list-table .col-qty,
+.scan-list-table .normal-edit-qty-cell {
+  width: 135px !important;
+  min-width: 135px !important;
+  text-align: right !important;
+}
+
+.normal-edit-qty-wrap {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.normal-edit-qty-input {
+  width: 78px;
+  height: 34px;
+  border: 1px solid #d8e3e6;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  outline: none;
+}
+
+.normal-edit-qty-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
+}
+
+.normal-edit-qty-input:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.normal-edit-save-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 12px;
+  background: #dcfce7;
+  color: #16a34a;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.normal-edit-save-btn:hover:not(:disabled) {
+  background: #bbf7d0;
+  transform: translateY(-1px);
+}
+
+.normal-edit-save-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ปุ่มลบ ถ้า disabled */
+.delete-row-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
