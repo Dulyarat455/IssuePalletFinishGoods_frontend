@@ -170,6 +170,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   locations: LocationRow[] = [];
   savedRows: WosTempRow[] = [];
 
+  fullBoxTagQty: number | null = null;
+  isSavingFullBoxTag = false;
+
 
   showFractionSection = false;
 
@@ -1712,6 +1715,20 @@ export class IssueComponent implements OnInit, AfterViewInit {
   clearScanForm() {
     this.scanForm = this.createEmptyScanForm();
     this.focusScanFirst();
+  }
+
+
+  onSaveFullBoxTag() {
+    if (this.fullBoxTagQty == null || Number(this.fullBoxTagQty) <= 0) {
+      return this.toast('warning', 'กรุณากรอก QTY Box เต็ม');
+    }
+  
+    if (Number(this.fullBoxTagQty) > 42) {
+      return this.toast('warning', 'QTY Box เต็มห้ามเกิน 42 Box');
+    }
+  
+    // รอ API จริงในอนาคต
+    this.toast('success', 'บันทึก QTY Box เต็มไว้ชั่วคราวแล้ว');
   }
 
   /* =======================

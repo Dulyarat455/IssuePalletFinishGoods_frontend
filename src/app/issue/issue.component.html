@@ -286,6 +286,52 @@
               Start scanning at Item No. and press Enter to continue
             </span>
 
+
+            <div
+              class="full-box-tag-box"
+              *ngIf="!isBoxFull"
+            >
+              <div class="full-box-tag-info">
+                <div class="full-box-tag-icon">
+                  <i class="fas fa-tags"></i>
+                </div>
+
+                <div>
+                  <b>QTY Box เต็ม</b>
+                  <span>กำหนดจำนวน Box เต็มไว้ก่อน สำหรับแยกกับ Box เศษ</span>
+                </div>
+              </div>
+
+              <div class="full-box-tag-control">
+                <input
+                  class="full-box-tag-input"
+                  type="number"
+                  min="1"
+                  max="42"
+                  name="fullBoxTagQty"
+                  placeholder="เช่น 40"
+                  [(ngModel)]="fullBoxTagQty"
+                  [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
+                />
+
+                <button
+                  type="button"
+                  class="full-box-tag-save-btn"
+                  (click)="onSaveFullBoxTag()"
+                  [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-save]="!isSavingFullBoxTag"
+                    [class.fa-spinner]="isSavingFullBoxTag"
+                    [class.fa-spin]="isSavingFullBoxTag"
+                  ></i>
+
+                  Save Tag
+                </button>
+              </div>
+            </div>
+
             <span *ngIf="isBoxFull">
               Scan completed according to Header QTY BOX
             </span>

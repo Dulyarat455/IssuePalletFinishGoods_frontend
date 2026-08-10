@@ -2964,3 +2964,146 @@ td small {
   cursor: not-allowed;
   transform: none !important;
 }
+
+
+
+
+/* =========================================================
+   Normal Scan - Full Box Tag Placeholder
+   ใช้สำหรับ QTY Box เต็ม รอ API ในอนาคต
+========================================================= */
+
+.full-box-tag-box {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+  border: 1px solid rgba(20, 184, 166, 0.22);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.full-box-tag-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.full-box-tag-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: #0f766e;
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+  font-size: 18px;
+  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.18);
+}
+
+.full-box-tag-info b {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.full-box-tag-info span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.full-box-tag-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.full-box-tag-input {
+  width: 105px;
+  height: 42px;
+  border: 1px solid #99f6e4;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0 12px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 950;
+  outline: none;
+}
+
+.full-box-tag-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
+}
+
+.full-box-tag-input:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.full-box-tag-save-btn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #16a34a, #14b8a6);
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.full-box-tag-save-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
+}
+
+.full-box-tag-save-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .full-box-tag-box {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .full-box-tag-control {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .full-box-tag-input {
+    width: 100%;
+  }
+
+  .full-box-tag-save-btn {
+    min-width: 120px;
+  }
+}
