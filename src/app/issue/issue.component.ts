@@ -257,13 +257,46 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.savedRows.length;
   }
 
+  get headerTotalBoxQty(): number {
+    return Number(this.header?.totalQtyBox || 0);
+  }
+  
+  get totalScannedBoxCount(): number {
+    return Number(this.scanCount || 0) + Number(this.fractionScanCount || 0);
+  }
+  
+  get totalRequiredPlanBoxQty(): number {
+    return Number(this.normalRequiredBoxQty || 0) + Number(this.fractionQtyBoxValue || 0);
+  }
+  
   get progressPercent(): number {
-    if (!this.header?.totalQtyBox) return 0;
-    return Math.min(100, Math.round((this.scanCount / this.header.totalQtyBox) * 100));
+    if (!this.headerTotalBoxQty) return 0;
+  
+    return Math.min(
+      100,
+      Math.round((this.totalScannedBoxCount / this.headerTotalBoxQty) * 100)
+    );
+  }
+  
+  get planPercent(): number {
+    if (!this.headerTotalBoxQty) return 0;
+  
+    return Math.min(
+      100,
+      Math.round((this.totalRequiredPlanBoxQty / this.headerTotalBoxQty) * 100)
+    );
   }
 
+  get savedNormalBoxQty(): number {
+    return Number(this.header?.normalQty || 0);
+  }
+  
   get normalRequiredBoxQty(): number {
-    return Number(this.fullBoxTagQty || this.header?.normalQty || 0);
+    return this.savedNormalBoxQty;
+  }
+  
+  get hasNormalBoxQty(): boolean {
+    return this.savedNormalBoxQty > 0;
   }
   
   get isBoxFull(): boolean {
@@ -309,9 +342,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
 
-  get hasNormalBoxQty(): boolean {
-    return Number(this.fullBoxTagQty || this.header?.normalQty || 0) > 0;
-  }
+  
 
 
   get isFullBoxTagChanged(): boolean {

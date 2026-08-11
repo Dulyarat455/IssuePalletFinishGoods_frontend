@@ -298,7 +298,7 @@
 
                 <div>
                   <b>QTY Box เต็ม</b>
-                  <span>กำหนดจำนวน Box เต็มไว้ก่อน สำหรับแยกกับ Box เศษ</span>
+                  
                 </div>
               </div>
 
@@ -340,25 +340,7 @@
                   </div>
               </div>
 
-              <div
-                class="full-box-tag-summary"
-                [class.over]="totalPlanBoxQty > (header.totalQtyBox || 0)"
-              >
-                <span>
-                  Normal:
-                  <b>{{ fullBoxTagQty || 0 }}</b>
-                </span>
-
-                <span>
-                  Fraction:
-                  <b>{{ fractionQtyBox || fractionHeader?.qtyBox || 0 }}</b>
-                </span>
-
-                <span>
-                  Header Total:
-                  <b>{{ header.totalQtyBox || 0 }}</b>
-                </span>
-              </div>
+              
             </div>
 
             <span *ngIf="isBoxFull">
@@ -402,9 +384,27 @@
 
         <!-- ===== Scan Form ===== -->
        <!-- ===== ยังไม่ได้กำหนด QTY Box เต็ม ===== -->
+      <!-- ===== ยังไม่มี Header ===== -->
       <div
       class="normal-scan-locked-state"
-      *ngIf="!isBoxFull && !hasNormalBoxQty"
+      *ngIf="!header || isEditingHeader"
+      >
+      <div class="normal-scan-locked-icon">
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+
+      <div>
+        <b>กรุณาสร้าง Header ก่อนเริ่ม Scan</b>
+        <span>
+          บันทึกข้อมูล Header หลักก่อน จากนั้นจึงกำหนด QTY Box เต็ม และเริ่ม Scan Box ปกติ
+        </span>
+      </div>
+      </div>
+
+      <!-- ===== มี Header แล้ว แต่ยังไม่ได้ Save QTY Box เต็ม ===== -->
+      <div
+      class="normal-scan-locked-state"
+      *ngIf="header && !isEditingHeader && !isBoxFull && !hasNormalBoxQty"
       >
       <div class="normal-scan-locked-icon">
         <i class="fas fa-tags"></i>
@@ -595,12 +595,47 @@
   
           <div class="progress-box">
             <div class="progress-head">
-              <span>Scan Progress</span>
+              <span>Overall Scan Progress</span>
               <b>{{ progressPercent }}%</b>
             </div>
-  
+          
             <div class="progress-track">
               <div class="progress-fill" [style.width.%]="progressPercent"></div>
+            </div>
+          
+            <div class="progress-detail-grid">
+              <div>
+                <span>Total QTY BOX</span>
+                <b>{{ headerTotalBoxQty }}</b>
+              </div>
+          
+              <div>
+                <span>QTY Box เต็ม</span>
+                <b>{{ normalRequiredBoxQty }}</b>
+              </div>
+          
+              <div>
+                <span>QTY Box เศษ</span>
+                <b>{{ fractionQtyBoxValue }}</b>
+              </div>
+          
+              <div>
+                <span>Scanned รวม</span>
+                <b>{{ totalScannedBoxCount }}</b>
+              </div>
+            </div>
+          
+            <div
+              class="progress-plan-note"
+              [class.complete]="totalRequiredPlanBoxQty === headerTotalBoxQty"
+              [class.over]="totalRequiredPlanBoxQty > headerTotalBoxQty"
+            >
+              Plan:
+              <b>{{ totalRequiredPlanBoxQty }}</b>
+              /
+              <b>{{ headerTotalBoxQty }}</b>
+              Box
+              <span>({{ planPercent }}%)</span>
             </div>
           </div>
   
@@ -622,22 +657,29 @@
               <div class="scan-list-title">Scanned WOS List</div>
               <div class="scan-list-subtitle">รายการ Box ที่ Scan แล้ว</div>
             </div>
-        
-            <button
-            type="button"
-            class="clear-all-btn"
-            (click)="onClearAllScan()"
-            [disabled]="!savedRows.length || isClearing"
-          >
-            <i
-              class="fas"
-              [class.fa-trash-alt]="!isDeletingBox"
-              [class.fa-spinner]="isClearing"
-              [class.fa-spin]="isClearing"
-            ></i>
 
-            {{ isClearing ? 'Clearing...' : 'Clear All' }}
-          </button>
+            <div class="scan-list-actions">
+              <span class="scan-badge" [class.full]="isBoxFull">
+                {{ scanCount }} / {{ normalRequiredBoxQty }} Box
+              </span>
+            
+              <button
+                type="button"
+                class="clear-all-btn"
+                (click)="onClearAllScan()"
+                [disabled]="!savedRows.length || isClearing"
+              >
+                <i
+                  class="fas"
+                  [class.fa-trash-alt]="!isDeletingBox"
+                  [class.fa-spinner]="isClearing"
+                  [class.fa-spin]="isClearing"
+                ></i>
+            
+                {{ isClearing ? 'Clearing...' : 'Clear All' }}
+              </button>
+            </div>
+
           </div>
 
 

@@ -3282,3 +3282,109 @@ td small {
 .fraction-header-saved-pill i {
   font-size: 14px;
 }
+
+
+
+
+
+
+/* =========================================================
+   Preview Progress Detail
+========================================================= */
+
+.progress-detail-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.progress-detail-grid div {
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: 14px;
+  background: #f8fffb;
+  border: 1px solid rgba(20, 184, 166, 0.14);
+}
+
+.progress-detail-grid span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.progress-detail-grid b {
+  display: block;
+  margin-top: 4px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.progress-plan-note {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.progress-plan-note b {
+  font-weight: 950;
+}
+
+.progress-plan-note.complete {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.progress-plan-note.over {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+@media (max-width: 768px) {
+  .progress-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Normal Scan List Header Actions
+========================================================= */
+
+.scan-list-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.scan-list-actions .scan-badge {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .scan-list-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .scan-list-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
