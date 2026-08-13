@@ -63,6 +63,12 @@
               <span>Shift</span>
               <b>{{ header.shift }}</b>
             </div>
+
+
+            <div class="summary-item wide">
+              <span>Item</span>
+              <b>{{ header.itemNo }} / {{ header.itemName }}</b>
+            </div>
   
             <div class="summary-item">
               <span>Group</span>
@@ -74,10 +80,6 @@
               <b>{{ controlLotDisplayName(header.controlLotId) }}</b>
             </div>
   
-            <div class="summary-item wide">
-              <span>Item</span>
-              <b>{{ header.itemNo }} / {{ header.itemName }}</b>
-            </div>
   
             <div class="summary-item wide">
               <span>Location FG</span>
@@ -132,37 +134,7 @@
                   <option value="C">Shift C</option>
                 </select>
               </div>
-  
-              <div class="form-field">
-                <label>Select Group</label>
-                <select
-                  class="control"
-                  name="groupId"
-                  [(ngModel)]="form.groupId"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                >
-                  <option [ngValue]="null" disabled>Select Group</option>
-                  <option *ngFor="let g of groups" [ngValue]="g.id">
-                    {{ g.name }}
-                  </option>
-                </select>
-              </div>
-  
-              <div class="form-field">
-                <label>Select Control Lot OQC</label>
-                <select
-                  class="control"
-                  name="controlLotId"
-                  [(ngModel)]="form.controlLotId"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                >
-                  <option [ngValue]="null" disabled>Select Control Lot</option>
-                  <option *ngFor="let c of controlLots" [ngValue]="c.id">
-                    {{ controlLotDisplayName(c.id) }}
-                  </option>
-                </select>
-              </div>
-              
+
 
               <div class="form-field item-search">
                 <label>Auto Item No.</label>
@@ -203,10 +175,40 @@
                 />
               </div>
 
+
+
+  
+              <div class="form-field">
+                <label>Select Group</label>
+                <select
+                  class="control"
+                  name="groupId"
+                  [(ngModel)]="form.groupId"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                >
+                  <option [ngValue]="null" disabled>Select Group</option>
+                  <option *ngFor="let g of groups" [ngValue]="g.id">
+                    {{ g.name }}
+                  </option>
+                </select>
+              </div>
+  
+              <div class="form-field">
+                <label>Select Control Lot OQC</label>
+                <select
+                  class="control"
+                  name="controlLotId"
+                  [(ngModel)]="form.controlLotId"
+                  [disabled]="isSavingHeader || isLoadingMaster"
+                >
+                  <option [ngValue]="null" disabled>Select Control Lot</option>
+                  <option *ngFor="let c of controlLots" [ngValue]="c.id">
+                    {{ controlLotDisplayName(c.id) }}
+                  </option>
+                </select>
+              </div>
               
 
-              
-  
               
   
               <div class="form-field">
