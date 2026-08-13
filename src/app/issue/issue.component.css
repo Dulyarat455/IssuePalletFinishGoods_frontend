@@ -3388,3 +3388,363 @@ td small {
     justify-content: flex-end;
   }
 }
+
+
+
+
+
+
+/* =========================================================
+   Header Label Type Dropdown
+========================================================= */
+
+.label-form-head {
+  align-items: flex-start;
+}
+
+.label-type-box {
+  margin-left: auto;
+  min-width: 130px;
+}
+
+.label-type-box label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.label-type-select {
+  width: 130px;
+  height: 42px;
+  border: 1px solid #99f6e4;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f766e;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 950;
+  outline: none;
+}
+
+.label-type-select:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
+}
+
+/* =========================================================
+   New FG/WIP Label Preview
+========================================================= */
+
+.pallet-label-preview-card {
+  background: #f8fafc;
+}
+
+/* =========================
+   Preview Header / Page Nav
+========================= */
+
+.label-preview-nav {
+  align-items: center;
+}
+
+.label-page-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-page-nav button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dbe4ea;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f766e;
+  cursor: pointer;
+}
+
+.label-page-nav button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.label-page-nav b {
+  min-width: 48px;
+  text-align: center;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+/* =========================
+   Label Paper
+========================= */
+
+.fg-label-paper {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #111827;
+  padding: 14px;
+  color: #111827;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* =========================
+   Top Area
+   Left barcode / Main info / ID Pallet
+========================= */
+
+.fg-label-top {
+  display: grid;
+  grid-template-columns: 185px minmax(0, 1fr) 190px;
+  gap: 8px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.fg-label-barcode-block {
+  min-width: 0;
+}
+
+.fake-barcode {
+  width: 100%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #111 0 2px,
+      transparent 2px 4px,
+      #111 4px 5px,
+      transparent 5px 8px,
+      #111 8px 11px,
+      transparent 11px 14px
+    );
+  border: 1px solid #ffffff;
+}
+
+.main-item-barcode {
+  height: 62px;
+}
+
+/* =========================
+   Left Info
+========================= */
+
+.fg-label-left-info {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.fg-label-left-info div {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.fg-label-left-info span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.fg-label-left-info b {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* =========================
+   Main Info
+========================= */
+
+.fg-label-main-info {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.fg-info-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.fg-info-row span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.fg-info-row b {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.fg-info-row.split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.fg-info-row.split > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+/* =========================
+   Right ID Pallet Area
+========================= */
+
+.fg-label-id-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.fg-label-type {
+  color: #000000;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1;
+  text-align: right;
+  margin-bottom: 86px;
+}
+
+/* Barcode + Text ของ ID Pallet */
+.pallet-id-zone {
+  width: 170px;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+.pallet-id-barcode {
+  width: 100%;
+  height: 28px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #111 0 2px,
+      transparent 2px 4px,
+      #111 4px 5px,
+      transparent 5px 8px,
+      #111 8px 11px,
+      transparent 11px 14px
+    );
+  border: 1px solid #ffffff;
+}
+
+.fg-label-id-line {
+  margin-top: 3px;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* =========================
+   QR Placeholder for Table
+========================= */
+
+.fake-qr {
+  background:
+    linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px,
+    linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px,
+    #ffffff;
+  border: 4px solid #ffffff;
+  outline: 1px solid #111827;
+}
+
+.table-qr {
+  width: 48px;
+  height: 48px;
+  margin: 4px auto;
+}
+
+/* =========================
+   Label Table
+========================= */
+
+.fg-label-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.fg-label-table th,
+.fg-label-table td {
+  border: 1px solid #111827;
+  padding: 5px 7px;
+  color: #000000;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.fg-label-table th {
+  background: #eeeeee;
+  text-align: center;
+  font-weight: 500;
+}
+
+.fg-label-table tbody tr {
+  height: 78px;
+}
+
+.fg-label-table .no-col {
+  width: 38px;
+}
+
+/* =========================
+   Label Footer
+========================= */
+
+.fg-label-footer {
+  padding: 7px 8px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.fg-label-footer b {
+  color: #111827;
+  font-weight: 700;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .label-form-head {
+    align-items: stretch;
+  }
+
+  .label-type-box {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .label-type-select {
+    width: 100%;
+  }
+
+  .fg-label-paper {
+    overflow-x: auto;
+  }
+
+  .fg-label-top,
+  .fg-label-table,
+  .fg-label-footer {
+    min-width: 650px;
+  }
+}

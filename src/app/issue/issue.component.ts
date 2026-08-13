@@ -138,6 +138,21 @@ type FetchWosTempResp = {
   results: WosTempRow[];
 };
 
+
+
+type LabelStockType = 'FG' | 'WIP';
+
+type LabelPreviewGroupRow = {
+  dieNo: string;
+  lotNo: string;
+  dwg: string;
+  fullBoxText: string;
+  partialBoxText: string;
+  totalQty: number;
+};
+
+
+
 @Component({
   selector: 'app-issue',
   standalone: true,
@@ -186,6 +201,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   fractionScanForm: WosScanForm = this.createEmptyScanForm();
   fractionRows: FractionTempRow[] = [];
+
+  labelStockType: LabelStockType = 'FG';
+  currentLabelPageIndex = 0;
 
   isSavingFractionHeader = false;
   isSavingFractionScan = false;
@@ -364,6 +382,170 @@ export class IssueComponent implements OnInit, AfterViewInit {
     const currentQty = Number(this.fractionQtyBox || 0);
   
     return currentQty > 0 && currentQty !== savedQty;
+  }
+
+
+  get previewIdPallet(): string {
+    const id = (this.header?.idPallet || '').trim();
+  
+    if (id && id !== 'Auto') return id;
+  
+    // Example ID Pallet ตามที่ต้องการก่อน
+    return '260811001';
+  }
+  
+  get previewEmpName(): string {
+    const empNo = localStorage.getItem('finish_goods_empNo') || '';
+    const name = localStorage.getItem('finish_goods_name') || '';
+  
+    return `${empNo} ${name}`.trim() || '-';
+  }
+  
+  get previewDate(): string {
+    const raw = this.header?.issueDate || this.form.issueDate;
+  
+    if (!raw) return '-';
+  
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return raw;
+  
+    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  }
+  
+  get previewItemNo(): string {
+    return this.header?.itemNo || this.form.itemNo || '-';
+  }
+  
+  get previewItemName(): string {
+    return this.header?.itemName || this.form.itemName || '-';
+  }
+  
+  get previewOqcLot(): string {
+    return this.header ? this.controlLotDisplayName(this.header.controlLotId) : '-';
+  }
+  
+  get previewLocation(): string {
+    return this.header ? this.locationName(this.header.locationId) : '-';
+  }
+  
+  get previewMovement(): string {
+    return this.header?.movementMonth || this.form.movementMonth || '-';
+  }
+  
+  get labelPreviewGroups(): LabelPreviewGroupRow[] {
+    const map = new Map<
+      string,
+      {
+        dieNo: string;
+        lotNo: string;
+        dwg: string;
+        fullQtyList: number[];
+        partialQtyList: number[];
+      }
+    >();
+  
+    const addRow = (row: WosTempRow, kind: 'FULL' | 'PARTIAL') => {
+      const dieNo = (row.dieNo || '-').trim();
+      const lotNo = (row.lotNo || '-').trim();
+      const dwg = (row.dwg || '-').trim();
+  
+      const key = `${dieNo}__${lotNo}`;
+  
+      if (!map.has(key)) {
+        map.set(key, {
+          dieNo,
+          lotNo,
+          dwg,
+          fullQtyList: [],
+          partialQtyList: [],
+        });
+      }
+  
+      const target = map.get(key)!;
+      const qty = Number(row.qty || 0);
+  
+      if (kind === 'FULL') {
+        target.fullQtyList.push(qty);
+      } else {
+        target.partialQtyList.push(qty);
+      }
+    };
+  
+    this.savedRows.forEach((row) => addRow(row, 'FULL'));
+    this.fractionRows.forEach((row) => addRow(row, 'PARTIAL'));
+  
+    return Array.from(map.values()).map((g) => {
+      const fullTotal = g.fullQtyList.reduce((sum, qty) => sum + qty, 0);
+      const partialTotal = g.partialQtyList.reduce((sum, qty) => sum + qty, 0);
+  
+      return {
+        dieNo: g.dieNo,
+        lotNo: g.lotNo,
+        dwg: g.dwg,
+        fullBoxText: this.qtyMultiplyText(g.fullQtyList),
+        partialBoxText: this.qtyMultiplyText(g.partialQtyList),
+        totalQty: fullTotal + partialTotal,
+      };
+    });
+  }
+  
+  get labelPreviewPages(): LabelPreviewGroupRow[][] {
+    const rows = this.labelPreviewGroups;
+    const pages: LabelPreviewGroupRow[][] = [];
+  
+    for (let i = 0; i < rows.length; i += 3) {
+      pages.push(rows.slice(i, i + 3));
+    }
+  
+    return pages.length ? pages : [[]];
+  }
+  
+  get labelPreviewPageCount(): number {
+    return this.labelPreviewPages.length;
+  }
+  
+  get currentLabelPageNo(): number {
+    return Math.min(this.currentLabelPageIndex + 1, this.labelPreviewPageCount);
+  }
+  
+  get currentLabelRows(): LabelPreviewGroupRow[] {
+    return this.labelPreviewPages[this.currentLabelPageIndex] || [];
+  }
+  
+  get labelPreviewTotalQty(): number {
+    return this.currentLabelRows.reduce((sum, row) => {
+      return sum + Number(row.totalQty || 0);
+    }, 0);
+  }
+  
+  private qtyMultiplyText(qtyList: number[]): string {
+    if (!qtyList.length) return '';
+  
+    const qtyMap = new Map<number, number>();
+  
+    qtyList.forEach((qty) => {
+      qtyMap.set(qty, (qtyMap.get(qty) || 0) + 1);
+    });
+  
+    return Array.from(qtyMap.entries())
+      .map(([qty, count]) => {
+        return `${this.formatNumber(qty)} x ${count}`;
+      })
+      .join(' + ');
+  }
+  
+  formatNumber(value: number | null | undefined): string {
+    return Number(value || 0).toLocaleString('en-US');
+  }
+  
+  prevLabelPage() {
+    if (this.currentLabelPageIndex <= 0) return;
+    this.currentLabelPageIndex--;
+  }
+  
+  nextLabelPage() {
+    if (this.currentLabelPageIndex >= this.labelPreviewPageCount - 1) return;
+    this.currentLabelPageIndex++;
   }
 
 

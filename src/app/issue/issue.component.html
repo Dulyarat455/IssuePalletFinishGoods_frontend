@@ -100,10 +100,24 @@
   
         <!-- ================= HEADER FORM ================= -->
         <section class="form-card" *ngIf="showHeaderForm">
-          <div class="section-head">
+          <div class="section-head label-form-head">
             <div>
               <h3>Input Label Pallet Stock Finish Goods</h3>
               <span>Create header before scan QR Code</span>
+            </div>
+          
+            <div class="label-type-box">
+              <label>Label Type</label>
+          
+              <select
+                class="label-type-select"
+                name="labelStockType"
+                [(ngModel)]="labelStockType"
+                [disabled]="isSavingHeader"
+              >
+                <option value="FG">FG</option>
+                <option value="WIP">WIP</option>
+              </select>
             </div>
           </div>
   
@@ -558,40 +572,128 @@
             <div class="mini-qr"></div>
           </div>
   
-          <div class="label-preview">
-            <div class="label-row">
-              <span>Item No.</span>
-              <b>{{ header?.itemNo || form.itemNo || '-' }}</b>
+          <div class="fg-label-paper">
+            <!-- Top Header -->
+            <div class="fg-label-top">
+              <!-- Left Barcode -->
+              <div class="fg-label-barcode-block">
+                <div
+                  class="fake-barcode main-item-barcode"
+                  [attr.data-value]="previewItemNo"
+                ></div>
+          
+                <div class="fg-label-left-info">
+                  <div>
+                    <span>Location</span>
+                    <b>{{ previewLocation }}</b>
+                  </div>
+          
+                  <div>
+                    <span>Emp. Name</span>
+                    <b>{{ previewEmpName }}</b>
+                  </div>
+                </div>
+              </div>
+          
+              <!-- Main Info -->
+              <div class="fg-label-main-info">
+                <div class="fg-info-row">
+                  <span>Item No.</span>
+                  <b>{{ previewItemNo }}</b>
+                </div>
+          
+                <div class="fg-info-row">
+                  <span>Item Name</span>
+                  <b>{{ previewItemName }}</b>
+                </div>
+          
+                <div class="fg-info-row">
+                  <span>Dwg No.</span>
+                  <b>{{ currentLabelRows.length ? currentLabelRows[0].dwg : '-' }}</b>
+                </div>
+          
+                <div class="fg-info-row split">
+                  <div>
+                    <span>OQC Lot</span>
+                    <b>{{ previewOqcLot }}</b>
+                  </div>
+          
+                  <div>
+                    <span>Total Qty</span>
+                    <b>{{ formatNumber(labelPreviewTotalQty) }} pcs</b>
+                  </div>
+                </div>
+          
+                <div class="fg-info-row">
+                  <span>Date</span>
+                  <b>{{ previewDate }}</b>
+                </div>
+              </div>
+          
+              <!-- Right ID Pallet -->
+              <div class="fg-label-id-block">
+                <div class="fg-label-type">{{ labelStockType }}</div>
+              
+                <div class="pallet-id-zone">
+                  <div
+                    class="fake-barcode pallet-id-barcode"
+                    [attr.data-value]="previewIdPallet"
+                  ></div>
+              
+                  <div class="fg-label-id-line">
+                    ID Pallet : {{ previewIdPallet }}
+                  </div>
+                </div>
+              </div>
             </div>
-  
-            <div class="label-row">
-              <span>Item Name</span>
-              <b>{{ header?.itemName || form.itemName || '-' }}</b>
-            </div>
-  
-            <div class="label-row">
-              <span>ID Pallet</span>
-              <b>{{ header?.idPallet || 'Auto' }}</b>
-            </div>
-  
-            <div class="label-row">
-              <span>Die No.</span>
-              <b>{{ savedRows.length > 0 ? savedRows[0].dieNo : '-' }}</b>
-            </div>
-  
-            <div class="label-row">
-              <span>Total Qty</span>
-              <b>{{ totalScanQty | number }}</b>
-            </div>
-  
-            <div class="label-row">
-              <span>Lot OQC</span>
-              <b>{{ header ? controlLotDisplayName(header.controlLotId) : '-' }}</b>
-            </div>
-            
-            <div class="label-row wide">
-              <span>Location</span>
-              <b>{{ header ? locationName(header.locationId) : '-' }}</b>
+          
+            <!-- Table -->
+            <table class="fg-label-table">
+              <thead>
+                <tr>
+                  <th class="no-col">No.</th>
+                  <th>Die No.</th>
+                  <th>Lot No.</th>
+                  <th>Full Box</th>
+                  <th>Partial Box</th>
+                  <th>Total Qty</th>
+                  <th>Stock in</th>
+                  <th>Issue D/O</th>
+                </tr>
+              </thead>
+          
+              <tbody>
+                <tr *ngFor="let row of currentLabelRows; let i = index">
+                  <td class="text-center">{{ i + 1 }}</td>
+                  <td>{{ row.dieNo || '-' }}</td>
+                  <td>{{ row.lotNo || '-' }}</td>
+                  <td>{{ row.fullBoxText || '-' }}</td>
+                  <td>{{ row.partialBoxText || '-' }}</td>
+                  <td class="text-end">{{ formatNumber(row.totalQty) }}</td>
+                  <td class="text-center">
+                    <div class="fake-qr table-qr"></div>
+                  </td>
+                  <td class="text-center">
+                    <div class="fake-qr table-qr"></div>
+                  </td>
+                </tr>
+          
+                <tr *ngFor="let empty of [].constructor(3 - currentLabelRows.length); let i = index">
+                  <td class="text-center">{{ currentLabelRows.length + i + 1 }}</td>
+                  <td>&nbsp;</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-end"></td>
+                  <td class="text-center"></td>
+                  <td class="text-center"></td>
+                </tr>
+              </tbody>
+            </table>
+          
+            <div class="fg-label-footer">
+              Normal movement within 3 month. If over, move within :
+              <b>{{ previewMovement }}</b>
             </div>
           </div>
   
