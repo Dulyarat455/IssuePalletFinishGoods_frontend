@@ -122,11 +122,11 @@
 }
 
 /* ใช้ 2 column เฉพาะจอกว้างมากจริง ๆ */
-@media (min-width: 1500px) {
+/* @media (min-width: 1500px) {
   .layout-grid {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   }
-}
+} */
 
 /* ถ้าจอไม่กว้างพอ หรือเปิด sidebar แล้วพื้นที่ลด ให้เป็น 1 column */
 @media (max-width: 1499px) {
@@ -3746,5 +3746,250 @@ td small {
   .fg-label-table,
   .fg-label-footer {
     min-width: 650px;
+  }
+}
+
+
+
+
+/* =========================================================
+   Layout Adjust: Header Full Width + Label Preview Bottom
+========================================================= */
+
+/* บังคับให้หน้านี้เป็น 1 column เต็มจอ */
+.layout-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ทุก panel เต็มความกว้าง */
+.left-panel,
+.right-panel,
+.fraction-full-row,
+.preview-bottom-card {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Header / Summary / Scan เต็ม */
+.form-card,
+.summary-card,
+.scan-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Label Preview ไปเป็น block ล่างสุด */
+.preview-bottom-card {
+  margin-top: 18px;
+}
+
+/* ให้ right panel ที่เหลือแสดงเฉพาะ Scanned WOS List เต็ม */
+.right-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+/* ขยาย form header ให้ใช้พื้นที่ดีขึ้น */
+.header-form .form-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ช่อง Item Name / Item No. ที่ยาว ให้กินพื้นที่มากขึ้น */
+.header-form .item-search {
+  grid-column: span 2;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .header-form .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .header-form .item-search {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-form .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .header-form .item-search {
+    grid-column: span 1;
+  }
+}
+
+
+
+
+/* =========================================================
+   Layout: Scan WOS Data + Scanned WOS List Same Row
+========================================================= */
+
+.layout-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.left-panel {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.scan-and-list-row {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.scan-and-list-row .scan-card,
+.scan-and-list-row .scan-list-card {
+  margin-top: 0 !important;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.scan-and-list-row .scan-list-table-wrap {
+  max-height: 560px;
+  overflow: auto;
+}
+
+.fraction-full-row,
+.preview-bottom-card {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.preview-bottom-card {
+  margin-top: 18px;
+}
+
+@media (max-width: 1200px) {
+  .scan-and-list-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+
+
+
+
+
+/* =========================================================
+   Adjust: Scan WOS Data width same as Scan Box เศษ
+========================================================= */
+
+.scan-and-list-row {
+  grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr) !important;
+  align-items: stretch;
+}
+
+/* ให้กล่อง Scan WOS Data สูงและกว้างเต็มเหมือน Scan Box เศษ */
+.scan-and-list-row .scan-card {
+  width: 100%;
+  height: 100%;
+  align-self: stretch;
+}
+
+/* ฝั่ง Scanned WOS List */
+.scan-and-list-row .scan-list-card {
+  width: 100%;
+  height: 100%;
+  align-self: stretch;
+}
+
+/* ปรับ form ใน Scan WOS Data ให้ใช้พื้นที่กว้างขึ้น */
+.scan-and-list-row .manual-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* QTY ให้ไม่กว้างเกินจำเป็น */
+.scan-and-list-row .manual-grid .form-field:last-child {
+  max-width: 240px;
+}
+
+/* จอแคบให้กลับเป็นบน-ล่าง */
+@media (max-width: 1280px) {
+  .scan-and-list-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .scan-and-list-row .manual-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .scan-and-list-row .manual-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .scan-and-list-row .manual-grid .form-field:last-child {
+    max-width: 100%;
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Force Scan WOS Data width = Scan Box เศษ width
+   วางท้ายสุดของ issue.component.css
+========================================================= */
+
+/* ใช้สัดส่วนเดียวกันทั้ง Normal Scan และ Fraction Scan */
+.scan-and-list-row,
+.fraction-wide-layout {
+  width: 100%;
+  max-width: 100%;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+/* ให้ card ฝั่งซ้ายของทั้ง 2 section กว้างเท่ากัน */
+.scan-and-list-row .scan-card,
+.fraction-wide-layout .fraction-scan-card-wide {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+  align-self: stretch !important;
+}
+
+/* ให้ card ฝั่งขวาของทั้ง 2 section กว้างเท่ากัน */
+.scan-and-list-row .scan-list-card,
+.fraction-wide-layout .fraction-list-card-wide {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  align-self: stretch !important;
+}
+
+/* Table scroll ด้านใน ไม่ให้ดันขนาด card */
+.scan-and-list-row .scan-list-table-wrap,
+.fraction-wide-layout .fraction-table-wide {
+  max-height: 560px;
+  overflow: auto;
+}
+
+/* จอแคบค่อยเรียงบนล่าง */
+@media (max-width: 1280px) {
+  .scan-and-list-row,
+  .fraction-wide-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }
