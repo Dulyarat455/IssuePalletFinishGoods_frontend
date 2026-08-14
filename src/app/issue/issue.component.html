@@ -564,12 +564,33 @@
       <div class="right-panel">
         <!-- PALLET PREVIEW -->
         <section class="preview-card">
-          <div class="preview-top">
+          <div class="preview-top label-preview-nav">
             <div>
               <span class="preview-label">Label Preview</span>
               <h3>Pallet FG</h3>
             </div>
-            <div class="mini-qr"></div>
+          
+            <div class="label-page-nav" *ngIf="labelPreviewPageCount > 1">
+              <button
+                type="button"
+                (click)="prevLabelPage()"
+                [disabled]="activeLabelPageIndex === 0"
+                title="Previous page"
+              >
+                <i class="fas fa-chevron-left"></i>
+              </button>
+          
+              <b>{{ currentLabelPageNo }} / {{ labelPreviewPageCount }}</b>
+          
+              <button
+                type="button"
+                (click)="nextLabelPage()"
+                [disabled]="activeLabelPageIndex >= labelPreviewPageCount - 1"
+                title="Next page"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
           </div>
   
           <div class="fg-label-paper">
@@ -664,7 +685,7 @@
           
               <tbody>
                 <tr *ngFor="let row of currentLabelRows; let i = index">
-                  <td class="text-center">{{ i + 1 }}</td>
+                  <td class="text-center">{{ labelRowNoOffset + i + 1 }}</td>
                   <td>{{ row.dieNo || '-' }}</td>
                   <td>{{ row.lotNo || '-' }}</td>
                   <td>{{ row.fullBoxText || '-' }}</td>
@@ -678,8 +699,8 @@
                   </td>
                 </tr>
           
-                <tr *ngFor="let empty of [].constructor(3 - currentLabelRows.length); let i = index">
-                  <td class="text-center">{{ currentLabelRows.length + i + 1 }}</td>
+                <tr *ngFor="let empty of emptyLabelRows; let i = index">
+                  <td class="text-center">{{ labelRowNoOffset + currentLabelRows.length + i + 1 }}</td>
                   <td>&nbsp;</td>
                   <td></td>
                   <td></td>

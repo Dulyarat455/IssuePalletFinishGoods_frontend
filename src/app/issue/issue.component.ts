@@ -205,6 +205,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   labelStockType: LabelStockType = 'FG';
   currentLabelPageIndex = 0;
 
+  labelRowsPerPage = 3;
+
   isSavingFractionHeader = false;
   isSavingFractionScan = false;
   isLoadingFractionRows = false;
@@ -489,27 +491,30 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
   
-  get labelPreviewPages(): LabelPreviewGroupRow[][] {
-    const rows = this.labelPreviewGroups;
-    const pages: LabelPreviewGroupRow[][] = [];
-  
-    for (let i = 0; i < rows.length; i += 3) {
-      pages.push(rows.slice(i, i + 3));
-    }
-  
-    return pages.length ? pages : [[]];
+  get labelPreviewPageCount(): number {
+    const totalRows = this.labelPreviewGroups.length;
+    return Math.max(1, Math.ceil(totalRows / this.labelRowsPerPage));
   }
   
-  get labelPreviewPageCount(): number {
-    return this.labelPreviewPages.length;
+  get activeLabelPageIndex(): number {
+    return Math.min(
+      Math.max(this.currentLabelPageIndex, 0),
+      this.labelPreviewPageCount - 1
+    );
   }
   
   get currentLabelPageNo(): number {
-    return Math.min(this.currentLabelPageIndex + 1, this.labelPreviewPageCount);
+    return this.activeLabelPageIndex + 1;
   }
   
   get currentLabelRows(): LabelPreviewGroupRow[] {
-    return this.labelPreviewPages[this.currentLabelPageIndex] || [];
+    const start = this.activeLabelPageIndex * this.labelRowsPerPage;
+    return this.labelPreviewGroups.slice(start, start + this.labelRowsPerPage);
+  }
+  
+  get emptyLabelRows(): number[] {
+    const emptyCount = Math.max(0, this.labelRowsPerPage - this.currentLabelRows.length);
+    return Array.from({ length: emptyCount }, (_, i) => i);
   }
   
   get labelPreviewTotalQty(): number {
@@ -517,6 +522,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return sum + Number(row.totalQty || 0);
     }, 0);
   }
+
+
+  get labelRowNoOffset(): number {
+    return this.activeLabelPageIndex * this.labelRowsPerPage;
+  }
+  
+
   
   private qtyMultiplyText(qtyList: number[]): string {
     if (!qtyList.length) return '';
@@ -539,13 +551,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
   
   prevLabelPage() {
-    if (this.currentLabelPageIndex <= 0) return;
-    this.currentLabelPageIndex--;
+    if (this.activeLabelPageIndex <= 0) return;
+    this.currentLabelPageIndex = this.activeLabelPageIndex - 1;
   }
   
   nextLabelPage() {
-    if (this.currentLabelPageIndex >= this.labelPreviewPageCount - 1) return;
-    this.currentLabelPageIndex++;
+    if (this.activeLabelPageIndex >= this.labelPreviewPageCount - 1) return;
+    this.currentLabelPageIndex = this.activeLabelPageIndex + 1;
   }
 
 
