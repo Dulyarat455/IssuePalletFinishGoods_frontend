@@ -142,6 +142,8 @@ type FetchWosTempResp = {
 
 type LabelStockType = 'FG' | 'WIP';
 
+type IssuePanel = 'normal' | 'fraction' | 'print';
+
 type LabelPreviewGroupRow = {
   dieNo: string;
   lotNo: string;
@@ -204,6 +206,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   labelStockType: LabelStockType = 'FG';
   currentLabelPageIndex = 0;
+  activeIssuePanel: IssuePanel = 'normal';
 
   labelRowsPerPage = 3;
 
@@ -259,6 +262,20 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.focusQr();
+  }
+
+  setIssuePanel(panel: IssuePanel): void {
+    this.activeIssuePanel = panel;
+
+    if (panel === 'normal') {
+      setTimeout(() => this.focusScanFirst(), 0);
+      return;
+    }
+
+    if (panel === 'fraction') {
+      this.showFractionSection = true;
+      setTimeout(() => this.focusFractionFirst(), 0);
+    }
   }
 
   /* =======================

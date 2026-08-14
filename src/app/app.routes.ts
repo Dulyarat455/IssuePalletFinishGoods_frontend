@@ -4,6 +4,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { IssueComponent } from './issue/issue.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { ItemMasterComponent } from './item-master/item-master.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,12 @@ export const routes: Routes = [
     path: 'signUp',
     component: SignUpComponent
   },
+  
+  {
+    path: 'itemMaster',
+    component: ItemMasterComponent
+  },
+
   {
     path: '404',
     component: NotFoundComponent,

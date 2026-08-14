@@ -295,8 +295,85 @@
     </div>
     <!-- END LEFT PANEL -->
 
-    <!-- ================= SCAN + LIST ROW ================= -->
-    <div class="scan-and-list-row">
+    <!-- ================= ISSUE MENU PANEL ================= -->
+    <section class="issue-menu-panel" *ngIf="header && !isEditingHeader">
+      <div class="issue-menu-head">
+        <div>
+          <h3>Operation Menu</h3>
+          <span>เลือกขั้นตอนการทำงาน โดย Header Saved จะแสดงอยู่ด้านบนตลอด</span>
+        </div>
+
+        <div class="issue-menu-current">
+          <span>Current ID Pallet</span>
+          <b>{{ header.idPallet }}</b>
+        </div>
+      </div>
+
+      <div class="issue-menu-tabs">
+        <button
+          type="button"
+          class="issue-menu-tab normal"
+          [class.active]="activeIssuePanel === 'normal'"
+          (click)="setIssuePanel('normal')"
+        >
+          <div class="issue-menu-icon">
+            <i class="fas fa-box"></i>
+          </div>
+
+          <div class="issue-menu-text">
+            <b>Scan Box เต็ม</b>
+            <span>Scan WOS สำหรับ Box ปกติ</span>
+          </div>
+
+          <div class="issue-menu-badge">
+            {{ scanCount }} / {{ normalRequiredBoxQty || 0 }}
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="issue-menu-tab fraction"
+          [class.active]="activeIssuePanel === 'fraction'"
+          (click)="setIssuePanel('fraction')"
+        >
+          <div class="issue-menu-icon">
+            <i class="fas fa-box-open"></i>
+          </div>
+
+          <div class="issue-menu-text">
+            <b>Scan Box เศษ</b>
+            <span>จัดการ Box เศษ / Partial Box</span>
+          </div>
+
+          <div class="issue-menu-badge">
+            {{ fractionScanCount }} / {{ fractionHeader?.qtyBox || 0 }}
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="issue-menu-tab print"
+          [class.active]="activeIssuePanel === 'print'"
+          (click)="setIssuePanel('print')"
+        >
+          <div class="issue-menu-icon">
+            <i class="fas fa-print"></i>
+          </div>
+
+          <div class="issue-menu-text">
+            <b>Print Label</b>
+            <span>Preview และ Issue & Print Label</span>
+          </div>
+
+          <div class="issue-menu-badge">
+            {{ currentLabelPageNo }} / {{ labelPreviewPageCount }}
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= SCAN BOX เต็ม PANEL ================= -->
+    <div class="scan-and-list-row" *ngIf="activeIssuePanel === 'normal'">
 
 <!-- ================= SCAN CARD ================= -->
 
@@ -724,40 +801,27 @@
 <!-- ================= FRACTION BOX FULL ROW ================= -->
       <section
       class="fraction-full-row"
-      *ngIf="header && !isEditingHeader"
-      >
-      <!-- Toggle Header -->
-      <div class="fraction-wide-toggle">
+      *ngIf="header && !isEditingHeader && activeIssuePanel === 'fraction'"
+    >
+      <div class="fraction-wide-toggle fraction-panel-title">
         <div>
           <h3>
             <i class="fas fa-box-open"></i>
-            Box เศษ / Fraction Box
+            Scan Box เศษ / Fraction Box
           </h3>
 
           <span>
-            แยกการ Scan Box เศษ ออกจาก Box ปกติ และแสดงรายการที่ Scan แล้วด้านขวา
+            กำหนด QTY BOX เศษ และ Scan เหมือน Box ปกติ
           </span>
         </div>
 
-        <button
-          type="button"
-          class="fraction-toggle"
-          [class.active]="showFractionSection"
-          (click)="toggleFractionSection()"
-        >
-          <span class="toggle-track">
-            <span class="toggle-thumb"></span>
-          </span>
-
-          {{ showFractionSection ? 'เปิดอยู่' : 'เพิ่ม Box เศษ' }}
-        </button>
+        <div class="fraction-panel-badge">
+          {{ fractionScanCount }} / {{ fractionHeader?.qtyBox || 0 }} Box
+        </div>
       </div>
 
       <!-- Main Fraction Area -->
-      <div
-        class="fraction-wide-layout"
-        *ngIf="showFractionSection"
-      >
+      <div class="fraction-wide-layout">
         <!-- ================= LEFT : SCAN BOX เศษ ================= -->
         <section class="fraction-scan-card-wide">
           <div class="fraction-card-title">
@@ -1201,7 +1265,9 @@
 
 
       <!-- PALLET PREVIEW -->
-      <section class="preview-card preview-bottom-card">
+      <section class="preview-card preview-bottom-card"
+        *ngIf="activeIssuePanel === 'print'"
+      >
         <div class="preview-top label-preview-nav">
           <div>
             <span class="preview-label">Label Preview</span>

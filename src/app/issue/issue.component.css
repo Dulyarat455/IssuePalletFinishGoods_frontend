@@ -3993,3 +3993,254 @@ td small {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+
+/* =========================================================
+   Menu Panel UI: Scan Box เต็ม / Scan Box เศษ / Print Label
+   วางท้ายสุดเพื่อ override layout เดิม
+========================================================= */
+
+.layout-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.left-panel,
+.issue-menu-panel,
+.scan-and-list-row,
+.fraction-full-row,
+.preview-bottom-card {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.issue-menu-panel {
+  padding: 18px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.issue-menu-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.issue-menu-head h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.issue-menu-head span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.issue-menu-current {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: #ecfdf5;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  text-align: right;
+}
+
+.issue-menu-current span {
+  margin: 0 0 3px;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.issue-menu-current b {
+  color: #064e3b;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.issue-menu-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.issue-menu-tab {
+  min-width: 0;
+  min-height: 86px;
+  border: 1px solid #dbe4ea;
+  border-radius: 18px;
+  background: #f8fafc;
+  color: #172033;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.issue-menu-tab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.issue-menu-tab.active {
+  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+  border-color: rgba(20, 184, 166, 0.55);
+  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.13);
+}
+
+.issue-menu-tab.fraction.active {
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border-color: #fdba74;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.12);
+}
+
+.issue-menu-tab.print.active {
+  background: linear-gradient(135deg, #fff7ed, #fff1e6);
+  border-color: #fb923c;
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.12);
+}
+
+.issue-menu-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: #0f766e;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+}
+
+.issue-menu-tab.fraction .issue-menu-icon {
+  background: #c2410c;
+}
+
+.issue-menu-tab.print .issue-menu-icon {
+  background: #ea580c;
+}
+
+.issue-menu-text {
+  min-width: 0;
+}
+
+.issue-menu-text b {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.issue-menu-text span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.issue-menu-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f766e;
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.issue-menu-tab.fraction .issue-menu-badge,
+.issue-menu-tab.print .issue-menu-badge {
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+/* Normal panel + Fraction panel ใช้ column เดียวกัน */
+.scan-and-list-row,
+.fraction-wide-layout {
+  width: 100%;
+  max-width: 100%;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.scan-and-list-row .scan-card,
+.scan-and-list-row .scan-list-card,
+.fraction-wide-layout .fraction-scan-card-wide,
+.fraction-wide-layout .fraction-list-card-wide {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+  align-self: stretch !important;
+}
+
+.fraction-panel-title {
+  margin-bottom: 18px;
+}
+
+.fraction-panel-title .fraction-panel-badge {
+  flex: 0 0 auto;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.preview-bottom-card {
+  margin-top: 0;
+}
+
+@media (max-width: 1280px) {
+  .scan-and-list-row,
+  .fraction-wide-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .issue-menu-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .issue-menu-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .issue-menu-current {
+    text-align: left;
+  }
+
+  .issue-menu-tab {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .issue-menu-badge {
+    grid-column: 1 / -1;
+    justify-self: flex-start;
+  }
+}
