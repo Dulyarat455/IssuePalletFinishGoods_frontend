@@ -4578,3 +4578,181 @@ td small {
 #fractionPanelSection {
   scroll-margin-top: 90px;
 }
+
+
+
+/* =========================================================
+   Fraction Panel Navigation Buttons
+   Back: left scan card / Next: right list card
+========================================================= */
+
+/* ทำให้กล่องซ้าย-ขวาเรียง content เป็นแนวตั้ง */
+.fraction-scan-card-wide,
+.fraction-list-card-wide {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* ---------- Back button: bottom-left of scan card ---------- */
+.fraction-back-panel-box {
+  margin-top: auto;
+  padding-top: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.fraction-back-panel-btn {
+  min-height: 44px;
+  border: 1px solid #dbe4ea;
+  border-radius: 999px;
+  padding: 0 16px 0 14px;
+
+  background: #ffffff;
+  color: #334155;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.fraction-back-panel-btn i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+}
+
+.fraction-back-panel-btn span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.fraction-back-panel-btn span b {
+  font-size: 13px;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.fraction-back-panel-btn:hover {
+  transform: translateY(-1px);
+  background: #f8fafc;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+}
+
+/* ---------- Next button: bottom-right of list card ---------- */
+.fraction-next-panel-box {
+  margin-top: 14px;
+  padding: 18px 16px 18px;
+  border-top: 1px solid #fed7aa;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.fraction-next-panel-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fraction-next-panel-info span {
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fraction-next-panel-info b {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.fraction-next-panel-btn {
+  min-width: 118px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 16px 0 18px;
+
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fraction-next-panel-btn span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.fraction-next-panel-btn i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+}
+
+.fraction-next-panel-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .fraction-back-panel-box {
+    justify-content: stretch;
+  }
+
+  .fraction-back-panel-btn {
+    width: 100%;
+  }
+
+  .fraction-next-panel-box {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fraction-next-panel-btn {
+    width: 100%;
+  }
+}

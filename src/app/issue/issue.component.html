@@ -1020,7 +1020,25 @@
               </button>
             </div>
           </ng-container>
+
+          <div class="fraction-back-panel-box">
+            <button
+              type="button"
+              class="fraction-back-panel-btn"
+              (click)="setIssuePanel('normal')"
+            >
+              <i class="fas fa-arrow-left"></i>
+              <span>
+                Back
+                <b>Scan Box เต็ม</b>
+              </span>
+            </button>
+          </div>
+
         </section>
+
+
+
 
         <!-- ================= RIGHT : BOX เศษ LIST ================= -->
         <section class="fraction-list-card-wide">
@@ -1198,6 +1216,23 @@
               </tbody>
             </table>
           </div>
+
+          <div class="fraction-next-panel-box">
+            <div class="fraction-next-panel-info">
+              <span>ขั้นตอนถัดไป</span>
+              <b>ไปที่ Print Label</b>
+            </div>
+
+            <button
+              type="button"
+              class="fraction-next-panel-btn"
+              (click)="setIssuePanel('print')"
+            >
+              <span>Next</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
         </section>
       </div>
       </section>
