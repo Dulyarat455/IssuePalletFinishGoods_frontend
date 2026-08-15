@@ -4244,3 +4244,238 @@ td small {
     justify-self: flex-start;
   }
 }
+
+
+
+/* =========================================================
+   Scanned WOS List: Fixed 5 Rows + Scroll + Next Panel
+========================================================= */
+
+/* ให้ card คุม layout เป็นแนวตั้ง */
+.scan-list-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* fix ความสูงตารางประมาณ 5 row แล้วค่อย scroll */
+.scan-list-table-wrap {
+  height: 430px !important;
+  max-height: 430px !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+/* หัวตาราง sticky เวลา scroll */
+.scan-list-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* คุมความสูง row ให้ใกล้เคียงกัน */
+.scan-list-table tbody tr {
+  height: 74px;
+}
+
+.scan-list-table tbody td {
+  height: 74px;
+  max-height: 74px;
+}
+
+/* กันข้อความยาวดัน row สูง */
+.scan-list-table .cell-main,
+.scan-list-table .cell-sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ปุ่ม Next ไป Panel Box เศษ */
+.normal-next-panel-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.normal-next-panel-btn {
+  min-height: 46px;
+  border: 0;
+  border-radius: 15px;
+  padding: 0 16px 0 18px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
+}
+
+.normal-next-panel-btn span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.normal-next-panel-btn span b {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.normal-next-panel-btn i {
+  font-size: 15px;
+}
+
+.normal-next-panel-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+@media (max-width: 768px) {
+  .normal-next-panel-box {
+    justify-content: stretch;
+  }
+
+  .normal-next-panel-btn {
+    width: 100%;
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Refine Normal Next Panel Button
+========================================================= */
+
+/* Footer ใต้ตาราง ให้ดูเป็นส่วนหนึ่งของ card */
+.normal-next-panel-box {
+  margin-top: 14px !important;
+  padding: 14px 16px 0 !important;
+  border-top: 1px solid #e2e8f0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+}
+
+/* ข้อความซ้ายของ footer */
+.normal-next-panel-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.normal-next-panel-info span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.normal-next-panel-info b {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+/* ปุ่ม Next ใหม่ ให้เป็น pill ขนาดพอดี */
+.normal-next-panel-btn {
+  min-width: 118px !important;
+  min-height: 42px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 0 16px 0 18px !important;
+
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  color: #ffffff !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18) !important;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.normal-next-panel-btn span {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+}
+
+.normal-next-panel-btn i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+}
+
+.normal-next-panel-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24) !important;
+}
+
+/* จอเล็ก ให้เรียงลงมา */
+@media (max-width: 768px) {
+  .normal-next-panel-box {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .normal-next-panel-btn {
+    width: 100% !important;
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Adjust spacing under Next Step footer
+========================================================= */
+
+.normal-next-panel-box {
+  padding: 18px 16px 18px !important;
+  margin-top: 14px !important;
+  margin-bottom: 6px !important;
+  border-top: 1px solid #e2e8f0 !important;
+  align-items: center !important;
+}
+
+/* ให้ปุ่มไม่ติดขอบล่าง และดูอยู่กลาง footer */
+.normal-next-panel-btn {
+  min-height: 44px !important;
+  margin-bottom: 0 !important;
+}
+
+/* เผื่อ scan-list-card มี padding ด้านล่างน้อยไป */
+.scan-list-card {
+  padding-bottom: 20px !important;
+}
