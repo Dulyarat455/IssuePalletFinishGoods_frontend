@@ -811,22 +811,6 @@
       class="fraction-full-row"
       *ngIf="header && !isEditingHeader && activeIssuePanel === 'fraction'"
     >
-      <div class="fraction-wide-toggle fraction-panel-title">
-        <div>
-          <h3>
-            <i class="fas fa-box-open"></i>
-            Scan Box เศษ / Fraction Box
-          </h3>
-
-          <span>
-            กำหนด QTY BOX เศษ และ Scan เหมือน Box ปกติ
-          </span>
-        </div>
-
-        <div class="fraction-panel-badge">
-          {{ fractionScanCount }} / {{ fractionHeader?.qtyBox || 0 }} Box
-        </div>
-      </div>
 
       <!-- Main Fraction Area -->
       <div class="fraction-wide-layout">

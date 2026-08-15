@@ -4595,12 +4595,13 @@ td small {
 
 /* ---------- Back button: bottom-left of scan card ---------- */
 .fraction-back-panel-box {
-  margin-top: auto;
-  padding-top: 16px;
+  margin-top: 14px !important;
+  padding: 18px 16px 18px !important;
+  border-top: 1px solid #e2e8f0 !important;
 
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
 }
 
 .fraction-back-panel-btn {
