@@ -92,6 +92,16 @@
           </div>
 
           <div class="summary-item">
+            <span>QTY Box เต็ม</span>
+            <b>{{ normalRequiredBoxQty }}</b>
+          </div>
+
+          <div class="summary-item">
+            <span>QTY Box เศษ</span>
+            <b>{{ fractionQtyBoxValue }}</b>
+          </div>
+
+          <div class="summary-item">
             <span>Total QTY BOX</span>
             <b>{{ header.totalQtyBox }}</b>
           </div>
@@ -255,16 +265,45 @@
               </select>
             </div>
 
-            <div class="form-field">
-              <label>Total QTY BOX</label>
+            <div class="form-field box-plan-field">
+              <label>QTY Box เต็ม</label>
               <input
                 class="control"
                 type="number"
-                name="totalQtyBox"
-                placeholder="Max 42 Box / ครั้ง"
-                [(ngModel)]="form.totalQtyBox"
+                min="1"
+                max="42"
+                name="headerFullBoxQty"
+                placeholder="เช่น 40"
+                [(ngModel)]="fullBoxTagQty"
                 [disabled]="isSavingHeader"
               />
+            </div>
+
+            <div class="form-field box-plan-field">
+              <label>QTY Box เศษ</label>
+              <input
+                class="control"
+                type="number"
+                min="0"
+                max="42"
+                name="headerFractionBoxQty"
+                placeholder="เช่น 2"
+                [(ngModel)]="fractionQtyBox"
+                [disabled]="isSavingHeader"
+              />
+            </div>
+
+            <div class="form-field total-box-auto-field">
+              <label>Total QTY BOX</label>
+              <input
+                class="control readonly total-box-auto-input"
+                type="number"
+                name="totalQtyBox"
+                [value]="headerPlanTotalBox || ''"
+                placeholder="Auto: Box เต็ม + Box เศษ"
+                readonly
+              />
+              <small class="auto-total-note">Auto calculated from QTY Box เต็ม + QTY Box เศษ</small>
             </div>
           </div>
 
@@ -389,60 +428,9 @@
           </span>
 
 
-          <div
-            class="full-box-tag-box"
-            *ngIf="header && !isEditingHeader"
-          >
-            <div class="full-box-tag-info">
-              <div class="full-box-tag-icon">
-                <i class="fas fa-tags"></i>
-              </div>
-
-              <div>
-                <b>QTY Box เต็ม</b>
-                
-              </div>
-            </div>
-
-            <div class="full-box-tag-control">
-              <input
-                class="full-box-tag-input"
-                type="number"
-                min="1"
-                max="42"
-                name="fullBoxTagQty"
-                placeholder="เช่น 40"
-                [(ngModel)]="fullBoxTagQty"
-                [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
-              />
-
-                <button
-                type="button"
-                class="full-box-tag-save-btn"
-                *ngIf="isFullBoxTagChanged"
-                (click)="onSaveFullBoxTag()"
-                [disabled]="!header || isEditingHeader || isSavingScan || isSavingFullBoxTag"
-                >
-                <i
-                  class="fas"
-                  [class.fa-save]="!isSavingFullBoxTag"
-                  [class.fa-spinner]="isSavingFullBoxTag"
-                  [class.fa-spin]="isSavingFullBoxTag"
-                ></i>
-
-                {{ isSavingFullBoxTag ? 'Saving...' : 'Save Tag' }}
-                </button>
-
-                <div
-                class="full-box-tag-saved-pill"
-                *ngIf="hasNormalBoxQty && !isFullBoxTagChanged"
-                >
-                <i class="fas fa-check-circle"></i>
-                Saved
-                </div>
-            </div>
-
-            
+          <div class="normal-plan-mini" *ngIf="header && !isEditingHeader">
+            <span>QTY Box เต็ม</span>
+            <b>{{ normalRequiredBoxQty }} Box</b>
           </div>
 
           <span *ngIf="isBoxFull">
@@ -513,9 +501,9 @@
     </div>
 
     <div>
-      <b>กรุณากำหนด QTY Box เต็มก่อนเริ่ม Scan</b>
+      <b>กรุณากำหนด QTY Box เต็มที่ Header ก่อนเริ่ม Scan</b>
       <span>
-        กรอกจำนวน QTY Box เต็ม แล้วกด Save Tag เพื่อเปิดการ Scan Box ปกติ
+        กด Edit Header แล้วระบุ QTY Box เต็ม จากนั้น Save Header เพื่อเปิดการ Scan Box ปกติ
       </span>
     </div>
     </div>
@@ -639,7 +627,7 @@
 
     <div class="note-box">
       <b>Scan Rule:</b>
-      ต้อง Save Header ก่อน Scan / ต้องกำหนด QTY Box เต็มก่อน / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
+      ต้อง Save Header ก่อน Scan / QTY Box เต็ม และ QTY Box เศษ กำหนดที่ Header / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
     </div>
     </ng-container>
     </section>
@@ -819,6 +807,7 @@
 
 <!-- ================= FRACTION BOX FULL ROW ================= -->
       <section
+      id="fractionPanelSection"
       class="fraction-full-row"
       *ngIf="header && !isEditingHeader && activeIssuePanel === 'fraction'"
     >
@@ -852,76 +841,16 @@
             
           </div>
 
-          <!-- Header Box เศษ -->
-          <div class="fraction-header-box">
-            <div class="form-field">
-              <label>QTY BOX เศษ</label>
-          
-              <input
-                class="control"
-                type="number"
-                name="fractionQtyBox"
-                min="1"
-                max="42"
-                placeholder="เช่น 2"
-                [(ngModel)]="fractionQtyBox"
-                [disabled]="isSavingFractionHeader || isSavingFractionScan || isDeletingFractionHeader"
-              />
+          <!-- Header Box เศษ Summary -->
+          <div class="fraction-header-summary-box">
+            <div>
+              <span>QTY Box เศษ</span>
+              <b>{{ fractionQtyBoxValue }} Box</b>
             </div>
-          
-            <div class="fraction-header-actions">
-              <button
-              type="button"
-              class="btn fraction-save"
-              *ngIf="!fractionHeader || isFractionHeaderQtyChanged"
-              (click)="onSaveFractionHeader()"
-              [disabled]="
-                !hasNormalBoxQty ||
-                isSavingFractionHeader ||
-                isSavingFractionScan ||
-                isDeletingFractionHeader
-              "
-            >
-                <i
-                  class="fas"
-                  [class.fa-save]="!isSavingFractionHeader"
-                  [class.fa-spinner]="isSavingFractionHeader"
-                  [class.fa-spin]="isSavingFractionHeader"
-                ></i>
-          
-                {{
-                  isSavingFractionHeader
-                    ? 'Saving...'
-                    : fractionHeader
-                      ? 'Update Header เศษ'
-                      : 'Create Header เศษ'
-                }}
-              </button>
 
-              <div
-                class="fraction-header-saved-pill"
-                *ngIf="fractionHeader && !isFractionHeaderQtyChanged"
-              >
-                <i class="fas fa-check-circle"></i>
-                Saved
-              </div>
-          
-              <button
-                type="button"
-                class="fraction-delete-header-btn"
-                *ngIf="fractionHeader"
-                (click)="onDeleteFractionHeaderTemp()"
-                [disabled]="isSavingFractionHeader || isSavingFractionScan || isDeletingFractionHeader"
-              >
-                <i
-                  class="fas"
-                  [class.fa-trash-alt]="!isDeletingFractionHeader"
-                  [class.fa-spinner]="isDeletingFractionHeader"
-                  [class.fa-spin]="isDeletingFractionHeader"
-                ></i>
-          
-                {{ isDeletingFractionHeader ? 'Deleting...' : 'Delete Header เศษ' }}
-              </button>
+            <div>
+              <span>Status</span>
+              <b>{{ fractionHeader ? 'Header เศษ Saved' : 'ยังไม่ได้กำหนด Box เศษ' }}</b>
             </div>
           </div>
 
@@ -932,22 +861,13 @@
           class="fraction-empty-state"
           *ngIf="!fractionHeader"
         >
-          <i
-            class="fas"
-            [class.fa-tags]="!hasNormalBoxQty"
-            [class.fa-arrow-up]="hasNormalBoxQty"
-          ></i>
+          <i class="fas fa-clipboard-list"></i>
         
-          <div *ngIf="!hasNormalBoxQty">
-            <b>กรุณาระบุ QTY Box เต็มก่อน</b>
+          <div>
+            <b>ยังไม่มี QTY Box เศษ</b>
             <span>
-              กรุณากรอกจำนวน QTY Box เต็ม ที่กล่อง Scan WOS Data แล้วกด Save Tag ก่อนเริ่มสร้าง Header Box เศษ
+              ถ้าต้องการ Scan Box เศษ ให้กลับไป Edit Header แล้วระบุ QTY Box เศษมากกว่า 0 จากนั้นกด Save Header
             </span>
-          </div>
-        
-          <div *ngIf="hasNormalBoxQty">
-            <b>กรุณาสร้าง Header Box เศษก่อน</b>
-            <span>ระบุ QTY BOX เศษ แล้วกด Create Header เศษ เพื่อเริ่ม Scan</span>
           </div>
         </div>
 

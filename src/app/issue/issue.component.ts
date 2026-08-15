@@ -294,6 +294,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.savedRows.length;
   }
 
+  get headerNormalQtyValue(): number {
+    return Number(this.fullBoxTagQty || 0);
+  }
+
+  get headerFractionQtyValue(): number {
+    return Number(this.fractionQtyBox || 0);
+  }
+
+  get headerPlanTotalBox(): number {
+    return this.headerNormalQtyValue + this.headerFractionQtyValue;
+  }
+
   get headerTotalBoxQty(): number {
     return Number(this.header?.totalQtyBox || 0);
   }
@@ -674,6 +686,43 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
     this.focusEl(this.fractionItemNo);
   }
+
+
+  private goToFractionPanelFromHeaderWarning(): void {
+    /*
+      ปิด Header Edit แบบ Cancel
+      แต่ไม่เรียก onCancelEditHeader()
+      เพราะ onCancelEditHeader() จะ focus กลับไปฝั่ง Box เต็ม
+    */
+    if (this.header) {
+      this.form = this.mapHeaderToForm(this.header);
+      this.itemKeyword = this.form.itemNo;
+      this.fullBoxTagQty = this.header.normalQty ?? null;
+      this.fractionQtyBox = this.fractionHeader?.qtyBox ?? null;
+    }
+  
+    this.isEditingHeader = false;
+    this.showFractionSection = true;
+    this.activeIssuePanel = 'fraction';
+  
+    /*
+      รอ Angular render panel ก่อน
+      แล้วค่อย scroll ลงไป + focus Item No.
+    */
+    setTimeout(() => {
+      const panel = document.getElementById('fractionPanelSection');
+  
+      panel?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+  
+      setTimeout(() => {
+        this.focusEl(this.fractionItemNo);
+      }, 350);
+    }, 120);
+  }
+
   
   loopFractionFocusToFirst(ev: any) {
     if (ev?.key === 'Tab') {
@@ -1051,111 +1100,334 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.form.controlLotId) return this.toast('warning', 'เลือก Control Lot OQC');
     if (!this.form.locationId) return this.toast('warning', 'เลือก Location FG');
     if (!this.form.movementMonth) return this.toast('warning', 'เลือก Movement within 3 month');
-  
-    if (!this.form.totalQtyBox || this.form.totalQtyBox <= 0) {
-      return this.toast('warning', 'กรอก Total QTY BOX');
+
+    const normalQty = Number(this.fullBoxTagQty || 0);
+    const fractionQty = Number(this.fractionQtyBox || 0);
+    const totalBox = normalQty + fractionQty;
+
+    if (!Number.isFinite(normalQty) || normalQty <= 0) {
+      return this.toast('warning', 'กรอก QTY Box เต็ม');
     }
-  
-  
-    if (
-      this.header &&
-      this.isEditingHeader &&
-      this.scanCount > Number(this.form.totalQtyBox)
-    ) {
+
+    if (!Number.isFinite(fractionQty) || fractionQty < 0) {
+      return this.toast('warning', 'QTY Box เศษไม่ถูกต้อง');
+    }
+
+    if (totalBox <= 0) {
+      return this.toast('warning', 'Total QTY BOX ต้องมากกว่า 0');
+    }
+
+    if (totalBox > 42) {
       return Swal.fire({
         icon: 'warning',
-        title: 'Total QTY BOX น้อยกว่าจำนวนที่ Scan แล้ว',
-        text:
-          `ตอนนี้ Scan แล้ว ${this.scanCount} Box ` +
-          `ไม่สามารถแก้ Total QTY BOX เป็น ${this.form.totalQtyBox} ได้`,
+        title: 'จำนวน Box เกิน 42 Box',
+        html: `
+          <div style="text-align:left">
+            <div><b>QTY Box เต็ม:</b> ${normalQty} Box</div>
+            <div><b>QTY Box เศษ:</b> ${fractionQty} Box</div>
+            <hr />
+            <div><b>Total QTY BOX:</b> ${totalBox} Box</div>
+            <div style="margin-top:10px;color:#b91c1c;font-weight:700">
+              Total QTY BOX ต้องไม่เกิน 42 Box ต่อครั้ง
+            </div>
+          </div>
+        `,
+        confirmButtonText: 'ตรวจสอบใหม่',
+        confirmButtonColor: '#dc2626',
       });
     }
-  
+
+    if (this.header && this.isEditingHeader && this.scanCount > normalQty) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'QTY Box เต็มน้อยกว่าจำนวนที่ Scan แล้ว',
+        text:
+          `ตอนนี้ Scan Box เต็มแล้ว ${this.scanCount} Box ` +
+          `ไม่สามารถแก้ QTY Box เต็มเป็น ${normalQty} ได้`,
+      });
+    }
+
+    /*
+  Case พิเศษ:
+  ตอน Edit Header แล้วลด QTY Box เศษเหลือ 0
+  แต่ยังมี Box เศษที่ Scan ค้างอยู่
+  => ห้าม Save Header / ห้ามลบ Header Fraction
+  => แจ้งเตือน แล้วพาไป Panel Scan Box เศษ
+*/
+if (
+  this.header &&
+  this.isEditingHeader &&
+  this.fractionHeader &&
+  fractionQty === 0 &&
+  this.fractionScanCount > 0
+) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'ยังมี Box เศษที่ Scan ค้างอยู่',
+    html: `
+      <div style="text-align:left">
+        <div>คุณกำลังเปลี่ยน <b>QTY Box เศษ</b> เป็น <b>0</b></div>
+        <div style="margin-top:8px">
+          แต่ตอนนี้ยังมีรายการ Box เศษที่ Scan ค้างอยู่
+          <b>${this.fractionScanCount}</b> รายการ
+        </div>
+
+        <div style="margin-top:12px;color:#b91c1c;font-weight:700">
+          กรุณาไปลบหรือ Clear รายการ Box เศษก่อน แล้วจึงกลับมา Save Header อีกครั้ง
+        </div>
+      </div>
+    `,
+    confirmButtonText: 'ไปที่ Scan Box เศษ',
+    confirmButtonColor: '#ea580c',
+  }).then(() => {
+   this.goToFractionPanelFromHeaderWarning();
+  });
+
+  return;
+}
+
+/*
+  Case ทั่วไป:
+  ถ้าลด QTY Box เศษให้น้อยกว่าจำนวนที่ Scan แล้ว
+*/
+if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'QTY Box เศษน้อยกว่าจำนวนที่ Scan แล้ว',
+    text:
+      `ตอนนี้ Scan Box เศษแล้ว ${this.fractionScanCount} Box ` +
+      `ไม่สามารถแก้ QTY Box เศษเป็น ${fractionQty} ได้`,
+  });
+  return;
+}
+    this.form.totalQtyBox = totalBox;
     this.isSavingHeader = true;
-  
+
     const payload = {
       userId: Number(this.userId),
       dateIssue: new Date(this.form.issueDate).toISOString(),
       itemNo: this.form.itemNo,
       itemName: this.form.itemName,
-      qtyBox: Number(this.form.totalQtyBox),
+      qtyBox: totalBox,
       shift: this.form.shift,
       groupId: Number(this.form.groupId),
       controlLotId: Number(this.form.controlLotId),
       locationId: Number(this.form.locationId),
-      totalBox: Number(this.form.totalQtyBox),
+      totalBox,
       moveMentThreeMonth: this.form.movementMonth,
     };
-  
+
     const isEditMode = !!this.header && this.isEditingHeader;
-  
+
     const url = isEditMode
       ? config.apiServer + '/api/issue/editHeaderTemp'
       : config.apiServer + '/api/issue/createHeaderTemp';
-  
+
     const finalPayload = isEditMode
       ? {
           ...payload,
           headTempId: this.header!.id,
         }
       : payload;
-  
-    this.http.post<any>(url, finalPayload).subscribe({
-      next: (res) => {
-        this.header = this.normalizeHeader(res.data);
-  
-        if (this.header) {
+
+      this.http.post<any>(url, finalPayload).subscribe({
+        next: (res): void => {
+          this.header = this.normalizeHeader(res.data);
+      
+          if (!this.header) {
+            this.isSavingHeader = false;
+            Swal.fire('Error', 'Save Header แล้วไม่พบข้อมูล Header', 'error');
+            return;
+          }
+      
+          this.header = {
+            ...this.header,
+            totalQtyBox: totalBox,
+            normalQty,
+          };
+      
           this.form = this.mapHeaderToForm(this.header);
+          this.form.totalQtyBox = totalBox;
           this.itemKeyword = this.form.itemNo;
+      
+          this.syncHeaderBoxQtyAfterSave(normalQty, fractionQty, isEditMode);
+        },
+      
+        error: (err): void => {
+          console.error(err);
+          this.isSavingHeader = false;
+      
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err.message ||
+            'Save Header fail';
+      
+          if (msg === 'missing_required_fields') {
+            Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
+            return;
+          }
+      
+          if (msg === 'invalid_dateIssue') {
+            Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
+            return;
+          }
+      
+          if (msg === 'header_issueTemp_notFound') {
+            Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
+            return;
+          }
+      
+          Swal.fire('Error', msg, 'error');
+        },
+      });
+
+
+  }
+
+  private syncHeaderBoxQtyAfterSave(
+    normalQty: number,
+    fractionQty: number,
+    isEditMode: boolean
+  ) {
+    if (!this.header) return;
+
+    this.http
+      .post<any>(config.apiServer + '/api/issue/addNormalQty', {
+        headTempId: this.header.id,
+        normalQty,
+      })
+      .subscribe({
+        next: (res) => {
+          const updatedNormalQty = Number(res?.data?.normalQty ?? normalQty);
+
+          this.fullBoxTagQty = updatedNormalQty;
+          this.header = {
+            ...this.header!,
+            normalQty: updatedNormalQty,
+          };
+
+          this.syncFractionHeaderAfterHeaderSave(fractionQty, isEditMode);
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSavingHeader = false;
+          Swal.fire(
+            'Error',
+            err?.error?.message || err?.error?.error || err.message || 'Save QTY Box เต็ม fail',
+            'error'
+          );
+        },
+      });
+  }
+
+  private syncFractionHeaderAfterHeaderSave(
+    fractionQty: number,
+    isHeaderEditMode: boolean
+  ) {
+    if (!this.header) return;
+
+    if (fractionQty <= 0) {
+      if (this.fractionHeader && this.fractionRows.length === 0) {
+        this.http
+          .post<any>(config.apiServer + '/api/issue/deleteheaderFractionTemp', {
+            headerFractionTempId: this.fractionHeader.id,
+          })
+          .subscribe({
+            next: () => {
+              this.fractionHeader = null;
+              this.fractionQtyBox = 0;
+              this.fractionRows = [];
+              this.fractionScanForm = this.createEmptyScanForm();
+            
+              this.finishHeaderSave(isHeaderEditMode);
+            },
+            error: (err) => {
+              console.error(err);
+              this.isSavingHeader = false;
+              Swal.fire(
+                'Error',
+                err?.error?.message ||
+                  err?.error?.error ||
+                  err.message ||
+                  'Delete Header Box เศษ fail',
+                'error'
+              );
+            },
+          });
+        return;
+      }
+
+      this.fractionQtyBox = 0;
+      this.finishHeaderSave(isHeaderEditMode);
+      return;
+    }
+
+    const isEditFraction = !!this.fractionHeader;
+    const url = isEditFraction
+      ? config.apiServer + '/api/issue/editFractionTemp'
+      : config.apiServer + '/api/issue/createHeaderTempFraction';
+
+    const payload = isEditFraction
+      ? {
+          headFractionTempId: this.fractionHeader!.id,
+          headTempId: this.header.id,
+          qtyBox: fractionQty,
         }
-  
-        this.isEditingHeader = false;
-        this.isSavingHeader = false;
-  
-        this.toast(
-          'success',
-          isEditMode ? 'Edit Header Success' : 'Save Header Success'
-        );
-  
-        this.fetchWosTemp();
-        this.fetchFractionTempList();
-  
-        this.focusQr();
+      : {
+          headTempId: this.header.id,
+          qtyBox: fractionQty,
+        };
+
+    this.http.post<any>(url, payload).subscribe({
+      next: (res) => {
+        this.fractionHeader = {
+          id: Number(res.data.id),
+          headerId: Number(res.data.headerId ?? this.header!.id),
+          qtyBox: Number(res.data.qtyBox),
+          timeStmp: res.data.timeStmp,
+          status: res.data.status || 'use',
+        };
+
+        this.fractionQtyBox = this.fractionHeader.qtyBox;
+        this.showFractionSection = true;
+        this.finishHeaderSave(isHeaderEditMode);
       },
       error: (err) => {
         console.error(err);
         this.isSavingHeader = false;
-  
+
         const msg =
           err?.error?.message ||
           err?.error?.error ||
-          err.message ||
-          'Save Header fail';
-  
-        if (msg === 'missing_required_fields') {
-          Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
-          return;
-        }
-  
-        if (msg === 'invalid_dateIssue') {
-          Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
-          return;
-        }
-  
-        if (msg === 'header_issueTemp_notFound') {
-          Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
-          return;
-        }
-  
+          err?.message ||
+          'Save Header Fraction fail';
+
         Swal.fire('Error', msg, 'error');
       },
     });
+  }
+
+  private finishHeaderSave(isEditMode: boolean) {
+    this.isEditingHeader = false;
+    this.isSavingHeader = false;
+
+    this.toast(
+      'success',
+      isEditMode ? 'Edit Header Success' : 'Save Header Success'
+    );
+
+    this.fetchWosTemp();
+    this.fetchFractionTempList();
+    this.focusQr();
   }
 
   onEditHeader() {
     if (!this.header) return;
     this.form = this.mapHeaderToForm(this.header);
     this.itemKeyword = this.form.itemNo;
+    this.fullBoxTagQty = this.header.normalQty ?? null;
+    this.fractionQtyBox = this.fractionHeader?.qtyBox ?? this.fractionQtyBox ?? null;
     this.isEditingHeader = true;
   }
 
@@ -1163,6 +1435,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.header) return;
     this.form = this.mapHeaderToForm(this.header);
     this.itemKeyword = this.form.itemNo;
+    this.fullBoxTagQty = this.header.normalQty ?? null;
+    this.fractionQtyBox = this.fractionHeader?.qtyBox ?? null;
     this.isEditingHeader = false;
     this.focusQr();
   }
