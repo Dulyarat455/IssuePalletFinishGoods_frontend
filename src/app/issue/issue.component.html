@@ -348,67 +348,69 @@
         </div>
       </div>
 
-      <div class="issue-menu-tabs">
-        <button
-          type="button"
-          class="issue-menu-tab normal"
+      
+      <div class="issue-menu-tabs step-indicator-tabs">
+        <!-- STEP 1 -->
+        <div
+          class="issue-menu-tab normal step-indicator-item"
           [class.active]="activeIssuePanel === 'normal'"
-          (click)="setIssuePanel('normal')"
         >
-          <div class="issue-menu-icon">
-            <i class="fas fa-box"></i>
+          <div class="issue-menu-icon step-number">
+            1
           </div>
-
+      
           <div class="issue-menu-text">
             <b>Scan Box เต็ม</b>
             <span>Scan WOS สำหรับ Box ปกติ</span>
           </div>
-
+      
           <div class="issue-menu-badge">
             {{ scanCount }} / {{ normalRequiredBoxQty || 0 }}
           </div>
-        </button>
-
-        <button
-          type="button"
-          class="issue-menu-tab fraction"
+        </div>
+      
+        <!-- STEP 2 -->
+        <div
+          class="issue-menu-tab fraction step-indicator-item"
           [class.active]="activeIssuePanel === 'fraction'"
-          (click)="setIssuePanel('fraction')"
         >
-          <div class="issue-menu-icon">
-            <i class="fas fa-box-open"></i>
+          <div class="issue-menu-icon step-number">
+            2
           </div>
-
+      
           <div class="issue-menu-text">
             <b>Scan Box เศษ</b>
             <span>จัดการ Box เศษ / Partial Box</span>
           </div>
-
+      
           <div class="issue-menu-badge">
             {{ fractionScanCount }} / {{ fractionHeader?.qtyBox || 0 }}
           </div>
-        </button>
-
-        <button
-          type="button"
-          class="issue-menu-tab print"
+        </div>
+      
+        <!-- STEP 3 -->
+        <div
+          class="issue-menu-tab print step-indicator-item"
           [class.active]="activeIssuePanel === 'print'"
-          (click)="setIssuePanel('print')"
         >
-          <div class="issue-menu-icon">
-            <i class="fas fa-print"></i>
+          <div class="issue-menu-icon step-number">
+            3
           </div>
-
+      
           <div class="issue-menu-text">
             <b>Print Label</b>
             <span>Preview และ Issue & Print Label</span>
           </div>
-
+      
           <div class="issue-menu-badge">
             {{ currentLabelPageNo }} / {{ labelPreviewPageCount }}
           </div>
-        </button>
+        </div>
       </div>
+
+
+
+
     </section>
 
     <!-- ================= SCAN BOX เต็ม PANEL ================= -->
@@ -1222,10 +1224,11 @@
       </section>
 
 
-      <!-- PALLET PREVIEW -->
-      <section class="preview-card preview-bottom-card"
-        *ngIf="activeIssuePanel === 'print'"
-      >
+      <!-- ================= PRINT LABEL PANEL ================= -->
+      <div class="print-label-panel" *ngIf="activeIssuePanel === 'print'">
+        <div class="print-label-main">
+          <!-- LEFT : LABEL PREVIEW เดิม ไม่แก้โครงสร้างด้านใน -->
+          <section class="preview-card preview-bottom-card print-preview-left">
         <div class="preview-top label-preview-nav">
           <div>
             <span class="preview-label">Label Preview</span>
@@ -1435,6 +1438,111 @@
           <i class="fas fa-print"></i>
           {{ isIssuing ? 'Issuing...' : 'Issue & Print Label' }}
         </button>
-      </section>
+          </section>
+
+          <!-- RIGHT : PRINT INFO / CHECK PANEL -->
+          <aside class="print-side-card">
+            <div class="print-side-head">
+              <div class="print-side-icon">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+
+              <div>
+                <h3>Print Check</h3>
+                <span>ตรวจสอบข้อมูลก่อน Issue & Print Label</span>
+              </div>
+            </div>
+
+          
+
+            <div class="print-side-section">
+              <h4>Label Information</h4>
+
+              <div class="print-info-list">
+                <div>
+                  <span>ID Pallet</span>
+                  <b>{{ previewIdPallet }}</b>
+                </div>
+
+                <div>
+                  <span>Item No.</span>
+                  <b>{{ previewItemNo }}</b>
+                </div>
+
+                <div>
+                  <span>Item Name</span>
+                  <b>{{ previewItemName }}</b>
+                </div>
+
+                <div>
+                  <span>Location</span>
+                  <b>{{ previewLocation }}</b>
+                </div>
+
+                <div>
+                  <span>Movement</span>
+                  <b>{{ previewMovement }}</b>
+                </div>
+
+                <div>
+                  <span>Date</span>
+                  <b>{{ previewDate }}</b>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="print-side-section">
+              <h4>Before Print Checklist</h4>
+
+              <div class="print-check-list">
+                <div>
+                  <i class="fas fa-check-circle"></i>
+                  <span>ตรวจสอบ Item No. และ Item Name</span>
+                </div>
+
+                <div>
+                  <i class="fas fa-check-circle"></i>
+                  <span>ตรวจสอบ Location และ Movement</span>
+                </div>
+
+                <div>
+                  <i class="fas fa-check-circle"></i>
+                  <span>ตรวจสอบจำนวน Box เต็ม / Box เศษ</span>
+                </div>
+
+                <div>
+                  <i class="fas fa-check-circle"></i>
+                  <span>ตรวจสอบ Page ของ Label ก่อน Print</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="print-side-actions">
+              <div class="print-side-top-actions">
+                <button
+                  type="button"
+                  class="print-side-back-btn"
+                  (click)="setIssuePanel('fraction')"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                  Back
+                </button>
+            
+                <button
+                  type="button"
+                  class="print-side-home-btn"
+                  (click)="setIssuePanel('normal')"
+                >
+                  <i class="fas fa-home"></i>
+                  Home
+                </button>
+              </div>
+            </div>
+
+
+          </aside>
+        </div>
+      </div>
   </div>
 </div>

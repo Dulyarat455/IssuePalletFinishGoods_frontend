@@ -4757,3 +4757,474 @@ td small {
     width: 100%;
   }
 }
+
+/* =========================================================
+   Print Label Panel - Right Check Card Only
+   หมายเหตุ: ไม่แก้ขนาด/โครงสร้าง Label Preview เดิม
+========================================================= */
+
+.print-label-panel {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 18px;
+}
+
+/* แยก Label Preview ซ้าย + กล่องข้อมูลขวา */
+.print-label-main {
+  width: 100%;
+  max-width: 100%;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 360px !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+/* กล่อง Label Preview เดิม: ไม่แก้ขนาดด้านใน แค่กันดันกล่องขวา */
+.print-preview-left {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin-top: 0 !important;
+  overflow: auto !important;
+}
+
+/* กล่องขวามือ */
+.print-side-card {
+  width: 360px;
+  min-width: 0;
+  max-width: 100%;
+
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+
+  position: sticky;
+  top: 16px;
+}
+
+.print-side-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.print-side-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  flex: 0 0 auto;
+  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
+}
+
+.print-side-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.print-side-head span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.print-ready-box {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+  border: 1px solid rgba(20, 184, 166, 0.22);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.print-ready-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #0f766e;
+  color: #ffffff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.print-ready-box b {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.print-ready-box span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.print-side-section {
+  margin-top: 16px;
+}
+
+.print-side-section h4 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.print-info-list {
+  display: grid;
+  gap: 9px;
+}
+
+.print-info-list > div {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.print-info-list span,
+.print-summary-grid span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.print-info-list b,
+.print-summary-grid b {
+  display: block;
+  margin-top: 4px;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 950;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.print-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.print-summary-grid > div {
+  padding: 12px;
+  border-radius: 15px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.print-summary-grid > div span {
+  color: #9a3412;
+}
+
+.print-check-list {
+  display: grid;
+  gap: 8px;
+}
+
+.print-check-list > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.print-check-list i {
+  margin-top: 2px;
+  color: #16a34a;
+  flex: 0 0 auto;
+}
+
+.print-side-actions {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.print-side-back-btn,
+.print-side-main-btn {
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.print-side-back-btn {
+  border: 1px solid #dbe4ea;
+  background: #ffffff;
+  color: #334155;
+}
+
+.print-side-main-btn {
+  border: 0;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
+}
+
+.print-side-back-btn:hover,
+.print-side-main-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.print-side-main-btn:hover:not(:disabled) {
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
+}
+
+.print-side-main-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none !important;
+}
+
+@media (max-width: 768px) {
+  .print-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+
+/* =========================================================
+   Print Panel: Force Preview + Print Check Same Row
+   ใช้ flex แทน grid เพื่อไม่ให้กล่องขวาหล่นลงล่าง
+========================================================= */
+
+.print-label-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-top: 18px !important;
+  overflow: visible !important;
+}
+
+/* ตัวครอบซ้าย-ขวา */
+.print-label-main {
+  width: 100% !important;
+  max-width: 100% !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start !important;
+  gap: 18px !important;
+}
+
+/* กล่องซ้าย: Label Preview เดิม */
+.print-preview-left {
+  flex: 1 1 auto !important;
+  width: calc(100% - 758px) !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 758px) !important;
+
+  margin-top: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+/* ไม่แก้ตัว Label Preview ด้านใน แค่ให้มันเลื่อนได้ในกล่องซ้าย */
+.print-preview-left .fg-label-paper {
+  max-width: none !important;
+}
+
+/* กล่องขวา */
+.print-side-card {
+  flex: 0 0 740px !important;
+  width: 740px !important;
+  min-width: 740px !important;
+  max-width: 740px !important;
+
+  align-self: flex-start !important;
+
+  background: #ffffff;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+
+  position: sticky;
+  top: 16px;
+}
+
+/* จอเล็กจริง ๆ ค่อยให้กล่องขวาลงล่าง */
+@media (max-width: 900px) {
+  .print-label-main {
+    flex-direction: column !important;
+  }
+
+  .print-preview-left {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .print-side-card {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    position: static !important;
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Print Side Actions: Back + Home same row
+========================================================= */
+
+.print-side-top-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.print-side-home-btn {
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  border: 0;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.18);
+}
+
+.print-side-home-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(20, 184, 166, 0.24);
+}
+
+@media (max-width: 480px) {
+  .print-side-top-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+
+
+
+/* =========================================================
+   Operation Menu as Step Indicator
+   ไม่ให้กดได้ ใช้บอกสถานะปัจจุบันอย่างเดียว
+========================================================= */
+
+.step-indicator-tabs .step-indicator-item {
+  cursor: default !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+/* ยกเลิก hover แบบปุ่ม */
+.step-indicator-tabs .step-indicator-item:hover {
+  transform: none !important;
+}
+
+/* วงกลมตัวเลข */
+.step-number {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border-radius: 50% !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+  border: 2px solid #cbd5e1 !important;
+}
+
+/* Step ที่ active ให้เด่น */
+.step-indicator-item.active .step-number {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  color: #ffffff !important;
+  border-color: #fdba74 !important;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.22) !important;
+}
+
+/* Step ที่ active ให้ card เด่นขึ้น */
+.step-indicator-item.active {
+  border-color: rgba(249, 115, 22, 0.45) !important;
+  background: linear-gradient(135deg, #fff7ed, #ffffff) !important;
+}
+
+/* ตัวเลขของแต่ละ step สามารถแยกสีได้เล็กน้อย */
+.step-indicator-item.normal.active .step-number {
+  background: linear-gradient(135deg, #10b981, #14b8a6) !important;
+  border-color: #99f6e4 !important;
+}
+
+.step-indicator-item.fraction.active .step-number {
+  background: linear-gradient(135deg, #f97316, #ea580c) !important;
+  border-color: #fed7aa !important;
+}
+
+.step-indicator-item.print.active .step-number {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  border-color: #c7d2fe !important;
+}
