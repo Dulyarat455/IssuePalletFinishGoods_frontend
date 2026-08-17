@@ -1429,15 +1429,26 @@
           </div>
         </div>
 
-        <button
-          type="button"
-          class="btn issue"
-          (click)="onIssuePallet()"
-          [disabled]="!canIssue || isIssuing"
-        >
-          <i class="fas fa-print"></i>
-          {{ isIssuing ? 'Issuing...' : 'Issue & Print Label' }}
-        </button>
+            <div class="print-left-actions">
+              <button
+                type="button"
+                class="print-left-back-btn"
+                (click)="setIssuePanel('fraction')"
+              >
+                <i class="fas fa-arrow-left"></i>
+                Back
+              </button>
+            
+              <button
+                type="button"
+                class="print-left-home-btn"
+                (click)="setIssuePanel('normal')"
+              >
+                <i class="fas fa-home"></i>
+                Home
+              </button>
+            </div>
+
           </section>
 
           <!-- RIGHT : PRINT INFO / CHECK PANEL -->
@@ -1519,27 +1530,16 @@
             </div>
 
             <div class="print-side-actions">
-              <div class="print-side-top-actions">
-                <button
+                  <button
                   type="button"
-                  class="print-side-back-btn"
-                  (click)="setIssuePanel('fraction')"
+                  class="print-side-main-btn"
+                  (click)="onIssuePallet()"
+                  [disabled]="!canIssue || isIssuing"
                 >
-                  <i class="fas fa-arrow-left"></i>
-                  Back
+                  <i class="fas fa-print"></i>
+                  {{ isIssuing ? 'Issuing...' : 'Issue & Print Label' }}
                 </button>
-            
-                <button
-                  type="button"
-                  class="print-side-home-btn"
-                  (click)="setIssuePanel('normal')"
-                >
-                  <i class="fas fa-home"></i>
-                  Home
-                </button>
-              </div>
             </div>
-
 
           </aside>
         </div>

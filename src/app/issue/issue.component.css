@@ -5228,3 +5228,93 @@ td small {
   background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
   border-color: #c7d2fe !important;
 }
+
+
+
+/* =========================================================
+   Print Panel Actions
+   Left: Back + Home / Right: Print Label
+========================================================= */
+
+/* ปุ่มฝั่งซ้าย ใต้ Label Preview */
+.print-left-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.print-left-back-btn,
+.print-left-home-btn {
+  min-height: 44px;
+  border-radius: 14px;
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.print-left-back-btn {
+  border: 1px solid #dbe4ea;
+  background: #ffffff;
+  color: #334155;
+}
+
+.print-left-home-btn {
+  border: 0;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.18);
+}
+
+.print-left-back-btn:hover,
+.print-left-home-btn:hover {
+  transform: translateY(-1px);
+}
+
+.print-left-home-btn:hover {
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(20, 184, 166, 0.24);
+}
+
+/* ปุ่ม Print อยู่กล่องขวาเต็มความกว้าง */
+.print-side-actions {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.print-side-main-btn {
+  width: 100%;
+  min-height: 48px;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .print-left-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .print-left-back-btn,
+  .print-left-home-btn {
+    width: 100%;
+  }
+}
