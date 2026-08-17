@@ -621,7 +621,7 @@
         type="button"
         class="btn ghost danger"
         (click)="clearScanForm()"
-        [disabled]="isSavingScan"
+        [disabled]="!header || isEditingHeader ||isSavingScan"
       >
         Clear
       </button>
@@ -811,7 +811,7 @@
       <section
       id="fractionPanelSection"
       class="fraction-full-row"
-      *ngIf="header && !isEditingHeader && activeIssuePanel === 'fraction'"
+      *ngIf="header && activeIssuePanel === 'fraction'"
     >
 
       <!-- Main Fraction Area -->
@@ -897,7 +897,7 @@
                   type="text"
                   name="fraction_itemNo"
                   [(ngModel)]="fractionScanForm.itemNo"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('itemNo', $event)"
                 />
               </div>
@@ -910,7 +910,7 @@
                   type="text"
                   name="fraction_itemName"
                   [(ngModel)]="fractionScanForm.itemName"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('itemName', $event)"
                 />
               </div>
@@ -923,7 +923,7 @@
                   type="text"
                   name="fraction_wosNo"
                   [(ngModel)]="fractionScanForm.wosNo"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('wosNo', $event)"
                 />
               </div>
@@ -936,7 +936,7 @@
                   type="text"
                   name="fraction_dwg"
                   [(ngModel)]="fractionScanForm.dwg"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('dwg', $event)"
                 />
               </div>
@@ -949,7 +949,7 @@
                   type="text"
                   name="fraction_dieNo"
                   [(ngModel)]="fractionScanForm.dieNo"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('dieNo', $event)"
                 />
               </div>
@@ -962,7 +962,7 @@
                   type="text"
                   name="fraction_lotNo"
                   [(ngModel)]="fractionScanForm.lotNo"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('lotNo', $event)"
                 />
               </div>
@@ -975,7 +975,7 @@
                   type="number"
                   name="fraction_qty"
                   [(ngModel)]="fractionScanForm.qty"
-                  [disabled]="isSavingFractionScan || isFractionFull"
+                  [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
                   (keydown.enter)="onFractionScanEnter('qty', $event)"
                   (keydown.tab)="loopFractionFocusToFirst($event)"
                 />
@@ -990,7 +990,7 @@
                 type="button"
                 class="btn fraction-save"
                 (click)="onConfirmFractionScan()"
-                [disabled]="isSavingFractionScan || isFractionFull"
+                [disabled]="isEditingHeader || isSavingFractionScan || isFractionFull"
               >
                 <i class="fas fa-check"></i>
                 {{ isSavingFractionScan ? 'Saving...' : 'Confirm Box เศษ' }}
@@ -1000,7 +1000,7 @@
                 type="button"
                 class="btn ghost danger"
                 (click)="clearFractionScanForm()"
-                [disabled]="isSavingFractionScan"
+                [disabled]="isEditingHeader || isSavingFractionScan"
               >
                 Clear
               </button>
