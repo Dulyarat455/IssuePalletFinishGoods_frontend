@@ -428,8 +428,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   get previewEmpName(): string {
     const empNo = localStorage.getItem('finish_goods_empNo') || '';
     const name = localStorage.getItem('finish_goods_name') || '';
+    const firstName = this.getFirstNameOnly(name);
   
-    return `${empNo} ${name}`.trim() || '-';
+    return `${empNo} ${firstName}`.trim() || '-';
   }
   
   get previewDate(): string {
@@ -454,7 +455,17 @@ export class IssueComponent implements OnInit, AfterViewInit {
   get previewOqcLot(): string {
     return this.header ? this.controlLotDisplayName(this.header.controlLotId) : '-';
   }
+
+
+  get previewDieNo(): string {
+    const firstNormal = this.savedRows.find((row) => (row.dieNo || '').trim());
+    const firstFraction = this.fractionRows.find((row) => (row.dieNo || '').trim());
   
+    return firstNormal?.dieNo || firstFraction?.dieNo || '-';
+  }
+
+
+
   get previewLocation(): string {
     return this.header ? this.locationName(this.header.locationId) : '-';
   }
@@ -467,7 +478,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
     const map = new Map<
       string,
       {
-        dieNo: string;
         lotNo: string;
         dwg: string;
         fullQtyList: number[];
@@ -476,16 +486,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
     >();
   
     const addRow = (row: WosTempRow, kind: 'FULL' | 'PARTIAL') => {
-      const dieNo = (row.dieNo || '-').trim();
-      const lotNo = (row.lotNo || '-').trim();
+      const shortLotNo = this.getShortLotNo(row.lotNo || '-');
       const dwg = (row.dwg || '-').trim();
   
-      const key = `${dieNo}__${lotNo}`;
+      // Group By เฉพาะ Lot No ที่ตัดแล้ว
+      const key = shortLotNo || '-';
   
       if (!map.has(key)) {
         map.set(key, {
-          dieNo,
-          lotNo,
+          lotNo: shortLotNo || '-',
           dwg,
           fullQtyList: [],
           partialQtyList: [],
@@ -510,7 +519,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       const partialTotal = g.partialQtyList.reduce((sum, qty) => sum + qty, 0);
   
       return {
-        dieNo: g.dieNo,
+        dieNo: this.previewDieNo,
         lotNo: g.lotNo,
         dwg: g.dwg,
         fullBoxText: this.qtyMultiplyText(g.fullQtyList),
@@ -878,6 +887,38 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
     this.movementMonthOptions = options;
   }
+
+
+
+  private getFirstNameOnly(fullName: string): string {
+    return (fullName || '').trim().split(/\s+/)[0] || '';
+  }
+  
+  private getShortLotNo(lotNo: string): string {
+    const raw = (lotNo || '').trim();
+  
+    // ตำแหน่งที่ 2 ถึง 6 แบบคนอ่าน = index 1 ถึง 5
+    // L24X28ABSS -> 24X28
+    if (raw.length >= 6) {
+      return raw.substring(1, 6);
+    }
+  
+    return raw;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* =======================
       Master Data

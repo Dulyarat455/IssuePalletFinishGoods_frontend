@@ -1298,16 +1298,21 @@
                 <b>{{ currentLabelRows.length ? currentLabelRows[0].dwg : '-' }}</b>
               </div>
         
-              <div class="fg-info-row split">
-                <div>
+              <div class="fg-info-row split oqc-total-row">
+                <div class="oqc-lot-box">
                   <span>OQC Lot</span>
                   <b>{{ previewOqcLot }}</b>
                 </div>
-        
-                <div>
+              
+                <div class="total-qty-box">
                   <span>Total Qty</span>
                   <b>{{ formatNumber(labelPreviewTotalQty) }} pcs</b>
                 </div>
+              </div>
+
+              <div class="fg-info-row">
+                <span>Die No.</span>
+                <b>{{ previewDieNo }}</b>
               </div>
         
               <div class="fg-info-row">
@@ -1338,7 +1343,6 @@
             <thead>
               <tr>
                 <th class="no-col">No.</th>
-                <th>Die No.</th>
                 <th>Lot No.</th>
                 <th>Full Box</th>
                 <th>Partial Box</th>
@@ -1351,7 +1355,6 @@
             <tbody>
               <tr *ngFor="let row of currentLabelRows; let i = index">
                 <td class="text-center">{{ labelRowNoOffset + i + 1 }}</td>
-                <td>{{ row.dieNo || '-' }}</td>
                 <td>{{ row.lotNo || '-' }}</td>
                 <td>{{ row.fullBoxText || '-' }}</td>
                 <td>{{ row.partialBoxText || '-' }}</td>
@@ -1369,7 +1372,6 @@
                 <td>&nbsp;</td>
                 <td></td>
                 <td></td>
-                <td></td>
                 <td class="text-end"></td>
                 <td class="text-center"></td>
                 <td class="text-center"></td>
@@ -1378,8 +1380,14 @@
           </table>
         
           <div class="fg-label-footer">
-            Normal movement within 3 month. If over, move within :
-            <b>{{ previewMovement }}</b>
+            <div class="fg-label-footer-main">
+              Normal movement within 3 month. If over, move within :
+              <b>{{ previewMovement }}</b>
+            </div>
+          
+            <div class="fg-label-format-no">
+              Format No. QA-02-001-A0646 Rev. (C)
+            </div>
           </div>
         </div>
 

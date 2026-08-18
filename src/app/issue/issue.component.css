@@ -5318,3 +5318,143 @@ td small {
     width: 100%;
   }
 }
+
+
+
+
+
+/* =========================================================
+   Label Preview Refinement
+   Die No on top / Strong Item No + Item Name
+========================================================= */
+
+/* เน้น Item No. และ Item Name ให้ใหญ่ชัด */
+.fg-label-main-info .fg-info-row:nth-child(1) b,
+.fg-label-main-info .fg-info-row:nth-child(2) b {
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  color: #0f172a !important;
+  line-height: 1.15 !important;
+}
+
+/* label Item No / Item Name */
+.fg-label-main-info .fg-info-row:nth-child(1) span,
+.fg-label-main-info .fg-info-row:nth-child(2) span {
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  color: #334155 !important;
+}
+
+/* Die No ย้ายมาแสดงด้านบนใต้ OQC Lot */
+.die-no-highlight-row {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 6px 8px !important;
+}
+
+.die-no-highlight-row span {
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  color: #475569 !important;
+}
+
+.die-no-highlight-row b {
+  margin-top: 3px !important;
+  display: block !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  color: #111827 !important;
+  line-height: 1.15 !important;
+}
+
+/* Lot No หลังตัดแล้ว ให้ดูเด่นขึ้นในตาราง */
+.fg-label-table tbody td:nth-child(2) {
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  color: #111827 !important;
+}
+
+
+
+
+
+/* =========================================================
+   Label Preview: align OQC / Total Qty / Format No
+========================================================= */
+
+/* ให้ OQC Lot อยู่แนวเดียวกับ row อื่น */
+.oqc-total-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 220px !important;
+  align-items: center !important;
+  column-gap: 18px !important;
+}
+
+.total-qty-box {
+  display: grid !important;
+  grid-template-columns: auto auto !important;
+  align-items: center !important;
+  justify-self: start !important;
+  column-gap: 10px !important;
+  white-space: nowrap !important;
+}
+
+.oqc-lot-box span {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.oqc-lot-box b {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Total Qty ให้อยู่บรรทัดเดียวกัน */
+.total-qty-box {
+  display: grid !important;
+  grid-template-columns: auto auto !important;
+  align-items: center !important;
+  column-gap: 10px !important;
+  white-space: nowrap !important;
+}
+
+.total-qty-box span {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.total-qty-box b {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Footer ล่างสุด */
+.fg-label-footer {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  column-gap: 16px !important;
+
+  padding-top: 8px !important;
+  font-size: 12px !important;
+  color: #475569 !important;
+}
+
+/* ข้อความ Normal movement */
+.fg-label-footer-main {
+  min-width: 0 !important;
+  line-height: 1.3 !important;
+}
+
+/* Format No. อยู่มุมขวาล่าง และต่ำกว่านิดนึง */
+.fg-label-format-no {
+  align-self: end !important;
+  justify-self: end !important;
+
+  transform: translateY(8px);
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+}
