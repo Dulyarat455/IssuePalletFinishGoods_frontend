@@ -1541,11 +1541,11 @@
                   <button
                   type="button"
                   class="print-side-main-btn"
-                  (click)="onIssuePallet()"
-                  [disabled]="!canIssue || isIssuing"
+                  (click)="printFullLabel()"
+                  [disabled]="isPrinting || !header"
                 >
                   <i class="fas fa-print"></i>
-                  {{ isIssuing ? 'Issuing...' : 'Issue & Print Label' }}
+                  {{ isPrinting ? 'Issuing...' : 'Issue & Print Label' }}
                 </button>
             </div>
 

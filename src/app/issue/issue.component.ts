@@ -240,6 +240,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   isDeletingFractionBox = false;
 
+  isPrinting = false;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -2793,4 +2795,42 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         });
     });
   }
+
+
+  printFullLabel(): void {
+    if (!this.header?.id) {
+      Swal.fire('Warning', 'ไม่พบ Header สำหรับ Print', 'warning');
+      return;
+    }
+  
+    this.isPrinting = true as any;
+  
+    this.http.post(
+      config.apiServer + '/api/issue/printFullLabel',
+      {
+        headerId: this.header.id,
+        labelType: this.labelStockType || 'FG'
+      },
+      { responseType: 'blob' }
+    ).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+  
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 10000);
+  
+        this.isPrinting = false as any;
+      },
+      error: (err) => {
+        this.isPrinting = false as any;
+        Swal.fire('Error', err?.error?.message || 'Print Full Label failed', 'error');
+      }
+    });
+  }
+
+
+
+
 }
