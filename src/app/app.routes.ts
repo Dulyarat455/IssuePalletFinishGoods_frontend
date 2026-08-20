@@ -5,6 +5,7 @@ import { IssueComponent } from './issue/issue.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ItemMasterComponent } from './item-master/item-master.component';
+import { LayOutComponent } from './lay-out/lay-out.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,11 @@ export const routes: Routes = [
   {
     path: 'itemMaster',
     component: ItemMasterComponent
+  },
+
+  {
+    path: 'layOut',
+    component: LayOutComponent
   },
 
   {

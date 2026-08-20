@@ -1,0 +1,881 @@
+/* =========================================================
+   PAGE
+========================================================= */
+
+:host {
+    display: block;
+    width: 100%;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  .layout-page {
+    min-height: 100vh;
+    padding: 20px;
+    background: #f4f6f9;
+    color: #1f2937;
+    font-family: Arial, sans-serif;
+  }
+  
+  
+  /* =========================================================
+     HEADER
+  ========================================================= */
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  
+    margin-bottom: 18px;
+  }
+  
+  .page-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111827;
+  }
+  
+  .page-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  
+  
+  /* =========================================================
+     LEGEND
+  ========================================================= */
+  
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+  
+    padding: 10px 14px;
+  
+    background: #ffffff;
+  
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .legend-color {
+    width: 16px;
+    height: 16px;
+  
+    display: inline-block;
+  
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  
+    border-radius: 3px;
+  }
+  
+  .legend-color.lam {
+    background: #ffd4bb;
+  }
+  
+  .legend-color.gen-stator-2nd {
+    background: #f5a7ed;
+  }
+  
+  .legend-color.gen-stator-pc {
+    background: #c8ff9e;
+  }
+  
+  .legend-color.occupied {
+    background: #374151;
+  }
+  
+  
+  /* =========================================================
+     SUMMARY
+  ========================================================= */
+  
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  
+    gap: 14px;
+  
+    margin-bottom: 18px;
+  }
+  
+  .summary-card {
+    background: #ffffff;
+  
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+  
+    padding: 14px 16px;
+  
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  
+  .summary-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+  
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  
+  .summary-value {
+    margin-top: 7px;
+  
+    font-size: 25px;
+    line-height: 1;
+  
+    font-weight: 800;
+    color: #111827;
+  }
+  
+  
+  /* =========================================================
+     MAIN
+  ========================================================= */
+  
+  .main-grid {
+    display: grid;
+  
+    grid-template-columns:
+      minmax(680px, 1.7fr)
+      minmax(390px, 0.9fr);
+  
+    gap: 16px;
+  
+    align-items: start;
+  }
+  
+  
+  /* =========================================================
+     COMMON PANEL
+  ========================================================= */
+  
+  .rack-panel,
+  .detail-panel {
+    background: #ffffff;
+  
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+  
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .rack-panel {
+    overflow: hidden;
+  }
+  
+  .detail-panel {
+    padding: 16px;
+  
+    min-height: 600px;
+  }
+  
+  
+  /* =========================================================
+     PANEL HEADER
+  ========================================================= */
+  
+  .panel-header {
+    padding: 14px 16px;
+  
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .panel-title {
+    font-size: 17px;
+    font-weight: 800;
+  }
+  
+  .panel-description {
+    margin-top: 2px;
+  
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  
+  /* =========================================================
+     RACK SCROLL
+  ========================================================= */
+  
+  .rack-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+  
+    padding: 14px;
+  
+    max-height: 720px;
+  }
+  
+  
+  /* =========================================================
+     RACK LAYOUT
+  ========================================================= */
+  
+  .rack-layout {
+    display: flex;
+    align-items: flex-start;
+  
+    gap: 8px;
+  
+    min-width: max-content;
+  }
+  
+  .rack-block {
+    flex: 0 0 auto;
+  }
+  
+  
+  /* =========================================================
+     RACK TITLE
+  ========================================================= */
+  
+  .rack-title {
+    height: 28px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    margin-bottom: 5px;
+  
+    border: 1px solid #334155;
+    border-radius: 3px;
+  
+    font-size: 13px;
+    font-weight: 800;
+  }
+  
+  .rack-title.lam {
+    background: #ffd4bb;
+  }
+  
+  .rack-title.gen-stator-2nd {
+    background: #f5a7ed;
+  }
+  
+  .rack-title.gen-stator-pc {
+    background: #c8ff9e;
+  }
+  
+  
+  /* =========================================================
+     RACK BODY
+  ========================================================= */
+  
+  .rack-body {
+    display: flex;
+    flex-direction: column;
+  
+    gap: 4px;
+  }
+  
+  .rack-row {
+    display: flex;
+  
+    gap: 4px;
+  }
+  
+  
+  /* =========================================================
+     SLOT
+  ========================================================= */
+  
+  .rack-slot {
+    width: 46px;
+    height: 32px;
+  
+    position: relative;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding: 0;
+  
+    border: 1px solid #64748b;
+    border-radius: 3px;
+  
+    cursor: pointer;
+  
+    font-size: 11px;
+    font-weight: 700;
+  
+    color: #111827;
+  
+    transition:
+      transform 0.1s ease,
+      border-color 0.1s ease,
+      box-shadow 0.1s ease;
+  }
+  
+  .rack-slot.lam {
+    background: #fff1e8;
+  }
+  
+  .rack-slot.gen-stator-2nd {
+    background: #fff0fd;
+  }
+  
+  .rack-slot.gen-stator-pc {
+    background: #efffe3;
+  }
+  
+  .rack-slot:hover {
+    transform: translateY(-1px);
+  
+    border-color: #111827;
+  
+    box-shadow:
+      0 2px 5px rgba(0, 0, 0, 0.13);
+  
+    z-index: 2;
+  }
+  
+  .rack-slot.has-inventory {
+    border: 2px solid #374151;
+  
+    font-weight: 800;
+  }
+  
+  .rack-slot.selected {
+    outline: 3px solid rgba(37, 99, 235, 0.28);
+  
+    border-color: #2563eb;
+  
+    transform: translateY(-1px);
+  }
+  
+  .slot-code {
+    line-height: 1;
+  }
+  
+  
+  /* =========================================================
+     PALLET COUNT BADGE
+  ========================================================= */
+  
+  .pallet-count {
+    position: absolute;
+  
+    top: -7px;
+    right: -6px;
+  
+    min-width: 17px;
+    height: 17px;
+  
+    padding: 0 4px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    border-radius: 10px;
+  
+    background: #1f2937;
+    color: #ffffff;
+  
+    font-size: 9px;
+    font-weight: 800;
+  
+    border: 2px solid #ffffff;
+  }
+  
+  
+  /* =========================================================
+     EMPTY SELECT
+  ========================================================= */
+  
+  .empty-selection {
+    min-height: 540px;
+  
+    display: flex;
+    flex-direction: column;
+  
+    align-items: center;
+    justify-content: center;
+  
+    text-align: center;
+  
+    color: #6b7280;
+  }
+  
+  .empty-icon {
+    font-size: 52px;
+    line-height: 1;
+    color: #cbd5e1;
+  }
+  
+  .empty-title {
+    margin-top: 16px;
+  
+    color: #374151;
+  
+    font-size: 18px;
+    font-weight: 800;
+  }
+  
+  .empty-text {
+    max-width: 270px;
+  
+    margin-top: 7px;
+  
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  
+  /* =========================================================
+     SELECTED HEADER
+  ========================================================= */
+  
+  .selected-header {
+    display: flex;
+  
+    justify-content: space-between;
+    align-items: center;
+  
+    gap: 16px;
+  
+    padding-bottom: 13px;
+  
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .selected-label {
+    font-size: 11px;
+  
+    font-weight: 700;
+  
+    color: #6b7280;
+  
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  
+  .selected-code {
+    margin-top: 4px;
+  
+    font-size: 23px;
+    font-weight: 900;
+  
+    color: #111827;
+  }
+  
+  .slot-state {
+    padding: 6px 10px;
+  
+    border-radius: 20px;
+  
+    background: #dcfce7;
+    color: #166534;
+  
+    font-size: 11px;
+    font-weight: 800;
+  }
+  
+  .slot-state.empty {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  
+  /* =========================================================
+     SLOT SUMMARY
+  ========================================================= */
+  
+  .slot-summary {
+    display: grid;
+  
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  
+    gap: 7px;
+  
+    padding: 12px 0;
+  }
+  
+  .slot-summary-item {
+    padding: 9px;
+  
+    background: #f8fafc;
+  
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+  
+    text-align: center;
+  }
+  
+  .slot-summary-item span {
+    display: block;
+  
+    font-size: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .slot-summary-item strong {
+    display: block;
+  
+    margin-top: 3px;
+  
+    font-size: 16px;
+  
+    color: #111827;
+  }
+  
+  
+  /* =========================================================
+     EMPTY SLOT
+  ========================================================= */
+  
+  .slot-empty-message {
+    min-height: 350px;
+  
+    display: flex;
+    flex-direction: column;
+  
+    align-items: center;
+    justify-content: center;
+  
+    gap: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .empty-box-icon {
+    font-size: 44px;
+  
+    color: #d1d5db;
+  }
+  
+  
+  /* =========================================================
+     SECTION
+  ========================================================= */
+  
+  .section-title-row {
+    display: flex;
+  
+    justify-content: space-between;
+    align-items: center;
+  
+    gap: 10px;
+  
+    margin-top: 6px;
+    margin-bottom: 8px;
+  }
+  
+  .section-title {
+    font-size: 13px;
+    font-weight: 800;
+  
+    color: #374151;
+  }
+  
+  .section-count {
+    font-size: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .label-section,
+  .box-section {
+    margin-top: 16px;
+  }
+  
+  
+  /* =========================================================
+     PALLET
+  ========================================================= */
+  
+  .pallet-list {
+    display: flex;
+  
+    gap: 8px;
+  
+    overflow-x: auto;
+  
+    padding-bottom: 3px;
+  }
+  
+  .pallet-card {
+    min-width: 185px;
+  
+    padding: 10px 11px;
+  
+    display: flex;
+  
+    justify-content: space-between;
+    align-items: center;
+  
+    gap: 10px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+  
+    background: #ffffff;
+  
+    cursor: pointer;
+  
+    text-align: left;
+  }
+  
+  .pallet-card:hover {
+    border-color: #6b7280;
+  }
+  
+  .pallet-card.active {
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+  }
+  
+  .pallet-id {
+    font-size: 14px;
+    font-weight: 800;
+  
+    color: #111827;
+  }
+  
+  .pallet-sub {
+    margin-top: 3px;
+  
+    font-size: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .pallet-status {
+    padding: 4px 7px;
+  
+    border-radius: 20px;
+  
+    background: #dcfce7;
+    color: #166534;
+  
+    font-size: 9px;
+    font-weight: 800;
+  }
+  
+  .pallet-status.partial {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  
+  /* =========================================================
+     LABEL
+  ========================================================= */
+  
+  .label-list {
+    display: grid;
+  
+    grid-template-columns:
+      repeat(1, minmax(0, 1fr));
+  
+    gap: 8px;
+  }
+  
+  .label-card {
+    width: 100%;
+  
+    padding: 11px 12px;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+  
+    background: #ffffff;
+  
+    cursor: pointer;
+  
+    text-align: left;
+  }
+  
+  .label-card:hover {
+    border-color: #6b7280;
+  }
+  
+  .label-card.active {
+    border: 2px solid #2563eb;
+  
+    background: #f8fbff;
+  }
+  
+  .label-top {
+    display: flex;
+  
+    justify-content: space-between;
+    align-items: flex-start;
+  
+    gap: 14px;
+  }
+  
+  .label-id {
+    font-size: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .item-no {
+    margin-top: 3px;
+  
+    font-size: 16px;
+    font-weight: 900;
+  
+    color: #111827;
+  }
+  
+  .label-qty {
+    font-size: 18px;
+    font-weight: 900;
+  
+    color: #111827;
+  }
+  
+  .item-name {
+    margin-top: 6px;
+  
+    font-size: 12px;
+  
+    color: #374151;
+  }
+  
+  .label-meta {
+    display: flex;
+  
+    flex-wrap: wrap;
+  
+    gap: 6px 12px;
+  
+    margin-top: 9px;
+  
+    padding-top: 8px;
+  
+    border-top: 1px solid #e5e7eb;
+  
+    font-size: 10px;
+  
+    color: #6b7280;
+  }
+  
+  .label-meta strong {
+    color: #374151;
+  
+    margin-left: 3px;
+  }
+  
+  
+  /* =========================================================
+     BOX TABLE
+  ========================================================= */
+  
+  .box-table-wrap {
+    width: 100%;
+  
+    overflow-x: auto;
+  
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+  
+  .box-table {
+    width: 100%;
+  
+    border-collapse: collapse;
+  
+    font-size: 11px;
+  }
+  
+  .box-table th {
+    padding: 8px;
+  
+    background: #f8fafc;
+  
+    border-bottom: 1px solid #d1d5db;
+  
+    color: #4b5563;
+  
+    text-align: left;
+  
+    font-weight: 800;
+  }
+  
+  .box-table td {
+    padding: 8px;
+  
+    border-bottom: 1px solid #e5e7eb;
+  
+    color: #374151;
+  }
+  
+  .box-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  
+  .box-no {
+    font-weight: 700;
+  
+    color: #111827 !important;
+  }
+  
+  .qty-column {
+    text-align: right !important;
+  }
+  
+  
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+  
+  @media (max-width: 1200px) {
+  
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .detail-panel {
+      min-height: auto;
+    }
+  
+  }
+  
+  
+  @media (max-width: 760px) {
+  
+    .layout-page {
+      padding: 10px;
+    }
+  
+    .page-header {
+      flex-direction: column;
+    }
+  
+    .summary-grid {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+    .slot-summary {
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    }
+  
+  }

@@ -1,12 +1,12 @@
-/* =========================
-   Issue Pallet FG UI
-   Theme: FG Warehouse / Label
-   Responsive + Sidebar Friendly
-========================= */
+/* =========================================================
+   Issue Pallet FG UI - Clean CSS
+   Scope: issue.component.html
+   Updated: 2026-08-19
+========================================================= */
 
-/* =========================
-   Page
-========================= */
+/* =========================================================
+   01) Page / Base
+========================================================= */
 
 .pallet-page {
   min-height: 100vh;
@@ -25,9 +25,9 @@
   box-sizing: border-box;
 }
 
-/* =========================
-   Hero
-========================= */
+/* =========================================================
+   02) Hero
+========================================================= */
 
 .page-hero {
   width: 100%;
@@ -93,22 +93,26 @@
   font-weight: 950;
 }
 
-/* =========================
-   Main Layout
-========================= */
+/* =========================================================
+   03) Layout / Cards
+========================================================= */
 
 .layout-grid {
   width: 100%;
   max-width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) !important;
   gap: 18px;
   align-items: start;
   overflow-x: hidden;
 }
 
 .left-panel,
-.right-panel {
+.right-panel,
+.fraction-full-row,
+.preview-bottom-card,
+.print-label-panel {
+  grid-column: 1 / -1;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -121,30 +125,17 @@
   gap: 18px;
 }
 
-/* ใช้ 2 column เฉพาะจอกว้างมากจริง ๆ */
-/* @media (min-width: 1500px) {
-  .layout-grid {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  }
-} */
-
-/* ถ้าจอไม่กว้างพอ หรือเปิด sidebar แล้วพื้นที่ลด ให้เป็น 1 column */
-@media (max-width: 1499px) {
-  .layout-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* =========================
-   Cards
-========================= */
-
 .form-card,
 .summary-card,
 .scan-card,
 .preview-card,
 .table-card,
-.loading-card {
+.loading-card,
+.scan-list-card,
+.fraction-scan-card-wide,
+.fraction-list-card-wide,
+.issue-menu-panel,
+.print-side-card {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -153,7 +144,6 @@
   border-radius: 18px;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
   padding: 18px;
-  overflow: hidden;
 }
 
 .scan-card,
@@ -170,9 +160,13 @@
   gap: 10px;
 }
 
-/* =========================
-   Section Head
-========================= */
+.preview-bottom-card {
+  margin-top: 0;
+}
+
+/* =========================================================
+   04) Shared Head / Forms / Buttons
+========================================================= */
 
 .section-head {
   display: flex;
@@ -203,15 +197,19 @@
   font-weight: 700;
 }
 
-.head-actions {
+.head-actions,
+.form-actions,
+.scan-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-/* =========================
-   Header Form
-========================= */
+.form-actions,
+.scan-actions {
+  margin-top: 16px;
+}
 
 .header-form {
   margin: 0;
@@ -223,6 +221,14 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.header-form .form-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.header-form .item-search {
+  grid-column: span 2;
 }
 
 .form-field {
@@ -264,6 +270,137 @@
   background: #f5f7fa;
   color: #64748b;
   cursor: not-allowed;
+}
+
+.btn {
+  min-height: 42px;
+  border: 0;
+  border-radius: 14px;
+  padding: 0 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #16a34a, #14b8a6);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
+}
+
+.btn.scan {
+  height: 54px;
+  background: #172033;
+  color: #ffffff;
+  padding: 0 20px;
+}
+
+.btn.issue {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 50px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-size: 15px;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.2);
+}
+
+.btn.ghost {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #dbe4ea;
+}
+
+.btn.ghost.danger {
+  color: #b91c1c;
+  background: #fff7f7;
+  border-color: #fecaca;
+}
+
+/* =========================================================
+   05) Header Summary / Header Form Extra
+========================================================= */
+
+.summary-item {
+  padding: 13px 14px;
+  border-radius: 16px;
+  background: #f8fffb;
+  border: 1px solid rgba(20, 184, 166, 0.13);
+  min-width: 0;
+}
+
+.summary-item.wide {
+  grid-column: 1 / -1;
+}
+
+.summary-item span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.summary-item b {
+  display: block;
+  margin-top: 5px;
+  color: #172033;
+  font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.label-form-head {
+  align-items: flex-start;
+}
+
+.label-type-box {
+  margin-left: auto;
+  min-width: 130px;
+}
+
+.label-type-box label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.label-type-select {
+  width: 130px;
+  height: 42px;
+  border: 1px solid #99f6e4;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f766e;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 950;
+  outline: none;
+}
+
+.label-type-select:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
 }
 
 .item-search {
@@ -311,49 +448,201 @@
   font-size: 12px;
 }
 
-.form-actions,
-.scan-actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.box-plan-field .control {
+  font-weight: 950;
+  color: #0f172a;
 }
 
-/* =========================
-   Summary
-========================= */
+.total-box-auto-field {
+  grid-column: span 2;
+}
 
-.summary-item {
-  padding: 13px 14px;
+.total-box-auto-input {
+  background: #ecfdf5 !important;
+  border-color: rgba(20, 184, 166, 0.35) !important;
+  color: #047857 !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+
+.auto-total-note {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   06) Operation Step Indicator
+========================================================= */
+
+.issue-menu-panel {
+  background: linear-gradient(135deg, #ffffff, #f8fffb);
+}
+
+.issue-menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.issue-menu-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.issue-menu-head span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.issue-menu-current {
+  min-width: 170px;
+  padding: 10px 14px;
   border-radius: 16px;
-  background: #f8fffb;
-  border: 1px solid rgba(20, 184, 166, 0.13);
+  background: #ecfdf5;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+}
+
+.issue-menu-current span {
+  margin: 0;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.issue-menu-current b {
+  display: block;
+  margin-top: 3px;
+  color: #064e3b;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.issue-menu-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.issue-menu-tab {
+  min-width: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-indicator-tabs .step-indicator-item {
+  cursor: default !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+.step-number,
+.issue-menu-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1;
+  background: #e2e8f0;
+  color: #475569;
+  border: 2px solid #cbd5e1;
+}
+
+.issue-menu-text {
   min-width: 0;
 }
 
-.summary-item.wide {
-  grid-column: 1 / -1;
+.issue-menu-text b {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
 }
 
-.summary-item span {
+.issue-menu-text span {
   display: block;
+  margin-top: 3px;
   color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
-.summary-item b {
-  display: block;
-  margin-top: 5px;
-  color: #172033;
-  font-size: 14px;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+.issue-menu-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
 }
 
-/* =========================
-   QR Scan
-========================= */
+.step-indicator-item.active {
+  border-color: rgba(249, 115, 22, 0.45);
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
+}
+
+.step-indicator-item.normal.active .step-number {
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  border-color: #99f6e4;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.22);
+}
+
+.step-indicator-item.fraction.active .step-number {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-color: #fed7aa;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.22);
+}
+
+.step-indicator-item.print.active .step-number {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-color: #c7d2fe;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
+}
+
+/* =========================================================
+   07) Scan Box เต็ม
+========================================================= */
+
+.scan-and-list-row {
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.scan-and-list-row .scan-card,
+.scan-and-list-row .scan-list-card {
+  margin-top: 0;
+  height: 100%;
+  align-self: stretch;
+}
 
 .scan-badge {
   display: inline-flex;
@@ -375,52 +664,66 @@
   border-color: rgba(37, 99, 235, 0.22);
 }
 
-.qr-box {
-  display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) auto;
-  gap: 10px;
+.normal-plan-mini {
+  margin-top: 10px;
+  display: inline-flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
-  border: 1px dashed rgba(15, 118, 110, 0.38);
-  margin-bottom: 16px;
-  min-width: 0;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  color: #047857;
 }
 
-.qr-box.disabled {
-  filter: grayscale(0.35);
-  opacity: 0.72;
+.normal-plan-mini span,
+.normal-plan-mini b {
+  margin: 0 !important;
+  color: #047857 !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
 }
 
-.qr-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  background: #0f766e;
-  color: #ffffff;
+.normal-scan-locked-state,
+.fraction-empty-state {
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #334155;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.normal-scan-locked-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 14px;
+  background: #e0f2fe;
+  color: #0369a1;
   display: grid;
   place-items: center;
-  font-size: 24px;
-  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.18);
 }
 
-.qr-input {
-  width: 100%;
-  min-width: 0;
-  height: 54px;
-  border: 0;
-  border-radius: 16px;
-  padding: 0 14px;
-  font-size: 16px;
-  font-weight: 900;
-  color: #172033;
-  outline: none;
-  background: #ffffff;
+.normal-scan-locked-state b,
+.fraction-empty-state b {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
 }
 
-.qr-input:focus {
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.16);
+.normal-scan-locked-state span,
+.fraction-empty-state span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .note-box {
@@ -434,9 +737,578 @@
   line-height: 1.55;
 }
 
-/* =========================
-   Label Preview
-========================= */
+.scan-complete-card,
+.fraction-complete-wide {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  margin-bottom: 16px;
+}
+
+.complete-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 16px;
+  background: #10b981;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+}
+
+.scan-complete-card h3 {
+  margin: 0 0 4px;
+  color: #064e3b;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.scan-complete-card p,
+.fraction-complete-wide span {
+  margin: 0;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.complete-summary {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.complete-summary span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+/* Normal scanned list */
+.scan-list-header,
+.fraction-list-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.scan-list-title,
+.fraction-list-title h3 {
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 950;
+  margin: 0;
+}
+
+.scan-list-subtitle,
+.fraction-list-title span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scan-list-actions,
+.fraction-list-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clear-all-btn,
+.fraction-clear-btn {
+  min-height: 36px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  background: #fff7f7;
+  color: #b91c1c;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.clear-all-btn:disabled,
+.fraction-clear-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.normal-scan-summary-grid,
+.fraction-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.normal-scan-summary-box,
+.fraction-summary-box {
+  padding: 11px 12px;
+  border-radius: 15px;
+  background: #f8fffb;
+  border: 1px solid rgba(20, 184, 166, 0.14);
+}
+
+.normal-scan-summary-box span,
+.fraction-summary-box span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.normal-scan-summary-box b,
+.fraction-summary-box b {
+  display: block;
+  margin-top: 4px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.scan-list-table-wrap,
+.fraction-table-wide {
+  width: 100%;
+  max-height: 370px;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scan-list-table,
+.fraction-list-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+
+.scan-list-table th,
+.scan-list-table td,
+.fraction-list-table th,
+.fraction-list-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #eef2f7;
+  color: #172033;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.scan-list-table th,
+.fraction-list-table th,
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0fdfa;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 950;
+  text-align: left;
+  border-bottom: 1px solid #ccfbf1;
+  white-space: nowrap;
+}
+
+.fraction-list-table th {
+  background: #fff7ed;
+  color: #c2410c;
+  border-bottom-color: #fed7aa;
+}
+
+.th-sub,
+.cell-sub {
+  display: block;
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cell-main {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.cell-sub-name {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-index,
+.col-index {
+  width: 42px;
+  text-align: center;
+}
+
+.cell-qty,
+.col-qty {
+  width: 120px;
+  text-align: right;
+}
+
+.cell-action,
+.col-action {
+  width: 48px;
+  text-align: center;
+}
+
+.empty-cell,
+.empty {
+  text-align: center;
+  color: #0f172a;
+  padding: 26px !important;
+  font-weight: 900;
+}
+
+.delete-row-btn,
+.row-delete,
+.fraction-row-delete-btn {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #dc2626;
+  cursor: pointer;
+}
+
+.delete-row-btn:hover,
+.row-delete:hover,
+.fraction-row-delete-btn:hover {
+  background: #fecaca;
+}
+
+.normal-edit-qty-wrap,
+.fraction-edit-qty-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.normal-edit-qty-input,
+.fraction-edit-qty-input {
+  width: 76px;
+  height: 32px;
+  border: 1px solid #d8e3e6;
+  border-radius: 10px;
+  padding: 4px 8px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.normal-edit-save-btn,
+.fraction-edit-save-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: #dcfce7;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+.normal-edit-save-btn:disabled,
+.fraction-edit-save-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.normal-next-panel-box,
+.fraction-next-panel-box {
+  margin-top: 14px;
+  padding: 18px 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.normal-next-panel-info,
+.fraction-next-panel-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.normal-next-panel-info span,
+.fraction-next-panel-info span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fraction-next-panel-info span {
+  color: #9a3412;
+}
+
+.normal-next-panel-info b,
+.fraction-next-panel-info b {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.normal-next-panel-btn,
+.fraction-next-panel-btn {
+  min-width: 118px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 16px 0 18px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.normal-next-panel-btn i,
+.fraction-next-panel-btn i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+}
+
+.normal-next-panel-btn:hover,
+.fraction-next-panel-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
+}
+
+/* =========================================================
+   08) Scan Box เศษ
+========================================================= */
+
+#fractionPanelSection {
+  scroll-margin-top: 90px;
+}
+
+.fraction-wide-layout {
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.fraction-scan-card-wide,
+.fraction-list-card-wide {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-self: stretch;
+}
+
+.fraction-card-title,
+.fraction-scan-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.fraction-card-title h3,
+.fraction-scan-top h4 {
+  margin: 0;
+  color: #9a3412;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.fraction-card-title span,
+.fraction-scan-top span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fraction-header-summary-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+.fraction-header-summary-box span {
+  display: block;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fraction-header-summary-box b {
+  display: block;
+  margin-top: 5px;
+  color: #7c2d12;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.fraction-divider {
+  height: 1px;
+  margin: 20px 0;
+  background: #ffedd5;
+}
+
+.fraction-empty-state i {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 14px;
+  background: #ffedd5;
+  color: #c2410c;
+  display: grid;
+  place-items: center;
+}
+
+.scan-badge.fraction,
+.fraction-count-pill {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.scan-badge.fraction.full,
+.fraction-count-pill.full {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.fraction-scan-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fraction-qty-field {
+  grid-column: span 1;
+}
+
+.fraction-save {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+}
+
+.fraction-save:hover:not(:disabled) {
+  filter: brightness(0.97);
+}
+
+.fraction-back-panel-box {
+  margin-top: 14px;
+  padding: 18px 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.fraction-back-panel-btn {
+  min-height: 44px;
+  border: 1px solid #dbe4ea;
+  border-radius: 999px;
+  padding: 0 16px 0 14px;
+  background: #ffffff;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.fraction-back-panel-btn i {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12px;
+}
+
+.fraction-back-panel-btn span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.fraction-back-panel-btn span b {
+  font-size: 13px;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.fraction-back-panel-btn:hover {
+  transform: translateY(-1px);
+  background: #f8fafc;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+}
+
+.fraction-next-panel-box {
+  border-top-color: #fed7aa;
+}
+
+/* =========================================================
+   09) Label Preview
+========================================================= */
 
 .preview-card {
   background: #ffffff;
@@ -466,60 +1338,309 @@
   word-break: break-word;
 }
 
-.mini-qr {
-  flex: 0 0 auto;
-  width: 58px;
-  height: 58px;
-  border-radius: 8px;
-  background:
-    linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px,
-    linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px,
-    #ffffff;
-  border: 6px solid #ffffff;
-  outline: 1px solid #cbd5e1;
+.label-preview-nav {
+  align-items: center;
 }
 
-.label-preview {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  border: 2px solid #172033;
+.label-page-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-page-nav button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dbe4ea;
+  border-radius: 12px;
   background: #ffffff;
+  color: #0f766e;
+  cursor: pointer;
+}
+
+.label-page-nav button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.label-page-nav b {
+  min-width: 48px;
+  text-align: center;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.fg-label-paper {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #111827;
   padding: 14px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px;
+  color: #111827;
+  font-family: Arial, sans-serif;
   overflow: hidden;
 }
 
-.label-row {
+.fg-label-top {
+  display: grid;
+  grid-template-columns: 185px minmax(0, 1fr) 190px;
+  gap: 8px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.fg-label-barcode-block,
+.fg-label-id-block,
+.fg-label-main-info {
   min-width: 0;
-  min-height: 54px;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 6px 0;
 }
 
-.label-row.wide {
-  grid-column: 1 / -1;
+.fake-barcode {
+  width: 100%;
+  background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 4px, #111 4px 5px, transparent 5px 8px, #111 8px 11px, transparent 11px 14px);
+  border: 1px solid #ffffff;
 }
 
-.label-row span {
-  display: block;
-  font-size: 11px;
-  font-weight: 950;
-  color: #475569;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+.main-item-barcode {
+  height: 62px;
 }
 
-.label-row b {
-  display: block;
-  margin-top: 5px;
+.fg-label-left-info {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.fg-label-left-info div,
+.fg-info-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+.fg-label-left-info span,
+.fg-info-row span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.fg-label-left-info b,
+.fg-info-row b {
   color: #111827;
   font-size: 14px;
+  font-weight: 500;
   word-break: break-word;
-  overflow-wrap: anywhere;
 }
+
+.fg-label-main-info {
+  display: grid;
+  gap: 5px;
+}
+
+.fg-info-row.split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.fg-info-row.split > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+
+/* Strong Item No / Item Name */
+.fg-label-main-info .fg-info-row:nth-child(1) b,
+.fg-label-main-info .fg-info-row:nth-child(2) b {
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  color: #0f172a !important;
+  line-height: 1.15 !important;
+}
+
+.fg-label-main-info .fg-info-row:nth-child(1) span,
+.fg-label-main-info .fg-info-row:nth-child(2) span {
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  color: #334155 !important;
+}
+
+.oqc-total-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 190px !important;
+  align-items: center !important;
+  column-gap: 14px !important;
+}
+
+.oqc-lot-box {
+  display: grid !important;
+  grid-template-columns: 86px minmax(0, 1fr) !important;
+  align-items: center !important;
+  column-gap: 10px !important;
+}
+
+.total-qty-box {
+  display: grid !important;
+  grid-template-columns: auto auto !important;
+  align-items: center !important;
+  justify-self: start !important;
+  column-gap: 8px !important;
+  white-space: nowrap !important;
+}
+
+.oqc-lot-box span,
+.oqc-lot-box b,
+.total-qty-box span,
+.total-qty-box b {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.die-no-highlight-row {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 6px 8px !important;
+}
+
+.die-no-highlight-row span {
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  color: #475569 !important;
+}
+
+.die-no-highlight-row b {
+  margin-top: 3px !important;
+  display: block !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  color: #111827 !important;
+  line-height: 1.15 !important;
+}
+
+.fg-label-id-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.fg-label-type {
+  color: #000000;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1;
+  text-align: right;
+  margin-bottom: 86px;
+}
+
+.pallet-id-zone {
+  width: 170px;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+.pallet-id-barcode {
+  height: 28px;
+}
+
+.fg-label-id-line {
+  margin-top: 3px;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.fake-qr {
+  background: linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px, linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px, #ffffff;
+  border: 4px solid #ffffff;
+  outline: 1px solid #111827;
+}
+
+.table-qr {
+  width: 48px;
+  height: 48px;
+  margin: 4px auto;
+}
+
+.fg-label-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.fg-label-table th,
+.fg-label-table td {
+  border: 1px solid #111827;
+  padding: 5px 7px;
+  color: #000000;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.fg-label-table th {
+  background: #eeeeee;
+  text-align: center;
+  font-weight: 500;
+}
+
+.fg-label-table tbody tr {
+  height: 78px;
+}
+
+.fg-label-table .no-col {
+  width: 38px;
+}
+
+.fg-label-table tbody td:nth-child(2) {
+  font-size: 16px;
+  font-weight: 950;
+  color: #111827;
+}
+
+.fg-label-footer {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  column-gap: 16px !important;
+  padding: 7px 8px 0 !important;
+  color: #6b7280 !important;
+  font-size: 12px !important;
+}
+
+.fg-label-footer b {
+  color: #111827;
+  font-weight: 700;
+}
+
+.fg-label-footer-main {
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.fg-label-format-no {
+  align-self: end;
+  justify-self: end;
+  transform: translateY(8px);
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.text-end {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* =========================================================
+   10) Progress
+========================================================= */
 
 .progress-box {
   margin-top: 16px;
@@ -549,2754 +1670,11 @@
   transition: width 0.2s ease;
 }
 
-/* =========================
-   Scanned WOS Table
-========================= */
-
-.table-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.table-wrap {
-  width: 100%;
-  max-width: 100%;
-  max-height: 460px;
-  overflow-x: auto;
-  overflow-y: auto;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  -webkit-overflow-scrolling: touch;
-}
-
-.table-wrap table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #ffffff;
-}
-
-thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #f0fdfa;
-  color: #0f766e;
-  font-size: 12px;
-  font-weight: 950;
-  text-align: left;
-  padding: 12px;
-  border-bottom: 1px solid #ccfbf1;
-  white-space: nowrap;
-}
-
-tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #eef2f7;
-  color: #172033;
-  font-size: 13px;
-  vertical-align: top;
-}
-
-tbody tr:hover {
-  background: #f8fffb;
-}
-
-td small {
-  display: block;
-  margin-top: 3px;
-  color: #64748b;
-}
-
-.empty {
-  text-align: center;
-  color: #0f172a;
-  padding: 26px !important;
-  font-weight: 900;
-}
-
-.text-end {
-  text-align: right;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.row-delete {
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 10px;
-  background: #fee2e2;
-  color: #dc2626;
-  cursor: pointer;
-}
-
-.row-delete:hover {
-  background: #fecaca;
-}
-
-/* =========================
-   Buttons
-========================= */
-
-.btn {
-  min-height: 42px;
-  border: 0;
-  border-radius: 14px;
-  padding: 0 15px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 950;
-  cursor: pointer;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  white-space: nowrap;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-}
-
-.btn.primary {
-  background: linear-gradient(135deg, #16a34a, #14b8a6);
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
-}
-
-.btn.scan {
-  height: 54px;
-  background: #172033;
-  color: #ffffff;
-  padding: 0 20px;
-}
-
-.btn.issue {
-  width: 100%;
-  margin-top: 16px;
-  min-height: 50px;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-  font-size: 15px;
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.2);
-}
-
-.btn.ghost {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #dbe4ea;
-}
-
-.btn.ghost.danger {
-  color: #b91c1c;
-  background: #fff7f7;
-  border-color: #fecaca;
-}
-
-.btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* =========================
-   Responsive
-========================= */
-
-/* พื้นที่เริ่มแคบ เช่น เปิด sidebar หรือจอ notebook */
-@media (max-width: 1499px) {
-  .layout-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .right-panel {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .preview-card,
-  .table-card {
-    width: 100%;
-  }
-}
-
-/* จอขนาดกลาง */
-@media (max-width: 1200px) {
-  .label-preview {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .label-row.wide {
-    grid-column: auto;
-  }
-
-  .table-wrap table {
-    min-width: 620px;
-  }
-}
-
-/* Tablet / Mobile */
-@media (max-width: 768px) {
-  .pallet-page {
-    padding: 14px;
-  }
-
-  .page-hero {
-    flex-direction: column;
-    align-items: flex-start;
-    border-radius: 20px;
-    padding: 18px;
-  }
-
-  .page-hero h2 {
-    font-size: 24px;
-  }
-
-  .hero-status {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .form-grid,
-  .manual-grid,
-  .summary-grid,
-  .label-preview {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .summary-item.wide,
-  .label-row.wide {
-    grid-column: auto;
-  }
-
-  .qr-box {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .qr-icon {
-    width: 100%;
-  }
-
-  .btn.scan {
-    width: 100%;
-  }
-
-  .section-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .section-head.compact {
-    align-items: stretch;
-  }
-
-  .head-actions,
-  .form-actions,
-  .scan-actions {
-    width: 100%;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
-  .preview-top {
-    align-items: flex-start;
-  }
-}
-
-/* มือถือเล็ก */
-@media (max-width: 480px) {
-  .pallet-page {
-    padding: 10px;
-  }
-
-  .form-card,
-  .summary-card,
-  .scan-card,
-  .preview-card,
-  .table-card,
-  .loading-card {
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .page-hero h2 {
-    font-size: 22px;
-  }
-
-  .page-hero p {
-    font-size: 13px;
-  }
-
-  .mini-qr {
-    width: 48px;
-    height: 48px;
-  }
-
-  .table-wrap table {
-    min-width: 560px;
-  }
-}
-
-
-
-
-/* =========================
-   Fraction Box Scan
-========================= */
-
-.fraction-toggle-card,
-.fraction-card {
-  width: 100%;
-  margin-top: 18px;
-  padding: 18px;
-  border-radius: 18px;
-  box-sizing: border-box;
-}
-
-.fraction-toggle-card {
-  background: linear-gradient(135deg, #fff7ed, #fffbeb);
-  border: 1px solid #fed7aa;
-  box-shadow: 0 6px 16px rgba(154, 52, 18, 0.07);
-}
-
-.fraction-card {
-  background: #ffffff;
-  border: 1px solid rgba(249, 115, 22, 0.24);
-  box-shadow: 0 6px 16px rgba(154, 52, 18, 0.07);
-}
-
-.fraction-toggle-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.fraction-toggle-head h3 {
-  margin: 0;
-  color: #9a3412;
-  font-size: 18px;
-  font-weight: 950;
-}
-
-.fraction-toggle-head h3 i {
-  margin-right: 7px;
-}
-
-.fraction-toggle-head span {
-  display: block;
-  margin-top: 4px;
-  color: #9a3412;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.fraction-toggle {
-  border: 0;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #9a3412;
-  padding: 9px 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-weight: 900;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 3px 10px rgba(154, 52, 18, 0.12);
-}
-
-.toggle-track {
-  width: 38px;
-  height: 22px;
-  margin: 0 !important;
-  padding: 3px;
-  border-radius: 999px;
-  background: #fed7aa;
-  display: flex !important;
-  align-items: center;
-  transition: 0.2s ease;
-}
-
-.toggle-thumb {
-  width: 16px;
-  height: 16px;
-  margin: 0 !important;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.2);
-  transition: transform 0.2s ease;
-}
-
-.fraction-toggle.active .toggle-track {
-  background: #f97316;
-}
-
-.fraction-toggle.active .toggle-thumb {
-  transform: translateX(16px);
-}
-
-.fraction-header-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: end;
-}
-
-.fraction-save {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-}
-
-.fraction-save:hover:not(:disabled) {
-  filter: brightness(0.97);
-}
-
-.fraction-status {
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #c2410c !important;
-  font-size: 12px !important;
-  font-weight: 950 !important;
-  white-space: nowrap;
-}
-
-.fraction-divider {
-  height: 1px;
-  margin: 20px 0;
-  background: #ffedd5;
-}
-
-.scan-badge.fraction {
-  background: #fff7ed;
-  color: #c2410c;
-  border-color: #fed7aa;
-}
-
-.scan-badge.fraction.full {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #a7f3d0;
-}
-
-.fraction-complete {
-  margin-bottom: 14px;
-  padding: 11px 13px;
-  border-radius: 14px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.fraction-complete i {
-  margin-right: 6px;
-}
-
-.fraction-list-head {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.fraction-list-head b {
-  display: block;
-  color: #9a3412;
-  font-size: 15px;
-}
-
-.fraction-list-head span {
-  display: block;
-  margin-top: 3px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.fraction-table thead th {
-  background: #fff7ed;
-  color: #c2410c;
-  border-bottom-color: #fed7aa;
-}
-
-@media (max-width: 700px) {
-  .fraction-toggle-head {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .fraction-toggle {
-    justify-content: center;
-  }
-
-  .fraction-header-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-
-/* =========================
-   Scan Complete
-========================= */
-
-.scan-complete-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
-}
-
-.complete-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
-  background: #10b981;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 30px;
-  flex: 0 0 auto;
-}
-
-.scan-complete-card h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 950;
-  color: #065f46;
-}
-
-.scan-complete-card p {
-  margin: 5px 0 10px;
-  font-size: 14px;
-  font-weight: 800;
-  color: #047857;
-}
-
-.complete-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.complete-summary span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 11px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #a7f3d0;
-  font-size: 13px;
-  font-weight: 900;
-  color: #065f46;
-}
-
-.complete-summary b {
-  font-size: 15px;
-  color: #047857;
-}
-
-
-
-
-
-
-
-
-
-/* =========================
-   Scanned WOS List
-========================= */
-.scan-list-card {
-  background: #ffffff;
-  border: 1px solid #e6edf5;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
-}
-
-.scan-list-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.scan-list-title {
-  font-size: 18px;
-  font-weight: 900;
-  color: #0f172a;
-  line-height: 1.1;
-}
-
-.scan-list-subtitle {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748b;
-}
-
-.clear-all-btn {
-  min-width: 92px;
-  height: 40px;
-  border-radius: 14px;
-  border: 1px solid #fecaca;
-  background: #fff5f5;
-  color: #dc2626;
-  font-size: 14px;
-  font-weight: 800;
-  padding: 0 16px;
-  transition: all 0.18s ease;
-}
-
-.clear-all-btn:hover:not(:disabled) {
-  background: #fee2e2;
-  border-color: #fca5a5;
-}
-
-.clear-all-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.scan-list-table-wrap {
-  max-height: 460px;
-  overflow: auto;
-}
-
-.scan-list-table {
-  width: 100%;
-  min-width: 780px;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.scan-list-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #eaf7f4;
-  color: #0f766e;
-  text-align: left;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  padding: 14px 12px;
-  border-bottom: 1px solid #d6eee7;
-  white-space: nowrap;
-}
-
-.scan-list-table thead th:first-child {
-  border-top-left-radius: 14px;
-}
-
-.scan-list-table thead th:last-child {
-  border-top-right-radius: 14px;
-}
-
-.th-sub {
-  font-size: 10px;
-  font-weight: 800;
-  color: #6b7280;
-  letter-spacing: 0.05em;
-}
-
-.scan-list-table tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #edf2f7;
-  vertical-align: top;
-  background: #ffffff;
-}
-
-.scan-list-table tbody tr:hover td {
-  background: #f8fbff;
-}
-
-.col-index {
-  width: 56px;
-  text-align: center;
-}
-
-.col-wos {
-  width: 200px;
-}
-
-.col-lot {
-  width: 290px;
-}
-
-.col-die {
-  width: 160px;
-}
-
-.col-qty {
-  width: 110px;
-  text-align: right;
-}
-
-.col-action {
-  width: 78px;
-  text-align: center;
-}
-
-.cell-index {
-  text-align: center;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.cell-stack {
-  line-height: 1.3;
-}
-
-.cell-main {
-  font-size: 14px;
-  font-weight: 900;
-  color: #0f172a;
-  word-break: break-word;
-}
-
-.cell-sub {
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
-  word-break: break-word;
-}
-
-.cell-sub-name {
-  color: #475569;
-}
-
-.cell-qty {
-  text-align: right;
-  font-size: 15px;
-  font-weight: 900;
-  color: #0f172a;
-  white-space: nowrap;
-}
-
-.cell-action {
-  text-align: center;
-}
-
-.delete-row-btn {
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 10px;
-  background: #fee2e2;
-  color: #ef4444;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.16s ease;
-}
-
-.delete-row-btn:hover {
-  background: #fecaca;
-  color: #dc2626;
-  transform: translateY(-1px);
-}
-
-.empty-cell {
-  text-align: center;
-  padding: 28px 16px !important;
-  color: #94a3b8;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* scrollbar */
-.scan-list-table-wrap::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.scan-list-table-wrap::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 999px;
-}
-
-.scan-list-table-wrap::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-
-/* mobile */
-@media (max-width: 991.98px) {
-  .scan-list-table {
-    min-width: 760px;
-  }
-}
-
-
-
-
-
-
-
-/* =========================================================
-   FRACTION BOX FULL WIDTH
-   Layout: Left Scan / Right List
-========================================================= */
-
-.fraction-full-row {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-top: 18px;
-}
-
-/* ---------- Toggle ---------- */
-.fraction-wide-toggle {
-  width: 100%;
-  padding: 20px 22px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #fff7ed, #fffbeb);
-  border: 1px solid #fed7aa;
-  box-shadow: 0 8px 18px rgba(154, 52, 18, 0.06);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.fraction-wide-toggle h3 {
-  margin: 0;
-  color: #9a3412;
-  font-size: 20px;
-  font-weight: 950;
-}
-
-.fraction-wide-toggle h3 i {
-  margin-right: 8px;
-}
-
-.fraction-wide-toggle span {
-  display: block;
-  margin-top: 6px;
-  color: #9a3412;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-/* ---------- Main 2 Columns ---------- */
-.fraction-wide-layout {
-  width: 100%;
-  margin-top: 18px;
-
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr);
-  gap: 18px;
-  align-items: stretch;
-}
-
-.fraction-scan-card-wide,
-.fraction-list-card-wide {
-  width: 100%;
-  min-width: 0;
-  background: #ffffff;
-  border-radius: 22px;
-  border: 1px solid rgba(249, 115, 22, 0.28);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.055);
-  padding: 20px;
-}
-
-/* ---------- Left Scan Card ---------- */
-.fraction-card-title,
-.fraction-scan-top,
-.fraction-list-title {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  min-width: 0;
-}
-
-.fraction-card-title {
-  margin-bottom: 16px;
-}
-
-.fraction-card-title h3,
-.fraction-scan-top h4,
-.fraction-list-title h3 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 20px;
-  font-weight: 950;
-}
-
-.fraction-card-title span,
-.fraction-scan-top span,
-.fraction-list-title span {
-  display: block;
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.fraction-status {
-  flex: 0 0 auto;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-  color: #c2410c !important;
-  font-size: 13px !important;
-  font-weight: 950 !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.fraction-header-box {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 210px;
-  gap: 14px;
-  align-items: end;
-
-  padding: 16px;
-  border-radius: 18px;
-  background: #fffaf5;
-  border: 1px solid #ffedd5;
-}
-
-.fraction-divider {
-  height: 1px;
-  background: #ffedd5;
-  margin: 18px 0;
-}
-
-.fraction-empty-state {
-  min-height: 180px;
-  padding: 20px;
-  border-radius: 18px;
-  background: #fff7ed;
-  border: 1px dashed #fdba74;
-  color: #9a3412;
-
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.fraction-empty-state i {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  background: #f97316;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-}
-
-.fraction-empty-state b {
-  display: block;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.fraction-empty-state span {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 750;
-  color: #9a3412;
-}
-
-.fraction-scan-top {
-  margin-bottom: 16px;
-}
-
-.fraction-scan-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.fraction-qty-field {
-  grid-column: 1 / 2;
-}
-
-/* Complete */
-.fraction-complete-wide {
-  margin-bottom: 16px;
-  padding: 16px;
-  border-radius: 18px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.fraction-complete-wide i {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  background: #10b981;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  font-size: 22px;
-}
-
-.fraction-complete-wide b {
-  display: block;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.fraction-complete-wide span {
-  display: block;
-  margin-top: 3px;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-/* ---------- Right List Card ---------- */
-.fraction-list-card-wide {
-  display: flex;
-  flex-direction: column;
-  min-height: 520px;
-}
-
-.fraction-list-title {
-  margin-bottom: 14px;
-}
-
-.fraction-list-title h3 {
-  color: #9a3412;
-}
-
-.fraction-count-pill,
-.scan-badge.fraction {
-  flex: 0 0 auto;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-  color: #c2410c;
-  font-size: 13px;
-  font-weight: 950;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.fraction-count-pill.full,
-.scan-badge.fraction.full {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #86efac;
-}
-
-.fraction-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.fraction-summary-box {
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: #fffaf5;
-  border: 1px solid #ffedd5;
-}
-
-.fraction-summary-box span {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.fraction-summary-box b {
-  display: block;
-  margin-top: 6px;
-  color: #0f172a;
-  font-size: 24px;
-  font-weight: 950;
-}
-
-.fraction-table-wide {
-  flex: 1;
-  min-height: 0;
-  max-height: 520px;
-  overflow: auto;
-  border-radius: 18px;
-  border: 1px solid #fed7aa;
-  background: #ffffff;
-}
-
-.fraction-table-wide table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.fraction-table-wide thead th {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: #fff7ed;
-  color: #c2410c;
-  font-size: 12px;
-  font-weight: 950;
-  padding: 12px;
-  border-bottom: 1px solid #fdba74;
-  white-space: nowrap;
-}
-
-.fraction-table-wide tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #0f172a;
-  font-size: 13px;
-  vertical-align: top;
-}
-
-.fraction-table-wide tbody tr:hover {
-  background: #fffaf5;
-}
-
-.fraction-table-wide td b {
-  display: block;
-  font-weight: 950;
-  color: #0f172a;
-}
-
-.fraction-table-wide td small {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 750;
-}
-
-/* ---------- Buttons ---------- */
-.fraction-save {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 1280px) {
-  .fraction-wide-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .fraction-list-card-wide {
-    min-height: auto;
-  }
-
-  .fraction-table-wide {
-    max-height: 360px;
-  }
-}
-
-@media (max-width: 768px) {
-  .fraction-wide-toggle,
-  .fraction-card-title,
-  .fraction-scan-top,
-  .fraction-list-title,
-  .fraction-empty-state,
-  .fraction-complete-wide {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .fraction-header-box,
-  .fraction-scan-form-grid,
-  .fraction-summary-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .fraction-qty-field {
-    grid-column: auto;
-  }
-
-  .fraction-table-wide table {
-    min-width: 560px;
-  }
-}
-
-
-
-
-
-/* =========================================================
-   FRACTION BOX FULL WIDTH - MATCH NORMAL SCAN/LIST WIDTH
-   Left = Scan Box เศษ / Right = Box เศษ List
-========================================================= */
-
-.fraction-full-row {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-top: 18px;
-}
-
-/* ใช้หัว toggle เต็มแถว */
-.fraction-wide-toggle {
-  width: 100%;
-  padding: 20px 22px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #fff7ed, #fffbeb);
-  border: 1px solid #fed7aa;
-  box-shadow: 0 8px 18px rgba(154, 52, 18, 0.06);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.fraction-wide-toggle h3 {
-  margin: 0;
-  color: #9a3412;
-  font-size: 20px;
-  font-weight: 950;
-}
-
-.fraction-wide-toggle h3 i {
-  margin-right: 8px;
-}
-
-.fraction-wide-toggle span {
-  display: block;
-  margin-top: 6px;
-  color: #9a3412;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-/* 
-   สำคัญ:
-   ให้ใช้สัดส่วนเดียวกับ layout หลัก
-   left-panel = 1.05fr
-   right-panel = 0.95fr
-*/
-.fraction-wide-layout {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-top: 18px;
-
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: 18px;
-  align-items: start;
-}
-
-/* ให้กล่อง Scan Box เศษหน้าตาและความกว้างใกล้ scan-card */
-.fraction-scan-card-wide {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  background: #ffffff;
-  border: 1px solid rgba(15, 118, 110, 0.12);
-  border-radius: 18px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  padding: 18px;
-  overflow: hidden;
-}
-
-/* ให้กล่อง List Box เศษหน้าตาและความกว้างใกล้ scan-list-card */
-.fraction-list-card-wide {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  background: #ffffff;
-  border: 1px solid #e6edf5;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
-
-  display: flex;
-  flex-direction: column;
-}
-
-/* ---------- Fraction Scan Header ---------- */
-
-.fraction-card-title,
-.fraction-scan-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-  min-width: 0;
-}
-
-.fraction-card-title {
-  margin-bottom: 16px;
-}
-
-.fraction-card-title h3,
-.fraction-scan-top h4 {
-  margin: 0;
-  color: #172033;
-  font-size: 18px;
-  font-weight: 950;
-}
-
-.fraction-card-title span,
-.fraction-scan-top span {
-  display: block;
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.fraction-status {
-  flex: 0 0 auto;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-  color: #c2410c !important;
-  font-size: 13px !important;
-  font-weight: 950 !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.fraction-header-box {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 210px;
-  gap: 14px;
-  align-items: end;
-
-  padding: 16px;
-  border-radius: 18px;
-  background: #fffaf5;
-  border: 1px solid #ffedd5;
-}
-
-.fraction-divider {
-  height: 1px;
-  background: #ffedd5;
-  margin: 18px 0;
-}
-
-.fraction-empty-state {
-  min-height: 180px;
-  padding: 20px;
-  border-radius: 18px;
-  background: #fff7ed;
-  border: 1px dashed #fdba74;
-  color: #9a3412;
-
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.fraction-empty-state i {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  background: #f97316;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-}
-
-.fraction-empty-state b {
-  display: block;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.fraction-empty-state span {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 750;
-  color: #9a3412;
-}
-
-.fraction-scan-top {
-  margin-bottom: 16px;
-}
-
-.fraction-scan-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.fraction-qty-field {
-  grid-column: 1 / 2;
-}
-
-/* ---------- Complete ---------- */
-
-.fraction-complete-wide {
-  margin-bottom: 16px;
-  padding: 16px;
-  border-radius: 18px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.fraction-complete-wide i {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  background: #10b981;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  font-size: 22px;
-}
-
-.fraction-complete-wide b {
-  display: block;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.fraction-complete-wide span {
-  display: block;
-  margin-top: 3px;
-  font-size: 13px;
-  font-weight: 750;
-}
-
-/* ---------- List Header ให้เหมือน Scanned WOS List ---------- */
-
-.fraction-list-title {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.fraction-list-title h3 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1.1;
-}
-
-.fraction-list-title span {
-  display: block;
-  margin-top: 6px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.fraction-count-pill,
-.scan-badge.fraction {
-  flex: 0 0 auto;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fdba74;
-  color: #c2410c;
-  font-size: 13px;
-  font-weight: 950;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.fraction-count-pill.full,
-.scan-badge.fraction.full {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #86efac;
-}
-
-/* Summary box ด้านบนของ list */
-.fraction-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  padding: 16px 18px;
-}
-
-.fraction-summary-box {
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: #fffaf5;
-  border: 1px solid #ffedd5;
-}
-
-.fraction-summary-box span {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.fraction-summary-box b {
-  display: block;
-  margin-top: 6px;
-  color: #0f172a;
-  font-size: 24px;
-  font-weight: 950;
-}
-
-/* ---------- Fraction List Table: Show 7 Fields ---------- */
-
-.fraction-table-wide {
-  max-height: 460px;
-  overflow: auto;
-}
-
-.fraction-list-table {
-  width: 100%;
-  min-width: 780px;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.fraction-list-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #fff7ed;
-  color: #c2410c;
-  text-align: left;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  padding: 14px 12px;
-  border-bottom: 1px solid #fdba74;
-  white-space: nowrap;
-}
-
-.fraction-list-table thead th:first-child {
-  border-top-left-radius: 14px;
-}
-
-.fraction-list-table thead th:last-child {
-  border-top-right-radius: 14px;
-}
-
-.fraction-list-table .th-sub {
-  font-size: 10px;
-  font-weight: 800;
-  color: #6b7280;
-  letter-spacing: 0.05em;
-}
-
-.fraction-list-table tbody td {
-  padding: 12px;
-  border-bottom: 1px solid #edf2f7;
-  vertical-align: top;
-  background: #ffffff;
-}
-
-.fraction-list-table tbody tr:hover td {
-  background: #fffaf5;
-}
-
-.fraction-list-table .col-index {
-  width: 56px;
-  text-align: center;
-}
-
-.fraction-list-table .col-wos {
-  width: 200px;
-}
-
-.fraction-list-table .col-lot {
-  width: 290px;
-}
-
-.fraction-list-table .col-die {
-  width: 180px;
-}
-
-.fraction-list-table .col-qty {
-  width: 110px;
-  text-align: right;
-}
-
-.fraction-list-table .cell-index {
-  text-align: center;
-  color: #475569;
-  font-weight: 900;
-}
-
-.fraction-list-table .cell-stack {
-  min-width: 0;
-}
-
-.fraction-list-table .cell-main {
-  color: #0f172a;
-  font-weight: 950;
-  font-size: 14px;
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-.fraction-list-table .cell-sub {
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-.fraction-list-table .cell-sub-name {
-  max-width: 260px;
-}
-
-.fraction-list-table .cell-qty {
-  text-align: right;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.fraction-list-table .empty-cell {
-  text-align: center;
-  padding: 32px 16px;
-  color: #64748b;
-  font-weight: 900;
-}
-
-/* ---------- Buttons ---------- */
-
-.fraction-save {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-}
-
-/* ---------- Responsive ---------- */
-
-@media (max-width: 1499px) {
-  .fraction-wide-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .fraction-table-wide {
-    max-height: 360px;
-  }
-}
-
-@media (max-width: 768px) {
-  .fraction-wide-toggle,
-  .fraction-card-title,
-  .fraction-scan-top,
-  .fraction-list-title,
-  .fraction-empty-state,
-  .fraction-complete-wide {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .fraction-header-box,
-  .fraction-scan-form-grid,
-  .fraction-summary-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .fraction-qty-field {
-    grid-column: auto;
-  }
-
-  .fraction-list-table {
-    min-width: 780px;
-  }
-}
-
-
-
-/* =========================================================
-   FIX: Fraction Box List - Compact WOS to LOT spacing
-   ลดช่องว่างระหว่าง column 1, 2, 3
-========================================================= */
-
-.fraction-table-wide {
-  width: 100%;
-  max-width: 100%;
-  max-height: 460px;
-  overflow-x: auto !important;
-  overflow-y: auto !important;
-  border-radius: 0;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ลด min-width ลงอีก เพื่อให้ LOT และ DIE ขยับมาทางซ้าย */
-.fraction-list-table {
-  width: 100% !important;
-  min-width: 600px !important;
-  table-layout: fixed !important;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-/* ห้ามขึ้นบรรทัดใหม่ */
-.fraction-list-table thead th,
-.fraction-list-table tbody td,
-.fraction-list-table .cell-main,
-.fraction-list-table .cell-sub {
-  white-space: nowrap !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-}
-
-/* ลด padding ซ้าย/ขวา */
-.fraction-list-table thead th {
-  padding: 13px 6px !important;
-}
-
-.fraction-list-table tbody td {
-  padding: 12px 6px !important;
-}
-
-/* column width ใหม่ */
-.fraction-list-table .col-index {
-  width: 42px !important;
-  min-width: 42px !important;
-  text-align: center;
-}
-
-.fraction-list-table .col-wos {
-  width: 190px !important;
-  min-width: 190px !important;
-}
-
-.fraction-list-table .col-lot {
-  width: 190px !important;
-  min-width: 190px !important;
-}
-
-.fraction-list-table .col-die {
-  width: 150px !important;
-  min-width: 150px !important;
-}
-
-.fraction-list-table .col-qty {
-  width: 80px !important;
-  min-width: 80px !important;
-  text-align: right;
-}
-
-/* cell alignment */
-.fraction-list-table .cell-index {
-  width: 42px !important;
-  min-width: 42px !important;
-  text-align: center;
-}
-
-.fraction-list-table .cell-qty {
-  width: 80px !important;
-  min-width: 80px !important;
-  text-align: right;
-}
-
-/* ไม่ให้ item name บังคับช่อง LOT กว้าง */
-.fraction-list-table .cell-sub-name {
-  max-width: none !important;
-}
-
-/* font */
-.fraction-list-table .cell-main {
-  font-size: 14px;
-  font-weight: 950;
-}
-
-.fraction-list-table .cell-sub {
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 800;
-  color: #64748b;
-}
-
-/* scrollbar */
-.fraction-table-wide::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-track {
-  background: #fff7ed;
-  border-radius: 999px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-thumb {
-  background: #fdba74;
-  border-radius: 999px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-thumb:hover {
-  background: #f97316;
-}
-
-
-
-
-/* =========================================================
-   Normal Scanned WOS Summary
-   Records / Total QTY
-========================================================= */
-
-.normal-scan-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  padding: 16px 18px;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.normal-scan-summary-box {
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: #f8fffb;
-  border: 1px solid rgba(20, 184, 166, 0.18);
-}
-
-.normal-scan-summary-box span {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.normal-scan-summary-box b {
-  display: block;
-  margin-top: 6px;
-  color: #0f172a;
-  font-size: 24px;
-  font-weight: 950;
-  line-height: 1;
-}
-
-@media (max-width: 768px) {
-  .normal-scan-summary-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-
-
-
-
-/* =========================================================
-   FIX: Fraction Count Badge ให้เหมือนรูปตัวอย่างที่ 2
-   ใช้กับทั้ง Scan Box เศษ และ Box เศษ List
-========================================================= */
-
-.scan-badge.fraction,
-.fraction-count-pill {
-  min-width: 92px !important;
-  height: 46px !important;
-  padding: 0 18px !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  border-radius: 999px !important;
-
-  background: #f0fdfa !important;
-  border: 1px solid #99f6e4 !important;
-  color: #64748b !important;
-
-  font-size: 14px !important;
-  font-weight: 850 !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
-
-  box-shadow: none !important;
-}
-
-/* ตอน scan ครบ ก็ยังใช้ style นุ่ม ๆ แบบเดียวกับรูปตัวอย่าง */
-.scan-badge.fraction.full,
-.fraction-count-pill.full {
-  background: #ecfdf5 !important;
-  border-color: #86efac !important;
-  color: #64748b !important;
-}
-
-/* กัน style ของ .scan-badge.full เดิมมา override */
-.scan-badge.full.fraction {
-  background: #ecfdf5 !important;
-  border-color: #86efac !important;
-  color: #64748b !important;
-}
-
-
-
-
-
-
-/* =========================================================
-   Fraction Box Qty Edit
-========================================================= */
-
-.fraction-edit-qty-cell {
-  min-width: 130px;
-}
-
-.fraction-edit-qty-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  width: 100%;
-}
-
-.fraction-edit-qty-input {
-  width: 82px;
-  height: 34px;
-  border: 1px solid #fed7aa;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #0f172a;
-  padding: 0 8px;
-  font-size: 13px;
-  font-weight: 900;
-  text-align: right;
-  outline: none;
-}
-
-.fraction-edit-qty-input:focus {
-  border-color: #fb923c;
-  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.18);
-}
-
-.fraction-edit-save-btn {
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 12px;
-  background: #fff7ed;
-  color: #ea580c;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.fraction-edit-save-btn:hover:not(:disabled) {
-  background: #fed7aa;
-}
-
-.fraction-edit-save-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-
-
-
-
-
-/* =========================================================
-   FIX: Fraction Box List Column Spacing
-   - ขยับ LOT NO เข้ามาใกล้ WOS NO
-   - เพิ่มพื้นที่ให้ DIE NO กับ QTY ไม่ชิดกันเกินไป
-========================================================= */
-
-.fraction-table-wide {
-  width: 100%;
-  max-width: 100%;
-  max-height: 460px;
-  overflow-x: auto !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ใช้ fixed layout เพื่อคุม column ให้ตรง */
-.fraction-list-table {
-  width: 100% !important;
-  min-width: 700px !important;
-  table-layout: fixed !important;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-/* ไม่ให้ข้อมูลตัดบรรทัด */
-.fraction-list-table thead th,
-.fraction-list-table tbody td,
-.fraction-list-table .cell-main,
-.fraction-list-table .cell-sub {
-  white-space: nowrap !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-}
-
-/* ลด padding นิดนึงเพื่อให้พื้นที่แน่นขึ้น */
-.fraction-list-table thead th {
-  padding: 13px 8px !important;
-}
-
-.fraction-list-table tbody td {
-  padding: 12px 8px !important;
-}
-
-/* # */
-.fraction-list-table .col-index,
-.fraction-list-table .cell-index {
-  width: 42px !important;
-  min-width: 42px !important;
-  text-align: center !important;
-}
-
-/* WOS NO: บีบลง เพื่อให้ LOT ขยับมาทางซ้าย */
-.fraction-list-table .col-wos {
-  width: 170px !important;
-  min-width: 170px !important;
-}
-
-/* LOT NO: ขยับซ้ายและไม่กว้างเกิน */
-.fraction-list-table .col-lot {
-  width: 200px !important;
-  min-width: 200px !important;
-}
-
-/* DIE NO: ให้มีพื้นที่พอ ไม่ชิดกับ QTY */
-.fraction-list-table .col-die {
-  width: 170px !important;
-  min-width: 170px !important;
-}
-
-/* QTY: เผื่อพื้นที่ input + save button */
-.fraction-list-table .col-qty,
-.fraction-list-table .cell-qty {
-  width: 135px !important;
-  min-width: 135px !important;
-  text-align: right !important;
-}
-
-/* ช่องแก้ QTY */
-.fraction-edit-qty-cell {
-  width: 135px !important;
-  min-width: 135px !important;
-}
-
-.fraction-edit-qty-wrap {
-  justify-content: flex-end !important;
-  gap: 6px !important;
-}
-
-.fraction-edit-qty-input {
-  width: 78px !important;
-}
-
-/* กัน itemName ดัน column ให้กว้าง */
-.fraction-list-table .cell-sub-name {
-  max-width: none !important;
-}
-
-/* Scrollbar */
-.fraction-table-wide::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-track {
-  background: #fff7ed;
-  border-radius: 999px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-thumb {
-  background: #fdba74;
-  border-radius: 999px;
-}
-
-.fraction-table-wide::-webkit-scrollbar-thumb:hover {
-  background: #f97316;
-}
-
-
-
-
-/* =========================================================
-   FIX: Fraction QTY Header Align With Input
-========================================================= */
-
-/* หัวข้อ QTY ให้ตรงกับช่อง input + save button */
-.fraction-list-table .col-qty {
-  text-align: center !important;
-  padding-right: 8px !important;
-}
-
-/* cell QTY ให้จัดกลางภายใน column */
-.fraction-list-table .cell-qty,
-.fraction-list-table .fraction-edit-qty-cell {
-  text-align: center !important;
-  padding-right: 8px !important;
-}
-
-/* กล่อง input + save button ให้อยู่กลาง column */
-.fraction-edit-qty-wrap {
-  justify-content: center !important;
-}
-
-/* input QTY ให้อยู่ตรงกลาง */
-.fraction-edit-qty-input {
-  text-align: center !important;
-}
-
-
-
-
-
-/* =========================================================
-   Delete Buttons - Normal / Fraction
-========================================================= */
-
-.clear-all-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.delete-row-btn:disabled,
-.clear-all-btn:disabled,
-.fraction-clear-btn:disabled,
-.fraction-delete-header-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Fraction list action buttons */
-.fraction-list-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.fraction-clear-btn,
-.fraction-delete-header-btn {
-  min-height: 38px;
-  padding: 0 13px;
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  font-size: 12px;
-  font-weight: 950;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.fraction-clear-btn {
-  border: 1px solid #fed7aa;
-  background: #fff7ed;
-  color: #c2410c;
-}
-
-.fraction-clear-btn:hover:not(:disabled) {
-  background: #ffedd5;
-}
-
-.fraction-delete-header-btn {
-  border: 1px solid #fecaca;
-  background: #fff5f5;
-  color: #dc2626;
-}
-
-.fraction-delete-header-btn:hover:not(:disabled) {
-  background: #fee2e2;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .fraction-list-actions {
-    justify-content: flex-start;
-  }
-
-  .fraction-clear-btn,
-  .fraction-delete-header-btn,
-  .fraction-count-pill {
-    width: 100%;
-  }
-}
-
-
-
-
-/* =========================================================
-   Fraction Header Actions
-========================================================= */
-
-.fraction-header-actions {
-  display: flex;
-  align-items: end;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.fraction-header-actions .fraction-save {
-  min-width: 170px;
-}
-
-.fraction-header-actions .fraction-delete-header-btn {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid #fecaca;
-  background: #fff5f5;
-  color: #dc2626;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  font-size: 13px;
-  font-weight: 950;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.fraction-header-actions .fraction-delete-header-btn:hover:not(:disabled) {
-  background: #fee2e2;
-}
-
-.fraction-header-actions .fraction-delete-header-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ให้กล่อง Header Box เศษ รองรับ 2 ปุ่ม */
-.fraction-header-box {
-  grid-template-columns: minmax(0, 1fr) auto !important;
-}
-
-@media (max-width: 768px) {
-  .fraction-header-box {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .fraction-header-actions {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .fraction-header-actions .fraction-save,
-  .fraction-header-actions .fraction-delete-header-btn {
-    width: 100%;
-  }
-}
-
-
-
-
-/* =========================================================
-   Fraction Box Row Delete
-========================================================= */
-
-.fraction-list-table .col-action,
-.fraction-list-table .cell-action {
-  width: 80px !important;
-  min-width: 80px !important;
-  text-align: center !important;
-}
-
-.fraction-row-delete-btn {
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #dc2626;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.fraction-row-delete-btn:hover:not(:disabled) {
-  background: #fecaca;
-  transform: translateY(-1px);
-}
-
-.fraction-row-delete-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* เพิ่มความกว้าง table เพราะมี column Action เพิ่ม */
-.fraction-list-table {
-  min-width: 780px !important;
-}
-
-
-
-
-/* =========================================================
-   Normal Box List - Edit QTY
-========================================================= */
-
-.scan-list-table .col-qty,
-.scan-list-table .normal-edit-qty-cell {
-  width: 135px !important;
-  min-width: 135px !important;
-  text-align: right !important;
-}
-
-.normal-edit-qty-wrap {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.normal-edit-qty-input {
-  width: 78px;
-  height: 34px;
-  border: 1px solid #d8e3e6;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #0f172a;
-  padding: 0 8px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 900;
-  outline: none;
-}
-
-.normal-edit-qty-input:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.14);
-}
-
-.normal-edit-qty-input:disabled {
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: not-allowed;
-}
-
-.normal-edit-save-btn {
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 12px;
-  background: #dcfce7;
-  color: #16a34a;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.normal-edit-save-btn:hover:not(:disabled) {
-  background: #bbf7d0;
-  transform: translateY(-1px);
-}
-
-.normal-edit-save-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* ปุ่มลบ ถ้า disabled */
-.delete-row-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-
-
-
-/* =========================================================
-   Normal Scan - Full Box Tag Placeholder
-   ใช้สำหรับ QTY Box เต็ม รอ API ในอนาคต
-========================================================= */
-
-.full-box-tag-box {
-  margin-top: 14px;
-  padding: 14px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
-  border: 1px solid rgba(20, 184, 166, 0.22);
-
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-}
-
-.full-box-tag-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.full-box-tag-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 15px;
-  background: #0f766e;
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  flex: 0 0 auto;
-  font-size: 18px;
-  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.18);
-}
-
-.full-box-tag-info b {
-  display: block;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 950;
-  line-height: 1.1;
-}
-
-.full-box-tag-info span {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 750;
-}
-
-.full-box-tag-control {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.full-box-tag-input {
-  width: 105px;
-  height: 42px;
-  border: 1px solid #99f6e4;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #0f172a;
-  padding: 0 12px;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 950;
-  outline: none;
-}
-
-.full-box-tag-input:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
-}
-
-.full-box-tag-input:disabled {
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: not-allowed;
-}
-
-.full-box-tag-save-btn {
-  min-height: 42px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #16a34a, #14b8a6);
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  font-size: 13px;
-  font-weight: 950;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.full-box-tag-save-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
-}
-
-.full-box-tag-save-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .full-box-tag-box {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .full-box-tag-control {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .full-box-tag-input {
-    width: 100%;
-  }
-
-  .full-box-tag-save-btn {
-    min-width: 120px;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-/* =========================================================
-   Normal + Fraction Box Plan Summary
-========================================================= */
-
-.full-box-tag-summary {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px dashed rgba(20, 184, 166, 0.24);
-}
-
-.full-box-tag-summary span {
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #ccfbf1;
-  color: #64748b;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-
-  font-size: 12px;
-  font-weight: 850;
-}
-
-.full-box-tag-summary b {
-  color: #0f766e;
-  font-weight: 950;
-}
-
-.full-box-tag-summary.over span {
-  background: #fff1f2;
-  border-color: #fecdd3;
-  color: #be123c;
-}
-
-.full-box-tag-summary.over b {
-  color: #dc2626;
-}
-
-
-
-
-
-
-
-/* =========================================================
-   Normal Scan Locked State
-   แสดงเมื่อยังไม่ได้กำหนด QTY Box เต็ม
-========================================================= */
-
-.normal-scan-locked-state {
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #f8fffb;
-  border: 1px dashed rgba(20, 184, 166, 0.42);
-
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.normal-scan-locked-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  background: #0f766e;
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  flex: 0 0 auto;
-  font-size: 20px;
-  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.18);
-}
-
-.normal-scan-locked-state b {
-  display: block;
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.normal-scan-locked-state span {
-  display: block;
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 750;
-  line-height: 1.45;
-}
-
-@media (max-width: 768px) {
-  .normal-scan-locked-state {
-    align-items: flex-start;
-  }
-}
-
-
-
-
-
-
-
-/* =========================================================
-   Full Box Tag Save State
-========================================================= */
-
-.full-box-tag-saved-pill {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 14px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  font-size: 13px;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.full-box-tag-saved-pill i {
-  font-size: 14px;
-}
-
-
-
-
-
-
-
-.fraction-header-saved-pill {
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 14px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #c2410c;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  font-size: 13px;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.fraction-header-saved-pill i {
-  font-size: 14px;
-}
-
-
-
-
-
-
-/* =========================================================
-   Preview Progress Detail
-========================================================= */
-
 .progress-detail-grid {
-  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .progress-detail-grid div {
@@ -3350,1455 +1728,45 @@ td small {
   color: #be123c;
 }
 
-@media (max-width: 768px) {
-  .progress-detail-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-
-
-
-
 /* =========================================================
-   Normal Scan List Header Actions
-========================================================= */
-
-.scan-list-actions {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.scan-list-actions .scan-badge {
-  margin: 0;
-}
-
-@media (max-width: 768px) {
-  .scan-list-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .scan-list-actions {
-    width: 100%;
-    justify-content: flex-end;
-  }
-}
-
-
-
-
-
-
-/* =========================================================
-   Header Label Type Dropdown
-========================================================= */
-
-.label-form-head {
-  align-items: flex-start;
-}
-
-.label-type-box {
-  margin-left: auto;
-  min-width: 130px;
-}
-
-.label-type-box label {
-  display: block;
-  margin-bottom: 6px;
-  color: #475569;
-  font-size: 11px;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.label-type-select {
-  width: 130px;
-  height: 42px;
-  border: 1px solid #99f6e4;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #0f766e;
-  padding: 0 12px;
-  font-size: 15px;
-  font-weight: 950;
-  outline: none;
-}
-
-.label-type-select:focus {
-  border-color: #14b8a6;
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14);
-}
-
-/* =========================================================
-   New FG/WIP Label Preview
-========================================================= */
-
-.pallet-label-preview-card {
-  background: #f8fafc;
-}
-
-/* =========================
-   Preview Header / Page Nav
-========================= */
-
-.label-preview-nav {
-  align-items: center;
-}
-
-.label-page-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.label-page-nav button {
-  width: 34px;
-  height: 34px;
-  border: 1px solid #dbe4ea;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #0f766e;
-  cursor: pointer;
-}
-
-.label-page-nav button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.label-page-nav b {
-  min-width: 48px;
-  text-align: center;
-  color: #0f172a;
-  font-size: 13px;
-  font-weight: 950;
-}
-
-/* =========================
-   Label Paper
-========================= */
-
-.fg-label-paper {
-  width: 100%;
-  background: #ffffff;
-  border: 2px solid #111827;
-  padding: 14px;
-  color: #111827;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-}
-
-/* =========================
-   Top Area
-   Left barcode / Main info / ID Pallet
-========================= */
-
-.fg-label-top {
-  display: grid;
-  grid-template-columns: 185px minmax(0, 1fr) 190px;
-  gap: 8px;
-  align-items: start;
-  margin-bottom: 14px;
-}
-
-.fg-label-barcode-block {
-  min-width: 0;
-}
-
-.fake-barcode {
-  width: 100%;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #111 0 2px,
-      transparent 2px 4px,
-      #111 4px 5px,
-      transparent 5px 8px,
-      #111 8px 11px,
-      transparent 11px 14px
-    );
-  border: 1px solid #ffffff;
-}
-
-.main-item-barcode {
-  height: 62px;
-}
-
-/* =========================
-   Left Info
-========================= */
-
-.fg-label-left-info {
-  margin-top: 10px;
-  display: grid;
-  gap: 6px;
-}
-
-.fg-label-left-info div {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 8px;
-  align-items: baseline;
-}
-
-.fg-label-left-info span {
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.fg-label-left-info b {
-  color: #111827;
-  font-size: 14px;
-  font-weight: 500;
-  word-break: break-word;
-}
-
-/* =========================
-   Main Info
-========================= */
-
-.fg-label-main-info {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-}
-
-.fg-info-row {
-  display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 8px;
-  align-items: baseline;
-}
-
-.fg-info-row span {
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.fg-info-row b {
-  color: #111827;
-  font-size: 14px;
-  font-weight: 500;
-  word-break: break-word;
-}
-
-.fg-info-row.split {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-.fg-info-row.split > div {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: 8px;
-  align-items: baseline;
-}
-
-/* =========================
-   Right ID Pallet Area
-========================= */
-
-.fg-label-id-block {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.fg-label-type {
-  color: #000000;
-  font-size: 22px;
-  font-weight: 950;
-  line-height: 1;
-  text-align: right;
-  margin-bottom: 86px;
-}
-
-/* Barcode + Text ของ ID Pallet */
-.pallet-id-zone {
-  width: 170px;
-  margin-left: auto;
-  margin-right: 16px;
-}
-
-.pallet-id-barcode {
-  width: 100%;
-  height: 28px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #111 0 2px,
-      transparent 2px 4px,
-      #111 4px 5px,
-      transparent 5px 8px,
-      #111 8px 11px,
-      transparent 11px 14px
-    );
-  border: 1px solid #ffffff;
-}
-
-.fg-label-id-line {
-  margin-top: 3px;
-  color: #000000;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left;
-  white-space: nowrap;
-}
-
-/* =========================
-   QR Placeholder for Table
-========================= */
-
-.fake-qr {
-  background:
-    linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px,
-    linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px,
-    #ffffff;
-  border: 4px solid #ffffff;
-  outline: 1px solid #111827;
-}
-
-.table-qr {
-  width: 48px;
-  height: 48px;
-  margin: 4px auto;
-}
-
-/* =========================
-   Label Table
-========================= */
-
-.fg-label-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.fg-label-table th,
-.fg-label-table td {
-  border: 1px solid #111827;
-  padding: 5px 7px;
-  color: #000000;
-  font-size: 14px;
-  vertical-align: top;
-}
-
-.fg-label-table th {
-  background: #eeeeee;
-  text-align: center;
-  font-weight: 500;
-}
-
-.fg-label-table tbody tr {
-  height: 78px;
-}
-
-.fg-label-table .no-col {
-  width: 38px;
-}
-
-/* =========================
-   Label Footer
-========================= */
-
-.fg-label-footer {
-  padding: 7px 8px 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.fg-label-footer b {
-  color: #111827;
-  font-weight: 700;
-}
-
-/* =========================
-   Responsive
-========================= */
-
-@media (max-width: 768px) {
-  .label-form-head {
-    align-items: stretch;
-  }
-
-  .label-type-box {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .label-type-select {
-    width: 100%;
-  }
-
-  .fg-label-paper {
-    overflow-x: auto;
-  }
-
-  .fg-label-top,
-  .fg-label-table,
-  .fg-label-footer {
-    min-width: 650px;
-  }
-}
-
-
-
-
-/* =========================================================
-   Layout Adjust: Header Full Width + Label Preview Bottom
-========================================================= */
-
-/* บังคับให้หน้านี้เป็น 1 column เต็มจอ */
-.layout-grid {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-
-/* ทุก panel เต็มความกว้าง */
-.left-panel,
-.right-panel,
-.fraction-full-row,
-.preview-bottom-card {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Header / Summary / Scan เต็ม */
-.form-card,
-.summary-card,
-.scan-card {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Label Preview ไปเป็น block ล่างสุด */
-.preview-bottom-card {
-  margin-top: 18px;
-}
-
-/* ให้ right panel ที่เหลือแสดงเฉพาะ Scanned WOS List เต็ม */
-.right-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
-}
-
-/* ขยาย form header ให้ใช้พื้นที่ดีขึ้น */
-.header-form .form-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-/* ช่อง Item Name / Item No. ที่ยาว ให้กินพื้นที่มากขึ้น */
-.header-form .item-search {
-  grid-column: span 2;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .header-form .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .header-form .item-search {
-    grid-column: span 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .header-form .form-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .header-form .item-search {
-    grid-column: span 1;
-  }
-}
-
-
-
-
-/* =========================================================
-   Layout: Scan WOS Data + Scanned WOS List Same Row
-========================================================= */
-
-.layout-grid {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-
-.left-panel {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-}
-
-.scan-and-list-row {
-  grid-column: 1 / -1;
-  width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 18px;
-  align-items: start;
-}
-
-.scan-and-list-row .scan-card,
-.scan-and-list-row .scan-list-card {
-  margin-top: 0 !important;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.scan-and-list-row .scan-list-table-wrap {
-  max-height: 560px;
-  overflow: auto;
-}
-
-.fraction-full-row,
-.preview-bottom-card {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-}
-
-.preview-bottom-card {
-  margin-top: 18px;
-}
-
-@media (max-width: 1200px) {
-  .scan-and-list-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-
-
-
-
-
-/* =========================================================
-   Adjust: Scan WOS Data width same as Scan Box เศษ
-========================================================= */
-
-.scan-and-list-row {
-  grid-template-columns: minmax(0, 1.15fr) minmax(420px, 0.85fr) !important;
-  align-items: stretch;
-}
-
-/* ให้กล่อง Scan WOS Data สูงและกว้างเต็มเหมือน Scan Box เศษ */
-.scan-and-list-row .scan-card {
-  width: 100%;
-  height: 100%;
-  align-self: stretch;
-}
-
-/* ฝั่ง Scanned WOS List */
-.scan-and-list-row .scan-list-card {
-  width: 100%;
-  height: 100%;
-  align-self: stretch;
-}
-
-/* ปรับ form ใน Scan WOS Data ให้ใช้พื้นที่กว้างขึ้น */
-.scan-and-list-row .manual-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-/* QTY ให้ไม่กว้างเกินจำเป็น */
-.scan-and-list-row .manual-grid .form-field:last-child {
-  max-width: 240px;
-}
-
-/* จอแคบให้กลับเป็นบน-ล่าง */
-@media (max-width: 1280px) {
-  .scan-and-list-row {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .scan-and-list-row .manual-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .scan-and-list-row .manual-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .scan-and-list-row .manual-grid .form-field:last-child {
-    max-width: 100%;
-  }
-}
-
-
-
-
-
-/* =========================================================
-   Force Scan WOS Data width = Scan Box เศษ width
-   วางท้ายสุดของ issue.component.css
-========================================================= */
-
-/* ใช้สัดส่วนเดียวกันทั้ง Normal Scan และ Fraction Scan */
-.scan-and-list-row,
-.fraction-wide-layout {
-  width: 100%;
-  max-width: 100%;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
-  gap: 18px !important;
-  align-items: stretch !important;
-}
-
-/* ให้ card ฝั่งซ้ายของทั้ง 2 section กว้างเท่ากัน */
-.scan-and-list-row .scan-card,
-.fraction-wide-layout .fraction-scan-card-wide {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  margin-top: 0 !important;
-  align-self: stretch !important;
-}
-
-/* ให้ card ฝั่งขวาของทั้ง 2 section กว้างเท่ากัน */
-.scan-and-list-row .scan-list-card,
-.fraction-wide-layout .fraction-list-card-wide {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  align-self: stretch !important;
-}
-
-/* Table scroll ด้านใน ไม่ให้ดันขนาด card */
-.scan-and-list-row .scan-list-table-wrap,
-.fraction-wide-layout .fraction-table-wide {
-  max-height: 560px;
-  overflow: auto;
-}
-
-/* จอแคบค่อยเรียงบนล่าง */
-@media (max-width: 1280px) {
-  .scan-and-list-row,
-  .fraction-wide-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-}
-
-
-/* =========================================================
-   Menu Panel UI: Scan Box เต็ม / Scan Box เศษ / Print Label
-   วางท้ายสุดเพื่อ override layout เดิม
-========================================================= */
-
-.layout-grid {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-
-.left-panel,
-.issue-menu-panel,
-.scan-and-list-row,
-.fraction-full-row,
-.preview-bottom-card {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.issue-menu-panel {
-  padding: 18px;
-  border-radius: 20px;
-  background: #ffffff;
-  border: 1px solid rgba(15, 118, 110, 0.12);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-}
-
-.issue-menu-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.issue-menu-head h3 {
-  margin: 0;
-  color: #172033;
-  font-size: 18px;
-  font-weight: 950;
-}
-
-.issue-menu-head span {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.issue-menu-current {
-  flex: 0 0 auto;
-  padding: 10px 14px;
-  border-radius: 16px;
-  background: #ecfdf5;
-  border: 1px solid rgba(16, 185, 129, 0.22);
-  text-align: right;
-}
-
-.issue-menu-current span {
-  margin: 0 0 3px;
-  color: #047857;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.issue-menu-current b {
-  color: #064e3b;
-  font-size: 18px;
-  font-weight: 950;
-}
-
-.issue-menu-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.issue-menu-tab {
-  min-width: 0;
-  min-height: 86px;
-  border: 1px solid #dbe4ea;
-  border-radius: 18px;
-  background: #f8fafc;
-  color: #172033;
-  padding: 14px;
-  display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.18s ease;
-}
-
-.issue-menu-tab:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-}
-
-.issue-menu-tab.active {
-  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
-  border-color: rgba(20, 184, 166, 0.55);
-  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.13);
-}
-
-.issue-menu-tab.fraction.active {
-  background: linear-gradient(135deg, #fff7ed, #fffbeb);
-  border-color: #fdba74;
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.12);
-}
-
-.issue-menu-tab.print.active {
-  background: linear-gradient(135deg, #fff7ed, #fff1e6);
-  border-color: #fb923c;
-  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.12);
-}
-
-.issue-menu-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  background: #0f766e;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 19px;
-}
-
-.issue-menu-tab.fraction .issue-menu-icon {
-  background: #c2410c;
-}
-
-.issue-menu-tab.print .issue-menu-icon {
-  background: #ea580c;
-}
-
-.issue-menu-text {
-  min-width: 0;
-}
-
-.issue-menu-text b {
-  display: block;
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-.issue-menu-text span {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 750;
-  line-height: 1.35;
-}
-
-.issue-menu-badge {
-  padding: 7px 10px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #0f766e;
-  border: 1px solid rgba(20, 184, 166, 0.25);
-  font-size: 12px;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.issue-menu-tab.fraction .issue-menu-badge,
-.issue-menu-tab.print .issue-menu-badge {
-  color: #c2410c;
-  border-color: #fed7aa;
-}
-
-/* Normal panel + Fraction panel ใช้ column เดียวกัน */
-.scan-and-list-row,
-.fraction-wide-layout {
-  width: 100%;
-  max-width: 100%;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
-  gap: 18px !important;
-  align-items: stretch !important;
-}
-
-.scan-and-list-row .scan-card,
-.scan-and-list-row .scan-list-card,
-.fraction-wide-layout .fraction-scan-card-wide,
-.fraction-wide-layout .fraction-list-card-wide {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  margin-top: 0 !important;
-  align-self: stretch !important;
-}
-
-.fraction-panel-title {
-  margin-bottom: 18px;
-}
-
-.fraction-panel-title .fraction-panel-badge {
-  flex: 0 0 auto;
-  padding: 8px 13px;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  color: #c2410c;
-  font-size: 13px;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.preview-bottom-card {
-  margin-top: 0;
-}
-
-@media (max-width: 1280px) {
-  .scan-and-list-row,
-  .fraction-wide-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .issue-menu-tabs {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .issue-menu-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .issue-menu-current {
-    text-align: left;
-  }
-
-  .issue-menu-tab {
-    grid-template-columns: 42px minmax(0, 1fr);
-  }
-
-  .issue-menu-badge {
-    grid-column: 1 / -1;
-    justify-self: flex-start;
-  }
-}
-
-
-
-/* =========================================================
-   Scanned WOS List: Fixed 5 Rows + Scroll + Next Panel
-========================================================= */
-
-/* ให้ card คุม layout เป็นแนวตั้ง */
-.scan-list-card {
-  display: flex;
-  flex-direction: column;
-}
-
-/* fix ความสูงตารางประมาณ 5 row แล้วค่อย scroll */
-.scan-list-table-wrap {
-  height: 430px !important;
-  max-height: 430px !important;
-  overflow-x: auto !important;
-  overflow-y: auto !important;
-}
-
-/* หัวตาราง sticky เวลา scroll */
-.scan-list-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-/* คุมความสูง row ให้ใกล้เคียงกัน */
-.scan-list-table tbody tr {
-  height: 74px;
-}
-
-.scan-list-table tbody td {
-  height: 74px;
-  max-height: 74px;
-}
-
-/* กันข้อความยาวดัน row สูง */
-.scan-list-table .cell-main,
-.scan-list-table .cell-sub {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ปุ่ม Next ไป Panel Box เศษ */
-.normal-next-panel-box {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.normal-next-panel-btn {
-  min-height: 46px;
-  border: 0;
-  border-radius: 15px;
-  padding: 0 16px 0 18px;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-
-  font-size: 13px;
-  font-weight: 950;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
-}
-
-.normal-next-panel-btn span {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.15;
-}
-
-.normal-next-panel-btn span b {
-  font-size: 14px;
-  font-weight: 950;
-}
-
-.normal-next-panel-btn i {
-  font-size: 15px;
-}
-
-.normal-next-panel-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(0.98);
-}
-
-@media (max-width: 768px) {
-  .normal-next-panel-box {
-    justify-content: stretch;
-  }
-
-  .normal-next-panel-btn {
-    width: 100%;
-  }
-}
-
-
-
-
-
-/* =========================================================
-   Refine Normal Next Panel Button
-========================================================= */
-
-/* Footer ใต้ตาราง ให้ดูเป็นส่วนหนึ่งของ card */
-.normal-next-panel-box {
-  margin-top: 14px !important;
-  padding: 14px 16px 0 !important;
-  border-top: 1px solid #e2e8f0 !important;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 14px !important;
-}
-
-/* ข้อความซ้ายของ footer */
-.normal-next-panel-info {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.normal-next-panel-info span {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.normal-next-panel-info b {
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 950;
-}
-
-/* ปุ่ม Next ใหม่ ให้เป็น pill ขนาดพอดี */
-.normal-next-panel-btn {
-  min-width: 118px !important;
-  min-height: 42px !important;
-  border: 0 !important;
-  border-radius: 999px !important;
-  padding: 0 16px 0 18px !important;
-
-  background: linear-gradient(135deg, #f97316, #ea580c) !important;
-  color: #ffffff !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 10px !important;
-
-  font-size: 14px !important;
-  font-weight: 950 !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18) !important;
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease !important;
-}
-
-.normal-next-panel-btn span {
-  display: inline-flex !important;
-  align-items: center !important;
-  line-height: 1 !important;
-  font-size: 14px !important;
-  font-weight: 950 !important;
-}
-
-.normal-next-panel-btn i {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.18);
-  font-size: 13px;
-}
-
-.normal-next-panel-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(0.98);
-  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24) !important;
-}
-
-/* จอเล็ก ให้เรียงลงมา */
-@media (max-width: 768px) {
-  .normal-next-panel-box {
-    align-items: stretch !important;
-    flex-direction: column !important;
-  }
-
-  .normal-next-panel-btn {
-    width: 100% !important;
-  }
-}
-
-
-
-
-
-/* =========================================================
-   Adjust spacing under Next Step footer
-========================================================= */
-
-.normal-next-panel-box {
-  padding: 18px 16px 18px !important;
-  margin-top: 14px !important;
-  margin-bottom: 6px !important;
-  border-top: 1px solid #e2e8f0 !important;
-  align-items: center !important;
-}
-
-/* ให้ปุ่มไม่ติดขอบล่าง และดูอยู่กลาง footer */
-.normal-next-panel-btn {
-  min-height: 44px !important;
-  margin-bottom: 0 !important;
-}
-
-/* เผื่อ scan-list-card มี padding ด้านล่างน้อยไป */
-.scan-list-card {
-  padding-bottom: 20px !important;
-}
-
-/* =========================================================
-   Header Box Plan: Full Box + Fraction Box + Auto Total
-========================================================= */
-
-.box-plan-field .control {
-  font-weight: 950;
-  color: #0f172a;
-}
-
-.total-box-auto-field {
-  grid-column: span 2;
-}
-
-.total-box-auto-input {
-  background: #ecfdf5 !important;
-  border-color: rgba(20, 184, 166, 0.35) !important;
-  color: #047857 !important;
-  font-size: 18px !important;
-  font-weight: 950 !important;
-}
-
-.auto-total-note {
-  display: block;
-  margin-top: 6px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.normal-plan-mini {
-  margin-top: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: #ecfdf5;
-  border: 1px solid rgba(16, 185, 129, 0.22);
-  color: #047857;
-}
-
-.normal-plan-mini span {
-  margin: 0 !important;
-  color: #047857 !important;
-  font-size: 12px !important;
-  font-weight: 900 !important;
-}
-
-.normal-plan-mini b {
-  color: #064e3b;
-  font-size: 13px;
-  font-weight: 950;
-}
-
-.fraction-header-summary-box {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  padding: 14px;
-  border-radius: 16px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-}
-
-.fraction-header-summary-box div {
-  min-width: 0;
-}
-
-.fraction-header-summary-box span {
-  display: block;
-  color: #9a3412;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.fraction-header-summary-box b {
-  display: block;
-  margin-top: 5px;
-  color: #7c2d12;
-  font-size: 15px;
-  font-weight: 950;
-}
-
-@media (max-width: 768px) {
-  .total-box-auto-field {
-    grid-column: span 1;
-  }
-
-  .fraction-header-summary-box {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-/* ให้ scroll ไปที่ Panel Box เศษ แล้วไม่ชิดขอบบนเกินไป */
-#fractionPanelSection {
-  scroll-margin-top: 90px;
-}
-
-
-
-/* =========================================================
-   Fraction Panel Navigation Buttons
-   Back: left scan card / Next: right list card
-========================================================= */
-
-/* ทำให้กล่องซ้าย-ขวาเรียง content เป็นแนวตั้ง */
-.fraction-scan-card-wide,
-.fraction-list-card-wide {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* ---------- Back button: bottom-left of scan card ---------- */
-.fraction-back-panel-box {
-  margin-top: 14px !important;
-  padding: 18px 16px 18px !important;
-  border-top: 1px solid #e2e8f0 !important;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-}
-
-.fraction-back-panel-btn {
-  min-height: 44px;
-  border: 1px solid #dbe4ea;
-  border-radius: 999px;
-  padding: 0 16px 0 14px;
-
-  background: #ffffff;
-  color: #334155;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  font-size: 13px;
-  font-weight: 950;
-  cursor: pointer;
-
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.fraction-back-panel-btn i {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #f1f5f9;
-  color: #475569;
-  font-size: 12px;
-}
-
-.fraction-back-panel-btn span {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.15;
-}
-
-.fraction-back-panel-btn span b {
-  font-size: 13px;
-  font-weight: 950;
-  color: #0f172a;
-}
-
-.fraction-back-panel-btn:hover {
-  transform: translateY(-1px);
-  background: #f8fafc;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
-}
-
-/* ---------- Next button: bottom-right of list card ---------- */
-.fraction-next-panel-box {
-  margin-top: 14px;
-  padding: 18px 16px 18px;
-  border-top: 1px solid #fed7aa;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.fraction-next-panel-info {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.fraction-next-panel-info span {
-  color: #9a3412;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.fraction-next-panel-info b {
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 950;
-}
-
-.fraction-next-panel-btn {
-  min-width: 118px;
-  min-height: 44px;
-  border: 0;
-  border-radius: 999px;
-  padding: 0 16px 0 18px;
-
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  font-size: 14px;
-  font-weight: 950;
-  cursor: pointer;
-
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
-}
-
-.fraction-next-panel-btn span {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-}
-
-.fraction-next-panel-btn i {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.18);
-  font-size: 13px;
-}
-
-.fraction-next-panel-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(0.98);
-  box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .fraction-back-panel-box {
-    justify-content: stretch;
-  }
-
-  .fraction-back-panel-btn {
-    width: 100%;
-  }
-
-  .fraction-next-panel-box {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .fraction-next-panel-btn {
-    width: 100%;
-  }
-}
-
-/* =========================================================
-   Print Label Panel - Right Check Card Only
-   หมายเหตุ: ไม่แก้ขนาด/โครงสร้าง Label Preview เดิม
+   11) Print Label Panel
 ========================================================= */
 
 .print-label-panel {
-  width: 100%;
-  max-width: 100%;
   margin-top: 18px;
+  overflow: visible;
 }
 
-/* แยก Label Preview ซ้าย + กล่องข้อมูลขวา */
 .print-label-main {
   width: 100%;
   max-width: 100%;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 360px !important;
-  gap: 18px !important;
-  align-items: start !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 18px;
 }
 
-/* กล่อง Label Preview เดิม: ไม่แก้ขนาดด้านใน แค่กันดันกล่องขวา */
 .print-preview-left {
-  min-width: 0 !important;
-  max-width: 100% !important;
-  margin-top: 0 !important;
-  overflow: auto !important;
+  flex: 1 1 auto;
+  width: calc(100% - 518px);
+  min-width: 0;
+  max-width: calc(100% - 518px);
+  margin-top: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
-/* กล่องขวามือ */
+.print-preview-left .fg-label-paper {
+  max-width: none;
+}
+
 .print-side-card {
-  width: 360px;
-  min-width: 0;
-  max-width: 100%;
-
-  background: #ffffff;
-  border: 1px solid rgba(15, 118, 110, 0.12);
-  border-radius: 18px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  padding: 18px;
-
+  flex: 0 0 500px;
+  width: 500px;
+  min-width: 500px;
+  max-width: 500px;
+  align-self: flex-start;
   position: sticky;
   top: 16px;
 }
@@ -4817,11 +1785,9 @@ td small {
   border-radius: 16px;
   background: linear-gradient(135deg, #10b981, #14b8a6);
   color: #ffffff;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   font-size: 20px;
   flex: 0 0 auto;
   box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
@@ -4842,49 +1808,6 @@ td small {
   font-weight: 800;
 }
 
-.print-ready-box {
-  margin-top: 14px;
-  padding: 14px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
-  border: 1px solid rgba(20, 184, 166, 0.22);
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.print-ready-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: #0f766e;
-  color: #ffffff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 18px;
-  flex: 0 0 auto;
-}
-
-.print-ready-box b {
-  display: block;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 950;
-}
-
-.print-ready-box span {
-  display: block;
-  margin-top: 3px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 750;
-  line-height: 1.35;
-}
-
 .print-side-section {
   margin-top: 16px;
 }
@@ -4896,7 +1819,8 @@ td small {
   font-weight: 950;
 }
 
-.print-info-list {
+.print-info-list,
+.print-check-list {
   display: grid;
   gap: 9px;
 }
@@ -4908,8 +1832,7 @@ td small {
   border: 1px solid #e2e8f0;
 }
 
-.print-info-list span,
-.print-summary-grid span {
+.print-info-list span {
   display: block;
   color: #64748b;
   font-size: 11px;
@@ -4917,8 +1840,7 @@ td small {
   text-transform: uppercase;
 }
 
-.print-info-list b,
-.print-summary-grid b {
+.print-info-list b {
   display: block;
   margin-top: 4px;
   color: #0f172a;
@@ -4928,33 +1850,10 @@ td small {
   overflow-wrap: anywhere;
 }
 
-.print-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.print-summary-grid > div {
-  padding: 12px;
-  border-radius: 15px;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-}
-
-.print-summary-grid > div span {
-  color: #9a3412;
-}
-
-.print-check-list {
-  display: grid;
-  gap: 8px;
-}
-
 .print-check-list > div {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-
   color: #334155;
   font-size: 13px;
   font-weight: 800;
@@ -4971,48 +1870,32 @@ td small {
   margin-top: 18px;
   padding-top: 14px;
   border-top: 1px solid #e2e8f0;
-
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
-.print-side-back-btn,
 .print-side-main-btn {
-  min-height: 44px;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
   border-radius: 14px;
   padding: 0 14px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   font-size: 13px;
   font-weight: 950;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-}
-
-.print-side-back-btn {
-  border: 1px solid #dbe4ea;
-  background: #ffffff;
-  color: #334155;
-}
-
-.print-side-main-btn {
-  border: 0;
   background: linear-gradient(135deg, #f97316, #ea580c);
   color: #ffffff;
   box-shadow: 0 8px 18px rgba(234, 88, 12, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
-.print-side-back-btn:hover,
 .print-side-main-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-}
-
-.print-side-main-btn:hover:not(:disabled) {
   filter: brightness(0.98);
   box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
 }
@@ -5021,227 +1904,13 @@ td small {
   opacity: 0.55;
   cursor: not-allowed;
   box-shadow: none;
-  transform: none !important;
+  transform: none;
 }
 
-@media (max-width: 768px) {
-  .print-summary-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-
-/* =========================================================
-   Print Panel: Force Preview + Print Check Same Row
-   ใช้ flex แทน grid เพื่อไม่ให้กล่องขวาหล่นลงล่าง
-========================================================= */
-
-.print-label-panel {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-top: 18px !important;
-  overflow: visible !important;
-}
-
-/* ตัวครอบซ้าย-ขวา */
-.print-label-main {
-  width: 100% !important;
-  max-width: 100% !important;
-
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  align-items: flex-start !important;
-  gap: 18px !important;
-}
-
-/* กล่องซ้าย: Label Preview เดิม */
-.print-preview-left {
-  flex: 1 1 auto !important;
-  width: calc(100% - 758px) !important;
-  min-width: 0 !important;
-  max-width: calc(100% - 758px) !important;
-
-  margin-top: 0 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-}
-
-/* ไม่แก้ตัว Label Preview ด้านใน แค่ให้มันเลื่อนได้ในกล่องซ้าย */
-.print-preview-left .fg-label-paper {
-  max-width: none !important;
-}
-
-/* กล่องขวา */
-.print-side-card {
-  flex: 0 0 740px !important;
-  width: 740px !important;
-  min-width: 740px !important;
-  max-width: 740px !important;
-
-  align-self: flex-start !important;
-
-  background: #ffffff;
-  border: 1px solid rgba(15, 118, 110, 0.12);
-  border-radius: 18px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  padding: 18px;
-
-  position: sticky;
-  top: 16px;
-}
-
-/* จอเล็กจริง ๆ ค่อยให้กล่องขวาลงล่าง */
-@media (max-width: 900px) {
-  .print-label-main {
-    flex-direction: column !important;
-  }
-
-  .print-preview-left {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .print-side-card {
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    position: static !important;
-  }
-}
-
-
-
-
-
-/* =========================================================
-   Print Side Actions: Back + Home same row
-========================================================= */
-
-.print-side-top-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.print-side-home-btn {
-  min-height: 44px;
-  border-radius: 14px;
-  padding: 0 14px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  font-size: 13px;
-  font-weight: 950;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-
-  border: 0;
-  background: linear-gradient(135deg, #10b981, #14b8a6);
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.18);
-}
-
-.print-side-home-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(0.98);
-  box-shadow: 0 10px 22px rgba(20, 184, 166, 0.24);
-}
-
-@media (max-width: 480px) {
-  .print-side-top-actions {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-
-
-
-
-/* =========================================================
-   Operation Menu as Step Indicator
-   ไม่ให้กดได้ ใช้บอกสถานะปัจจุบันอย่างเดียว
-========================================================= */
-
-.step-indicator-tabs .step-indicator-item {
-  cursor: default !important;
-  user-select: none !important;
-  pointer-events: none !important;
-}
-
-/* ยกเลิก hover แบบปุ่ม */
-.step-indicator-tabs .step-indicator-item:hover {
-  transform: none !important;
-}
-
-/* วงกลมตัวเลข */
-.step-number {
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  border-radius: 50% !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  font-size: 18px !important;
-  font-weight: 950 !important;
-  line-height: 1 !important;
-
-  background: #e2e8f0 !important;
-  color: #475569 !important;
-  border: 2px solid #cbd5e1 !important;
-}
-
-/* Step ที่ active ให้เด่น */
-.step-indicator-item.active .step-number {
-  background: linear-gradient(135deg, #f97316, #ea580c) !important;
-  color: #ffffff !important;
-  border-color: #fdba74 !important;
-  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.22) !important;
-}
-
-/* Step ที่ active ให้ card เด่นขึ้น */
-.step-indicator-item.active {
-  border-color: rgba(249, 115, 22, 0.45) !important;
-  background: linear-gradient(135deg, #fff7ed, #ffffff) !important;
-}
-
-/* ตัวเลขของแต่ละ step สามารถแยกสีได้เล็กน้อย */
-.step-indicator-item.normal.active .step-number {
-  background: linear-gradient(135deg, #10b981, #14b8a6) !important;
-  border-color: #99f6e4 !important;
-}
-
-.step-indicator-item.fraction.active .step-number {
-  background: linear-gradient(135deg, #f97316, #ea580c) !important;
-  border-color: #fed7aa !important;
-}
-
-.step-indicator-item.print.active .step-number {
-  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
-  border-color: #c7d2fe !important;
-}
-
-
-
-/* =========================================================
-   Print Panel Actions
-   Left: Back + Home / Right: Print Label
-========================================================= */
-
-/* ปุ่มฝั่งซ้าย ใต้ Label Preview */
 .print-left-actions {
   margin-top: 16px;
   padding-top: 14px;
   border-top: 1px solid #e2e8f0;
-
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -5254,16 +1923,13 @@ td small {
   min-height: 44px;
   border-radius: 14px;
   padding: 0 18px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   font-size: 13px;
   font-weight: 950;
   cursor: pointer;
-
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
@@ -5290,24 +1956,225 @@ td small {
   box-shadow: 0 10px 22px rgba(20, 184, 166, 0.24);
 }
 
-/* ปุ่ม Print อยู่กล่องขวาเต็มความกว้าง */
-.print-side-actions {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid #e2e8f0;
+/* =========================================================
+   12) Legacy Table Helpers
+========================================================= */
 
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
-}
-
-.print-side-main-btn {
+.table-card {
   width: 100%;
-  min-height: 48px;
+  max-width: 100%;
+  min-width: 0;
 }
 
-/* Mobile */
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  max-height: 460px;
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #eef2f7;
+  color: #172033;
+  font-size: 13px;
+  vertical-align: top;
+}
+
+tbody tr:hover {
+  background: #f8fffb;
+}
+
+td small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+}
+
+/* =========================================================
+   13) Responsive
+========================================================= */
+
+@media (max-width: 1280px) {
+  .scan-and-list-row,
+  .fraction-wide-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .header-form .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .header-form .item-search {
+    grid-column: span 1;
+  }
+
+  .label-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .label-row.wide {
+    grid-column: auto;
+  }
+
+  .table-wrap table {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 900px) {
+  .print-label-main {
+    flex-direction: column;
+  }
+
+  .print-preview-left {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .print-side-card {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .pallet-page {
+    padding: 14px;
+  }
+
+  .page-hero,
+  .section-head,
+  .section-head.compact,
+  .issue-menu-head,
+  .scan-list-header,
+  .fraction-list-title {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-hero {
+    border-radius: 20px;
+    padding: 18px;
+  }
+
+  .page-hero h2 {
+    font-size: 24px;
+  }
+
+  .hero-status,
+  .head-actions,
+  .form-actions,
+  .scan-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .form-grid,
+  .manual-grid,
+  .summary-grid,
+  .header-form .form-grid,
+  .fraction-scan-form-grid,
+  .issue-menu-tabs,
+  .progress-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .summary-item.wide,
+  .total-box-auto-field {
+    grid-column: auto;
+  }
+
+  .btn,
+  .btn.scan,
+  .normal-next-panel-btn,
+  .fraction-next-panel-btn {
+    width: 100%;
+  }
+
+  .label-type-box {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .label-type-select {
+    width: 100%;
+  }
+
+  .fg-label-paper {
+    overflow-x: auto;
+  }
+
+  .fg-label-top,
+  .fg-label-table,
+  .fg-label-footer {
+    min-width: 650px;
+  }
+
+  .normal-next-panel-box,
+  .fraction-next-panel-box {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fraction-back-panel-box {
+    justify-content: stretch;
+  }
+
+  .fraction-back-panel-btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
+  .pallet-page {
+    padding: 10px;
+  }
+
+  .form-card,
+  .summary-card,
+  .scan-card,
+  .preview-card,
+  .table-card,
+  .loading-card,
+  .scan-list-card,
+  .fraction-scan-card-wide,
+  .fraction-list-card-wide,
+  .issue-menu-panel,
+  .print-side-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .page-hero h2 {
+    font-size: 22px;
+  }
+
+  .page-hero p {
+    font-size: 13px;
+  }
+
+  .normal-scan-summary-grid,
+  .fraction-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .print-left-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -5317,144 +2184,30 @@ td small {
   .print-left-home-btn {
     width: 100%;
   }
+
+  .table-wrap table {
+    min-width: 560px;
+  }
 }
-
-
-
-
 
 /* =========================================================
-   Label Preview Refinement
-   Die No on top / Strong Item No + Item Name
+   14) Minor Column Helpers
 ========================================================= */
 
-/* เน้น Item No. และ Item Name ให้ใหญ่ชัด */
-.fg-label-main-info .fg-info-row:nth-child(1) b,
-.fg-label-main-info .fg-info-row:nth-child(2) b {
-  font-size: 22px !important;
-  font-weight: 950 !important;
-  color: #0f172a !important;
-  line-height: 1.15 !important;
+.cell-stack,
+.normal-edit-qty-cell,
+.fraction-edit-qty-cell {
+  min-width: 0;
 }
 
-/* label Item No / Item Name */
-.fg-label-main-info .fg-info-row:nth-child(1) span,
-.fg-label-main-info .fg-info-row:nth-child(2) span {
-  font-size: 12px !important;
-  font-weight: 950 !important;
-  color: #334155 !important;
+.col-wos {
+  width: 190px;
 }
 
-/* Die No ย้ายมาแสดงด้านบนใต้ OQC Lot */
-.die-no-highlight-row {
-  background: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px !important;
-  padding: 6px 8px !important;
+.col-lot {
+  width: 230px;
 }
 
-.die-no-highlight-row span {
-  font-size: 11px !important;
-  font-weight: 950 !important;
-  color: #475569 !important;
-}
-
-.die-no-highlight-row b {
-  margin-top: 3px !important;
-  display: block !important;
-  font-size: 18px !important;
-  font-weight: 950 !important;
-  color: #111827 !important;
-  line-height: 1.15 !important;
-}
-
-/* Lot No หลังตัดแล้ว ให้ดูเด่นขึ้นในตาราง */
-.fg-label-table tbody td:nth-child(2) {
-  font-size: 16px !important;
-  font-weight: 950 !important;
-  color: #111827 !important;
-}
-
-
-
-
-
-/* =========================================================
-   Label Preview: align OQC / Total Qty / Format No
-========================================================= */
-
-/* ให้ OQC Lot อยู่แนวเดียวกับ row อื่น */
-.oqc-total-row {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 220px !important;
-  align-items: center !important;
-  column-gap: 18px !important;
-}
-
-.total-qty-box {
-  display: grid !important;
-  grid-template-columns: auto auto !important;
-  align-items: center !important;
-  justify-self: start !important;
-  column-gap: 10px !important;
-  white-space: nowrap !important;
-}
-
-.oqc-lot-box span {
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
-.oqc-lot-box b {
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
-/* Total Qty ให้อยู่บรรทัดเดียวกัน */
-.total-qty-box {
-  display: grid !important;
-  grid-template-columns: auto auto !important;
-  align-items: center !important;
-  column-gap: 10px !important;
-  white-space: nowrap !important;
-}
-
-.total-qty-box span {
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
-.total-qty-box b {
-  margin: 0 !important;
-  white-space: nowrap !important;
-}
-
-/* Footer ล่างสุด */
-.fg-label-footer {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: end !important;
-  column-gap: 16px !important;
-
-  padding-top: 8px !important;
-  font-size: 12px !important;
-  color: #475569 !important;
-}
-
-/* ข้อความ Normal movement */
-.fg-label-footer-main {
-  min-width: 0 !important;
-  line-height: 1.3 !important;
-}
-
-/* Format No. อยู่มุมขวาล่าง และต่ำกว่านิดนึง */
-.fg-label-format-no {
-  align-self: end !important;
-  justify-self: end !important;
-
-  transform: translateY(8px);
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  color: #64748b !important;
-  white-space: nowrap !important;
+.col-die {
+  width: 190px;
 }
