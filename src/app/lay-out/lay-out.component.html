@@ -1,696 +1,1006 @@
 <div class="layout-page">
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-  
-    <div class="page-header">
-  
-      <div>
-        <div class="page-title">
-          Rack Inventory Layout
-        </div>
-  
-        <div class="page-subtitle">
-          Pallet / Label / Box Inventory Overview
-        </div>
+  <!-- =====================================================
+       PAGE HEADER
+  ====================================================== -->
+
+  <div class="page-header">
+
+    <div>
+
+      <div class="page-title">
+        Rack Inventory Layout
       </div>
-  
-      <div class="legend">
-  
-        <div class="legend-item">
-          <span class="legend-color lam"></span>
-          <span>Lam PC</span>
-        </div>
-  
-        <div class="legend-item">
-          <span class="legend-color gen-stator-2nd"></span>
-          <span>Gen, Stator 2nd</span>
-        </div>
-  
-        <div class="legend-item">
-          <span class="legend-color gen-stator-pc"></span>
-          <span>Gen, Stator PC</span>
-        </div>
-  
-        <div class="legend-item">
-          <span class="legend-color occupied"></span>
-          <span>Inventory</span>
-        </div>
-  
+
+      <div class="page-subtitle">
+        Rack → Pallet → Label / Model → Box
       </div>
-  
+
     </div>
-  
-  
-    <!-- =====================================================
-         SUMMARY
-    ====================================================== -->
-  
-    <div class="summary-grid">
-  
-      <div class="summary-card">
-        <div class="summary-label">
-          Total Pallet
-        </div>
-  
-        <div class="summary-value">
-          {{ totalPallets | number }}
-        </div>
+
+
+    <!-- LEGEND -->
+
+    <div class="legend">
+
+      <div class="legend-item">
+
+        <span
+          class="legend-color rack-group-abc"
+        ></span>
+
+        <span>
+          Rack A / B / C
+        </span>
+
       </div>
-  
-  
-      <div class="summary-card">
-        <div class="summary-label">
-          Total Label
-        </div>
-  
-        <div class="summary-value">
-          {{ totalLabels | number }}
-        </div>
+
+
+      <div class="legend-item">
+
+        <span
+          class="legend-color rack-group-de"
+        ></span>
+
+        <span>
+          Rack D / E
+        </span>
+
       </div>
-  
-  
-      <div class="summary-card">
-        <div class="summary-label">
-          Total Box
-        </div>
-  
-        <div class="summary-value">
-          {{ totalBoxes | number }}
-        </div>
+
+
+      <div class="legend-item">
+
+        <span
+          class="legend-color rack-group-fgh"
+        ></span>
+
+        <span>
+          Rack F / G / H
+        </span>
+
       </div>
-  
-  
-      <div class="summary-card">
-        <div class="summary-label">
-          Total Qty
-        </div>
-  
-        <div class="summary-value">
-          {{ totalQty | number }}
-        </div>
+
+
+      <div class="legend-item">
+
+        <span
+          class="legend-color empty-color"
+        ></span>
+
+        <span>
+          Empty
+        </span>
+
       </div>
-  
+
     </div>
-  
-  
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-  
-    <div class="main-grid">
-  
-  
-      <!-- ===================================================
-           LEFT : RACK MAP
-      ==================================================== -->
-  
-      <div class="rack-panel">
-  
-        <div class="panel-header">
-  
-          <div>
-            <div class="panel-title">
-              Rack Layout
-            </div>
-  
-            <div class="panel-description">
-              Click a location to view inventory
-            </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       SUMMARY
+  ====================================================== -->
+
+  <div class="summary-grid">
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Total Pallet
+      </div>
+
+      <div class="summary-value">
+        {{ totalPallets | number }}
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Total Label / Model
+      </div>
+
+      <div class="summary-value">
+        {{ totalLabels | number }}
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Total Box
+      </div>
+
+      <div class="summary-value">
+        {{ totalBoxes | number }}
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Total Qty
+      </div>
+
+      <div class="summary-value">
+        {{ totalQty | number }}
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <div class="main-grid">
+
+
+    <!-- ===================================================
+         RACK LAYOUT
+    ==================================================== -->
+
+    <div class="rack-panel">
+
+
+      <div class="panel-header">
+
+        <div>
+
+          <div class="panel-title">
+            Rack Layout
           </div>
-  
+
+          <div class="panel-description">
+            Colored location = Pallet exists
+          </div>
+
         </div>
-  
-  
-        <div class="rack-scroll">
-  
-          <div class="rack-layout">
-  
+
+      </div>
+
+
+
+      <div class="rack-scroll">
+
+
+        <div class="rack-layout">
+
+
+          <div
+            class="rack-block"
+            *ngFor="
+              let rack of rackDefinitions;
+              trackBy: trackByRack
+            "
+          >
+
+
+            <!-- ============================================
+                 RACK TITLE
+
+                 Title ใช้สีตาม Group เสมอ
+            ============================================= -->
+
             <div
-              class="rack-block"
-              *ngFor="
-                let rack of rackDefinitions;
-                trackBy: trackByRack
+              class="rack-title"
+              [ngClass]="
+                getRackGroupClass(
+                  rack.rackGroup
+                )
               "
             >
-  
-              <!-- RACK TITLE -->
-  
+
+              {{ rack.name }}
+
+            </div>
+
+
+
+            <!-- ============================================
+                 RACK BODY
+            ============================================= -->
+
+            <div class="rack-body">
+
+
               <div
-                class="rack-title"
-                [ngClass]="rack.colorType"
+                class="rack-row"
+                *ngFor="
+                  let row of getRows(rack);
+                  trackBy: trackByNumber
+                "
               >
-                {{ rack.name }}
-              </div>
-  
-  
-              <!-- RACK BODY -->
-  
-              <div class="rack-body">
-  
-                <div
-                  class="rack-row"
+
+
+                <button
+                  type="button"
+                  class="rack-slot"
                   *ngFor="
-                    let row of getRows(rack);
+                    let column of rack.columns;
                     trackBy: trackByNumber
                   "
-                >
-  
-                  <button
-                    type="button"
-                    class="rack-slot"
-                    *ngFor="
-                      let column of rack.columns;
-                      trackBy: trackByNumber
-                    "
-                    [ngClass]="[
-                      rack.colorType,
-                      hasInventory(rack, column, row)
-                        ? 'has-inventory'
-                        : '',
-                      isSelected(rack, column, row)
-                        ? 'selected'
-                        : ''
-                    ]"
-                    (click)="
-                      selectSlot(
-                        getSlot(
-                          rack,
-                          column,
-                          row
-                        )
+
+                  [ngClass]="{
+
+                    'has-pallet':
+                      hasPallet(
+                        rack,
+                        column,
+                        row
+                      ),
+
+                    'selected':
+                      isSelected(
+                        rack,
+                        column,
+                        row
+                      ),
+
+                    'rack-group-abc':
+                      hasPallet(
+                        rack,
+                        column,
+                        row
+                      ) &&
+                      rack.rackGroup === 'ABC',
+
+                    'rack-group-de':
+                      hasPallet(
+                        rack,
+                        column,
+                        row
+                      ) &&
+                      rack.rackGroup === 'DE',
+
+                    'rack-group-fgh':
+                      hasPallet(
+                        rack,
+                        column,
+                        row
+                      ) &&
+                      rack.rackGroup === 'FGH'
+
+                  }"
+
+                  (click)="
+                    selectSlot(
+                      getSlot(
+                        rack,
+                        column,
+                        row
                       )
+                    )
+                  "
+                >
+
+
+                  <!-- SLOT NUMBER -->
+
+                  <span class="slot-code">
+
+                    {{
+                      buildSlotCode(
+                        column,
+                        row
+                      )
+                    }}
+
+                  </span>
+
+
+
+                  <!-- ======================================
+                       BADGE = จำนวน Label / Model
+
+                       ไม่ใช่จำนวน Pallet
+                  ======================================= -->
+
+                  <span
+                    class="label-count"
+                    *ngIf="
+                      getLabelCount(
+                        rack,
+                        column,
+                        row
+                      ) > 0
                     "
                   >
-  
-                    <span class="slot-code">
-                      {{
-                        buildSlotCode(
-                          column,
-                          row
-                        )
-                      }}
-                    </span>
-  
-  
-                    <span
-                      class="pallet-count"
-                      *ngIf="
-                        getPalletCount(
-                          rack,
-                          column,
-                          row
-                        ) > 0
-                      "
-                    >
-                      {{
-                        getPalletCount(
-                          rack,
-                          column,
-                          row
-                        )
-                      }}
-                    </span>
-  
-                  </button>
-  
-                </div>
-  
+
+                    {{
+                      getLabelCount(
+                        rack,
+                        column,
+                        row
+                      )
+                    }}
+
+                  </span>
+
+
+                </button>
+
+
               </div>
-  
+
+
             </div>
-  
+
+
           </div>
-  
+
+
         </div>
-  
+
+
       </div>
-  
-  
-  
-      <!-- ===================================================
-           RIGHT : INVENTORY DETAIL
-      ==================================================== -->
-  
-      <div class="detail-panel">
-  
-  
-        <!-- =================================================
-             NO SLOT
-        ================================================== -->
-  
-        <div
-          class="empty-selection"
-          *ngIf="!selectedSlot"
-        >
-  
-          <div class="empty-icon">
-            ▦
-          </div>
-  
-          <div class="empty-title">
-            Select Rack Location
-          </div>
-  
-          <div class="empty-text">
-            Click a location on the rack layout
-            to view Pallet, Label and Box details.
-          </div>
-  
+
+
+    </div>
+
+
+
+    <!-- ===================================================
+         INVENTORY DETAIL
+    ==================================================== -->
+
+    <div class="detail-panel">
+
+
+      <!-- =================================================
+           NOTHING SELECTED
+      ================================================== -->
+
+      <div
+        class="empty-selection"
+        *ngIf="!selectedSlot"
+      >
+
+        <div class="empty-icon">
+          ▦
         </div>
-  
-  
-  
-        <!-- =================================================
-             SELECTED SLOT
-        ================================================== -->
-  
-        <ng-container *ngIf="selectedSlot">
-  
-  
-          <!-- ===============================================
-               SLOT HEADER
-          ================================================ -->
-  
-          <div class="selected-header">
-  
-            <div>
-  
-              <div class="selected-label">
-                Selected Location
-              </div>
-  
-              <div class="selected-code">
-                {{ selectedSlot.rack }}
+
+        <div class="empty-title">
+          Select Rack Location
+        </div>
+
+        <div class="empty-text">
+
+          Click a Rack No. to view
+          Pallet, Label and Box details.
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           SELECTED SLOT
+      ================================================== -->
+
+      <ng-container
+        *ngIf="selectedSlot"
+      >
+
+
+        <!-- ===============================================
+             SELECTED LOCATION
+        ================================================ -->
+
+        <div class="selected-header">
+
+
+          <div>
+
+            <div class="selected-label">
+              Selected Location
+            </div>
+
+            <div class="selected-code">
+
+              {{ selectedSlot.rack }}
+
+              <span class="selected-slash">
                 /
-                {{ selectedSlot.displayCode }}
-              </div>
-  
+              </span>
+
+              {{ selectedSlot.displayCode }}
+
             </div>
-  
-            <div
-              class="slot-state"
-              [class.empty]="
-                selectedSlot.pallets.length === 0
-              "
-            >
-  
-              {{
-                selectedSlot.pallets.length > 0
-                  ? 'OCCUPIED'
-                  : 'EMPTY'
-              }}
-  
-            </div>
-  
+
           </div>
-  
-  
-  
-          <!-- ===============================================
+
+
+          <div
+            class="slot-state"
+            [class.empty]="
+              !selectedPallet
+            "
+          >
+
+            {{
+              selectedPallet
+                ? 'OCCUPIED'
+                : 'EMPTY'
+            }}
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- ===============================================
+             SLOT EMPTY
+        ================================================ -->
+
+        <div
+          class="slot-empty-message"
+          *ngIf="
+            !selectedPallet
+          "
+        >
+
+          <div class="empty-box-icon">
+            □
+          </div>
+
+          <div class="empty-slot-title">
+            Empty Location
+          </div>
+
+          <div class="empty-slot-text">
+            No pallet in this Rack No.
+          </div>
+
+        </div>
+
+
+
+        <!-- ===============================================
+             HAS PALLET
+        ================================================ -->
+
+        <ng-container
+          *ngIf="
+            selectedPallet
+          "
+        >
+
+
+          <!-- =============================================
                SLOT SUMMARY
-          ================================================ -->
-  
+          ============================================== -->
+
           <div class="slot-summary">
-  
+
+
             <div class="slot-summary-item">
-  
+
               <span>
                 Pallet
               </span>
-  
+
               <strong>
-                {{
-                  selectedSlot.pallets.length
-                  | number
-                }}
+                1
               </strong>
-  
+
             </div>
-  
-  
+
+
             <div class="slot-summary-item">
-  
+
               <span>
                 Label
               </span>
-  
+
               <strong>
                 {{
                   selectedSlotLabelCount
                   | number
                 }}
               </strong>
-  
+
             </div>
-  
-  
+
+
             <div class="slot-summary-item">
-  
+
               <span>
                 Box
               </span>
-  
+
               <strong>
                 {{
                   selectedSlotBoxCount
                   | number
                 }}
               </strong>
-  
+
             </div>
-  
-  
+
+
             <div class="slot-summary-item">
-  
+
               <span>
                 Qty
               </span>
-  
+
               <strong>
                 {{
                   selectedSlotQty
                   | number
                 }}
               </strong>
-  
+
             </div>
-  
+
+
           </div>
-  
-  
-  
-          <!-- ===============================================
-               EMPTY SLOT
-          ================================================ -->
-  
-          <div
-            class="slot-empty-message"
-            *ngIf="
-              selectedSlot.pallets.length === 0
-            "
-          >
-  
-            <div class="empty-box-icon">
-              □
-            </div>
-  
+
+
+
+          <!-- =============================================
+               PALLET INFORMATION
+          ============================================== -->
+
+          <div class="pallet-info-card">
+
+
             <div>
-              No inventory in this location.
+
+
+              <div class="info-caption">
+                Pallet ID
+              </div>
+
+              <div class="pallet-id-main">
+
+                {{
+                  selectedPallet.palletId
+                }}
+
+              </div>
+
+
             </div>
-  
+
+
+
+            <div class="pallet-date">
+
+              <span>
+                Received
+              </span>
+
+              <strong>
+
+                {{
+                  selectedPallet.receivedDate
+                }}
+
+              </strong>
+
+            </div>
+
+
           </div>
-  
-  
-  
-          <!-- ===============================================
-               PALLET
-          ================================================ -->
-  
+
+
+
+          <!-- =============================================
+               LABEL / MODEL
+          ============================================== -->
+
+          <div class="section-title-row label-section">
+
+
+            <div class="section-title">
+
+              Label / Model
+
+            </div>
+
+
+            <div class="section-count">
+
+              {{
+                selectedPallet.labels.length
+              }}
+
+              model(s)
+
+            </div>
+
+
+          </div>
+
+
+
+          <div class="label-list">
+
+
+            <button
+              type="button"
+              class="label-card"
+              *ngFor="
+                let label of selectedPallet.labels;
+                trackBy: trackByLabel
+              "
+
+              [class.active]="
+                selectedLabel?.labelId ===
+                label.labelId
+              "
+
+              (click)="
+                selectLabel(
+                  label
+                )
+              "
+            >
+
+
+              <div class="label-top">
+
+
+                <div>
+
+
+                  <div class="label-id">
+
+                    Label ID :
+                    {{ label.labelId }}
+
+                  </div>
+
+
+                  <div class="item-no">
+
+                    {{ label.itemNo }}
+
+                  </div>
+
+
+                </div>
+
+
+
+                <div class="label-qty">
+
+                  {{
+                    label.qty
+                    | number
+                  }}
+
+                </div>
+
+
+              </div>
+
+
+
+              <div class="item-name">
+
+                {{ label.itemName }}
+
+              </div>
+
+
+
+              <div class="label-meta">
+
+
+                <span>
+
+                  Die
+
+                  <strong>
+                    {{ label.dieNo }}
+                  </strong>
+
+                </span>
+
+
+                <span>
+
+                  OQC
+
+                  <strong>
+                    {{ label.oqcLotNo }}
+                  </strong>
+
+                </span>
+
+
+                <span>
+
+                  Full
+
+                  <strong>
+                    {{
+                      getFullBoxCount(
+                        label
+                      )
+                    }}
+                  </strong>
+
+                </span>
+
+
+                <span>
+
+                  Partial
+
+                  <strong>
+                    {{
+                      getPartialBoxCount(
+                        label
+                      )
+                    }}
+                  </strong>
+
+                </span>
+
+
+              </div>
+
+
+            </button>
+
+
+          </div>
+
+
+
+          <!-- =============================================
+               BOX
+          ============================================== -->
+
           <ng-container
             *ngIf="
-              selectedSlot.pallets.length > 0
+              selectedLabel
             "
           >
-  
-            <div class="section-title-row">
-  
-              <div class="section-title">
-                Pallet
-              </div>
-  
-              <div class="section-count">
-                {{
-                  selectedSlot.pallets.length
-                }}
-                pallet(s)
-              </div>
-  
-            </div>
-  
-  
-            <div class="pallet-list">
-  
-              <button
-                type="button"
-                class="pallet-card"
-                *ngFor="
-                  let pallet of selectedSlot.pallets;
-                  trackBy: trackByPallet
-                "
-                [class.active]="
-                  selectedPallet?.palletId ===
-                  pallet.palletId
-                "
-                (click)="
-                  selectPallet(
-                    pallet
-                  )
-                "
-              >
-  
-                <div>
-  
-                  <div class="pallet-id">
-                    {{ pallet.palletId }}
-                  </div>
-  
-                  <div class="pallet-sub">
-                    {{
-                      pallet.labels.length
-                    }}
-                    Label
-                    ·
-                    {{ pallet.receivedDate }}
-                  </div>
-  
-                </div>
-  
-  
-                <span
-                  class="pallet-status"
-                  [class.partial]="
-                    pallet.status === 'PARTIAL'
-                  "
-                >
-                  {{ pallet.status }}
-                </span>
-  
-              </button>
-  
-            </div>
-  
-  
-  
-            <!-- =============================================
-                 LABEL
-            ============================================== -->
-  
-            <ng-container
-              *ngIf="selectedPallet"
-            >
-  
-              <div class="section-title-row label-section">
-  
+
+
+            <div class="section-title-row box-section">
+
+
+              <div>
+
                 <div class="section-title">
-                  Label / Item
+
+                  Box Detail
+
                 </div>
-  
-                <div class="section-count">
-                  {{
-                    selectedPallet.labels.length
-                  }}
-                  label(s)
+
+                <div class="box-description">
+
+                  Full box first,
+                  partial box last
+
                 </div>
-  
+
               </div>
-  
-  
-              <div class="label-list">
-  
-                <button
-                  type="button"
-                  class="label-card"
-                  *ngFor="
-                    let label of selectedPallet.labels;
-                    trackBy: trackByLabel
-                  "
-                  [class.active]="
-                    selectedLabel?.labelId ===
-                    label.labelId
-                  "
-                  (click)="
-                    selectLabel(
-                      label
-                    )
-                  "
-                >
-  
-                  <div class="label-top">
-  
-                    <div>
-  
-                      <div class="label-id">
-                        Label:
-                        {{ label.labelId }}
-                      </div>
-  
-                      <div class="item-no">
-                        {{ label.itemNo }}
-                      </div>
-  
-                    </div>
-  
-  
-                    <div class="label-qty">
+
+
+              <div class="box-count-summary">
+
+
+                <span class="full-count">
+
+                  Full
+
+                  <strong>
+
+                    {{
+                      getFullBoxCount(
+                        selectedLabel
+                      )
+                    }}
+
+                  </strong>
+
+                </span>
+
+
+                <span class="partial-count">
+
+                  Partial
+
+                  <strong>
+
+                    {{
+                      getPartialBoxCount(
+                        selectedLabel
+                      )
+                    }}
+
+                  </strong>
+
+                </span>
+
+
+              </div>
+
+
+            </div>
+
+
+
+            <div class="box-table-wrap">
+
+
+              <table class="box-table">
+
+
+                <thead>
+
+
+                  <tr>
+
+
+                    <th class="col-box-no-index">
+                      No.
+                    </th>
+
+
+                    <th>
+                      Box No.
+                    </th>
+
+
+                    <th>
+                      Lot No.
+                    </th>
+
+
+                    <th class="qty-column">
+                      Qty
+                    </th>
+
+
+                    <!-- NEW -->
+
+                    <th class="type-column">
+                      Type
+                    </th>
+
+
+                  </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                  <tr
+                    *ngFor="
+                      let box of getSortedBoxes(
+                        selectedLabel
+                      );
+                      let i = index;
+                      trackBy: trackByBox
+                    "
+
+                    [ngClass]="{
+
+                      'partial-row':
+                        box.type === 'PARTIAL',
+
+                      'rack-group-abc':
+                        box.type === 'PARTIAL' &&
+                        selectedSlot.rackGroup === 'ABC',
+
+                      'rack-group-de':
+                        box.type === 'PARTIAL' &&
+                        selectedSlot.rackGroup === 'DE',
+
+                      'rack-group-fgh':
+                        box.type === 'PARTIAL' &&
+                        selectedSlot.rackGroup === 'FGH'
+
+                    }"
+                  >
+
+
+                    <td class="box-index">
+
+                      {{ i + 1 }}
+
+                    </td>
+
+
+                    <td class="box-no">
+
+                      {{ box.boxNo }}
+
+                    </td>
+
+
+                    <td>
+
+                      {{ box.lotNo }}
+
+                    </td>
+
+
+                    <td class="qty-column">
+
                       {{
-                        label.qty
+                        box.qty
                         | number
                       }}
-                    </div>
-  
-                  </div>
-  
-  
-                  <div class="item-name">
-                    {{ label.itemName }}
-                  </div>
-  
-  
-                  <div class="label-meta">
-  
-                    <span>
-                      DIE
-                      <strong>
-                        {{ label.dieNo }}
-                      </strong>
-                    </span>
-  
-                    <span>
-                      OQC
-                      <strong>
-                        {{ label.oqcLotNo }}
-                      </strong>
-                    </span>
-  
-                    <span>
-                      BOX
-                      <strong>
-                        {{
-                          label.boxes.length
-                        }}
-                      </strong>
-                    </span>
-  
-                  </div>
-  
-                </button>
-  
-              </div>
-  
-            </ng-container>
-  
-  
-  
-            <!-- =============================================
-                 BOX DETAIL
-            ============================================== -->
-  
-            <ng-container
-              *ngIf="selectedLabel"
-            >
-  
-              <div class="section-title-row box-section">
-  
-                <div class="section-title">
-                  Box Detail
-                </div>
-  
-                <div class="section-count">
-                  {{
-                    selectedLabel.boxes.length
-                  }}
-                  box(es)
-                </div>
-  
-              </div>
-  
-  
-              <div class="box-table-wrap">
-  
-                <table class="box-table">
-  
-                  <thead>
-  
-                    <tr>
-  
-                      <th>
-                        No.
-                      </th>
-  
-                      <th>
-                        Box No.
-                      </th>
-  
-                      <th>
-                        Lot No.
-                      </th>
-  
-                      <th class="qty-column">
-                        Qty
-                      </th>
-  
-                    </tr>
-  
-                  </thead>
-  
-  
-                  <tbody>
-  
-                    <tr
-                      *ngFor="
-                        let box of selectedLabel.boxes;
-                        let i = index;
-                        trackBy: trackByBox
-                      "
-                    >
-  
-                      <td>
-                        {{ i + 1 }}
-                      </td>
-  
-                      <td class="box-no">
-                        {{ box.boxNo }}
-                      </td>
-  
-                      <td>
-                        {{ box.lotNo }}
-                      </td>
-  
-                      <td class="qty-column">
-                        {{ box.qty | number }}
-                      </td>
-  
-                    </tr>
-  
-                  </tbody>
-  
-                </table>
-  
-              </div>
-  
-            </ng-container>
-  
-  
+
+                    </td>
+
+
+                    <td class="type-column">
+
+
+                      <span
+                        class="box-type"
+                        [class.full]="
+                          box.type === 'FULL'
+                        "
+                        [class.partial]="
+                          box.type === 'PARTIAL'
+                        "
+                      >
+
+                        {{ box.type }}
+
+                      </span>
+
+
+                    </td>
+
+
+                  </tr>
+
+
+                </tbody>
+
+
+              </table>
+
+
+            </div>
+
+
           </ng-container>
-  
-  
+
+
         </ng-container>
-  
-  
-      </div>
-  
+
+
+      </ng-container>
+
+
     </div>
-  
+
+
   </div>
+
+
+</div>
