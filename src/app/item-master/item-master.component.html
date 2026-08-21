@@ -1,1 +1,623 @@
-<p>item-master works!</p>
+<div class="item-master-page">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+  
+    <div class="hero-card">
+  
+      <div class="hero-left">
+  
+        <div class="hero-eyebrow">
+          FINISH GOODS PALLET MASTER
+        </div>
+  
+        <div class="hero-title">
+          Item Master
+        </div>
+  
+        <div class="hero-description">
+          Manage item information and synchronize master data from PBASS.
+        </div>
+  
+      </div>
+  
+  
+      <div class="hero-badge">
+  
+        <span>
+          MASTER DATA
+        </span>
+  
+        <strong>
+          Part Master Control
+        </strong>
+  
+      </div>
+  
+    </div>
+  
+  
+  
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+  
+    <div class="summary-grid">
+  
+      <!-- TOTAL -->
+  
+      <div class="summary-card">
+  
+        <div class="summary-icon total-icon">
+          ▦
+        </div>
+  
+        <div>
+          <div class="summary-label">
+            TOTAL ITEM
+          </div>
+  
+          <div class="summary-value">
+            {{ rows.length | number }}
+          </div>
+        </div>
+  
+      </div>
+  
+  
+      <!-- GENERAL -->
+  
+      <div class="summary-card">
+  
+        <div class="summary-icon general-icon">
+          G
+        </div>
+  
+        <div>
+          <div class="summary-label">
+            GENERAL
+          </div>
+  
+          <div class="summary-value">
+            {{ totalGeneral | number }}
+          </div>
+        </div>
+  
+      </div>
+  
+  
+      <!-- LAMINATION -->
+  
+      <div class="summary-card">
+  
+        <div class="summary-icon lamination-icon">
+          L
+        </div>
+  
+        <div>
+          <div class="summary-label">
+            LAMINATION
+          </div>
+  
+          <div class="summary-value">
+            {{ totalLamination | number }}
+          </div>
+        </div>
+  
+      </div>
+  
+  
+      <!-- STATOR -->
+  
+      <div class="summary-card">
+  
+        <div class="summary-icon stator-icon">
+          S
+        </div>
+  
+        <div>
+          <div class="summary-label">
+            STATOR
+          </div>
+  
+          <div class="summary-value">
+            {{ totalStator | number }}
+          </div>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  
+  
+    <!-- =====================================================
+         FILTER
+    ====================================================== -->
+  
+    <div class="filter-card">
+  
+      <div class="filter-header">
+  
+        <div>
+          <div class="filter-title">
+            Filter
+          </div>
+  
+          <div class="filter-subtitle">
+            Search by Item No., Item Name, Item Class or Lot Size
+          </div>
+        </div>
+  
+  
+        <button
+          type="button"
+          class="reset-button"
+          [disabled]="isSyncing"
+          (click)="clearFilter()"
+        >
+          Reset
+        </button>
+  
+      </div>
+  
+  
+      <div class="filter-grid">
+  
+        <!-- ITEM NO -->
+  
+        <div class="form-group">
+  
+          <label>
+            ITEM NO.
+          </label>
+  
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter Item No."
+            [disabled]="isSyncing"
+            [(ngModel)]="searchItemNo"
+            (ngModelChange)="applyFilter()"
+          />
+  
+        </div>
+  
+  
+        <!-- ITEM NAME -->
+  
+        <div class="form-group">
+  
+          <label>
+            ITEM NAME
+          </label>
+  
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter Item Name"
+            [disabled]="isSyncing"
+            [(ngModel)]="searchItemName"
+            (ngModelChange)="applyFilter()"
+          />
+  
+        </div>
+  
+  
+        <!-- ITEM CLASS -->
+  
+        <div class="form-group">
+  
+          <label>
+            ITEM CLASS
+          </label>
+  
+          <select
+            class="form-control"
+            [disabled]="isSyncing"
+            [(ngModel)]="searchItemClass"
+            (ngModelChange)="applyFilter()"
+          >
+  
+            <option value="">
+              All Class
+            </option>
+  
+            <option value="G">
+              General
+            </option>
+  
+            <option value="L">
+              Lamination
+            </option>
+  
+            <option value="S">
+              Stator
+            </option>
+  
+          </select>
+  
+        </div>
+  
+  
+        <!-- LOT SIZE -->
+  
+        <div class="form-group">
+  
+          <label>
+            LOT SIZE
+          </label>
+  
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter Lot Size"
+            [disabled]="isSyncing"
+            [(ngModel)]="searchLotSize"
+            (ngModelChange)="applyFilter()"
+          />
+  
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  
+  
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+  
+    <div class="table-card">
+  
+      <!-- TOOLBAR -->
+  
+      <div class="table-toolbar">
+  
+        <div class="toolbar-left">
+  
+          <!-- TITLE -->
+  
+          <div>
+  
+            <div class="table-title">
+              Item Master List
+            </div>
+  
+            <div class="table-subtitle">
+  
+              Showing
+  
+              <strong>
+                {{ filteredRows.length | number }}
+              </strong>
+  
+              of
+  
+              <strong>
+                {{ rows.length | number }}
+              </strong>
+  
+              items
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- BUTTONS -->
+  
+          <div class="toolbar-actions">
+  
+            <button
+              type="button"
+              class="btn-add"
+              [disabled]="isSyncing"
+              (click)="addItem()"
+            >
+  
+              <span class="button-icon">
+                +
+              </span>
+  
+              Add Item
+  
+            </button>
+  
+  
+            <button
+              type="button"
+              class="btn-sync"
+              [disabled]="isSyncing"
+              (click)="syncPbass()"
+            >
+  
+              <span
+                class="button-icon sync-button-icon"
+                [class.spin]="isSyncing"
+              >
+                ↻
+              </span>
+  
+              {{
+                isSyncing
+                  ? 'Syncing...'
+                  : 'Sync PBASS'
+              }}
+  
+            </button>
+  
+          </div>
+  
+        </div>
+  
+  
+        <div class="record-pill">
+  
+          <span>
+            RECORDS
+          </span>
+  
+          <strong>
+            {{ filteredRows.length | number }}
+          </strong>
+  
+        </div>
+  
+      </div>
+  
+  
+  
+      <!-- ===================================================
+           LOADING
+      ==================================================== -->
+  
+      <div
+        class="loading-state"
+        *ngIf="isLoading"
+      >
+  
+        <div class="loading-spinner"></div>
+  
+        <div class="loading-title">
+          Loading Item Master
+        </div>
+  
+        <div class="loading-subtitle">
+          Please wait...
+        </div>
+  
+      </div>
+  
+  
+  
+      <!-- ===================================================
+           TABLE DATA
+      ==================================================== -->
+  
+      <div
+        class="table-wrapper"
+        *ngIf="!isLoading"
+      >
+  
+        <table class="master-table">
+  
+          <thead>
+  
+            <tr>
+  
+              <th class="col-no">
+                #
+              </th>
+  
+              <th class="col-item-no">
+                ITEM NO.
+              </th>
+  
+              <th>
+                ITEM NAME
+              </th>
+  
+              <th class="col-class">
+                ITEM CLASS
+              </th>
+  
+              <th class="col-lot">
+                LOT SIZE
+              </th>
+  
+              <th class="col-update">
+                LAST UPDATE
+              </th>
+  
+            </tr>
+  
+          </thead>
+  
+  
+          <tbody>
+  
+            <tr
+              *ngFor="
+                let row of filteredRows;
+                let i = index;
+                trackBy: trackById
+              "
+            >
+  
+              <!-- NO -->
+  
+              <td class="row-no">
+                {{ i + 1 }}
+              </td>
+  
+  
+              <!-- ITEM NO -->
+  
+              <td>
+  
+                <div class="item-no">
+                  {{ row.itemNo }}
+                </div>
+  
+              </td>
+  
+  
+              <!-- ITEM NAME -->
+  
+              <td>
+  
+                <div class="item-name">
+                  {{ row.itemName || '-' }}
+                </div>
+  
+              </td>
+  
+  
+              <!-- ITEM CLASS -->
+  
+              <td>
+  
+                <!-- GENERAL -->
+  
+                <span
+                  class="class-badge class-general"
+                  *ngIf="row.itemClass === 'G'"
+                >
+  
+                  <span class="class-code">
+                    G
+                  </span>
+  
+                  <span>
+                    General
+                  </span>
+  
+                </span>
+  
+  
+                <!-- LAMINATION -->
+  
+                <span
+                  class="class-badge class-lamination"
+                  *ngIf="row.itemClass === 'L'"
+                >
+  
+                  <span class="class-code">
+                    L
+                  </span>
+  
+                  <span>
+                    Lamination
+                  </span>
+  
+                </span>
+  
+  
+                <!-- STATOR -->
+  
+                <span
+                  class="class-badge class-stator"
+                  *ngIf="row.itemClass === 'S'"
+                >
+  
+                  <span class="class-code">
+                    S
+                  </span>
+  
+                  <span>
+                    Stator
+                  </span>
+  
+                </span>
+  
+  
+                <!-- OTHER -->
+  
+                <span
+                  class="class-empty"
+                  *ngIf="
+                    row.itemClass !== 'G' &&
+                    row.itemClass !== 'L' &&
+                    row.itemClass !== 'S'
+                  "
+                >
+                  -
+                </span>
+  
+              </td>
+  
+  
+              <!-- LOT -->
+  
+              <td class="lot-size">
+  
+                {{
+                  row.lotSize == null
+                    ? '-'
+                    : (row.lotSize | number)
+                }}
+  
+              </td>
+  
+  
+              <!-- UPDATE -->
+  
+              <td class="last-update">
+  
+                {{
+                  formatDate(
+                    row.timeStmp
+                  )
+                }}
+  
+              </td>
+  
+            </tr>
+  
+  
+  
+            <!-- EMPTY -->
+  
+            <tr
+              *ngIf="
+                filteredRows.length === 0
+              "
+            >
+  
+              <td
+                colspan="6"
+                class="empty-table"
+              >
+  
+                <div class="empty-state">
+  
+                  <div class="empty-icon">
+                    ⌕
+                  </div>
+  
+                  <div class="empty-title">
+                    No Item Master Found
+                  </div>
+  
+                  <div class="empty-subtitle">
+                    Try changing your filter conditions.
+                  </div>
+  
+                </div>
+  
+              </td>
+  
+            </tr>
+  
+          </tbody>
+  
+        </table>
+  
+      </div>
+  
+    </div>
+  
+  </div>
