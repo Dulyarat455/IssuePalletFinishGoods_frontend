@@ -1,159 +1,416 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4 fg-sidebar">
-  <!-- Brand Logo -->
+
+  <!-- =====================================================
+       BRAND
+  ====================================================== -->
+
   <a routerLink="/" class="brand-link fg-brand-link">
+
     <div class="brand-logo-wrap">
+
       <img
         src="dist/img/product2.png"
         alt="Finish Goods Logo"
         class="brand-image fg-brand-image"
       />
+
     </div>
 
+
     <span class="brand-text fg-brand-text">
-      <span class="brand-small">FG PALLET</span>
-      <span class="brand-title">Finish Goods</span>
+
+      <span class="brand-small">
+        FG PALLET
+      </span>
+
+      <span class="brand-title">
+        Finish Goods
+      </span>
+
     </span>
+
   </a>
 
-  <!-- Sidebar -->
+
+
+  <!-- =====================================================
+       SIDEBAR
+  ====================================================== -->
+
   <div class="sidebar fg-sidebar-body">
-    <!-- User Panel -->
-    @if (name != undefined) {
-      <div class="user-panel fg-user-panel">
-        <div class="fg-user-card">
-          <div class="image fg-user-avatar">
-            <img
-              src="dist/img/employee.png"
-              class="img-circle"
-              alt="User Image"
-            />
+
+
+    <!-- ===================================================
+         USER PROFILE
+    ==================================================== -->
+
+    @if (name) {
+
+      <div class="fg-user-panel">
+
+        <div class="fg-profile-card">
+
+
+          <!-- =============================================
+               USER TOP
+          ============================================== -->
+
+          <div class="fg-profile-top">
+
+            <div class="fg-user-avatar">
+
+              <img
+                src="dist/img/employee.png"
+                class="img-circle"
+                alt="User Image"
+              />
+
+            </div>
+
+
+            <div class="fg-user-info">
+
+              <div class="fg-user-emp">
+                {{ empNo || 'Operator' }}
+              </div>
+
+              <div class="fg-user-name">
+                {{ name || 'Finish Goods User' }}
+              </div>
+
+            </div>
+
           </div>
 
-          <div class="info fg-user-info">
-            <h5>{{ empNo || 'Operator' }}</h5>
-            <small>{{ level || 'Finish Goods User' }}</small>
+
+
+          <!-- =============================================
+               ROLE / GROUP
+          ============================================== -->
+
+          <div class="fg-profile-grid">
+
+
+            <div class="fg-profile-item">
+
+              <div class="profile-label">
+                ROLE
+              </div>
+
+              <div class="profile-value">
+                {{ getRoleDisplay() }}
+              </div>
+
+            </div>
+
+
+            <div class="fg-profile-item">
+
+              <div class="profile-label">
+                GROUP
+              </div>
+
+              <div class="profile-value">
+                {{ getGroupDisplay() }}
+              </div>
+
+            </div>
+
+
           </div>
+
+
+
+          <!-- =============================================
+               SECTION
+          ============================================== -->
+
+          <div class="fg-profile-item fg-section-item">
+
+            <div class="profile-label">
+              SECTION
+            </div>
+
+            <div class="profile-value">
+              {{ getSectionDisplay() }}
+            </div>
+
+          </div>
+
+
         </div>
 
-        <button class="btn fg-signout-btn w-100" (click)="signout()">
-          <i class="fas fa-sign-out-alt me-2"></i>
-          Sign Out
+
+
+        <!-- SIGN OUT -->
+
+        <button
+          type="button"
+          class="btn fg-signout-btn w-100"
+          (click)="signout()"
+        >
+
+          <i class="fas fa-sign-out-alt"></i>
+
+          <span>
+            Sign Out
+          </span>
+
         </button>
+
       </div>
+
     }
 
-    <!-- Menu -->
+
+
+    <!-- ===================================================
+         MENU
+    ==================================================== -->
+
     <nav class="mt-2">
+
       <ul
         class="nav nav-pills nav-sidebar flex-column fg-nav"
         data-widget="treeview"
         role="menu"
         style="padding-bottom: 60px"
       >
-        <!-- Main Menu -->
+
+
+        <!-- HOME -->
+
         <li class="nav-item mb-1">
-          <a routerLink="/" class="nav-link" routerLinkActive="active">
+
+          <a
+            routerLink="/"
+            class="nav-link"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+
             <i class="nav-icon fas fa-home"></i>
-            <p class="ms-2">หน้าหลัก</p>
+
+            <p class="ms-2">
+              หน้าหลัก
+            </p>
+
           </a>
+
         </li>
 
 
-        <!-- Add Member -->
-         <li class="nav-item mb-1">
-          <a routerLink="/signUp" class="nav-link" routerLinkActive="active">
+
+        <!-- ADD MEMBER -->
+
+        <li class="nav-item mb-1">
+
+          <a
+            routerLink="/signUp"
+            class="nav-link"
+            routerLinkActive="active"
+          >
+
             <i class="nav-icon fas fa-user-plus"></i>
-            <p class="ms-2">Add Member</p>
+
+            <p class="ms-2">
+              Add Member
+            </p>
+
           </a>
+
         </li>
 
-        <!-- layout -->
+
+
+        <!-- RACK LAYOUT -->
+
         <li class="nav-item mb-1">
-          <a routerLink="/layOut" class="nav-link" routerLinkActive="active">
+
+          <a
+            routerLink="/layOut"
+            class="nav-link"
+            routerLinkActive="active"
+          >
+
             <i class="nav-icon fas fa-th-large"></i>
-            <p class="ms-2">Rack LayOut </p>
+
+            <p class="ms-2">
+              Rack LayOut
+            </p>
+
           </a>
+
         </li>
 
-        <!-- Issue Pallet -->
+
+
+        <!-- ISSUE PALLET -->
+
         <li class="nav-item mb-1">
-          <a routerLink="/issue" class="nav-link" routerLinkActive="active">
-            <i class="nav-icon fas fa-pallet"></i>
-            <p class="ms-2">Issue Pallet</p>
+
+          <a
+            routerLink="/issue"
+            class="nav-link"
+            routerLinkActive="active"
+          >
+
+            <i class="nav-icon fas fa-boxes"></i>
+
+            <p class="ms-2">
+              Issue Pallet
+            </p>
+
           </a>
+
         </li>
 
 
-         
 
-        <!-- Data Master -->
+        <!-- =================================================
+             DATA MASTER
+        ================================================== -->
+
         <li class="nav-item">
+
           <h6 class="sidebar-heading fg-sidebar-heading">
-            <span>Data Master</span>
+
+            <span>
+              Data Master
+            </span>
+
           </h6>
 
-          <a href="#" class="nav-link">
+
+          <a
+            href="#"
+            class="nav-link"
+            (click)="$event.preventDefault()"
+          >
+
             <i class="nav-icon fas fa-database"></i>
+
             <p class="ms-2">
+
               Master
+
               <i class="fas fa-angle-right ms-auto"></i>
+
             </p>
+
           </a>
 
+
           <ul class="nav nav-treeview fg-treeview">
+
             <li class="nav-item">
+
               <a
                 routerLink="/itemMaster"
                 class="nav-link"
                 routerLinkActive="active"
               >
+
                 <i class="fas fa-database nav-icon"></i>
-                <p class="ms-2">Item Master</p>
+
+                <p class="ms-2">
+                  Item Master
+                </p>
+
               </a>
+
             </li>
 
           </ul>
+
         </li>
 
-        <!-- Report Views -->
+
+
+        <!-- =================================================
+             REPORT
+        ================================================== -->
+
         <li class="nav-item">
+
           <h6 class="sidebar-heading fg-sidebar-heading">
-            <span>Report Views</span>
+
+            <span>
+              Report Views
+            </span>
+
           </h6>
 
-          <a href="#" class="nav-link">
+
+          <a
+            href="#"
+            class="nav-link"
+            (click)="$event.preventDefault()"
+          >
+
             <i class="nav-icon fas fa-chart-pie"></i>
+
             <p class="ms-2">
+
               Reports
+
               <i class="fas fa-angle-right ms-auto"></i>
+
             </p>
+
           </a>
 
+
           <ul class="nav nav-treeview fg-treeview">
+
+
             <li class="nav-item mb-1">
+
               <a
                 routerLink="/dashboard"
                 class="nav-link"
                 routerLinkActive="active"
               >
+
                 <i class="nav-icon fas fa-chart-line"></i>
-                <p class="ms-2">Dashboard</p>
+
+                <p class="ms-2">
+                  Dashboard
+                </p>
+
               </a>
+
             </li>
 
+
             <li class="nav-item mb-1">
+
               <a
                 routerLink="/scrap-report"
                 class="nav-link"
                 routerLinkActive="active"
               >
-                <i class="nav-icon fas fa-file-lines"></i>
-                <p class="ms-2">FG Report</p>
+
+                <i class="nav-icon fas fa-file-alt"></i>
+
+                <p class="ms-2">
+                  FG Report
+                </p>
+
               </a>
+
             </li>
+
+
           </ul>
+
         </li>
+
+
       </ul>
+
     </nav>
+
   </div>
+
 </aside>

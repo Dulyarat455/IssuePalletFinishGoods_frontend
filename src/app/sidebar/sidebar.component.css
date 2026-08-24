@@ -1,393 +1,919 @@
-/* =========================
-   Sidebar Theme - Finish Goods Pallet
-   UI Only / AdminLTE Safe
-   ไม่ยุ่งกับ layout เปิด-ปิด sidebar
-========================= */
-
-/* =========================
-   Main Sidebar
-========================= */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .fg-sidebar {
   background:
-    linear-gradient(180deg, #071a23 0%, #0b1f2a 48%, #07111f 100%) !important;
-  border-right: 1px solid rgba(20, 184, 166, 0.18);
-  box-shadow: 10px 0 28px rgba(15, 23, 42, 0.16);
+    linear-gradient(
+      180deg,
+      #171a27 0%,
+      #1d1f2d 55%,
+      #181a26 100%
+    ) !important;
+
+  border-right:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    8px 0 24px
+    rgba(15, 23, 42, 0.2);
 }
 
-/* =========================
-   Brand
-========================= */
+
+/* =========================================================
+   BRAND
+========================================================= */
 
 .fg-brand-link {
   min-height: 72px;
-  padding: 12px 14px !important;
-  text-decoration: none !important;
-  border-bottom: 1px solid rgba(20, 184, 166, 0.16) !important;
+
+  padding:
+    12px 14px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  text-decoration:
+    none !important;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07) !important;
+
   background:
-    linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(20, 184, 166, 0.07));
-  display: flex !important;
-  align-items: center;
-  gap: 12px;
+    rgba(255, 255, 255, 0.015);
 }
+
 
 .fg-brand-link:hover {
   background:
-    linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(20, 184, 166, 0.1));
+    rgba(255, 255, 255, 0.035);
 }
+
 
 .brand-logo-wrap {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #10b981, #14b8a6);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.24);
-  flex: 0 0 auto;
+  width:
+    42px;
+
+  height:
+    42px;
+
+  flex:
+    0 0 42px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #13b981,
+      #14b8a6
+    );
+
+  box-shadow:
+    0 5px 13px
+    rgba(20, 184, 166, 0.2);
 }
+
 
 .fg-brand-image {
-  width: 30px !important;
-  height: 30px !important;
-  object-fit: contain;
-  padding: 0 !important;
-  margin: 0 !important;
-  float: none !important;
-  opacity: 1 !important;
+  width:
+    29px !important;
+
+  height:
+    29px !important;
+
+  object-fit:
+    contain;
+
+  float:
+    none !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  opacity:
+    1 !important;
 }
+
 
 .fg-brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-  min-width: 0;
+  min-width:
+    0;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  line-height:
+    1.1;
 }
+
 
 .brand-small {
-  color: #34d399;
-  font-size: 10px;
-  font-weight: 950;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  color:
+    #35d399;
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    1.8px;
 }
+
 
 .brand-title {
-  margin-top: 4px;
-  color: #ffffff;
-  font-size: 21px;
-  font-weight: 950;
-  letter-spacing: -0.4px;
-  white-space: nowrap;
+  margin-top:
+    4px;
+
+  color:
+    #ffffff;
+
+  font-size:
+    20px;
+
+  font-weight:
+    900;
+
+  white-space:
+    nowrap;
 }
 
-/* =========================
-   Sidebar Body
-========================= */
+
+/* =========================================================
+   SIDEBAR BODY
+========================================================= */
 
 .fg-sidebar-body {
-  padding: 14px 8px 20px;
+  padding:
+    13px 8px 22px;
 }
+
 
 .fg-sidebar-body::-webkit-scrollbar {
-  width: 6px;
+  width:
+    5px;
 }
+
 
 .fg-sidebar-body::-webkit-scrollbar-track {
-  background: transparent;
+  background:
+    transparent;
 }
+
 
 .fg-sidebar-body::-webkit-scrollbar-thumb {
-  background: rgba(20, 184, 166, 0.34);
-  border-radius: 999px;
+  background:
+    rgba(148, 163, 184, 0.26);
+
+  border-radius:
+    10px;
 }
 
-.fg-sidebar-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 184, 166, 0.48);
-}
 
-/* =========================
-   User Panel
-========================= */
+/* =========================================================
+   USER PANEL
+========================================================= */
 
 .fg-user-panel {
-  margin-top: 10px !important;
-  padding-bottom: 14px !important;
-  margin-bottom: 16px !important;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+  margin-top:
+    0 !important;
+
+  margin-bottom:
+    16px !important;
+
+  padding-bottom:
+    15px !important;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07) !important;
 }
 
-.fg-user-card {
-  padding: 13px;
-  margin-bottom: 12px;
-  border-radius: 18px;
+
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.fg-profile-card {
+  padding:
+    13px;
+
+  margin-bottom:
+    10px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.11);
+
+  border-radius:
+    16px;
+
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(20, 184, 166, 0.08));
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.075),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  box-shadow:
+    0 6px 16px
+    rgba(0, 0, 0, 0.12);
 }
+
+
+/* =========================================================
+   PROFILE TOP
+========================================================= */
+
+.fg-profile-top {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  padding:
+    1px 2px 12px;
+}
+
 
 .fg-user-avatar {
-  flex: 0 0 auto;
+  flex:
+    0 0 auto;
 }
+
 
 .fg-user-avatar img {
-  width: 46px !important;
-  height: 46px !important;
-  object-fit: cover;
-  border: 2px solid rgba(52, 211, 153, 0.55);
-  background: #ecfdf5;
-  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.16);
+  width:
+    49px !important;
+
+  height:
+    49px !important;
+
+  object-fit:
+    cover;
+
+  padding:
+    2px;
+
+  background:
+    #eef2f7;
+
+  border:
+    2px solid
+    #8ea0b8;
+
+  box-shadow:
+    0 2px 6px
+    rgba(0, 0, 0, 0.28);
 }
+
 
 .fg-user-info {
-  min-width: 0;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
+  min-width:
+    0;
+
+  padding-left:
+    0 !important;
+
+  margin-left:
+    0 !important;
 }
 
-.fg-user-info h5 {
-  margin: 0 0 3px;
-  color: #ffffff !important;
-  font-size: 14px;
-  font-weight: 950;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+.fg-user-emp {
+  color:
+    #ffffff;
+
+  font-size:
+    17px;
+
+  font-weight:
+    900;
+
+  line-height:
+    1.1;
+
+  white-space:
+    nowrap;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
 }
 
-.fg-user-info small {
-  color: #a7f3d0 !important;
-  font-size: 11px;
-  font-weight: 800;
+
+.fg-user-name {
+  margin-top:
+    6px;
+
+  color:
+    #ffffff;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.2;
+
+  white-space:
+    nowrap;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
 }
 
-/* =========================
-   Sign Out Button
-========================= */
+
+/* =========================================================
+   PROFILE INFORMATION GRID
+========================================================= */
+
+.fg-profile-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:
+    10px;
+
+  margin-bottom:
+    10px;
+}
+
+
+.fg-profile-item {
+  min-width:
+    0;
+
+  padding:
+    12px 11px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(255, 255, 255, 0.055);
+}
+
+
+.profile-label {
+  color:
+    #aeb8c9;
+
+  font-size:
+    10px;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.06em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.profile-value {
+  margin-top:
+    8px;
+
+  color:
+    #ffffff;
+
+  font-size:
+    13px;
+
+  font-weight:
+    800;
+
+  line-height:
+    1.2;
+
+  overflow-wrap:
+    anywhere;
+}
+
+
+/* =========================================================
+   SECTION FULL WIDTH
+========================================================= */
+
+.fg-section-item {
+  width:
+    100%;
+
+  min-height:
+    66px;
+}
+
+
+/* =========================================================
+   SIGN OUT
+========================================================= */
 
 .fg-signout-btn {
-  min-height: 42px;
-  border: none !important;
-  border-radius: 14px !important;
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #fb7185 0%, #f97316 100%) !important;
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 0.2px;
-  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.22);
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  min-height:
+    39px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    7px;
+
+  border:
+    1px solid
+    rgba(248, 113, 113, 0.32) !important;
+
+  border-radius:
+    10px !important;
+
+  background:
+    rgba(220, 53, 69, 0.13) !important;
+
+  color:
+    #fda4af !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    12px;
+
+  font-weight:
+    800;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
+
 
 .fg-signout-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(249, 115, 22, 0.28);
+  background:
+    #dc3545 !important;
+
+  color:
+    #ffffff !important;
 }
 
-.fg-signout-btn:active {
-  transform: translateY(0);
-}
 
-/* =========================
-   Section Heading
-========================= */
+/* =========================================================
+   SECTION HEADING
+========================================================= */
 
 .fg-sidebar-heading {
-  margin-top: 18px;
-  margin-bottom: 8px !important;
-  padding: 0 12px;
-  color: #a7f3d0 !important;
-  font-size: 11px;
-  font-weight: 950;
-  letter-spacing: 1.7px;
-  text-transform: uppercase;
-  opacity: 1;
+  margin-top:
+    17px;
+
+  margin-bottom:
+    7px !important;
+
+  padding:
+    0 11px;
+
+  color:
+    #8592a8 !important;
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    1.5px;
+
+  text-transform:
+    uppercase;
 }
+
 
 .fg-sidebar-heading span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
 }
+
 
 .fg-sidebar-heading span::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #22c55e;
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
+  content:
+    "";
+
+  width:
+    5px;
+
+  height:
+    5px;
+
+  flex:
+    0 0 5px;
+
+  border-radius:
+    50%;
+
+  background:
+    #34d399;
 }
 
-/* =========================
-   Main Nav
-========================= */
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 .fg-nav {
-  gap: 4px;
+  gap:
+    2px;
 }
+
 
 .fg-nav .nav-item {
-  margin-bottom: 4px;
+  margin-bottom:
+    3px;
 }
+
 
 .fg-nav .nav-link {
-  min-height: 44px;
-  padding: 0.72rem 0.86rem !important;
-  color: #cbd5e1 !important;
-  border-radius: 15px !important;
-  display: flex;
-  align-items: center;
-  border: 1px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  min-height:
+    42px;
+
+  padding:
+    0.65rem 0.78rem !important;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius:
+    9px !important;
+
+  color:
+    #c0c8d4 !important;
+
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    border-color 0.14s ease;
 }
+
 
 .fg-nav .nav-link:hover {
-  color: #ffffff !important;
-  background: rgba(20, 184, 166, 0.13);
-  border-color: rgba(45, 212, 191, 0.16);
+  color:
+    #ffffff !important;
+
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  border-color:
+    rgba(255, 255, 255, 0.05);
 }
+
 
 .fg-nav .nav-link.active {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%) !important;
-  border-color: rgba(167, 243, 208, 0.28);
-  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.22);
+  color:
+    #ffffff !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(16, 185, 129, 0.8),
+      rgba(20, 184, 166, 0.72)
+    ) !important;
+
+  border-color:
+    rgba(52, 211, 153, 0.25);
+
+  box-shadow:
+    0 4px 11px
+    rgba(20, 184, 166, 0.15);
 }
+
+
+/* =========================================================
+   ICON
+========================================================= */
 
 .fg-nav .nav-link .nav-icon {
-  width: 28px !important;
-  min-width: 28px;
-  margin-right: 6px !important;
-  color: inherit;
-  font-size: 15px;
-  text-align: center;
-  opacity: 0.95;
+  width:
+    27px !important;
+
+  min-width:
+    27px;
+
+  margin-right:
+    5px !important;
+
+  color:
+    inherit;
+
+  font-size:
+    14px;
+
+  text-align:
+    center;
 }
+
+
+/* =========================================================
+   NAV TEXT
+========================================================= */
 
 .fg-nav .nav-link p {
-  margin: 0;
-  color: inherit;
-  font-size: 14px;
-  font-weight: 850;
-  letter-spacing: 0.15px;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  white-space: nowrap;
+  width:
+    100%;
+
+  margin:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  color:
+    inherit;
+
+  font-size:
+    13px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.1px;
+
+  white-space:
+    nowrap;
 }
+
+
+/* =========================================================
+   ARROW
+========================================================= */
 
 .fg-nav .nav-link .fa-angle-right {
-  margin-left: auto !important;
-  font-size: 13px;
-  opacity: 0.75;
-  transition: transform 0.15s ease;
+  margin-left:
+    auto !important;
+
+  font-size:
+    12px;
+
+  opacity:
+    0.65;
+
+  transition:
+    transform 0.15s ease;
 }
+
 
 .fg-nav .menu-open > .nav-link .fa-angle-right {
-  transform: rotate(90deg);
+  transform:
+    rotate(90deg);
 }
 
-/* =========================
-   Treeview
-========================= */
+
+/* =========================================================
+   TREE VIEW
+========================================================= */
 
 .fg-treeview {
-  margin: 6px 8px 10px 18px !important;
-  padding: 8px 6px !important;
-  border-left: 1px solid rgba(45, 212, 191, 0.22);
-  border-radius: 16px !important;
-  background: rgba(2, 44, 34, 0.36) !important;
+  margin:
+    4px 5px 8px 17px !important;
+
+  padding:
+    5px 4px !important;
+
+  background:
+    rgba(0, 0, 0, 0.12) !important;
+
+  border-left:
+    1px solid
+    rgba(52, 211, 153, 0.22);
+
+  border-radius:
+    7px !important;
 }
+
 
 .fg-treeview .nav-item {
-  margin-bottom: 3px;
+  margin-bottom:
+    2px;
 }
+
 
 .fg-treeview .nav-link {
-  min-height: 38px;
-  padding: 0.55rem 0.7rem !important;
-  border-radius: 12px !important;
-  color: #b6c2d4 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  min-height:
+    36px;
+
+  padding:
+    0.48rem 0.62rem !important;
+
+  border-radius:
+    7px !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  color:
+    #aeb8c6 !important;
 }
+
 
 .fg-treeview .nav-link:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.07) !important;
+  color:
+    #ffffff !important;
+
+  background:
+    rgba(255, 255, 255, 0.06) !important;
 }
+
 
 .fg-treeview .nav-link.active {
-  color: #ffffff !important;
-  background: rgba(16, 185, 129, 0.22) !important;
-  border-color: rgba(45, 212, 191, 0.18);
-  box-shadow: inset 3px 0 0 #34d399 !important;
+  color:
+    #ffffff !important;
+
+  background:
+    rgba(16, 185, 129, 0.16) !important;
+
+  box-shadow:
+    inset 3px 0 0
+    #34d399 !important;
 }
+
 
 .fg-treeview .nav-link .nav-icon {
-  width: 24px !important;
-  min-width: 24px;
-  font-size: 14px;
+  width:
+    23px !important;
+
+  min-width:
+    23px;
+
+  font-size:
+    12px;
 }
+
 
 .fg-treeview .nav-link p {
-  font-size: 13px;
-  font-weight: 800;
+  font-size:
+    12px;
+
+  font-weight:
+    700;
 }
 
-/* =========================
-   Icon
-========================= */
 
+/* =========================================================
+   SIDEBAR MINI
+========================================================= */
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar:hover {
+  overflow:
+    visible;
+}
+
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.brand-text,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.nav-sidebar
+.nav-link p,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.sidebar-heading,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.user-panel
+.fg-user-info,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.fg-profile-grid,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.fg-section-item,
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.fg-signout-btn {
+  transition:
+    opacity 0.2s ease;
+}
+
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.nav-sidebar
+.nav-link {
+  justify-content:
+    center;
+}
+
+
+body.sidebar-mini.sidebar-collapse
+.main-sidebar
+.nav-sidebar
 .nav-icon {
-  opacity: 0.92;
+  margin-right:
+    0 !important;
 }
 
-/* =========================
-   AdminLTE Sidebar Mini Safe
-   UI only, ไม่แก้ layout collapse
-========================= */
 
-body.sidebar-mini.sidebar-collapse .main-sidebar:hover {
-  overflow: visible;
-}
-
-body.sidebar-mini.sidebar-collapse .main-sidebar .brand-text,
-body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link p,
-body.sidebar-mini.sidebar-collapse .main-sidebar .sidebar-heading,
-body.sidebar-mini.sidebar-collapse .main-sidebar .user-panel .info,
-body.sidebar-mini.sidebar-collapse .main-sidebar .fg-signout-btn {
-  transition: opacity 0.2s ease;
-}
-
-body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-link {
-  justify-content: center;
-}
-
-body.sidebar-mini.sidebar-collapse .main-sidebar .nav-sidebar .nav-icon {
-  margin-right: 0 !important;
-}
-
-/* =========================
-   Responsive
-========================= */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media (max-width: 992px) {
+
   .brand-title {
-    font-size: 19px;
+    font-size:
+      18px;
   }
+
 
   .fg-nav .nav-link {
-    min-height: 40px;
-    padding: 0.62rem 0.75rem !important;
+    min-height:
+      39px;
+
+    padding:
+      0.58rem 0.7rem !important;
   }
 
+
   .fg-nav .nav-link p {
-    font-size: 13px;
+    font-size:
+      12px;
   }
+
 }

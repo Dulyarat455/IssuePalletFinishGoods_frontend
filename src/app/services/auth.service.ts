@@ -45,6 +45,7 @@ export class AuthService {
     localStorage.setItem('finish_goods_groupName', userData.groupName);
     localStorage.setItem('finish_goods_sectionId', userData.sectionId); 
     localStorage.setItem('finish_goods_sectionName', userData.sectionName); 
+    localStorage.setItem('finish_goods_role', userData.role); 
   
     this.authStatus.next(true);
     this.loggedIn$.next(true);
@@ -60,6 +61,7 @@ export class AuthService {
     localStorage.removeItem('finish_goods_groupName');
     localStorage.removeItem('finish_goods_sectionId');
     localStorage.removeItem('finish_goods_sectionName');
+    localStorage.removeItem('finish_goods_role');
 
     this.authStatus.next(false);
     this.loggedIn$.next(false);
