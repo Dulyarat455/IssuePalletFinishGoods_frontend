@@ -74,9 +74,12 @@
                 {{ empNo || 'Operator' }}
               </div>
 
-              <div class="fg-user-name">
-                {{ name || 'Finish Goods User' }}
-              </div>
+              <div
+              class="fg-user-name"
+              [title]="name || 'Finish Goods User'"
+            >
+              {{ name || 'Finish Goods User' }}
+            </div>
 
             </div>
 

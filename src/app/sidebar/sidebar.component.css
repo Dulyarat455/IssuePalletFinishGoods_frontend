@@ -299,14 +299,13 @@
 
 
 .fg-user-info {
-  min-width:
-    0;
+  min-width: 0;
+  flex: 1;
 
-  padding-left:
-    0 !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 
-  margin-left:
-    0 !important;
+  overflow: hidden;
 }
 
 
@@ -335,29 +334,21 @@
 
 
 .fg-user-name {
-  margin-top:
-    6px;
+  margin-top: 6px;
 
-  color:
-    #ffffff;
+  color: #ffffff;
 
-  font-size:
-    12px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
 
-  font-weight:
-    700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  line-height:
-    1.2;
+  max-width: 135px;
 
-  white-space:
-    nowrap;
-
-  overflow:
-    hidden;
-
-  text-overflow:
-    ellipsis;
+  cursor: default;
 }
 
 
@@ -366,17 +357,13 @@
 ========================================================= */
 
 .fg-profile-grid {
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  /* ROLE แคบกว่า GROUP */
+  grid-template-columns: 0.8fr 1.25fr;
 
-  gap:
-    10px;
-
-  margin-bottom:
-    10px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 
@@ -418,23 +405,16 @@
 
 
 .profile-value {
-  margin-top:
-    8px;
+  margin-top: 8px;
 
-  color:
-    #ffffff;
+  color: #ffffff;
 
-  font-size:
-    13px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
 
-  font-weight:
-    800;
-
-  line-height:
-    1.2;
-
-  overflow-wrap:
-    anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 
@@ -456,46 +436,44 @@
 ========================================================= */
 
 .fg-signout-btn {
-  min-height:
-    39px;
+  min-height: 39px;
 
-  display:
-    flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  align-items:
-    center;
+  gap: 7px;
 
-  justify-content:
-    center;
+  border: 1px solid #dc3545 !important;
+  border-radius: 10px !important;
 
-  gap:
-    7px;
-
-  border:
-    1px solid
-    rgba(248, 113, 113, 0.32) !important;
-
-  border-radius:
-    10px !important;
-
-  background:
-    rgba(220, 53, 69, 0.13) !important;
-
-  color:
-    #fda4af !important;
+  background: #e9364a !important;
+  color: #ffffff !important;
 
   box-shadow:
-    none !important;
+    0 4px 10px
+    rgba(220, 53, 69, 0.22) !important;
 
-  font-size:
-    12px;
-
-  font-weight:
-    800;
+  font-size: 12px;
+  font-weight: 800;
 
   transition:
     background 0.15s ease,
-    color 0.15s ease;
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.fg-signout-btn:hover {
+  background: #d62f42 !important;
+  border-color: #c82333 !important;
+  color: #ffffff !important;
+
+  transform: translateY(-1px);
+}
+
+.fg-signout-btn:active {
+  background: #c82333 !important;
+  transform: translateY(0);
 }
 
 
