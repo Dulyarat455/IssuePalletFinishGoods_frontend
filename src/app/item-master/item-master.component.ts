@@ -266,16 +266,629 @@ export class ItemMasterComponent implements OnInit {
     if (this.isSyncing) {
       return;
     }
-
+  
     Swal.fire({
-      width: 430,
-      icon: 'info',
-      title: 'Add Item',
-      text: 'Add Item function is not available yet.',
-      confirmButtonText: 'OK',
-      confirmButtonColor: '#14b89a'
+      width: 560,
+      title: 'Add Item Master',
+      confirmButtonText: 'Save',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+      confirmButtonColor: '#14b89a',
+      cancelButtonColor: '#6c757d',
+      allowOutsideClick: false,
+  
+      html: `
+        <div style="
+          font-family: Arial, sans-serif;
+          text-align: left;
+          padding: 5px 8px 0;
+        ">
+  
+          <div style="margin-bottom:14px;">
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:12px;
+              font-weight:700;
+              color:#374151;
+            ">
+              Item No. <span style="color:#dc3545;">*</span>
+            </label>
+  
+            <input
+              id="swal-item-no"
+              class="swal2-input"
+              placeholder="Enter Item No."
+              style="
+                width:100%;
+                height:40px;
+                margin:0;
+                padding:8px 11px;
+                font-size:13px;
+                border:1px solid #ced4da;
+                border-radius:6px;
+                box-sizing:border-box;
+              "
+            />
+          </div>
+  
+          <div style="margin-bottom:14px;">
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:12px;
+              font-weight:700;
+              color:#374151;
+            ">
+              Item Name <span style="color:#dc3545;">*</span>
+            </label>
+  
+            <input
+              id="swal-item-name"
+              class="swal2-input"
+              placeholder="Enter Item Name"
+              style="
+                width:100%;
+                height:40px;
+                margin:0;
+                padding:8px 11px;
+                font-size:13px;
+                border:1px solid #ced4da;
+                border-radius:6px;
+                box-sizing:border-box;
+              "
+            />
+          </div>
+  
+          <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+          ">
+  
+            <div>
+              <label style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+                color:#374151;
+              ">
+                Item Class <span style="color:#dc3545;">*</span>
+              </label>
+  
+              <select
+                id="swal-item-class"
+                style="
+                  width:100%;
+                  height:40px;
+                  padding:8px 11px;
+                  font-size:13px;
+                  border:1px solid #ced4da;
+                  border-radius:6px;
+                  background:#fff;
+                  box-sizing:border-box;
+                "
+              >
+                <option value="">-- Select Item Class --</option>
+                <option value="G">General</option>
+                <option value="L">Lamination</option>
+                <option value="S">Stator</option>
+              </select>
+            </div>
+  
+            <div>
+              <label style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+                color:#374151;
+              ">
+                Lot Size <span style="color:#dc3545;">*</span>
+              </label>
+  
+              <input
+                id="swal-lot-size"
+                type="number"
+                min="0"
+                placeholder="Enter Lot Size"
+                style="
+                  width:100%;
+                  height:40px;
+                  padding:8px 11px;
+                  font-size:13px;
+                  border:1px solid #ced4da;
+                  border-radius:6px;
+                  box-sizing:border-box;
+                "
+              />
+            </div>
+  
+          </div>
+  
+        </div>
+      `,
+  
+      preConfirm: () => {
+        const itemNo =
+          (document.getElementById('swal-item-no') as HTMLInputElement)
+            ?.value
+            ?.trim();
+  
+        const itemName =
+          (document.getElementById('swal-item-name') as HTMLInputElement)
+            ?.value
+            ?.trim();
+  
+        const itemClass =
+          (document.getElementById('swal-item-class') as HTMLSelectElement)
+            ?.value;
+  
+        const lotSize =
+          (document.getElementById('swal-lot-size') as HTMLInputElement)
+            ?.value;
+  
+        if (
+          !itemNo ||
+          !itemName ||
+          !itemClass ||
+          lotSize === ''
+        ) {
+          Swal.showValidationMessage(
+            'Please fill in all required fields.'
+          );
+  
+          return false;
+        }
+  
+        if (
+          Number.isNaN(Number(lotSize)) ||
+          Number(lotSize) < 0
+        ) {
+          Swal.showValidationMessage(
+            'Lot Size must be a valid number.'
+          );
+  
+          return false;
+        }
+  
+        return {
+          itemNo,
+          itemName,
+          itemClass,
+          lotSize: Number(lotSize)
+        };
+      }
+    }).then(result => {
+      if (!result.isConfirmed || !result.value) {
+        return;
+      }
+  
+      const payload = result.value;
+  
+      Swal.fire({
+        title: 'Saving Item...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      this.http
+        .post(
+          config.apiServer +
+          '/api/partMaster/add',
+          payload
+        )
+        .subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Success',
+              text: 'Item Master has been added successfully.',
+              icon: 'success',
+              confirmButtonColor: '#14b89a'
+            });
+  
+            this.fetchData();
+          },
+  
+          error: (err) => {
+            const message =
+              err?.error?.message;
+  
+            if (message === 'Part_Master_already') {
+              Swal.fire({
+                title: 'Duplicate Item',
+                text: 'This Item Master already exists.',
+                icon: 'warning',
+                confirmButtonColor: '#14b89a'
+              });
+  
+              return;
+            }
+  
+            Swal.fire({
+              title: 'Add Item Failed',
+              text:
+                err?.error?.error ||
+                message ||
+                err?.message ||
+                'Cannot add Item Master',
+              icon: 'error',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
     });
   }
+
+
+  editItem(row: PartMasterRow): void {
+    if (this.isSyncing) {
+      return;
+    }
+  
+    const currentItemNo =
+      String(row.itemNo || '');
+  
+    const currentItemName =
+      String(row.itemName || '');
+  
+    const currentItemClass =
+      String(row.itemClass || '');
+  
+    const currentLotSize =
+      row.lotSize == null
+        ? ''
+        : String(row.lotSize);
+  
+    Swal.fire({
+      width: 560,
+      title: 'Edit Item Master',
+      confirmButtonText: 'Update',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+      confirmButtonColor: '#3c8dbc',
+      cancelButtonColor: '#6c757d',
+      allowOutsideClick: false,
+  
+      html: `
+        <div style="
+          font-family:Arial,sans-serif;
+          text-align:left;
+          padding:5px 8px 0;
+        ">
+  
+          <div style="margin-bottom:14px;">
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:12px;
+              font-weight:700;
+              color:#374151;
+            ">
+              Item No. <span style="color:#dc3545;">*</span>
+            </label>
+  
+            <input
+              id="swal-edit-item-no"
+              value="${this.escapeHtml(currentItemNo)}"
+              style="
+                width:100%;
+                height:40px;
+                padding:8px 11px;
+                font-size:13px;
+                border:1px solid #ced4da;
+                border-radius:6px;
+                box-sizing:border-box;
+              "
+            />
+          </div>
+  
+          <div style="margin-bottom:14px;">
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:12px;
+              font-weight:700;
+              color:#374151;
+            ">
+              Item Name <span style="color:#dc3545;">*</span>
+            </label>
+  
+            <input
+              id="swal-edit-item-name"
+              value="${this.escapeHtml(currentItemName)}"
+              style="
+                width:100%;
+                height:40px;
+                padding:8px 11px;
+                font-size:13px;
+                border:1px solid #ced4da;
+                border-radius:6px;
+                box-sizing:border-box;
+              "
+            />
+          </div>
+  
+          <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+          ">
+  
+            <div>
+              <label style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+                color:#374151;
+              ">
+                Item Class <span style="color:#dc3545;">*</span>
+              </label>
+  
+              <select
+                id="swal-edit-item-class"
+                style="
+                  width:100%;
+                  height:40px;
+                  padding:8px 11px;
+                  font-size:13px;
+                  border:1px solid #ced4da;
+                  border-radius:6px;
+                  background:#fff;
+                  box-sizing:border-box;
+                "
+              >
+                <option value="">-- Select Item Class --</option>
+  
+                <option
+                  value="G"
+                  ${currentItemClass === 'G' ? 'selected' : ''}
+                >
+                  General
+                </option>
+  
+                <option
+                  value="L"
+                  ${currentItemClass === 'L' ? 'selected' : ''}
+                >
+                  Lamination
+                </option>
+  
+                <option
+                  value="S"
+                  ${currentItemClass === 'S' ? 'selected' : ''}
+                >
+                  Stator
+                </option>
+              </select>
+            </div>
+  
+            <div>
+              <label style="
+                display:block;
+                margin-bottom:6px;
+                font-size:12px;
+                font-weight:700;
+                color:#374151;
+              ">
+                Lot Size <span style="color:#dc3545;">*</span>
+              </label>
+  
+              <input
+                id="swal-edit-lot-size"
+                type="number"
+                min="0"
+                value="${currentLotSize}"
+                style="
+                  width:100%;
+                  height:40px;
+                  padding:8px 11px;
+                  font-size:13px;
+                  border:1px solid #ced4da;
+                  border-radius:6px;
+                  box-sizing:border-box;
+                "
+              />
+            </div>
+  
+          </div>
+  
+        </div>
+      `,
+  
+      preConfirm: () => {
+        const itemNo =
+          (document.getElementById('swal-edit-item-no') as HTMLInputElement)
+            ?.value
+            ?.trim();
+  
+        const itemName =
+          (document.getElementById('swal-edit-item-name') as HTMLInputElement)
+            ?.value
+            ?.trim();
+  
+        const itemClass =
+          (document.getElementById('swal-edit-item-class') as HTMLSelectElement)
+            ?.value;
+  
+        const lotSize =
+          (document.getElementById('swal-edit-lot-size') as HTMLInputElement)
+            ?.value;
+  
+        if (
+          !itemNo ||
+          !itemName ||
+          !itemClass ||
+          lotSize === ''
+        ) {
+          Swal.showValidationMessage(
+            'Please fill in all required fields.'
+          );
+  
+          return false;
+        }
+  
+        return {
+          partMasterId: row.id,
+          itemNo,
+          itemName,
+          itemClass,
+          lotSize: Number(lotSize)
+        };
+      }
+    }).then(result => {
+      if (!result.isConfirmed || !result.value) {
+        return;
+      }
+  
+      Swal.fire({
+        title: 'Updating Item...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      this.http
+        .post(
+          config.apiServer +
+          '/api/partMaster/updateMaster',
+          result.value
+        )
+        .subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Updated',
+              text: 'Item Master has been updated successfully.',
+              icon: 'success',
+              confirmButtonColor: '#14b89a'
+            });
+  
+            this.fetchData();
+          },
+  
+          error: (err) => {
+            Swal.fire({
+              title: 'Update Failed',
+              text:
+                err?.error?.error ||
+                err?.error?.message ||
+                err?.message ||
+                'Cannot update Item Master',
+              icon: 'error',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
+    });
+  }
+
+
+
+
+
+  deleteItem(row: PartMasterRow): void {
+    if (this.isSyncing) {
+      return;
+    }
+  
+    Swal.fire({
+      title: 'Delete Item Master?',
+      html: `
+        <div style="
+          font-family:Arial,sans-serif;
+          text-align:center;
+          color:#555;
+          font-size:13px;
+        ">
+          Are you sure you want to delete
+          <div style="
+            margin-top:8px;
+            font-size:16px;
+            font-weight:700;
+            color:#222;
+          ">
+            ${this.escapeHtml(row.itemNo)}
+          </div>
+  
+          <div style="
+            margin-top:3px;
+            color:#777;
+          ">
+            ${this.escapeHtml(row.itemName)}
+          </div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      reverseButtons: true
+    }).then(result => {
+      if (!result.isConfirmed) {
+        return;
+      }
+  
+      Swal.fire({
+        title: 'Deleting...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+  
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      this.http
+        .post(
+          config.apiServer +
+          '/api/partMaster/delete',
+          {
+            partMasterId: row.id
+          }
+        )
+        .subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Deleted',
+              text: 'Item Master has been deleted successfully.',
+              icon: 'success',
+              confirmButtonColor: '#14b89a'
+            });
+  
+            this.fetchData();
+          },
+  
+          error: (err) => {
+            Swal.fire({
+              title: 'Delete Failed',
+              text:
+                err?.error?.error ||
+                err?.error?.message ||
+                err?.message ||
+                'Cannot delete Item Master',
+              icon: 'error',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
+    });
+  }
+
+
 
   /* =====================================================
      SYNC PBASS
@@ -857,6 +1470,19 @@ export class ItemMasterComponent implements OnInit {
         }
       });
   }
+
+
+  escapeHtml(value: any): string {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+
+
 
   /* =====================================================
      ITEM CLASS DISPLAY

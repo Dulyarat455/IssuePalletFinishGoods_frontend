@@ -1018,3 +1018,97 @@
     }
   
   }
+
+
+  /* =========================================================
+   ACTION COLUMN
+========================================================= */
+
+.col-action {
+  width: 75px;
+  text-align: center !important;
+}
+
+
+.action-cell {
+  text-align: center;
+}
+
+
+/* =========================================================
+   TABLE ACTION BUTTON
+========================================================= */
+
+.table-action-btn {
+  width: 32px;
+  height: 32px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  transition:
+    background .15s ease,
+    border-color .15s ease,
+    color .15s ease;
+}
+
+
+.table-action-btn:disabled {
+  opacity: .45;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+.edit-action {
+  background: #eaf3ff;
+
+  border: 1px solid #b8d8f7;
+
+  color: #2878bd;
+}
+
+
+.edit-action:hover:not(:disabled) {
+  background: #2878bd;
+
+  border-color: #2878bd;
+
+  color: #fff;
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+.delete-action {
+  background: #fff0f0;
+
+  border: 1px solid #f2b7b7;
+
+  color: #dc3545;
+}
+
+
+.delete-action:hover:not(:disabled) {
+  background: #dc3545;
+
+  border-color: #dc3545;
+
+  color: #fff;
+}

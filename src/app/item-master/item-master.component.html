@@ -405,35 +405,43 @@
         <table class="master-table">
   
           <thead>
-  
+
             <tr>
-  
+          
               <th class="col-no">
                 #
               </th>
-  
+          
               <th class="col-item-no">
                 ITEM NO.
               </th>
-  
+          
               <th>
                 ITEM NAME
               </th>
-  
+          
               <th class="col-class">
                 ITEM CLASS
               </th>
-  
+          
               <th class="col-lot">
                 LOT SIZE
               </th>
-  
+          
               <th class="col-update">
                 LAST UPDATE
               </th>
-  
+          
+              <th class="col-action">
+                EDIT
+              </th>
+          
+              <th class="col-action">
+                DELETE
+              </th>
+          
             </tr>
-  
+          
           </thead>
   
   
@@ -573,6 +581,43 @@
                   )
                 }}
   
+              </td>
+
+              <!-- EDIT -->
+
+              <td class="action-cell">
+
+                <button
+                  type="button"
+                  class="table-action-btn edit-action"
+                  [disabled]="isSyncing"
+                  (click)="editItem(row)"
+                  title="Edit Item Master"
+                >
+
+                  <i class="fas fa-edit"></i>
+
+                </button>
+
+              </td>
+
+
+              <!-- DELETE -->
+
+              <td class="action-cell">
+
+                <button
+                  type="button"
+                  class="table-action-btn delete-action"
+                  [disabled]="isSyncing"
+                  (click)="deleteItem(row)"
+                  title="Delete Item Master"
+                >
+
+                  <i class="fas fa-trash-alt"></i>
+
+                </button>
+
               </td>
   
             </tr>
