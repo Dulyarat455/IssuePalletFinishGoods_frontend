@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 
-type RackGroup =
-  | 'ABC'
-  | 'DE'
-  | 'FGH';
+import Swal from 'sweetalert2';
+import config from '../../config';
 
-type BoxType =
-  | 'FULL'
-  | 'PARTIAL';
+type RackGroup = 'ABC' | 'DE' | 'FGH';
+
+type BoxType = 'FULL' | 'PARTIAL';
 
 type BoxItem = {
   boxNo: string;
@@ -33,7 +32,21 @@ type PalletItem = {
   labels: LabelItem[];
 };
 
+type AreaRow = {
+  areaId: number;
+  areaName: string;
+};
+
+type RackApiRow = {
+  rackId: number;
+  rackName: string;
+  areas: AreaRow[];
+};
+
 type RackSlot = {
+  rackId: number;
+  areaId: number;
+
   rack: string;
   code: string;
   displayCode: string;
@@ -46,78 +59,185 @@ type RackSlot = {
 };
 
 type RackDefinition = {
+  rackId: number;
   name: string;
   rackGroup: RackGroup;
-  columns: number[];
-  rows: number;
+  areas: AreaRow[];
 };
 
 @Component({
   selector: 'app-lay-out',
   standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   templateUrl: './lay-out.component.html',
-  styleUrl: './lay-out.component.css'
+  styleUrl: './lay-out.component.css',
 })
-export class LayOutComponent {
-
+export class LayOutComponent implements OnInit {
   /* =====================================================
-     RACK MASTER
+     RACK / AREA MASTER FROM API
   ===================================================== */
 
-  rackDefinitions: RackDefinition[] = [
-    {
-      name: 'Rack A',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15
-    },
-    {
-      name: 'Rack B',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15
-    },
-    {
-      name: 'Rack C',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15
-    },
-    {
-      name: 'Rack D',
-      rackGroup: 'DE',
-      columns: [1, 2, 3, 4, 5],
-      rows: 12
-    },
-    {
-      name: 'Rack E',
-      rackGroup: 'DE',
-      columns: [1, 2, 3],
-      rows: 12
-    },
-    {
-      name: 'Rack F',
-      rackGroup: 'FGH',
-      columns: [1, 2],
-      rows: 12
-    },
-    {
-      name: 'Rack G',
-      rackGroup: 'FGH',
-      columns: [1, 2, 3, 4],
-      rows: 12
-    },
-    {
-      name: 'Rack H',
-      rackGroup: 'FGH',
-      columns: [1, 2, 3],
-      rows: 12
-    }
-  ];
+  rackDefinitions: RackDefinition[] = [];
 
+  isLoadingRack = false;
+
+  rackLoadError = '';
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.fetchLocations();
+  }
+
+  /* =====================================================
+     LOAD RACK / AREA
+  ===================================================== */
+
+  fetchLocations(): void {
+    this.isLoadingRack = true;
+
+    this.rackLoadError = '';
+
+    this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
+      next: (res: any) => {
+        const rows: RackApiRow[] = Array.isArray(res?.results)
+          ? res.results
+          : [];
+
+        this.rackDefinitions = rows.map((rack: RackApiRow) => ({
+          rackId: Number(rack.rackId),
+
+          name: String(rack.rackName || '').trim(),
+
+          rackGroup: this.getRackGroupByName(rack.rackName),
+
+          areas: Array.isArray(rack.areas)
+            ? [...rack.areas]
+                .map((area) => ({
+                  areaId: Number(area.areaId),
+
+                  areaName: String(area.areaName || '').trim(),
+                }))
+                .sort((a, b) => this.compareAreaName(a.areaName, b.areaName))
+            : [],
+        }));
+
+        this.isLoadingRack = false;
+      },
+
+      error: (err) => {
+        console.error('Load Rack Location Error:', err);
+
+        this.rackDefinitions = [];
+
+        this.isLoadingRack = false;
+
+        this.rackLoadError =
+          err?.error?.error ||
+          err?.error?.message ||
+          err?.message ||
+          'Load rack location fail';
+
+        Swal.fire({
+          title: 'Error',
+          text: this.rackLoadError,
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  /* =====================================================
+     RACK GROUP
+
+     สีหัว Rack ยังใช้ Logic เดิม
+  ===================================================== */
+
+  getRackGroupByName(rackName: string): RackGroup {
+    const name = String(rackName || '')
+      .trim()
+      .toUpperCase();
+
+    /*
+      รองรับทั้ง
+  
+      A
+      B
+      C
+  
+      และ
+  
+      Rack A
+      Rack B
+      Rack C
+    */
+
+    const rackCode = name
+      .replace('RACK', '')
+      .replace(/[^A-Z]/g, '')
+      .trim();
+
+    if (rackCode === 'A' || rackCode === 'B' || rackCode === 'C') {
+      return 'ABC';
+    }
+
+    if (rackCode === 'D' || rackCode === 'E') {
+      return 'DE';
+    }
+
+    return 'FGH';
+  }
+
+  /* =====================================================
+     AREA SORT
+  ===================================================== */
+
+  compareAreaName(a: string, b: string): number {
+    return String(a).localeCompare(String(b), undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    });
+  }
+
+  /* =====================================================
+     GROUP AREA INTO VISUAL ROWS
+
+     101 201 301 401 501
+     102 202 302 402 502
+     ...
+  ===================================================== */
+
+  getAreaRows(rack: RackDefinition): AreaRow[][] {
+    const rowMap = new Map<string, AreaRow[]>();
+
+    const fallbackRows: AreaRow[][] = [];
+
+    for (const area of rack.areas) {
+      const areaName = String(area.areaName || '').trim();
+
+      const match = areaName.match(/^(\d)(\d{2})$/);
+
+      if (match) {
+        const rowKey = match[2];
+
+        if (!rowMap.has(rowKey)) {
+          rowMap.set(rowKey, []);
+        }
+
+        rowMap.get(rowKey)!.push(area);
+      } else {
+        fallbackRows.push([area]);
+      }
+    }
+
+    const normalRows = Array.from(rowMap.entries())
+      .sort(([rowA], [rowB]) => Number(rowA) - Number(rowB))
+      .map(([_, areas]) =>
+        [...areas].sort((a, b) => this.compareAreaName(a.areaName, b.areaName))
+      );
+
+    return [...normalRows, ...fallbackRows];
+  }
 
   /* =====================================================
      MOCK INVENTORY
@@ -127,7 +247,6 @@ export class LayOutComponent {
   ===================================================== */
 
   mockInventory: Record<string, PalletItem> = {
-
     /* =================================================
        Rack A-101
        มี 1 Pallet
@@ -152,19 +271,19 @@ export class LayOutComponent {
               boxNo: 'BOX-001',
               lotNo: '24X24',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-002',
               lotNo: '24X24',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-003',
               lotNo: '24X27',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
 
             /*
@@ -174,15 +293,15 @@ export class LayOutComponent {
               boxNo: 'BOX-004',
               lotNo: '24X28',
               qty: 400,
-              type: 'PARTIAL'
+              type: 'PARTIAL',
             },
             {
               boxNo: 'BOX-005',
               lotNo: '24X28',
               qty: 300,
-              type: 'PARTIAL'
-            }
-          ]
+              type: 'PARTIAL',
+            },
+          ],
         },
 
         {
@@ -198,25 +317,24 @@ export class LayOutComponent {
               boxNo: 'BOX-006',
               lotNo: '24Y01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-007',
               lotNo: '24Y01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-008',
               lotNo: '24Y01',
               qty: 800,
-              type: 'PARTIAL'
-            }
-          ]
-        }
-      ]
+              type: 'PARTIAL',
+            },
+          ],
+        },
+      ],
     },
-
 
     /* =================================================
        Rack A-201
@@ -240,25 +358,24 @@ export class LayOutComponent {
               boxNo: 'BOX-101',
               lotNo: '25A01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-102',
               lotNo: '25A01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-103',
               lotNo: '25A01',
               qty: 1000,
-              type: 'FULL'
-            }
-          ]
-        }
-      ]
+              type: 'FULL',
+            },
+          ],
+        },
+      ],
     },
-
 
     /* =================================================
        Rack B-305
@@ -282,25 +399,24 @@ export class LayOutComponent {
               boxNo: 'BOX-201',
               lotNo: '25B11',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-202',
               lotNo: '25B11',
               qty: 500,
-              type: 'PARTIAL'
+              type: 'PARTIAL',
             },
             {
               boxNo: 'BOX-203',
               lotNo: '25B11',
               qty: 400,
-              type: 'PARTIAL'
-            }
-          ]
-        }
-      ]
+              type: 'PARTIAL',
+            },
+          ],
+        },
+      ],
     },
-
 
     /* =================================================
        Rack D-401
@@ -325,39 +441,39 @@ export class LayOutComponent {
               boxNo: 'BOX-301',
               lotNo: '25C20',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-302',
               lotNo: '25C20',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-303',
               lotNo: '25C20',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-304',
               lotNo: '25C20',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-305',
               lotNo: '25C20',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-306',
               lotNo: '25C20',
               qty: 500,
-              type: 'PARTIAL'
-            }
-          ]
+              type: 'PARTIAL',
+            },
+          ],
         },
 
         {
@@ -373,19 +489,18 @@ export class LayOutComponent {
               boxNo: 'BOX-307',
               lotNo: '25C21',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-308',
               lotNo: '25C21',
               qty: 700,
-              type: 'PARTIAL'
-            }
-          ]
-        }
-      ]
+              type: 'PARTIAL',
+            },
+          ],
+        },
+      ],
     },
-
 
     /* =================================================
        Rack F-202
@@ -410,26 +525,25 @@ export class LayOutComponent {
               boxNo: 'BOX-401',
               lotNo: '26D01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-402',
               lotNo: '26D01',
               qty: 1000,
-              type: 'FULL'
+              type: 'FULL',
             },
             {
               boxNo: 'BOX-403',
               lotNo: '26D01',
               qty: 300,
-              type: 'PARTIAL'
-            }
-          ]
-        }
-      ]
-    }
+              type: 'PARTIAL',
+            },
+          ],
+        },
+      ],
+    },
   };
-
 
   /* =====================================================
      STATE
@@ -439,204 +553,135 @@ export class LayOutComponent {
 
   selectedLabel: LabelItem | null = null;
 
-
   /* =====================================================
-     BUILD SLOT CODE
+     GET SLOT FROM API AREA
+
+     Mock Pallet ยังใช้ key เดิม:
+     Rack A-101
+     Rack A-201
+     ...
   ===================================================== */
 
-  buildSlotCode(
-    column: number,
-    row: number
-  ): string {
+  getSlot(rack: RackDefinition, area: AreaRow): RackSlot {
+    /*
+      Area จาก API
+  
+      เช่น
+      101
+      201
+      305
+    */
 
-    return (
-      `${column}` +
-      `${row.toString().padStart(2, '0')}`
-    );
-  }
+    const displayCode = String(area.areaName || '').trim();
 
+    /*
+      Rack API อาจส่ง
+  
+      A
+      B
+      C
+  
+      หรือ
+  
+      Rack A
+      Rack B
+  
+      เราจะบังคับให้ Mock Key
+      กลับเป็นรูปแบบเดิมเสมอ
+  
+      Rack A-101
+    */
 
-  /* =====================================================
-     GET SLOT
-  ===================================================== */
+    let rackCode = String(rack.name || '')
+      .trim()
+      .toUpperCase();
 
-  getSlot(
-    rack: RackDefinition,
-    column: number,
-    row: number
-  ): RackSlot {
+    rackCode = rackCode
+      .replace('RACK', '')
+      .replace(/[^A-Z]/g, '')
+      .trim();
 
-    const displayCode =
-      this.buildSlotCode(
-        column,
-        row
-      );
+    const mockRackName = `Rack ${rackCode}`;
 
+    const key = `${mockRackName}-${displayCode}`;
 
-    const key =
-      `${rack.name}-${displayCode}`;
-
+    const pallet = this.mockInventory[key] || null;
 
     return {
-      rack:
-        rack.name,
+      rackId: rack.rackId,
 
-      code:
-        key,
+      areaId: area.areaId,
 
-      displayCode:
-        displayCode,
+      rack: rack.name,
 
-      rackGroup:
-        rack.rackGroup,
+      code: key,
 
-      pallet:
-        this.mockInventory[key] || null
+      displayCode: displayCode,
+
+      rackGroup: rack.rackGroup,
+
+      pallet: pallet,
     };
   }
-
-
-  /* =====================================================
-     ROWS
-  ===================================================== */
-
-  getRows(
-    rack: RackDefinition
-  ): number[] {
-
-    return Array.from(
-      {
-        length:
-          rack.rows
-      },
-      (
-        _,
-        index
-      ) =>
-        index + 1
-    );
-  }
-
 
   /* =====================================================
      SELECT SLOT
   ===================================================== */
 
-  selectSlot(
-    slot: RackSlot
-  ): void {
+  selectSlot(slot: RackSlot): void {
+    this.selectedSlot = slot;
 
-    this.selectedSlot =
-      slot;
-
-
-    if (
-      slot.pallet &&
-      slot.pallet.labels.length > 0
-    ) {
-
-      this.selectedLabel =
-        slot.pallet.labels[0];
-
+    if (slot.pallet && slot.pallet.labels.length > 0) {
+      this.selectedLabel = slot.pallet.labels[0];
     } else {
-
-      this.selectedLabel =
-        null;
-
+      this.selectedLabel = null;
     }
   }
-
 
   /* =====================================================
      SELECT LABEL
   ===================================================== */
 
-  selectLabel(
-    label: LabelItem
-  ): void {
-
-    this.selectedLabel =
-      label;
+  selectLabel(label: LabelItem): void {
+    this.selectedLabel = label;
   }
-
 
   /* =====================================================
      SLOT HAS PALLET
   ===================================================== */
 
-  hasPallet(
-    rack: RackDefinition,
-    column: number,
-    row: number
-  ): boolean {
-
-    return (
-      this.getSlot(
-        rack,
-        column,
-        row
-      ).pallet !== null
-    );
+  hasPallet(rack: RackDefinition, area: AreaRow): boolean {
+    return this.getSlot(rack, area).pallet !== null;
   }
-
 
   /* =====================================================
      LABEL COUNT
-
-     Badge มุม Rack No
   ===================================================== */
 
-  getLabelCount(
-    rack: RackDefinition,
-    column: number,
-    row: number
-  ): number {
-
-    const pallet =
-      this.getSlot(
-        rack,
-        column,
-        row
-      ).pallet;
-
+  getLabelCount(rack: RackDefinition, area: AreaRow): number {
+    const pallet = this.getSlot(rack, area).pallet;
 
     if (!pallet) {
       return 0;
     }
 
-
     return pallet.labels.length;
   }
-
 
   /* =====================================================
      SELECTED
   ===================================================== */
 
-  isSelected(
-    rack: RackDefinition,
-    column: number,
-    row: number
-  ): boolean {
-
+  isSelected(rack: RackDefinition, area: AreaRow): boolean {
     if (!this.selectedSlot) {
       return false;
     }
 
-
-    const code =
-      this.buildSlotCode(
-        column,
-        row
-      );
-
-
     return (
-      this.selectedSlot.rack === rack.name &&
-      this.selectedSlot.displayCode === code
+      this.selectedSlot.rackId === rack.rackId &&
+      this.selectedSlot.areaId === area.areaId
     );
   }
-
 
   /* =====================================================
      SORT BOX
@@ -648,241 +693,113 @@ export class LayOutComponent {
      เรียงตาม Box No.
   ===================================================== */
 
-  getSortedBoxes(
-    label: LabelItem | null
-  ): BoxItem[] {
-
+  getSortedBoxes(label: LabelItem | null): BoxItem[] {
     if (!label) {
       return [];
     }
 
-
-    return [
-      ...label.boxes
-    ].sort(
-      (
-        a,
-        b
-      ) => {
-
-        /* FULL มาก่อน */
-        if (
-          a.type !== b.type
-        ) {
-
-          return (
-            a.type === 'FULL'
-              ? -1
-              : 1
-          );
-        }
-
-
-        /* Type เดียวกัน เรียง Box No */
-        return a.boxNo.localeCompare(
-          b.boxNo,
-          undefined,
-          {
-            numeric:
-              true,
-
-            sensitivity:
-              'base'
-          }
-        );
+    return [...label.boxes].sort((a, b) => {
+      /* FULL มาก่อน */
+      if (a.type !== b.type) {
+        return a.type === 'FULL' ? -1 : 1;
       }
-    );
-  }
 
+      /* Type เดียวกัน เรียง Box No */
+      return a.boxNo.localeCompare(b.boxNo, undefined, {
+        numeric: true,
+
+        sensitivity: 'base',
+      });
+    });
+  }
 
   /* =====================================================
      BOX COUNTS
   ===================================================== */
 
-  getFullBoxCount(
-    label: LabelItem | null
-  ): number {
-
+  getFullBoxCount(label: LabelItem | null): number {
     if (!label) {
       return 0;
     }
 
-
-    return label.boxes.filter(
-      box =>
-        box.type === 'FULL'
-    ).length;
+    return label.boxes.filter((box) => box.type === 'FULL').length;
   }
 
-
-  getPartialBoxCount(
-    label: LabelItem | null
-  ): number {
-
+  getPartialBoxCount(label: LabelItem | null): number {
     if (!label) {
       return 0;
     }
 
-
-    return label.boxes.filter(
-      box =>
-        box.type === 'PARTIAL'
-    ).length;
+    return label.boxes.filter((box) => box.type === 'PARTIAL').length;
   }
-
 
   /* =====================================================
      SELECTED SLOT SUMMARY
   ===================================================== */
 
   get selectedPallet(): PalletItem | null {
-
-    return (
-      this.selectedSlot?.pallet ||
-      null
-    );
+    return this.selectedSlot?.pallet || null;
   }
 
-
   get selectedSlotLabelCount(): number {
+    return this.selectedPallet?.labels.length || 0;
+  }
 
-    return (
-      this.selectedPallet?.labels.length ||
+  get selectedSlotBoxCount(): number {
+    if (!this.selectedPallet) {
+      return 0;
+    }
+
+    return this.selectedPallet.labels.reduce(
+      (sum, label) => sum + label.boxes.length,
       0
     );
   }
 
-
-  get selectedSlotBoxCount(): number {
-
-    if (!this.selectedPallet) {
-      return 0;
-    }
-
-
-    return this.selectedPallet
-      .labels
-      .reduce(
-        (
-          sum,
-          label
-        ) =>
-          sum +
-          label.boxes.length,
-        0
-      );
-  }
-
-
   get selectedSlotQty(): number {
-
     if (!this.selectedPallet) {
       return 0;
     }
 
-
-    return this.selectedPallet
-      .labels
-      .reduce(
-        (
-          sum,
-          label
-        ) =>
-          sum +
-          label.qty,
-        0
-      );
+    return this.selectedPallet.labels.reduce(
+      (sum, label) => sum + label.qty,
+      0
+    );
   }
-
 
   /* =====================================================
      OVERALL SUMMARY
   ===================================================== */
 
   get totalPallets(): number {
-
-    return Object
-      .keys(
-        this.mockInventory
-      )
-      .length;
+    return Object.keys(this.mockInventory).length;
   }
-
 
   get totalLabels(): number {
-
-    return Object
-      .values(
-        this.mockInventory
-      )
-      .reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          pallet.labels.length,
-        0
-      );
+    return Object.values(this.mockInventory).reduce(
+      (sum, pallet) => sum + pallet.labels.length,
+      0
+    );
   }
-
 
   get totalBoxes(): number {
-
-    return Object
-      .values(
-        this.mockInventory
-      )
-      .flatMap(
-        pallet =>
-          pallet.labels
-      )
-      .reduce(
-        (
-          sum,
-          label
-        ) =>
-          sum +
-          label.boxes.length,
-        0
-      );
+    return Object.values(this.mockInventory)
+      .flatMap((pallet) => pallet.labels)
+      .reduce((sum, label) => sum + label.boxes.length, 0);
   }
-
 
   get totalQty(): number {
-
-    return Object
-      .values(
-        this.mockInventory
-      )
-      .flatMap(
-        pallet =>
-          pallet.labels
-      )
-      .reduce(
-        (
-          sum,
-          label
-        ) =>
-          sum +
-          label.qty,
-        0
-      );
+    return Object.values(this.mockInventory)
+      .flatMap((pallet) => pallet.labels)
+      .reduce((sum, label) => sum + label.qty, 0);
   }
-
 
   /* =====================================================
      RACK COLOR CLASS
   ===================================================== */
 
-  getRackGroupClass(
-    rackGroup: RackGroup
-  ): string {
-
-    switch (
-      rackGroup
-    ) {
-
+  getRackGroupClass(rackGroup: RackGroup): string {
+    switch (rackGroup) {
       case 'ABC':
         return 'rack-group-abc';
 
@@ -897,60 +814,39 @@ export class LayOutComponent {
     }
   }
 
-
   /* =====================================================
      PARTIAL ROW CLASS
   ===================================================== */
 
   getPartialRowClass(): string {
-
     if (!this.selectedSlot) {
       return '';
     }
 
-
-    return this.getRackGroupClass(
-      this.selectedSlot.rackGroup
-    );
+    return this.getRackGroupClass(this.selectedSlot.rackGroup);
   }
-
 
   /* =====================================================
      TRACK BY
   ===================================================== */
 
-  trackByRack(
-    index: number,
-    rack: RackDefinition
-  ): string {
-
-    return rack.name;
+  trackByRack(index: number, rack: RackDefinition): number {
+    return rack.rackId;
   }
 
-
-  trackByNumber(
-    index: number,
-    value: number
-  ): number {
-
-    return value;
+  trackByArea(index: number, area: AreaRow): number {
+    return area.areaId;
   }
 
+  trackByAreaRow(index: number, row: AreaRow[]): string {
+    return row.map((area) => area.areaId).join('-');
+  }
 
-  trackByLabel(
-    index: number,
-    label: LabelItem
-  ): string {
-
+  trackByLabel(index: number, label: LabelItem): string {
     return label.labelId;
   }
 
-
-  trackByBox(
-    index: number,
-    box: BoxItem
-  ): string {
-
+  trackByBox(index: number, box: BoxItem): string {
     return box.boxNo;
   }
 }

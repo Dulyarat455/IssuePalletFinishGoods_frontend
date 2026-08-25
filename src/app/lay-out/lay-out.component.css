@@ -1051,3 +1051,43 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* =========================================================
+   API RACK LOADING
+========================================================= */
+
+.rack-loading {
+  min-height: 220px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 20px;
+
+  color: #475569;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.rack-loading i {
+  color: #0f766e;
+
+  font-size: 18px;
+}
+
+
+.rack-loading.rack-error {
+  color: #b91c1c;
+}
+
+
+.rack-loading.rack-error i {
+  color: #dc2626;
+}

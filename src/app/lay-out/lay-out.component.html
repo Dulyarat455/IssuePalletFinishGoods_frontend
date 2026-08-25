@@ -95,78 +95,177 @@
         </div>
       </div>
 
-      <div class="rack-scroll">
+      <!-- LOADING RACK -->
+
+      <div
+        class="rack-loading"
+        *ngIf="isLoadingRack"
+      >
+        <i class="fas fa-spinner fa-spin"></i>
+        Loading Rack Location...
+      </div>
+
+
+      <!-- EMPTY / ERROR -->
+
+      <div
+        class="rack-loading rack-error"
+        *ngIf="
+          !isLoadingRack &&
+          rackLoadError
+        "
+      >
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ rackLoadError }}
+      </div>
+
+
+      <!-- RACK FROM API -->
+
+      <div
+        class="rack-scroll"
+        *ngIf="
+          !isLoadingRack &&
+          !rackLoadError
+        "
+      >
+
         <div class="rack-layout">
+
           <div
             class="rack-block"
-            *ngFor="let rack of rackDefinitions; trackBy: trackByRack"
+            *ngFor="
+              let rack of rackDefinitions;
+              trackBy: trackByRack
+            "
           >
+
             <!-- ============================================
                  RACK TITLE
 
-                 Title ใช้สีตาม Group เสมอ
+                 สีหัว Rack เดิมยังอยู่
             ============================================= -->
 
             <div
               class="rack-title"
-              [ngClass]="getRackGroupClass(rack.rackGroup)"
+              [ngClass]="
+                getRackGroupClass(
+                  rack.rackGroup
+                )
+              "
             >
               {{ rack.name }}
             </div>
 
+
             <!-- ============================================
-                 RACK BODY
+                 RACK BODY FROM API AREA
             ============================================= -->
 
             <div class="rack-body">
+
               <div
                 class="rack-row"
-                *ngFor="let row of getRows(rack); trackBy: trackByNumber"
+                *ngFor="
+                  let areaRow of getAreaRows(rack);
+                  trackBy: trackByAreaRow
+                "
               >
+
                 <button
                   type="button"
                   class="rack-slot"
-                  *ngFor="let column of rack.columns; trackBy: trackByNumber"
-                  [ngClass]="{
-                    'has-pallet': hasPallet(rack, column, row),
 
-                    selected: isSelected(rack, column, row),
+                  *ngFor="
+                    let area of areaRow;
+                    trackBy: trackByArea
+                  "
+
+                  [ngClass]="{
+                    'has-pallet':
+                      hasPallet(
+                        rack,
+                        area
+                      ),
+
+                    selected:
+                      isSelected(
+                        rack,
+                        area
+                      ),
 
                     'rack-group-abc':
-                      hasPallet(rack, column, row) && rack.rackGroup === 'ABC',
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'ABC',
 
                     'rack-group-de':
-                      hasPallet(rack, column, row) && rack.rackGroup === 'DE',
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'DE',
 
                     'rack-group-fgh':
-                      hasPallet(rack, column, row) && rack.rackGroup === 'FGH'
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'FGH'
                   }"
-                  (click)="selectSlot(getSlot(rack, column, row))"
+
+                  (click)="
+                    selectSlot(
+                      getSlot(
+                        rack,
+                        area
+                      )
+                    )
+                  "
                 >
-                  <!-- SLOT NUMBER -->
+
+                  <!-- AREA NAME FROM API -->
 
                   <span class="slot-code">
-                    {{ buildSlotCode(column, row) }}
+                    {{ area.areaName }}
                   </span>
 
-                  <!-- ======================================
-                       BADGE = จำนวน Label / Model
 
-                       ไม่ใช่จำนวน Pallet
-                  ======================================= -->
+                  <!--
+                    Badge ยังใช้ Mock Pallet เดิม
+                  -->
 
                   <span
                     class="label-count"
-                    *ngIf="getLabelCount(rack, column, row) > 0"
+                    *ngIf="
+                      getLabelCount(
+                        rack,
+                        area
+                      ) > 0
+                    "
                   >
-                    {{ getLabelCount(rack, column, row) }}
+                    {{
+                      getLabelCount(
+                        rack,
+                        area
+                      )
+                    }}
                   </span>
+
                 </button>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
     <!-- ===================================================
