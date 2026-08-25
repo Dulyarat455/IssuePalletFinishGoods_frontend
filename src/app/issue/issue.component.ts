@@ -39,6 +39,21 @@ type LocationRow = {
   name?: string;
 };
 
+
+type IssueRackGroup =
+  | 'ABC'
+  | 'DE'
+  | 'FGH';
+
+type IssueRackDefinition = {
+  name: string;
+  rackCode: string;
+  rackGroup: IssueRackGroup;
+  columns: number[];
+  rows: number;
+};
+
+
 type HeaderIssuePalletTemp = {
   id: number;
   issueDate: string;
@@ -144,6 +159,18 @@ type LabelStockType = 'FG' | 'WIP';
 
 type IssuePanel = 'normal' | 'fraction' | 'print';
 
+
+
+type PalletCreateForm = {
+  date: string;
+  shift: string;
+  locationId: number | null;
+  labelType: LabelStockType;
+};
+
+
+
+
 type LabelPreviewGroupRow = {
   dieNo: string;
   lotNo: string;
@@ -222,6 +249,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
   showItemDrop = false;
 
 
+
+  showCreatePallet = true;
+
+  palletCreateForm: PalletCreateForm =  this.createEmptyPalletCreateForm();
+
+
   isLoadingHeader = false;
   isSavingHeader = false;
   isEditingHeader = false;
@@ -241,6 +274,68 @@ export class IssueComponent implements OnInit, AfterViewInit {
   isDeletingFractionBox = false;
 
   isPrinting = false;
+
+
+  createPalletRackDefinitions: IssueRackDefinition[] = [
+    {
+      name: 'Rack A',
+      rackCode: 'A',
+      rackGroup: 'ABC',
+      columns: [1, 2, 3, 4, 5],
+      rows: 15
+    },
+    {
+      name: 'Rack B',
+      rackCode: 'B',
+      rackGroup: 'ABC',
+      columns: [1, 2, 3, 4, 5],
+      rows: 15
+    },
+    {
+      name: 'Rack C',
+      rackCode: 'C',
+      rackGroup: 'ABC',
+      columns: [1, 2, 3, 4, 5],
+      rows: 15
+    },
+    {
+      name: 'Rack D',
+      rackCode: 'D',
+      rackGroup: 'DE',
+      columns: [1, 2, 3, 4, 5],
+      rows: 12
+    },
+    {
+      name: 'Rack E',
+      rackCode: 'E',
+      rackGroup: 'DE',
+      columns: [1, 2, 3],
+      rows: 12
+    },
+    {
+      name: 'Rack F',
+      rackCode: 'F',
+      rackGroup: 'FGH',
+      columns: [1, 2],
+      rows: 12
+    },
+    {
+      name: 'Rack G',
+      rackCode: 'G',
+      rackGroup: 'FGH',
+      columns: [1, 2, 3, 4],
+      rows: 12
+    },
+    {
+      name: 'Rack H',
+      rackCode: 'H',
+      rackGroup: 'FGH',
+      columns: [1, 2, 3],
+      rows: 12
+    }
+  ];
+
+
 
   constructor(private http: HttpClient) {}
 
@@ -278,6 +373,29 @@ export class IssueComponent implements OnInit, AfterViewInit {
       this.showFractionSection = true;
       setTimeout(() => this.focusFractionFirst(), 0);
     }
+  }
+
+
+
+ 
+
+
+  createEmptyPalletCreateForm(): PalletCreateForm {
+    const d = new Date();
+  
+    const f = (n: number) =>
+      String(n).padStart(2, '0');
+  
+    return {
+      date:
+        `${d.getFullYear()}-${f(d.getMonth() + 1)}-${f(d.getDate())}`,
+  
+      shift: '',
+  
+      locationId: null,
+  
+      labelType: 'FG'
+    };
   }
 
   /* =======================
@@ -566,6 +684,362 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   get labelRowNoOffset(): number {
     return this.activeLabelPageIndex * this.labelRowsPerPage;
+  }
+
+
+
+
+  get selectedCreatePalletLocation(): LocationRow | null {
+    if (!this.palletCreateForm.locationId) {
+      return null;
+    }
+  
+    return (
+      this.locations.find(
+        row =>
+          Number(row.id) ===
+          Number(this.palletCreateForm.locationId)
+      ) || null
+    );
+  }
+
+
+
+  get createPalletRackGroups(): {
+    rackName: string;
+    locations: LocationRow[];
+  }[] {
+  
+    const map =
+      new Map<string, LocationRow[]>();
+  
+    for (const location of this.locations) {
+  
+      const locationText =
+        String(
+          location.locationNo ||
+          location.name ||
+          ''
+        )
+          .trim()
+          .toUpperCase();
+  
+      if (!locationText) {
+        continue;
+      }
+  
+      const match =
+        locationText.match(/[A-Z]/);
+  
+      const rackName =
+        match?.[0] || 'OTHER';
+  
+      if (!map.has(rackName)) {
+        map.set(
+          rackName,
+          []
+        );
+      }
+  
+      map
+        .get(rackName)!
+        .push(location);
+    }
+  
+    const rackOrder = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H'
+    ];
+  
+    return Array
+      .from(map.entries())
+      .sort(([a], [b]) => {
+  
+        const indexA =
+          rackOrder.indexOf(a);
+  
+        const indexB =
+          rackOrder.indexOf(b);
+  
+        return (
+          (indexA < 0 ? 999 : indexA) -
+          (indexB < 0 ? 999 : indexB)
+        );
+      })
+      .map(
+        ([rackName, locations]) => ({
+          rackName,
+  
+          locations:
+            [...locations].sort(
+              (a, b) =>
+                String(
+                  a.locationNo ||
+                  a.name ||
+                  ''
+                ).localeCompare(
+                  String(
+                    b.locationNo ||
+                    b.name ||
+                    ''
+                  ),
+                  undefined,
+                  {
+                    numeric: true
+                  }
+                )
+            )
+        })
+      );
+  }
+
+
+
+  buildCreatePalletSlotCode(
+    column: number,
+    row: number
+  ): string {
+  
+    return (
+      `${column}` +
+      `${row.toString().padStart(2, '0')}`
+    );
+  }
+
+
+
+  getCreatePalletRackRows(
+    rack: IssueRackDefinition
+  ): number[] {
+  
+    return Array.from(
+      {
+        length: rack.rows
+      },
+      (_, index) =>
+        index + 1
+    );
+  }
+
+
+  getCreatePalletLocationBySlot(
+    rack: IssueRackDefinition,
+    column: number,
+    row: number
+  ): LocationRow | null {
+  
+    const slotCode =
+      this.buildCreatePalletSlotCode(
+        column,
+        row
+      );
+  
+    const targetCode =
+      `${rack.rackCode}${slotCode}`
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '');
+  
+    const found =
+      this.locations.find(location => {
+  
+        const locationText =
+          String(
+            location.name ||
+            location.locationNo ||
+            ''
+          )
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, '');
+  
+        return (
+          locationText === targetCode ||
+          locationText.endsWith(targetCode)
+        );
+      });
+  
+    return found || null;
+  }
+
+
+
+
+  selectCreatePalletRackSlot(
+    rack: IssueRackDefinition,
+    column: number,
+    row: number
+  ): void {
+  
+    const location =
+      this.getCreatePalletLocationBySlot(
+        rack,
+        column,
+        row
+      );
+  
+    if (!location) {
+      this.toast(
+        'warning',
+        `ไม่พบ Location ${rack.rackCode}${this.buildCreatePalletSlotCode(column, row)} ใน Master`
+      );
+  
+      return;
+    }
+  
+    this.palletCreateForm.locationId =
+      location.id;
+  }
+
+
+
+  isCreatePalletRackSlotSelected(
+    rack: IssueRackDefinition,
+    column: number,
+    row: number
+  ): boolean {
+  
+    const location =
+      this.getCreatePalletLocationBySlot(
+        rack,
+        column,
+        row
+      );
+  
+    if (!location) {
+      return false;
+    }
+  
+    return (
+      Number(
+        this.palletCreateForm.locationId
+      ) ===
+      Number(location.id)
+    );
+  }
+
+
+
+  hasCreatePalletLocation(
+    rack: IssueRackDefinition,
+    column: number,
+    row: number
+  ): boolean {
+  
+    return !!this.getCreatePalletLocationBySlot(
+      rack,
+      column,
+      row
+    );
+  }
+
+
+
+  getCreatePalletRackGroupClass(
+    rackGroup: IssueRackGroup
+  ): string {
+  
+    switch (rackGroup) {
+  
+      case 'ABC':
+        return 'create-rack-group-abc';
+  
+      case 'DE':
+        return 'create-rack-group-de';
+  
+      case 'FGH':
+        return 'create-rack-group-fgh';
+  
+      default:
+        return '';
+    }
+  }
+
+
+
+  selectCreatePalletLocation(
+    location: LocationRow
+  ): void {
+    this.palletCreateForm.locationId =
+      location.id;
+  }
+
+
+
+  isCreatePalletLocationSelected(
+    location: LocationRow
+  ): boolean {
+    return (
+      Number(this.palletCreateForm.locationId) ===
+      Number(location.id)
+    );
+  }
+
+
+
+  onNextCreatePallet(): void {
+
+    if (!this.palletCreateForm.date) {
+      return this.toast(
+        'warning',
+        'กรุณาเลือก Date'
+      );
+    }
+  
+    if (!this.palletCreateForm.shift) {
+      return this.toast(
+        'warning',
+        'กรุณาเลือก Shift'
+      );
+    }
+  
+    if (!this.palletCreateForm.locationId) {
+      return this.toast(
+        'warning',
+        'กรุณาเลือก Location'
+      );
+    }
+  
+    if (!this.palletCreateForm.labelType) {
+      return this.toast(
+        'warning',
+        'กรุณาเลือก Label Type'
+      );
+    }
+  
+    /*
+      ส่งค่าจากหน้า Create Pallet
+      ไปใส่ Header Form เดิม
+    */
+      this.form.issueDate =
+      this.palletCreateForm.date;
+  
+    this.form.shift =
+      this.palletCreateForm.shift;
+  
+    this.form.locationId =
+      this.palletCreateForm.locationId;
+  
+    this.labelStockType =
+      this.palletCreateForm.labelType;
+   
+    /*
+      ปิดหน้า Create Pallet
+      แล้วกลับเข้าสู่ UI เดิม 100%
+    */
+  
+    this.showCreatePallet = false;
+  
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 0);
   }
   
 
