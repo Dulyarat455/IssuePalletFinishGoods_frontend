@@ -35,9 +35,33 @@ type ControlLotRow = {
 
 type LocationRow = {
   id: number;
+
+  mapAreaRackId: number;
+
+  rackId: number;
+  rackName: string;
+
+  areaId: number;
+  areaName: string;
+
   locationNo: string;
   name?: string;
 };
+
+
+
+type PalletTempRow = {
+  id: number;
+  date: string;
+  shift: string;
+  mapAreaRackId: number;
+  labelType: LabelStockType;
+  userId: number;
+  status: string;
+};
+
+
+
 
 
 type IssueRackGroup =
@@ -64,12 +88,13 @@ type HeaderIssuePalletTemp = {
   itemName: string;
   controlLotId: number;
   controlLotName?: string;
-  locationId: number;
-  locationNo?: string;
+
   movementMonth: string;
   totalQtyBox: number;
 
   normalQty?: number | null;
+
+  palletTempId: number;
 
   idPallet: string;
   userId: number;
@@ -255,6 +280,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
   palletCreateForm: PalletCreateForm =  this.createEmptyPalletCreateForm();
 
 
+  palletTemp: PalletTempRow | null = null;
+
+  isLoadingPalletTemp = false;
+  isSavingPalletTemp = false;
+
+
   isLoadingHeader = false;
   isSavingHeader = false;
   isEditingHeader = false;
@@ -353,7 +384,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.fetchItems();
     this.fetchControlLots();
     this.fetchLocations();
-  
+    
+    this.fetchPalletTemp();
     this.fetchHeader();
   }
 
@@ -587,7 +619,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
 
   get previewLocation(): string {
-    return this.header ? this.locationName(this.header.locationId) : '-';
+
+    if (!this.palletTemp) {
+      return '-';
+    }
+  
+    return this.locationName(
+      this.palletTemp.mapAreaRackId
+    );
   }
   
   get previewMovement(): string {
@@ -983,6 +1022,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   onNextCreatePallet(): void {
 
+    if (!this.userId) {
+      return this.toast(
+        'warning',
+        'ไม่พบ User ID'
+      );
+    }
+  
     if (!this.palletCreateForm.date) {
       return this.toast(
         'warning',
@@ -1004,42 +1050,129 @@ export class IssueComponent implements OnInit, AfterViewInit {
       );
     }
   
-    if (!this.palletCreateForm.labelType) {
-      return this.toast(
-        'warning',
-        'กรุณาเลือก Label Type'
+    const mapAreaRackId =
+      Number(
+        this.palletCreateForm.locationId
       );
-    }
   
-    /*
-      ส่งค่าจากหน้า Create Pallet
-      ไปใส่ Header Form เดิม
-    */
-      this.form.issueDate =
-      this.palletCreateForm.date;
+    const payload = {
+      userId:
+        Number(this.userId),
   
-    this.form.shift =
-      this.palletCreateForm.shift;
+      date:
+        new Date(
+          this.palletCreateForm.date
+        ).toISOString(),
   
-    this.form.locationId =
-      this.palletCreateForm.locationId;
+      shift:
+        this.palletCreateForm.shift,
   
-    this.labelStockType =
-      this.palletCreateForm.labelType;
-   
-    /*
-      ปิดหน้า Create Pallet
-      แล้วกลับเข้าสู่ UI เดิม 100%
-    */
+      mapAreaRackId:
+        mapAreaRackId,
   
-    this.showCreatePallet = false;
+      labelType:
+        this.palletCreateForm.labelType
+    };
   
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    this.isSavingPalletTemp = true;
+  
+    this.http
+      .post<any>(
+        config.apiServer +
+          '/api/issue/createPalletTemp',
+        payload
+      )
+      .subscribe({
+  
+        next: (res: any) => {
+  
+          const palletTemp: PalletTempRow | null =
+            res?.data || null;
+  
+          if (!palletTemp) {
+            this.isSavingPalletTemp = false;
+  
+            Swal.fire(
+              'Error',
+              'ไม่พบข้อมูล Pallet Temp จาก API',
+              'error'
+            );
+  
+            return;
+          }
+  
+          this.palletTemp =
+            palletTemp;
+  
+          this.form.issueDate =
+            this.palletCreateForm.date;
+  
+          this.form.shift =
+            this.palletCreateForm.shift;
+  
+          this.form.locationId =
+            Number(
+              palletTemp.mapAreaRackId
+            );
+  
+          this.labelStockType =
+            palletTemp.labelType;
+  
+          this.isSavingPalletTemp = false;
+  
+          this.showCreatePallet = false;
+        },
+  
+        error: (err) => {
+  
+          console.error(err);
+  
+          this.isSavingPalletTemp = false;
+  
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+              err.message ||
+              'Create Pallet fail',
+            'error'
+          );
+        }
       });
-    }, 0);
+  }
+
+
+
+  fetchPalletTemp(): void {
+
+    if (!this.userId) return;
+  
+    this.isLoadingPalletTemp = true;
+  
+    this.http
+      .post<any>(
+        config.apiServer +
+          '/api/issue/fetchPalletTemp',
+        {
+          userId:
+            Number(this.userId)
+        }
+      )
+      .subscribe({
+        next: (res: any) => {
+  
+          this.palletTemp =
+            res.results || null;
+  
+          this.isLoadingPalletTemp = false;
+        },
+  
+        error: (err) => {
+          console.error(err);
+  
+          this.palletTemp = null;
+          this.isLoadingPalletTemp = false;
+        }
+      });
   }
   
 
@@ -1251,41 +1384,72 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
 
-  private normalizeHeader(raw: any): HeaderIssuePalletTemp | null {
-    if (!raw) return null;
+  private normalizeHeader(
+    raw: any
+  ): HeaderIssuePalletTemp | null {
+  
+    if (!raw) {
+      return null;
+    }
   
     return {
-      id: Number(raw.id),
+      id:
+        Number(raw.id),
   
-      issueDate: raw.issueDate || raw.dateIssue,
-      shift: raw.shift || '',
+      issueDate:
+        raw.issueDate ||
+        raw.dateIssue,
   
-      groupId: Number(raw.groupId),
-      groupName: raw.groupName,
+      shift:
+        raw.shift || '',
   
-      itemNo: raw.itemNo || '',
-      itemName: raw.itemName || '',
+      groupId:
+        Number(raw.groupId),
   
-      controlLotId: Number(raw.controlLotId),
-      controlLotName: raw.controlLotName,
+      groupName:
+        raw.groupName,
   
-      locationId: Number(raw.locationId),
-      locationNo: raw.locationNo,
+      itemNo:
+        raw.itemNo || '',
   
-      movementMonth: raw.movementMonth || raw.moveMentThreeMonth || '-',
+      itemName:
+        raw.itemName || '',
   
-      totalQtyBox: Number(raw.totalQtyBox ?? raw.totalBox ?? 0),
-      
+      controlLotId:
+        Number(raw.controlLotId),
+  
+      controlLotName:
+        raw.controlLotName,
+  
+      palletTempId:
+        Number(raw.palletTempId),
+  
+      movementMonth:
+        raw.movementMonth ||
+        raw.moveMentThreeMonth ||
+        '-',
+  
+      totalQtyBox:
+        Number(
+          raw.totalQtyBox ??
+          raw.totalBox ??
+          0
+        ),
+  
       normalQty:
-      raw.normalQty == null
-        ? null
-        : Number(raw.normalQty),
-
-      // Temp ยังไม่ต้องมี ID Pallet จริง
-      idPallet: raw.idPallet || 'Auto',
+        raw.normalQty == null
+          ? null
+          : Number(raw.normalQty),
   
-      userId: Number(raw.userId),
-      status: raw.status || 'use',
+      idPallet:
+        raw.idPallet ||
+        'Auto',
+  
+      userId:
+        Number(raw.userId),
+  
+      status:
+        raw.status || 'use'
     };
   }
 
@@ -1318,7 +1482,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       itemNo: h.itemNo,
       itemName: h.itemName,
       controlLotId: h.controlLotId,
-      locationId: h.locationId,
+      locationId: this.palletTemp?.mapAreaRackId ?? null,
       movementMonth: h.movementMonth,
       totalQtyBox: h.totalQtyBox,
     };
@@ -1481,28 +1645,80 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     fetchLocations() {
       this.isLoadingMaster = true;
-
-      this.http.get(config.apiServer + '/api/location/list').subscribe({
-        next: (res: any) => {
-          this.locations = (res.results || []).map((r: any) => ({
-            id: r.id,
-            locationNo: r.locationNo || r.name,
-            name: r.name,
-          }));
-
-          this.checkMasterLoadingDone();
-        },
-        error: (err) => {
-          console.error(err);
-          this.checkMasterLoadingDone();
-
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load location fail',
-            icon: 'error',
-          });
-        },
-      });
+    
+      this.http
+        .get<any>(config.apiServer + '/api/location/list')
+        .subscribe({
+          next: (res: any) => {
+    
+            const racks =
+              Array.isArray(res?.results)
+                ? res.results
+                : [];
+    
+            this.locations =
+              racks.flatMap((rack: any) => {
+    
+                const rackName =
+                  String(
+                    rack.rackName || ''
+                  ).trim();
+    
+                return (rack.areas || []).map(
+                  (area: any) => {
+    
+                    const displayName =
+                      `${rackName}-${area.areaName}`;
+    
+                    return {
+                      id:
+                        Number(area.mapAreaRackId),
+    
+                      mapAreaRackId:
+                        Number(area.mapAreaRackId),
+    
+                      rackId:
+                        Number(rack.rackId),
+    
+                      rackName:
+                        rackName,
+    
+                      areaId:
+                        Number(area.areaId),
+    
+                      areaName:
+                        String(area.areaName),
+    
+                      locationNo:
+                        displayName,
+    
+                      name:
+                        displayName
+                    };
+                  }
+                );
+              });
+    
+            this.checkMasterLoadingDone();
+          },
+    
+          error: (err) => {
+            console.error(err);
+    
+            this.locations = [];
+    
+            this.checkMasterLoadingDone();
+    
+            Swal.fire({
+              title: 'Error',
+              text:
+                err?.error?.message ||
+                err.message ||
+                'Load location fail',
+              icon: 'error'
+            });
+          }
+        });
     }
 
     private checkMasterLoadingDone() {
@@ -1615,7 +1831,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.form.itemNo) return this.toast('warning', 'เลือก Item No.');
     if (!this.form.itemName) return this.toast('warning', 'ไม่พบ Item Name');
     if (!this.form.controlLotId) return this.toast('warning', 'เลือก Control Lot OQC');
-    if (!this.form.locationId) return this.toast('warning', 'เลือก Location FG');
     if (!this.form.movementMonth) return this.toast('warning', 'เลือก Movement within 3 month');
 
     const normalQty = Number(this.fullBoxTagQty || 0);
@@ -1634,24 +1849,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return this.toast('warning', 'Total QTY BOX ต้องมากกว่า 0');
     }
 
-    if (totalBox > 42) {
-      return Swal.fire({
-        icon: 'warning',
-        title: 'จำนวน Box เกิน 42 Box',
-        html: `
-          <div style="text-align:left">
-            <div><b>QTY Box เต็ม:</b> ${normalQty} Box</div>
-            <div><b>QTY Box เศษ:</b> ${fractionQty} Box</div>
-            <hr />
-            <div><b>Total QTY BOX:</b> ${totalBox} Box</div>
-            <div style="margin-top:10px;color:#b91c1c;font-weight:700">
-              Total QTY BOX ต้องไม่เกิน 42 Box ต่อครั้ง
-            </div>
-          </div>
-        `,
-        confirmButtonText: 'ตรวจสอบใหม่',
-        confirmButtonColor: '#dc2626',
-      });
+    if (!this.palletTemp?.id) {
+      return this.toast(
+        'warning',
+        'ไม่พบ Pallet Temp'
+      );
+    }
+    
+    if (!this.palletTemp?.mapAreaRackId) {
+      return this.toast(
+        'warning',
+        'ไม่พบ Location ของ Pallet'
+      );
     }
 
     if (this.header && this.isEditingHeader && this.scanCount > normalQty) {
@@ -1725,13 +1934,17 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       dateIssue: new Date(this.form.issueDate).toISOString(),
       itemNo: this.form.itemNo,
       itemName: this.form.itemName,
-      qtyBox: totalBox,
       shift: this.form.shift,
       groupId: Number(this.form.groupId),
       controlLotId: Number(this.form.controlLotId),
-      locationId: Number(this.form.locationId),
+      normalQty: normalQty,
       totalBox,
       moveMentThreeMonth: this.form.movementMonth,
+      palletTempId: Number(
+        this.palletTemp!.id
+      ),
+     
+
     };
 
     const isEditMode = !!this.header && this.isEditingHeader;
@@ -1767,7 +1980,12 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           this.form.totalQtyBox = totalBox;
           this.itemKeyword = this.form.itemNo;
       
-          this.syncHeaderBoxQtyAfterSave(normalQty, fractionQty, isEditMode);
+          this.fullBoxTagQty = normalQty;
+
+          this.syncFractionHeaderAfterHeaderSave(
+            fractionQty,
+            isEditMode
+          );
         },
       
         error: (err): void => {
@@ -1802,41 +2020,6 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
 
   }
 
-  private syncHeaderBoxQtyAfterSave(
-    normalQty: number,
-    fractionQty: number,
-    isEditMode: boolean
-  ) {
-    if (!this.header) return;
-
-    this.http
-      .post<any>(config.apiServer + '/api/issue/addNormalQty', {
-        headTempId: this.header.id,
-        normalQty,
-      })
-      .subscribe({
-        next: (res) => {
-          const updatedNormalQty = Number(res?.data?.normalQty ?? normalQty);
-
-          this.fullBoxTagQty = updatedNormalQty;
-          this.header = {
-            ...this.header!,
-            normalQty: updatedNormalQty,
-          };
-
-          this.syncFractionHeaderAfterHeaderSave(fractionQty, isEditMode);
-        },
-        error: (err) => {
-          console.error(err);
-          this.isSavingHeader = false;
-          Swal.fire(
-            'Error',
-            err?.error?.message || err?.error?.error || err.message || 'Save QTY Box เต็ม fail',
-            'error'
-          );
-        },
-      });
-  }
 
   private syncFractionHeaderAfterHeaderSave(
     fractionQty: number,
@@ -3211,7 +3394,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         <div style="text-align:left">
           <div><b>ID Pallet:</b> ${this.header.idPallet}</div>
           <div><b>Item:</b> ${this.header.itemNo} - ${this.header.itemName}</div>
-          <div><b>Location:</b> ${this.locationName(this.header.locationId)}</div>
+          <div><b>Location:</b> ${this.locationName(this.palletTemp?.mapAreaRackId)}</div>
           <div><b>Total WOS:</b> ${this.savedRows.length}</div>
           <div><b>Total QTY:</b> ${this.totalScanQty.toLocaleString()}</div>
         </div>

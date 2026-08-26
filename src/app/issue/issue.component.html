@@ -423,7 +423,7 @@
 
             <div class="summary-item wide">
               <span>Location FG</span>
-              <b>{{ locationName(header.locationId) }}</b>
+              <b>{{ locationName( palletTemp?.mapAreaRackId) }}</b>
             </div>
 
             <div class="summary-item">
@@ -572,17 +572,24 @@
 
               <div class="form-field">
                 <label>Location FG</label>
-                <select
-                  class="control"
-                  name="locationId"
-                  [(ngModel)]="form.locationId"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                >
-                  <option [ngValue]="null" disabled>Select Location</option>
-                  <option *ngFor="let l of locations" [ngValue]="l.id">
-                    {{ l.name ? l.name : "" }}
-                  </option>
-                </select>
+              
+                <input
+                  class="control readonly"
+                  type="text"
+                  [value]="
+                    selectedCreatePalletLocation
+                      ? (
+                          selectedCreatePalletLocation.name ||
+                          selectedCreatePalletLocation.locationNo
+                        )
+                      : '-'
+                  "
+                  readonly
+                />
+              
+                <small class="auto-total-note">
+                  Auto from Create Pallet
+                </small>
               </div>
 
               <div class="form-field">
