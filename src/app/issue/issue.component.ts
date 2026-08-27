@@ -1549,17 +1549,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     /* =======================
       Master Data
     ======================= */
