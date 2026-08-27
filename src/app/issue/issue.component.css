@@ -3391,3 +3391,123 @@ td small {
 .create-rack-slot:disabled {
   cursor: not-allowed;
 }
+
+
+
+
+/* =========================================================
+   CREATE PALLET
+   READ ONLY STATE : SHIFT + LABEL TYPE
+========================================================= */
+
+
+/* =========================
+   SHIFT - READ ONLY
+========================= */
+
+.create-shift-group.readonly-state {
+  gap: 8px;
+}
+
+
+.create-shift-group.readonly-state button:disabled {
+  opacity: 1 !important;
+
+  cursor: default !important;
+
+  pointer-events: none;
+
+  background: #f8fafc !important;
+
+  border: 1px solid #e2e8f0 !important;
+
+  color: #cbd5e1 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/* Shift ที่ถูกเลือก */
+
+.create-shift-group.readonly-state button.selected:disabled {
+  background: #e2e8f0 !important;
+
+  border-color: #cbd5e1 !important;
+
+  color: #334155 !important;
+
+  font-weight: 950;
+
+  box-shadow: none !important;
+}
+
+
+/* ไม่ให้มี Hover */
+
+.create-shift-group.readonly-state button:hover {
+  transform: none !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================
+   LABEL TYPE - READ ONLY
+========================= */
+
+.create-label-type-group.readonly-state {
+  gap: 8px;
+}
+
+
+.create-label-type-group.readonly-state button:disabled {
+  opacity: 1 !important;
+
+  cursor: default !important;
+
+  pointer-events: none;
+
+  background: #f8fafc !important;
+
+  border: 1px solid #e2e8f0 !important;
+
+  color: #cbd5e1 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/* Label Type ที่ถูกเลือก */
+
+.create-label-type-group.readonly-state button.selected:disabled {
+  background: #e2e8f0 !important;
+
+  border-color: #cbd5e1 !important;
+
+  color: #334155 !important;
+
+  font-weight: 950;
+
+  box-shadow: none !important;
+}
+
+
+/* Icon ของตัวที่เลือก */
+
+.create-label-type-group.readonly-state
+button.selected:disabled i {
+  color: #475569 !important;
+}
+
+
+/* ไม่ให้มี Hover */
+
+.create-label-type-group.readonly-state button:hover {
+  transform: none !important;
+
+  box-shadow: none !important;
+}

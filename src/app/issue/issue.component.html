@@ -222,7 +222,10 @@
         <div class="form-field create-pallet-field">
           <label> Shift </label>
 
-          <div class="create-shift-group">
+          <div 
+            class="create-shift-group"
+            [class.readonly-state]="isPalletFormLocked"
+          >
             <button
               type="button"
               [class.selected]="palletCreateForm.shift === 'A'"
@@ -282,7 +285,10 @@
         <div class="form-field create-pallet-field">
           <label> Label Type </label>
 
-          <div class="create-label-type-group">
+          <div 
+            class="create-label-type-group"
+            [class.readonly-state]="isPalletFormLocked"
+          >
             <button
               type="button"
               class="fg"
