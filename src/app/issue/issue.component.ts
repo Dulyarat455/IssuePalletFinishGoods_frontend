@@ -70,24 +70,37 @@ type IssueRackDefinition = {
 
 type HeaderIssuePalletTemp = {
   id: number;
+
   issueDate: string;
   shift: string;
+
   groupId: number;
   groupName?: string;
+
   itemNo: string;
   itemName: string;
+
   controlLotId: number;
   controlLotName?: string;
 
   movementMonth: string;
+
   totalQtyBox: number;
 
   normalQty?: number | null;
 
+  fractionQty?: number;
+
+  normalScannedQty?: number;
+
+  fractionScannedQty?: number;
+
   palletTempId: number;
 
   idPallet: string;
+
   userId: number;
+
   status: string;
 };
 
@@ -152,7 +165,7 @@ type FractionTempListResp = {
 };
 
 type FetchHeaderResp = {
-  results: HeaderIssuePalletTemp | null;
+  results: HeaderIssuePalletTemp[];
 };
 
 type FetchWosTempResp = {
@@ -207,6 +220,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   userId: number | null = null;
 
   header: HeaderIssuePalletTemp | null = null;
+  headers: HeaderIssuePalletTemp[] = [];
+  showHeaderList = false;
   form: HeaderForm = this.createEmptyHeaderForm();
   scanForm: WosScanForm = this.createEmptyScanForm();
 
@@ -690,6 +705,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return !!this.palletTemp && !this.isEditingPalletTemp;
   }
 
+  get currentPalletHeaders(): HeaderIssuePalletTemp[] {
+    if (!this.palletTemp) {
+      return [];
+    }
+
+    const palletTempId = Number(this.palletTemp.id);
+
+    return this.headers.filter(
+      (header) => Number(header.palletTempId) === palletTempId
+    );
+  }
+
   get createPalletRackGroups(): {
     rackName: string;
     locations: LocationRow[];
@@ -872,11 +899,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
       this.labelStockType = this.palletTemp.labelType;
 
-      this.showCreatePallet = false;
+      // โหลด Header ใหม่ก่อน
+      this.fetchHeader(() => {
+        this.openHeaderStepForCurrentPallet();
+      });
 
       return;
     }
-
     // ถ้ายังอยู่ Edit Mode
     // ต้อง Save Edit ก่อน
 
@@ -938,7 +967,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
           this.isSavingPalletTemp = false;
 
+          this.isSavingPalletTemp = false;
+
+          // Pallet ใหม่ยังไม่มี Header
+          // จึงไปหน้า Create Header
+
           this.showCreatePallet = false;
+
+          this.showHeaderList = false;
+
+          this.prepareCreateNewHeader();
         },
 
         error: (err) => {
@@ -953,6 +991,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
           );
         },
       });
+  }
+
+  backToHeaderList(): void {
+    this.resetSelectedHeaderData();
+
+    this.showCreatePallet = false;
+
+    this.showHeaderList = true;
   }
 
   fetchPalletTemp(): void {
@@ -1490,6 +1536,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
       normalQty: raw.normalQty == null ? null : Number(raw.normalQty),
 
+      fractionQty: Number(raw.fractionQty || 0),
+
+      normalScannedQty: Number(raw.normalScannedQty || 0),
+
+      fractionScannedQty: Number(raw.fractionScannedQty || 0),
+
       idPallet: raw.idPallet || 'Auto',
 
       userId: Number(raw.userId),
@@ -1777,55 +1829,49 @@ export class IssueComponent implements OnInit, AfterViewInit {
   /* =======================
      Header Temp
   ======================= */
-  fetchHeader() {
-    if (!this.userId) return;
+  fetchHeader(afterLoad?: () => void): void {
+    if (!this.userId) {
+      return;
+    }
 
     this.isLoadingHeader = true;
 
     this.http
-      .post<any>(config.apiServer + '/api/issue/fetchHeaderTemp', {
-        userId: this.userId,
+      .post<FetchHeaderResp>(config.apiServer + '/api/issue/fetchHeaderTemp', {
+        userId: Number(this.userId),
       })
       .subscribe({
-        next: (res: any) => {
-          this.header = this.normalizeHeader(res.results);
+        next: (res): void => {
+          const rawList = Array.isArray(res?.results) ? res.results : [];
 
-          if (this.header) {
-            this.form = this.mapHeaderToForm(this.header);
-            this.itemKeyword = this.form.itemNo;
-            this.isEditingHeader = false;
+          const normalized = rawList
+            .map((raw) => this.normalizeHeader(raw))
+            .filter((row): row is HeaderIssuePalletTemp => row !== null);
 
-            this.fullBoxTagQty = this.header.normalQty ?? null;
+          this.headers = normalized;
 
-            // โหลดรายการ Box Temp ของ Header นี้
-            this.fetchWosTemp();
-            this.fetchFractionTempList();
-          } else {
-            this.header = null;
-            this.form = this.createEmptyHeaderForm();
-            this.itemKeyword = '';
-            this.savedRows = [];
-            this.isEditingHeader = true;
-            this.showFractionSection = false;
-            this.fractionHeader = null;
-            this.fractionQtyBox = null;
-            this.fractionRows = [];
-            this.fractionScanForm = this.createEmptyScanForm();
-            this.fullBoxTagQty = null;
+          this.isLoadingHeader = false;
+
+          if (afterLoad) {
+            afterLoad();
           }
-
-          this.isLoadingHeader = false;
-          this.focusQr();
         },
-        error: (err) => {
+
+        error: (err): void => {
           console.error(err);
+
+          this.headers = [];
+
           this.isLoadingHeader = false;
 
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load Header fail',
-            icon: 'error',
-          });
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Load Header fail',
+            'error'
+          );
         },
       });
   }
@@ -2018,6 +2064,140 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private openHeaderStepForCurrentPallet(): void {
+    if (!this.palletTemp) {
+      return;
+    }
+
+    const palletHeaders = this.currentPalletHeaders;
+
+    this.showCreatePallet = false;
+
+    // =========================
+    // มี Header แล้ว
+    // แสดง Header List
+    // =========================
+
+    if (palletHeaders.length > 0) {
+      this.header = null;
+
+      this.showHeaderList = true;
+
+      this.resetSelectedHeaderData();
+
+      return;
+    }
+
+    // =========================
+    // ยังไม่มี Header
+    // เข้า Create Header ทันที
+    // =========================
+
+    this.showHeaderList = false;
+
+    this.prepareCreateNewHeader();
+  }
+
+  private resetSelectedHeaderData(): void {
+    this.header = null;
+
+    this.savedRows = [];
+
+    this.scanForm = this.createEmptyScanForm();
+
+    this.fullBoxTagQty = null;
+
+    this.showFractionSection = false;
+
+    this.fractionHeader = null;
+
+    this.fractionQtyBox = null;
+
+    this.fractionRows = [];
+
+    this.fractionScanForm = this.createEmptyScanForm();
+
+    this.isEditingHeader = false;
+
+    this.activeIssuePanel = 'normal';
+  }
+
+  prepareCreateNewHeader(): void {
+    this.resetSelectedHeaderData();
+
+    this.showHeaderList = false;
+
+    const newForm = this.createEmptyHeaderForm();
+
+    if (this.palletTemp) {
+      newForm.issueDate = this.toYmd(this.palletTemp.date);
+
+      newForm.shift = this.palletTemp.shift;
+
+      newForm.locationId = this.palletTemp.mapAreaRackId;
+
+      this.labelStockType = this.palletTemp.labelType;
+    }
+
+    this.form = newForm;
+
+    this.itemKeyword = '';
+
+    this.isEditingHeader = false;
+  }
+
+  selectHeaderFromList(selectedHeader: HeaderIssuePalletTemp): void {
+    this.header = selectedHeader;
+
+    this.showHeaderList = false;
+
+    this.showCreatePallet = false;
+
+    // =========================
+    // Header Form
+    // =========================
+
+    this.form = this.mapHeaderToForm(selectedHeader);
+
+    this.itemKeyword = this.form.itemNo;
+
+    this.fullBoxTagQty = selectedHeader.normalQty ?? null;
+
+    // =========================
+    // Clear ของ Header ก่อนหน้า
+    // =========================
+
+    this.savedRows = [];
+
+    this.scanForm = this.createEmptyScanForm();
+
+    this.fractionHeader = null;
+
+    this.fractionQtyBox = selectedHeader.fractionQty ?? null;
+
+    this.fractionRows = [];
+
+    this.fractionScanForm = this.createEmptyScanForm();
+
+    this.showFractionSection = false;
+
+    this.isEditingHeader = false;
+
+    this.activeIssuePanel = 'normal';
+
+    // =========================
+    // โหลด Detail ของ Header นี้
+    // =========================
+
+    this.fetchWosTemp();
+
+    this.fetchFractionTempList();
+
+    setTimeout(() => {
+      this.focusQr();
+    }, 0);
+  }
+
   private syncFractionHeaderAfterHeaderSave(
     fractionQty: number,
     isHeaderEditMode: boolean
@@ -2113,6 +2293,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
       'success',
       isEditMode ? 'Edit Header Success' : 'Save Header Success'
     );
+     // Update Header List
+    this.fetchHeader();
 
     this.fetchWosTemp();
     this.fetchFractionTempList();
