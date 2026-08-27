@@ -48,8 +48,6 @@ type LocationRow = {
   name?: string;
 };
 
-
-
 type PalletTempRow = {
   id: number;
   date: string;
@@ -60,14 +58,7 @@ type PalletTempRow = {
   status: string;
 };
 
-
-
-
-
-type IssueRackGroup =
-  | 'ABC'
-  | 'DE'
-  | 'FGH';
+type IssueRackGroup = 'ABC' | 'DE' | 'FGH';
 
 type IssueRackDefinition = {
   name: string;
@@ -76,7 +67,6 @@ type IssueRackDefinition = {
   columns: number[];
   rows: number;
 };
-
 
 type HeaderIssuePalletTemp = {
   id: number;
@@ -99,8 +89,6 @@ type HeaderIssuePalletTemp = {
   idPallet: string;
   userId: number;
   status: string;
-
-
 };
 
 type HeaderForm = {
@@ -140,8 +128,6 @@ type WosTempRow = {
   isUpdatingQty?: boolean;
 };
 
-
-
 type HeaderTempFraction = {
   id: number;
   headerId: number;
@@ -149,8 +135,6 @@ type HeaderTempFraction = {
   timeStmp?: string;
   status: string;
 };
-
-
 
 type FractionTempRow = WosTempRow & {
   mapId?: number;
@@ -161,14 +145,11 @@ type FractionTempRow = WosTempRow & {
   isUpdatingQty?: boolean;
 };
 
-
-
 type FractionTempListResp = {
   message?: string;
   headerFraction: HeaderTempFraction | null;
   results: FractionTempRow[];
 };
-
 
 type FetchHeaderResp = {
   results: HeaderIssuePalletTemp | null;
@@ -178,13 +159,9 @@ type FetchWosTempResp = {
   results: WosTempRow[];
 };
 
-
-
 type LabelStockType = 'FG' | 'WIP';
 
 type IssuePanel = 'normal' | 'fraction' | 'print';
-
-
 
 type PalletCreateForm = {
   date: string;
@@ -192,9 +169,6 @@ type PalletCreateForm = {
   locationId: number | null;
   labelType: LabelStockType;
 };
-
-
-
 
 type LabelPreviewGroupRow = {
   dieNo: string;
@@ -204,8 +178,6 @@ type LabelPreviewGroupRow = {
   partialBoxText: string;
   totalQty: number;
 };
-
-
 
 @Component({
   selector: 'app-issue',
@@ -223,9 +195,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   @ViewChild('scanLotNo') scanLotNo!: ElementRef<HTMLInputElement>;
   @ViewChild('scanQty') scanQty!: ElementRef<HTMLInputElement>;
 
-
   @ViewChild('fractionItemNo') fractionItemNo!: ElementRef<HTMLInputElement>;
-  @ViewChild('fractionItemName') fractionItemName!: ElementRef<HTMLInputElement>;
+  @ViewChild('fractionItemName')
+  fractionItemName!: ElementRef<HTMLInputElement>;
   @ViewChild('fractionWosNo') fractionWosNo!: ElementRef<HTMLInputElement>;
   @ViewChild('fractionDwg') fractionDwg!: ElementRef<HTMLInputElement>;
   @ViewChild('fractionDieNo') fractionDieNo!: ElementRef<HTMLInputElement>;
@@ -247,7 +219,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
   fullBoxTagQty: number | null = null;
   isSavingFullBoxTag = false;
 
-
   showFractionSection = false;
 
   fractionHeader: HeaderTempFraction | null = null;
@@ -266,25 +237,22 @@ export class IssueComponent implements OnInit, AfterViewInit {
   isSavingFractionScan = false;
   isLoadingFractionRows = false;
 
-
   movementMonthOptions: string[] = [];
 
   itemKeyword = '';
   filteredItems: ItemMasterRow[] = [];
   showItemDrop = false;
 
-
-
   showCreatePallet = true;
 
-  palletCreateForm: PalletCreateForm =  this.createEmptyPalletCreateForm();
-
+  palletCreateForm: PalletCreateForm = this.createEmptyPalletCreateForm();
 
   palletTemp: PalletTempRow | null = null;
 
   isLoadingPalletTemp = false;
   isSavingPalletTemp = false;
 
+  isEditingPalletTemp = false;
 
   isLoadingHeader = false;
   isSavingHeader = false;
@@ -301,11 +269,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   isDeletingFractionHeader = false;
   isClearingFractionBoxes = false;
 
-
   isDeletingFractionBox = false;
 
   isPrinting = false;
-
 
   createPalletRackDefinitions: IssueRackDefinition[] = [
     {
@@ -313,78 +279,76 @@ export class IssueComponent implements OnInit, AfterViewInit {
       rackCode: 'A',
       rackGroup: 'ABC',
       columns: [1, 2, 3, 4, 5],
-      rows: 15
+      rows: 15,
     },
     {
       name: 'Rack B',
       rackCode: 'B',
       rackGroup: 'ABC',
       columns: [1, 2, 3, 4, 5],
-      rows: 15
+      rows: 15,
     },
     {
       name: 'Rack C',
       rackCode: 'C',
       rackGroup: 'ABC',
       columns: [1, 2, 3, 4, 5],
-      rows: 15
+      rows: 15,
     },
     {
       name: 'Rack D',
       rackCode: 'D',
       rackGroup: 'DE',
       columns: [1, 2, 3, 4, 5],
-      rows: 12
+      rows: 12,
     },
     {
       name: 'Rack E',
       rackCode: 'E',
       rackGroup: 'DE',
       columns: [1, 2, 3],
-      rows: 12
+      rows: 12,
     },
     {
       name: 'Rack F',
       rackCode: 'F',
       rackGroup: 'FGH',
       columns: [1, 2],
-      rows: 12
+      rows: 12,
     },
     {
       name: 'Rack G',
       rackCode: 'G',
       rackGroup: 'FGH',
       columns: [1, 2, 3, 4],
-      rows: 12
+      rows: 12,
     },
     {
       name: 'Rack H',
       rackCode: 'H',
       rackGroup: 'FGH',
       columns: [1, 2, 3],
-      rows: 12
-    }
+      rows: 12,
+    },
   ];
-
-
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
-  
+
     if (!this.userId) {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');
       return;
     }
-  
+
     this.generateMovementMonthOptions();
-  
+
     this.fetchGroups();
     this.fetchItems();
     this.fetchControlLots();
     this.fetchLocations();
-    
+
     this.fetchPalletTemp();
     this.fetchHeader();
   }
@@ -407,26 +371,19 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
   }
 
-
-
- 
-
-
   createEmptyPalletCreateForm(): PalletCreateForm {
     const d = new Date();
-  
-    const f = (n: number) =>
-      String(n).padStart(2, '0');
-  
+
+    const f = (n: number) => String(n).padStart(2, '0');
+
     return {
-      date:
-        `${d.getFullYear()}-${f(d.getMonth() + 1)}-${f(d.getDate())}`,
-  
+      date: `${d.getFullYear()}-${f(d.getMonth() + 1)}-${f(d.getDate())}`,
+
       shift: '',
-  
+
       locationId: null,
-  
-      labelType: 'FG'
+
+      labelType: 'FG',
     };
   }
 
@@ -461,27 +418,30 @@ export class IssueComponent implements OnInit, AfterViewInit {
   get headerTotalBoxQty(): number {
     return Number(this.header?.totalQtyBox || 0);
   }
-  
+
   get totalScannedBoxCount(): number {
     return Number(this.scanCount || 0) + Number(this.fractionScanCount || 0);
   }
-  
+
   get totalRequiredPlanBoxQty(): number {
-    return Number(this.normalRequiredBoxQty || 0) + Number(this.fractionQtyBoxValue || 0);
+    return (
+      Number(this.normalRequiredBoxQty || 0) +
+      Number(this.fractionQtyBoxValue || 0)
+    );
   }
-  
+
   get progressPercent(): number {
     if (!this.headerTotalBoxQty) return 0;
-  
+
     return Math.min(
       100,
       Math.round((this.totalScannedBoxCount / this.headerTotalBoxQty) * 100)
     );
   }
-  
+
   get planPercent(): number {
     if (!this.headerTotalBoxQty) return 0;
-  
+
     return Math.min(
       100,
       Math.round((this.totalRequiredPlanBoxQty / this.headerTotalBoxQty) * 100)
@@ -491,19 +451,19 @@ export class IssueComponent implements OnInit, AfterViewInit {
   get savedNormalBoxQty(): number {
     return Number(this.header?.normalQty || 0);
   }
-  
+
   get normalRequiredBoxQty(): number {
     return this.savedNormalBoxQty;
   }
-  
+
   get hasNormalBoxQty(): boolean {
     return this.savedNormalBoxQty > 0;
   }
-  
+
   get isBoxFull(): boolean {
     if (!this.header) return false;
     if (!this.hasNormalBoxQty) return false;
-  
+
     return this.scanCount >= this.normalRequiredBoxQty;
   }
 
@@ -511,128 +471,115 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return !!this.header && !this.isEditingHeader && this.scanCount > 0;
   }
 
-
   get fractionScanCount(): number {
     return this.fractionRows.length;
   }
-  
+
   get isFractionFull(): boolean {
     if (!this.fractionHeader) return false;
-  
+
     return this.fractionScanCount >= Number(this.fractionHeader.qtyBox || 0);
   }
-  
+
   get fractionTotalQty(): number {
     return this.fractionRows.reduce((sum, row) => {
       return sum + Number(row.qty || 0);
     }, 0);
   }
 
-
-
   get normalQtyValue(): number {
     return Number(this.fullBoxTagQty || 0);
   }
-  
+
   get fractionQtyBoxValue(): number {
     return Number(this.fractionQtyBox || this.fractionHeader?.qtyBox || 0);
   }
-  
+
   get totalPlanBoxQty(): number {
     return this.normalQtyValue + this.fractionQtyBoxValue;
   }
 
-
-  
-
-
   get isFullBoxTagChanged(): boolean {
     if (!this.header) return false;
-  
+
     const savedQty = Number(this.header.normalQty || 0);
     const currentQty = Number(this.fullBoxTagQty || 0);
-  
+
     return currentQty > 0 && currentQty !== savedQty;
   }
-
-
-
 
   get isFractionHeaderQtyChanged(): boolean {
     if (!this.fractionHeader) return false;
-  
+
     const savedQty = Number(this.fractionHeader.qtyBox || 0);
     const currentQty = Number(this.fractionQtyBox || 0);
-  
+
     return currentQty > 0 && currentQty !== savedQty;
   }
 
-
   get previewIdPallet(): string {
     const id = (this.header?.idPallet || '').trim();
-  
+
     if (id && id !== 'Auto') return id;
-  
+
     // Example ID Pallet ตามที่ต้องการก่อน
     return '260811001';
   }
-  
+
   get previewEmpName(): string {
     const empNo = localStorage.getItem('finish_goods_empNo') || '';
     const name = localStorage.getItem('finish_goods_name') || '';
     const firstName = this.getFirstNameOnly(name);
-  
+
     return `${empNo} ${firstName}`.trim() || '-';
   }
-  
+
   get previewDate(): string {
     const raw = this.header?.issueDate || this.form.issueDate;
-  
+
     if (!raw) return '-';
-  
+
     const d = new Date(raw);
     if (Number.isNaN(d.getTime())) return raw;
-  
+
     return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
   }
-  
+
   get previewItemNo(): string {
     return this.header?.itemNo || this.form.itemNo || '-';
   }
-  
+
   get previewItemName(): string {
     return this.header?.itemName || this.form.itemName || '-';
   }
-  
-  get previewOqcLot(): string {
-    return this.header ? this.controlLotDisplayName(this.header.controlLotId) : '-';
-  }
 
+  get previewOqcLot(): string {
+    return this.header
+      ? this.controlLotDisplayName(this.header.controlLotId)
+      : '-';
+  }
 
   get previewDieNo(): string {
     const firstNormal = this.savedRows.find((row) => (row.dieNo || '').trim());
-    const firstFraction = this.fractionRows.find((row) => (row.dieNo || '').trim());
-  
+    const firstFraction = this.fractionRows.find((row) =>
+      (row.dieNo || '').trim()
+    );
+
     return firstNormal?.dieNo || firstFraction?.dieNo || '-';
   }
 
-
-
   get previewLocation(): string {
-
     if (!this.palletTemp) {
       return '-';
     }
-  
-    return this.locationName(
-      this.palletTemp.mapAreaRackId
-    );
+
+    return this.locationName(this.palletTemp.mapAreaRackId);
   }
-  
+
   get previewMovement(): string {
     return this.header?.movementMonth || this.form.movementMonth || '-';
   }
-  
+
   get labelPreviewGroups(): LabelPreviewGroupRow[] {
     const map = new Map<
       string,
@@ -643,14 +590,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
         partialQtyList: number[];
       }
     >();
-  
+
     const addRow = (row: WosTempRow, kind: 'FULL' | 'PARTIAL') => {
       const shortLotNo = this.getShortLotNo(row.lotNo || '-');
       const dwg = (row.dwg || '-').trim();
-  
+
       // Group By เฉพาะ Lot No ที่ตัดแล้ว
       const key = shortLotNo || '-';
-  
+
       if (!map.has(key)) {
         map.set(key, {
           lotNo: shortLotNo || '-',
@@ -659,24 +606,24 @@ export class IssueComponent implements OnInit, AfterViewInit {
           partialQtyList: [],
         });
       }
-  
+
       const target = map.get(key)!;
       const qty = Number(row.qty || 0);
-  
+
       if (kind === 'FULL') {
         target.fullQtyList.push(qty);
       } else {
         target.partialQtyList.push(qty);
       }
     };
-  
+
     this.savedRows.forEach((row) => addRow(row, 'FULL'));
     this.fractionRows.forEach((row) => addRow(row, 'PARTIAL'));
-  
+
     return Array.from(map.values()).map((g) => {
       const fullTotal = g.fullQtyList.reduce((sum, qty) => sum + qty, 0);
       const partialTotal = g.partialQtyList.reduce((sum, qty) => sum + qty, 0);
-  
+
       return {
         dieNo: this.previewDieNo,
         lotNo: g.lotNo,
@@ -687,532 +634,666 @@ export class IssueComponent implements OnInit, AfterViewInit {
       };
     });
   }
-  
+
   get labelPreviewPageCount(): number {
     const totalRows = this.labelPreviewGroups.length;
     return Math.max(1, Math.ceil(totalRows / this.labelRowsPerPage));
   }
-  
+
   get activeLabelPageIndex(): number {
     return Math.min(
       Math.max(this.currentLabelPageIndex, 0),
       this.labelPreviewPageCount - 1
     );
   }
-  
+
   get currentLabelPageNo(): number {
     return this.activeLabelPageIndex + 1;
   }
-  
+
   get currentLabelRows(): LabelPreviewGroupRow[] {
     const start = this.activeLabelPageIndex * this.labelRowsPerPage;
     return this.labelPreviewGroups.slice(start, start + this.labelRowsPerPage);
   }
-  
+
   get emptyLabelRows(): number[] {
-    const emptyCount = Math.max(0, this.labelRowsPerPage - this.currentLabelRows.length);
+    const emptyCount = Math.max(
+      0,
+      this.labelRowsPerPage - this.currentLabelRows.length
+    );
     return Array.from({ length: emptyCount }, (_, i) => i);
   }
-  
+
   get labelPreviewTotalQty(): number {
     return this.currentLabelRows.reduce((sum, row) => {
       return sum + Number(row.totalQty || 0);
     }, 0);
   }
 
-
   get labelRowNoOffset(): number {
     return this.activeLabelPageIndex * this.labelRowsPerPage;
   }
-
-
-
 
   get selectedCreatePalletLocation(): LocationRow | null {
     if (!this.palletCreateForm.locationId) {
       return null;
     }
-  
+
     return (
       this.locations.find(
-        row =>
-          Number(row.id) ===
-          Number(this.palletCreateForm.locationId)
+        (row) => Number(row.id) === Number(this.palletCreateForm.locationId)
       ) || null
     );
   }
 
-
+  get isPalletFormLocked(): boolean {
+    return !!this.palletTemp && !this.isEditingPalletTemp;
+  }
 
   get createPalletRackGroups(): {
     rackName: string;
     locations: LocationRow[];
   }[] {
-  
-    const map =
-      new Map<string, LocationRow[]>();
-  
+    const map = new Map<string, LocationRow[]>();
+
     for (const location of this.locations) {
-  
-      const locationText =
-        String(
-          location.locationNo ||
-          location.name ||
-          ''
-        )
-          .trim()
-          .toUpperCase();
-  
+      const locationText = String(location.locationNo || location.name || '')
+        .trim()
+        .toUpperCase();
+
       if (!locationText) {
         continue;
       }
-  
-      const match =
-        locationText.match(/[A-Z]/);
-  
-      const rackName =
-        match?.[0] || 'OTHER';
-  
+
+      const match = locationText.match(/[A-Z]/);
+
+      const rackName = match?.[0] || 'OTHER';
+
       if (!map.has(rackName)) {
-        map.set(
-          rackName,
-          []
-        );
+        map.set(rackName, []);
       }
-  
-      map
-        .get(rackName)!
-        .push(location);
+
+      map.get(rackName)!.push(location);
     }
-  
-    const rackOrder = [
-      'A',
-      'B',
-      'C',
-      'D',
-      'E',
-      'F',
-      'G',
-      'H'
-    ];
-  
-    return Array
-      .from(map.entries())
+
+    const rackOrder = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+    return Array.from(map.entries())
       .sort(([a], [b]) => {
-  
-        const indexA =
-          rackOrder.indexOf(a);
-  
-        const indexB =
-          rackOrder.indexOf(b);
-  
-        return (
-          (indexA < 0 ? 999 : indexA) -
-          (indexB < 0 ? 999 : indexB)
-        );
+        const indexA = rackOrder.indexOf(a);
+
+        const indexB = rackOrder.indexOf(b);
+
+        return (indexA < 0 ? 999 : indexA) - (indexB < 0 ? 999 : indexB);
       })
-      .map(
-        ([rackName, locations]) => ({
-          rackName,
-  
-          locations:
-            [...locations].sort(
-              (a, b) =>
-                String(
-                  a.locationNo ||
-                  a.name ||
-                  ''
-                ).localeCompare(
-                  String(
-                    b.locationNo ||
-                    b.name ||
-                    ''
-                  ),
-                  undefined,
-                  {
-                    numeric: true
-                  }
-                )
-            )
-        })
-      );
+      .map(([rackName, locations]) => ({
+        rackName,
+
+        locations: [...locations].sort((a, b) =>
+          String(a.locationNo || a.name || '').localeCompare(
+            String(b.locationNo || b.name || ''),
+            undefined,
+            {
+              numeric: true,
+            }
+          )
+        ),
+      }));
   }
 
-
-
-  buildCreatePalletSlotCode(
-    column: number,
-    row: number
-  ): string {
-  
-    return (
-      `${column}` +
-      `${row.toString().padStart(2, '0')}`
-    );
+  buildCreatePalletSlotCode(column: number, row: number): string {
+    return `${column}` + `${row.toString().padStart(2, '0')}`;
   }
 
-
-
-  getCreatePalletRackRows(
-    rack: IssueRackDefinition
-  ): number[] {
-  
+  getCreatePalletRackRows(rack: IssueRackDefinition): number[] {
     return Array.from(
       {
-        length: rack.rows
+        length: rack.rows,
       },
-      (_, index) =>
-        index + 1
+      (_, index) => index + 1
     );
   }
-
 
   getCreatePalletLocationBySlot(
     rack: IssueRackDefinition,
     column: number,
     row: number
   ): LocationRow | null {
-  
-    const slotCode =
-      this.buildCreatePalletSlotCode(
-        column,
-        row
-      );
-  
-    const targetCode =
-      `${rack.rackCode}${slotCode}`
+    const slotCode = this.buildCreatePalletSlotCode(column, row);
+
+    const targetCode = `${rack.rackCode}${slotCode}`
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+
+    const found = this.locations.find((location) => {
+      const locationText = String(location.name || location.locationNo || '')
         .toUpperCase()
         .replace(/[^A-Z0-9]/g, '');
-  
-    const found =
-      this.locations.find(location => {
-  
-        const locationText =
-          String(
-            location.name ||
-            location.locationNo ||
-            ''
-          )
-            .toUpperCase()
-            .replace(/[^A-Z0-9]/g, '');
-  
-        return (
-          locationText === targetCode ||
-          locationText.endsWith(targetCode)
-        );
-      });
-  
+
+      return locationText === targetCode || locationText.endsWith(targetCode);
+    });
+
     return found || null;
   }
-
-
-
 
   selectCreatePalletRackSlot(
     rack: IssueRackDefinition,
     column: number,
     row: number
   ): void {
-  
-    const location =
-      this.getCreatePalletLocationBySlot(
-        rack,
-        column,
-        row
-      );
-  
+    if (this.isPalletFormLocked) {
+      return;
+    }
+
+    const location = this.getCreatePalletLocationBySlot(rack, column, row);
+
     if (!location) {
       this.toast(
         'warning',
-        `ไม่พบ Location ${rack.rackCode}${this.buildCreatePalletSlotCode(column, row)} ใน Master`
+        `ไม่พบ Location ${rack.rackCode}${this.buildCreatePalletSlotCode(
+          column,
+          row
+        )} ใน Master`
       );
-  
+
       return;
     }
-  
-    this.palletCreateForm.locationId =
-      location.id;
+
+    this.palletCreateForm.locationId = location.id;
   }
-
-
 
   isCreatePalletRackSlotSelected(
     rack: IssueRackDefinition,
     column: number,
     row: number
   ): boolean {
-  
-    const location =
-      this.getCreatePalletLocationBySlot(
-        rack,
-        column,
-        row
-      );
-  
+    const location = this.getCreatePalletLocationBySlot(rack, column, row);
+
     if (!location) {
       return false;
     }
-  
-    return (
-      Number(
-        this.palletCreateForm.locationId
-      ) ===
-      Number(location.id)
-    );
+
+    return Number(this.palletCreateForm.locationId) === Number(location.id);
   }
-
-
 
   hasCreatePalletLocation(
     rack: IssueRackDefinition,
     column: number,
     row: number
   ): boolean {
-  
-    return !!this.getCreatePalletLocationBySlot(
-      rack,
-      column,
-      row
-    );
+    return !!this.getCreatePalletLocationBySlot(rack, column, row);
   }
 
-
-
-  getCreatePalletRackGroupClass(
-    rackGroup: IssueRackGroup
-  ): string {
-  
+  getCreatePalletRackGroupClass(rackGroup: IssueRackGroup): string {
     switch (rackGroup) {
-  
       case 'ABC':
         return 'create-rack-group-abc';
-  
+
       case 'DE':
         return 'create-rack-group-de';
-  
+
       case 'FGH':
         return 'create-rack-group-fgh';
-  
+
       default:
         return '';
     }
   }
 
+  selectCreatePalletLocation(location: LocationRow): void {
+    if (this.isPalletFormLocked) {
+      return;
+    }
 
-
-  selectCreatePalletLocation(
-    location: LocationRow
-  ): void {
-    this.palletCreateForm.locationId =
-      location.id;
+    this.palletCreateForm.locationId = location.id;
   }
 
-
-
-  isCreatePalletLocationSelected(
-    location: LocationRow
-  ): boolean {
-    return (
-      Number(this.palletCreateForm.locationId) ===
-      Number(location.id)
-    );
+  isCreatePalletLocationSelected(location: LocationRow): boolean {
+    return Number(this.palletCreateForm.locationId) === Number(location.id);
   }
-
-
 
   onNextCreatePallet(): void {
-
     if (!this.userId) {
-      return this.toast(
-        'warning',
-        'ไม่พบ User ID'
-      );
+      return this.toast('warning', 'ไม่พบ User ID');
     }
-  
+
+    // ===============================
+    // มี Pallet อยู่แล้ว
+    // ไม่ต้อง Create ซ้ำ
+    // ไป Header ต่อได้เลย
+    // ===============================
+
+    if (this.palletTemp && !this.isEditingPalletTemp) {
+      this.form.issueDate = this.palletCreateForm.date;
+
+      this.form.shift = this.palletCreateForm.shift;
+
+      this.form.locationId = this.palletTemp.mapAreaRackId;
+
+      this.labelStockType = this.palletTemp.labelType;
+
+      this.showCreatePallet = false;
+
+      return;
+    }
+
+    // ถ้ายังอยู่ Edit Mode
+    // ต้อง Save Edit ก่อน
+
+    if (this.palletTemp && this.isEditingPalletTemp) {
+      return this.toast('warning', 'กรุณา Save Edit Pallet ก่อน');
+    }
+
     if (!this.palletCreateForm.date) {
-      return this.toast(
-        'warning',
-        'กรุณาเลือก Date'
-      );
+      return this.toast('warning', 'กรุณาเลือก Date');
     }
-  
+
     if (!this.palletCreateForm.shift) {
-      return this.toast(
-        'warning',
-        'กรุณาเลือก Shift'
-      );
+      return this.toast('warning', 'กรุณาเลือก Shift');
     }
-  
+
     if (!this.palletCreateForm.locationId) {
-      return this.toast(
-        'warning',
-        'กรุณาเลือก Location'
-      );
+      return this.toast('warning', 'กรุณาเลือก Location');
     }
-  
-    const mapAreaRackId =
-      Number(
-        this.palletCreateForm.locationId
-      );
-  
+
+    const mapAreaRackId = Number(this.palletCreateForm.locationId);
+
     const payload = {
-      userId:
-        Number(this.userId),
-  
-      date:
-        new Date(
-          this.palletCreateForm.date
-        ).toISOString(),
-  
-      shift:
-        this.palletCreateForm.shift,
-  
-      mapAreaRackId:
-        mapAreaRackId,
-  
-      labelType:
-        this.palletCreateForm.labelType
+      userId: Number(this.userId),
+
+      date: new Date(this.palletCreateForm.date).toISOString(),
+
+      shift: this.palletCreateForm.shift,
+
+      mapAreaRackId: mapAreaRackId,
+
+      labelType: this.palletCreateForm.labelType,
     };
-  
+
     this.isSavingPalletTemp = true;
-  
+
     this.http
-      .post<any>(
-        config.apiServer +
-          '/api/issue/createPalletTemp',
-        payload
-      )
+      .post<any>(config.apiServer + '/api/issue/createPalletTemp', payload)
       .subscribe({
-  
         next: (res: any) => {
-  
-          const palletTemp: PalletTempRow | null =
-            res?.data || null;
-  
+          const palletTemp: PalletTempRow | null = res?.data || null;
+
           if (!palletTemp) {
             this.isSavingPalletTemp = false;
-  
-            Swal.fire(
-              'Error',
-              'ไม่พบข้อมูล Pallet Temp จาก API',
-              'error'
-            );
-  
+
+            Swal.fire('Error', 'ไม่พบข้อมูล Pallet Temp จาก API', 'error');
+
             return;
           }
-  
-          this.palletTemp =
-            palletTemp;
-  
-          this.form.issueDate =
-            this.palletCreateForm.date;
-  
-          this.form.shift =
-            this.palletCreateForm.shift;
-  
-          this.form.locationId =
-            Number(
-              palletTemp.mapAreaRackId
-            );
-  
-          this.labelStockType =
-            palletTemp.labelType;
-  
+
+          this.palletTemp = palletTemp;
+
+          this.form.issueDate = this.palletCreateForm.date;
+
+          this.form.shift = this.palletCreateForm.shift;
+
+          this.form.locationId = Number(palletTemp.mapAreaRackId);
+
+          this.labelStockType = palletTemp.labelType;
+
           this.isSavingPalletTemp = false;
-  
+
           this.showCreatePallet = false;
         },
-  
+
         error: (err) => {
-  
           console.error(err);
-  
+
           this.isSavingPalletTemp = false;
-  
+
+          Swal.fire(
+            'Error',
+            err?.error?.message || err.message || 'Create Pallet fail',
+            'error'
+          );
+        },
+      });
+  }
+
+  fetchPalletTemp(): void {
+    if (!this.userId) {
+      return;
+    }
+
+    this.isLoadingPalletTemp = true;
+
+    this.http
+      .post<any>(config.apiServer + '/api/issue/fetchPalletTemp', {
+        userId: Number(this.userId),
+      })
+      .subscribe({
+        next: (res: any): void => {
+          const raw = res?.results || null;
+
+          // =========================
+          // ยังไม่มี Pallet Temp
+          // =========================
+
+          if (!raw) {
+            this.palletTemp = null;
+
+            this.isEditingPalletTemp = false;
+
+            this.isLoadingPalletTemp = false;
+
+            return;
+          }
+
+          // =========================
+          // Convert Label Type
+          // =========================
+
+          const labelType: LabelStockType =
+            raw.labelType === 'WIP' ? 'WIP' : 'FG';
+
+          // =========================
+          // มี Pallet Temp
+          // =========================
+
+          const palletTemp: PalletTempRow = {
+            id: Number(raw.id),
+
+            date: raw.date,
+
+            shift: raw.shift || '',
+
+            mapAreaRackId: Number(raw.mapAreaRackId),
+
+            labelType: labelType,
+
+            userId: Number(raw.userId),
+
+            status: raw.status || 'use',
+          };
+
+          this.palletTemp = palletTemp;
+
+          // =========================
+          // เอาค่าที่ Fetch ได้
+          // กลับเข้า Create Pallet Form
+          // =========================
+
+          this.palletCreateForm = {
+            date: this.toYmd(palletTemp.date),
+
+            shift: palletTemp.shift,
+
+            locationId: palletTemp.mapAreaRackId,
+
+            labelType: palletTemp.labelType,
+          };
+
+          // =========================
+          // Sync ค่าไป Header
+          // =========================
+
+          this.form.issueDate = this.palletCreateForm.date;
+
+          this.form.shift = this.palletCreateForm.shift;
+
+          this.form.locationId = palletTemp.mapAreaRackId;
+
+          this.labelStockType = palletTemp.labelType;
+
+          // =========================
+          // Lock Pallet Form
+          // =========================
+
+          this.isEditingPalletTemp = false;
+
+          this.isLoadingPalletTemp = false;
+        },
+
+        error: (err: any): void => {
+          console.error(err);
+
+          this.palletTemp = null;
+
+          this.isEditingPalletTemp = false;
+
+          this.isLoadingPalletTemp = false;
+
           Swal.fire(
             'Error',
             err?.error?.message ||
-              err.message ||
-              'Create Pallet fail',
+              err?.error?.error ||
+              err?.message ||
+              'Load Pallet Temp fail',
             'error'
           );
-        }
-      });
-  }
-
-
-
-  fetchPalletTemp(): void {
-
-    if (!this.userId) return;
-  
-    this.isLoadingPalletTemp = true;
-  
-    this.http
-      .post<any>(
-        config.apiServer +
-          '/api/issue/fetchPalletTemp',
-        {
-          userId:
-            Number(this.userId)
-        }
-      )
-      .subscribe({
-        next: (res: any) => {
-  
-          this.palletTemp =
-            res.results || null;
-  
-          this.isLoadingPalletTemp = false;
         },
-  
-        error: (err) => {
-          console.error(err);
-  
-          this.palletTemp = null;
-          this.isLoadingPalletTemp = false;
-        }
       });
   }
-  
 
-  
+  onEditPalletTemp(): void {
+    if (!this.palletTemp) {
+      return;
+    }
+
+    // =========================
+    // ครั้งแรก = เข้า Edit Mode
+    // =========================
+
+    if (!this.isEditingPalletTemp) {
+      this.isEditingPalletTemp = true;
+
+      return;
+    }
+
+    // =========================
+    // Validate
+    // =========================
+
+    if (!this.palletCreateForm.date) {
+      this.toast('warning', 'กรุณาเลือก Date');
+
+      return;
+    }
+
+    if (!this.palletCreateForm.shift) {
+      this.toast('warning', 'กรุณาเลือก Shift');
+
+      return;
+    }
+
+    if (!this.palletCreateForm.locationId) {
+      this.toast('warning', 'กรุณาเลือก Location');
+
+      return;
+    }
+
+    if (!this.palletCreateForm.labelType) {
+      this.toast('warning', 'กรุณาเลือก Label Type');
+
+      return;
+    }
+
+    // =========================
+    // Payload
+    // =========================
+
+    const payload = {
+      palletTempId: Number(this.palletTemp.id),
+
+      date: new Date(this.palletCreateForm.date).toISOString(),
+
+      shift: this.palletCreateForm.shift,
+
+      mapAreaRackId: Number(this.palletCreateForm.locationId),
+
+      labelType: this.palletCreateForm.labelType,
+    };
+
+    this.isSavingPalletTemp = true;
+
+    // =========================
+    // API Edit Pallet
+    // =========================
+
+    this.http
+      .post<any>(config.apiServer + '/api/issue/editPalletTemp', payload)
+      .subscribe({
+        next: (res: any): void => {
+          const raw = res?.data || null;
+
+          // =========================
+          // API ไม่มี Data กลับมา
+          // =========================
+
+          if (!raw) {
+            this.isSavingPalletTemp = false;
+
+            Swal.fire('Error', 'ไม่พบข้อมูล Pallet Temp หลังจาก Edit', 'error');
+
+            return;
+          }
+
+          // =========================
+          // Convert Label Type
+          // =========================
+
+          const labelType: LabelStockType =
+            raw.labelType === 'WIP' ? 'WIP' : 'FG';
+
+          // =========================
+          // Update Pallet Temp State
+          // =========================
+
+          const updatedPalletTemp: PalletTempRow = {
+            id: Number(raw.id),
+
+            date: raw.date,
+
+            shift: raw.shift || '',
+
+            mapAreaRackId: Number(raw.mapAreaRackId),
+
+            labelType: labelType,
+
+            userId: Number(raw.userId ?? this.userId),
+
+            status: raw.status || 'use',
+          };
+
+          this.palletTemp = updatedPalletTemp;
+
+          // =========================
+          // Update Form
+          // =========================
+
+          this.palletCreateForm = {
+            date: this.toYmd(updatedPalletTemp.date),
+
+            shift: updatedPalletTemp.shift,
+
+            locationId: updatedPalletTemp.mapAreaRackId,
+
+            labelType: updatedPalletTemp.labelType,
+          };
+
+          // =========================
+          // Sync Header
+          // =========================
+
+          this.form.issueDate = this.palletCreateForm.date;
+
+          this.form.shift = this.palletCreateForm.shift;
+
+          this.form.locationId = updatedPalletTemp.mapAreaRackId;
+
+          this.labelStockType = updatedPalletTemp.labelType;
+
+          // =========================
+          // Finish
+          // =========================
+
+          this.isEditingPalletTemp = false;
+
+          this.isSavingPalletTemp = false;
+
+          this.toast('success', 'Edit Pallet Success');
+        },
+
+        error: (err: any): void => {
+          console.error(err);
+
+          this.isSavingPalletTemp = false;
+
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Edit Pallet fail';
+
+          if (msg === 'missing_required_fields') {
+            Swal.fire('Warning', 'กรุณากรอกข้อมูล Pallet ให้ครบ', 'warning');
+
+            return;
+          }
+
+          if (msg === 'invalid_dateIssue') {
+            Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
+
+            return;
+          }
+
+          Swal.fire('Error', msg, 'error');
+        },
+      });
+  }
+
+  onDeletePalletTemp(): void {
+    if (!this.palletTemp) {
+      return;
+    }
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Delete Pallet',
+      text: 'ฟังก์ชัน Delete Pallet ยังไม่ได้เชื่อมต่อ API',
+      confirmButtonText: 'OK',
+    });
+  }
+
   private qtyMultiplyText(qtyList: number[]): string {
     if (!qtyList.length) return '';
-  
+
     const qtyMap = new Map<number, number>();
-  
+
     qtyList.forEach((qty) => {
       qtyMap.set(qty, (qtyMap.get(qty) || 0) + 1);
     });
-  
+
     return Array.from(qtyMap.entries())
       .map(([qty, count]) => {
         return `${this.formatNumber(qty)} x ${count}`;
       })
       .join(' + ');
   }
-  
+
   formatNumber(value: number | null | undefined): string {
     return Number(value || 0).toLocaleString('en-US');
   }
-  
+
   prevLabelPage() {
     if (this.activeLabelPageIndex <= 0) return;
     this.currentLabelPageIndex = this.activeLabelPageIndex - 1;
   }
-  
+
   nextLabelPage() {
     if (this.activeLabelPageIndex >= this.labelPreviewPageCount - 1) return;
     this.currentLabelPageIndex = this.activeLabelPageIndex + 1;
   }
 
-
-  
   private showBoxQtyOverLimitAlert(normalQty: number, fractionQty: number) {
     const totalBox = Number(this.header?.totalQtyBox || 0);
     const totalPlan = normalQty + fractionQty;
-  
+
     return Swal.fire({
       icon: 'warning',
       title: 'จำนวน Box เกิน Header',
@@ -1233,9 +1314,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
       confirmButtonColor: '#dc2626',
     });
   }
-
-
-
 
   /* =======================
      Create Empty
@@ -1278,33 +1356,31 @@ export class IssueComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       const el = ref?.nativeElement;
       if (!el) return;
-  
+
       el.focus();
       el.select();
     }, 0);
   }
-  
+
   private focusScanFirst() {
     if (!this.header || this.isEditingHeader) return;
     if (this.isBoxFull) return;
-  
+
     this.focusEl(this.scanItemNo);
   }
-  
+
   private focusQr() {
     this.focusScanFirst();
   }
-
 
   private focusFractionFirst() {
     if (!this.header || this.isEditingHeader) return;
     if (!this.showFractionSection) return;
     if (!this.fractionHeader) return;
     if (this.isFractionFull) return;
-  
+
     this.focusEl(this.fractionItemNo);
   }
-
 
   private goToFractionPanelFromHeaderWarning(): void {
     /*
@@ -1318,41 +1394,40 @@ export class IssueComponent implements OnInit, AfterViewInit {
       this.fullBoxTagQty = this.header.normalQty ?? null;
       this.fractionQtyBox = this.fractionHeader?.qtyBox ?? null;
     }
-  
+
     this.isEditingHeader = false;
     this.showFractionSection = true;
     this.activeIssuePanel = 'fraction';
-  
+
     /*
       รอ Angular render panel ก่อน
       แล้วค่อย scroll ลงไป + focus Item No.
     */
     setTimeout(() => {
       const panel = document.getElementById('fractionPanelSection');
-  
+
       panel?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
-  
+
       setTimeout(() => {
         this.focusEl(this.fractionItemNo);
       }, 350);
     }, 120);
   }
 
-  
   loopFractionFocusToFirst(ev: any) {
     if (ev?.key === 'Tab') {
       ev.preventDefault();
     }
-  
+
     this.focusFractionFirst();
   }
-  
+
   loopFocusToFirst(ev: any) {
     if (!this.header || this.isEditingHeader) return;
-  
+
     if (ev?.key === 'Tab') ev.preventDefault();
     this.focusScanFirst();
   }
@@ -1383,80 +1458,49 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return loc.name || loc.locationNo || '-';
   }
 
-
-  private normalizeHeader(
-    raw: any
-  ): HeaderIssuePalletTemp | null {
-  
+  private normalizeHeader(raw: any): HeaderIssuePalletTemp | null {
     if (!raw) {
       return null;
     }
-  
+
     return {
-      id:
-        Number(raw.id),
-  
-      issueDate:
-        raw.issueDate ||
-        raw.dateIssue,
-  
-      shift:
-        raw.shift || '',
-  
-      groupId:
-        Number(raw.groupId),
-  
-      groupName:
-        raw.groupName,
-  
-      itemNo:
-        raw.itemNo || '',
-  
-      itemName:
-        raw.itemName || '',
-  
-      controlLotId:
-        Number(raw.controlLotId),
-  
-      controlLotName:
-        raw.controlLotName,
-  
-      palletTempId:
-        Number(raw.palletTempId),
-  
-      movementMonth:
-        raw.movementMonth ||
-        raw.moveMentThreeMonth ||
-        '-',
-  
-      totalQtyBox:
-        Number(
-          raw.totalQtyBox ??
-          raw.totalBox ??
-          0
-        ),
-  
-      normalQty:
-        raw.normalQty == null
-          ? null
-          : Number(raw.normalQty),
-  
-      idPallet:
-        raw.idPallet ||
-        'Auto',
-  
-      userId:
-        Number(raw.userId),
-  
-      status:
-        raw.status || 'use'
+      id: Number(raw.id),
+
+      issueDate: raw.issueDate || raw.dateIssue,
+
+      shift: raw.shift || '',
+
+      groupId: Number(raw.groupId),
+
+      groupName: raw.groupName,
+
+      itemNo: raw.itemNo || '',
+
+      itemName: raw.itemName || '',
+
+      controlLotId: Number(raw.controlLotId),
+
+      controlLotName: raw.controlLotName,
+
+      palletTempId: Number(raw.palletTempId),
+
+      movementMonth: raw.movementMonth || raw.moveMentThreeMonth || '-',
+
+      totalQtyBox: Number(raw.totalQtyBox ?? raw.totalBox ?? 0),
+
+      normalQty: raw.normalQty == null ? null : Number(raw.normalQty),
+
+      idPallet: raw.idPallet || 'Auto',
+
+      userId: Number(raw.userId),
+
+      status: raw.status || 'use',
     };
   }
 
-
   controlLotDisplayName(id?: number | null): string {
     if (!id) return '-';
-  
+
     switch (Number(id)) {
       case 2:
         return 'Stator, HAL';
@@ -1472,7 +1516,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
         return this.controlLotName(id);
     }
   }
-
 
   private mapHeaderToForm(h: HeaderIssuePalletTemp): HeaderForm {
     return {
@@ -1506,215 +1549,190 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-
-
   private generateMovementMonthOptions() {
     const monthNames = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
-  
+
     const now = new Date();
     const options: string[] = ['-'];
-  
+
     for (let i = 0; i < 12; i++) {
       const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
       const month = monthNames[d.getMonth()];
       const year = d.getFullYear();
-  
+
       options.push(`${month}-${year}`);
     }
-  
+
     this.movementMonthOptions = options;
   }
-
-
 
   private getFirstNameOnly(fullName: string): string {
     return (fullName || '').trim().split(/\s+/)[0] || '';
   }
-  
+
   private getShortLotNo(lotNo: string): string {
     const raw = (lotNo || '').trim();
-  
+
     // ตำแหน่งที่ 2 ถึง 6 แบบคนอ่าน = index 1 ถึง 5
     // L24X28ABSS -> 24X28
     if (raw.length >= 6) {
       return raw.substring(1, 6);
     }
-  
+
     return raw;
   }
 
-
-
-
-    /* =======================
+  /* =======================
       Master Data
     ======================= */
 
-    fetchGroups() {
-      this.isLoadingMaster = true;
+  fetchGroups() {
+    this.isLoadingMaster = true;
 
-      this.http.get(config.apiServer + '/api/group/list').subscribe({
-        next: (res: any) => {
-          this.groups = (res.results || []).map((r: any) => ({
-            id: r.id,
-            name: r.name,
-          }));
+    this.http.get(config.apiServer + '/api/group/list').subscribe({
+      next: (res: any) => {
+        this.groups = (res.results || []).map((r: any) => ({
+          id: r.id,
+          name: r.name,
+        }));
 
-          this.checkMasterLoadingDone();
-        },
-        error: (err) => {
-          console.error(err);
-          this.checkMasterLoadingDone();
+        this.checkMasterLoadingDone();
+      },
+      error: (err) => {
+        console.error(err);
+        this.checkMasterLoadingDone();
 
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load group fail',
-            icon: 'error',
-          });
-        },
-      });
-    }
-
-    fetchItems() {
-      this.isLoadingMaster = true;
-    
-      this.http.get(config.apiServer + '/api/partMaster/list').subscribe({
-        next: (res: any) => {
-          this.items = (res.results || []).map((r: any) => ({
-            id: r.id,
-            itemNo: r.itemNo,
-            itemName: r.itemName,
-          }));
-    
-          this.filteredItems = [...this.items];
-    
-          this.checkMasterLoadingDone();
-        },
-        error: (err) => {
-          console.error(err);
-          this.checkMasterLoadingDone();
-    
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load Part Master fail',
-            icon: 'error',
-          });
-        },
-      });
-    }
-
-    fetchControlLots() {
-      this.isLoadingMaster = true;
-
-      this.http.get(config.apiServer + '/api/controlLot/list').subscribe({
-        next: (res: any) => {
-          this.controlLots = (res.results || []).map((r: any) => ({
-            id: r.id,
-            name: r.name,
-            code: r.code,
-          }));
-
-          this.checkMasterLoadingDone();
-        },
-        error: (err) => {
-          console.error(err);
-          this.checkMasterLoadingDone();
-
-          Swal.fire({
-            title: 'Error',
-            text: err?.error?.message || err.message || 'Load control lot fail',
-            icon: 'error',
-          });
-        },
-      });
-    }
-
-    fetchLocations() {
-      this.isLoadingMaster = true;
-    
-      this.http
-        .get<any>(config.apiServer + '/api/location/list')
-        .subscribe({
-          next: (res: any) => {
-    
-            const racks =
-              Array.isArray(res?.results)
-                ? res.results
-                : [];
-    
-            this.locations =
-              racks.flatMap((rack: any) => {
-    
-                const rackName =
-                  String(
-                    rack.rackName || ''
-                  ).trim();
-    
-                return (rack.areas || []).map(
-                  (area: any) => {
-    
-                    const displayName =
-                      `${rackName}-${area.areaName}`;
-    
-                    return {
-                      id:
-                        Number(area.mapAreaRackId),
-    
-                      mapAreaRackId:
-                        Number(area.mapAreaRackId),
-    
-                      rackId:
-                        Number(rack.rackId),
-    
-                      rackName:
-                        rackName,
-    
-                      areaId:
-                        Number(area.areaId),
-    
-                      areaName:
-                        String(area.areaName),
-    
-                      locationNo:
-                        displayName,
-    
-                      name:
-                        displayName
-                    };
-                  }
-                );
-              });
-    
-            this.checkMasterLoadingDone();
-          },
-    
-          error: (err) => {
-            console.error(err);
-    
-            this.locations = [];
-    
-            this.checkMasterLoadingDone();
-    
-            Swal.fire({
-              title: 'Error',
-              text:
-                err?.error?.message ||
-                err.message ||
-                'Load location fail',
-              icon: 'error'
-            });
-          }
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.message || err.message || 'Load group fail',
+          icon: 'error',
         });
-    }
+      },
+    });
+  }
 
-    private checkMasterLoadingDone() {
-      this.isLoadingMaster = false;
-    }
+  fetchItems() {
+    this.isLoadingMaster = true;
 
+    this.http.get(config.apiServer + '/api/partMaster/list').subscribe({
+      next: (res: any) => {
+        this.items = (res.results || []).map((r: any) => ({
+          id: r.id,
+          itemNo: r.itemNo,
+          itemName: r.itemName,
+        }));
 
+        this.filteredItems = [...this.items];
+
+        this.checkMasterLoadingDone();
+      },
+      error: (err) => {
+        console.error(err);
+        this.checkMasterLoadingDone();
+
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.message || err.message || 'Load Part Master fail',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  fetchControlLots() {
+    this.isLoadingMaster = true;
+
+    this.http.get(config.apiServer + '/api/controlLot/list').subscribe({
+      next: (res: any) => {
+        this.controlLots = (res.results || []).map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          code: r.code,
+        }));
+
+        this.checkMasterLoadingDone();
+      },
+      error: (err) => {
+        console.error(err);
+        this.checkMasterLoadingDone();
+
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.message || err.message || 'Load control lot fail',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  fetchLocations() {
+    this.isLoadingMaster = true;
+
+    this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
+      next: (res: any) => {
+        const racks = Array.isArray(res?.results) ? res.results : [];
+
+        this.locations = racks.flatMap((rack: any) => {
+          const rackName = String(rack.rackName || '').trim();
+
+          return (rack.areas || []).map((area: any) => {
+            const displayName = `${rackName}-${area.areaName}`;
+
+            return {
+              id: Number(area.mapAreaRackId),
+
+              mapAreaRackId: Number(area.mapAreaRackId),
+
+              rackId: Number(rack.rackId),
+
+              rackName: rackName,
+
+              areaId: Number(area.areaId),
+
+              areaName: String(area.areaName),
+
+              locationNo: displayName,
+
+              name: displayName,
+            };
+          });
+        });
+
+        this.checkMasterLoadingDone();
+      },
+
+      error: (err) => {
+        console.error(err);
+
+        this.locations = [];
+
+        this.checkMasterLoadingDone();
+
+        Swal.fire({
+          title: 'Error',
+          text: err?.error?.message || err.message || 'Load location fail',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  private checkMasterLoadingDone() {
+    this.isLoadingMaster = false;
+  }
 
   /* =======================
      Item Search
@@ -1761,9 +1779,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   ======================= */
   fetchHeader() {
     if (!this.userId) return;
-  
+
     this.isLoadingHeader = true;
-  
+
     this.http
       .post<any>(config.apiServer + '/api/issue/fetchHeaderTemp', {
         userId: this.userId,
@@ -1771,12 +1789,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
       .subscribe({
         next: (res: any) => {
           this.header = this.normalizeHeader(res.results);
-  
+
           if (this.header) {
             this.form = this.mapHeaderToForm(this.header);
             this.itemKeyword = this.form.itemNo;
             this.isEditingHeader = false;
-            
+
             this.fullBoxTagQty = this.header.normalQty ?? null;
 
             // โหลดรายการ Box Temp ของ Header นี้
@@ -1795,14 +1813,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.fractionScanForm = this.createEmptyScanForm();
             this.fullBoxTagQty = null;
           }
-  
+
           this.isLoadingHeader = false;
           this.focusQr();
         },
         error: (err) => {
           console.error(err);
           this.isLoadingHeader = false;
-  
+
           Swal.fire({
             title: 'Error',
             text: err?.error?.message || err.message || 'Load Header fail',
@@ -1819,8 +1837,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (!this.form.groupId) return this.toast('warning', 'เลือก Group');
     if (!this.form.itemNo) return this.toast('warning', 'เลือก Item No.');
     if (!this.form.itemName) return this.toast('warning', 'ไม่พบ Item Name');
-    if (!this.form.controlLotId) return this.toast('warning', 'เลือก Control Lot OQC');
-    if (!this.form.movementMonth) return this.toast('warning', 'เลือก Movement within 3 month');
+    if (!this.form.controlLotId)
+      return this.toast('warning', 'เลือก Control Lot OQC');
+    if (!this.form.movementMonth)
+      return this.toast('warning', 'เลือก Movement within 3 month');
 
     const normalQty = Number(this.fullBoxTagQty || 0);
     const fractionQty = Number(this.fractionQtyBox || 0);
@@ -1839,17 +1859,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
 
     if (!this.palletTemp?.id) {
-      return this.toast(
-        'warning',
-        'ไม่พบ Pallet Temp'
-      );
+      return this.toast('warning', 'ไม่พบ Pallet Temp');
     }
-    
+
     if (!this.palletTemp?.mapAreaRackId) {
-      return this.toast(
-        'warning',
-        'ไม่พบ Location ของ Pallet'
-      );
+      return this.toast('warning', 'ไม่พบ Location ของ Pallet');
     }
 
     if (this.header && this.isEditingHeader && this.scanCount > normalQty) {
@@ -1869,17 +1883,17 @@ export class IssueComponent implements OnInit, AfterViewInit {
   => ห้าม Save Header / ห้ามลบ Header Fraction
   => แจ้งเตือน แล้วพาไป Panel Scan Box เศษ
 */
-if (
-  this.header &&
-  this.isEditingHeader &&
-  this.fractionHeader &&
-  fractionQty === 0 &&
-  this.fractionScanCount > 0
-) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'ยังมี Box เศษที่ Scan ค้างอยู่',
-    html: `
+    if (
+      this.header &&
+      this.isEditingHeader &&
+      this.fractionHeader &&
+      fractionQty === 0 &&
+      this.fractionScanCount > 0
+    ) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ยังมี Box เศษที่ Scan ค้างอยู่',
+        html: `
       <div style="text-align:left">
         <div>คุณกำลังเปลี่ยน <b>QTY Box เศษ</b> เป็น <b>0</b></div>
         <div style="margin-top:8px">
@@ -1892,29 +1906,33 @@ if (
         </div>
       </div>
     `,
-    confirmButtonText: 'ไปที่ Scan Box เศษ',
-    confirmButtonColor: '#ea580c',
-  }).then(() => {
-   this.goToFractionPanelFromHeaderWarning();
-  });
+        confirmButtonText: 'ไปที่ Scan Box เศษ',
+        confirmButtonColor: '#ea580c',
+      }).then(() => {
+        this.goToFractionPanelFromHeaderWarning();
+      });
 
-  return;
-}
+      return;
+    }
 
-/*
+    /*
   Case ทั่วไป:
   ถ้าลด QTY Box เศษให้น้อยกว่าจำนวนที่ Scan แล้ว
 */
-if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'QTY Box เศษน้อยกว่าจำนวนที่ Scan แล้ว',
-    text:
-      `ตอนนี้ Scan Box เศษแล้ว ${this.fractionScanCount} Box ` +
-      `ไม่สามารถแก้ QTY Box เศษเป็น ${fractionQty} ได้`,
-  });
-  return;
-}
+    if (
+      this.header &&
+      this.isEditingHeader &&
+      this.fractionScanCount > fractionQty
+    ) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'QTY Box เศษน้อยกว่าจำนวนที่ Scan แล้ว',
+        text:
+          `ตอนนี้ Scan Box เศษแล้ว ${this.fractionScanCount} Box ` +
+          `ไม่สามารถแก้ QTY Box เศษเป็น ${fractionQty} ได้`,
+      });
+      return;
+    }
     this.form.totalQtyBox = totalBox;
     this.isSavingHeader = true;
 
@@ -1929,11 +1947,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       normalQty: normalQty,
       totalBox,
       moveMentThreeMonth: this.form.movementMonth,
-      palletTempId: Number(
-        this.palletTemp!.id
-      ),
-     
-
+      palletTempId: Number(this.palletTemp!.id),
     };
 
     const isEditMode = !!this.header && this.isEditingHeader;
@@ -1949,66 +1963,60 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         }
       : payload;
 
-      this.http.post<any>(url, finalPayload).subscribe({
-        next: (res): void => {
-          this.header = this.normalizeHeader(res.data);
-      
-          if (!this.header) {
-            this.isSavingHeader = false;
-            Swal.fire('Error', 'Save Header แล้วไม่พบข้อมูล Header', 'error');
-            return;
-          }
-      
-          this.header = {
-            ...this.header,
-            totalQtyBox: totalBox,
-            normalQty,
-          };
-      
-          this.form = this.mapHeaderToForm(this.header);
-          this.form.totalQtyBox = totalBox;
-          this.itemKeyword = this.form.itemNo;
-      
-          this.fullBoxTagQty = normalQty;
+    this.http.post<any>(url, finalPayload).subscribe({
+      next: (res): void => {
+        this.header = this.normalizeHeader(res.data);
 
-          this.syncFractionHeaderAfterHeaderSave(
-            fractionQty,
-            isEditMode
-          );
-        },
-      
-        error: (err): void => {
-          console.error(err);
+        if (!this.header) {
           this.isSavingHeader = false;
-      
-          const msg =
-            err?.error?.message ||
-            err?.error?.error ||
-            err.message ||
-            'Save Header fail';
-      
-          if (msg === 'missing_required_fields') {
-            Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
-            return;
-          }
-      
-          if (msg === 'invalid_dateIssue') {
-            Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
-            return;
-          }
-      
-          if (msg === 'header_issueTemp_notFound') {
-            Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
-            return;
-          }
-      
-          Swal.fire('Error', msg, 'error');
-        },
-      });
+          Swal.fire('Error', 'Save Header แล้วไม่พบข้อมูล Header', 'error');
+          return;
+        }
 
+        this.header = {
+          ...this.header,
+          totalQtyBox: totalBox,
+          normalQty,
+        };
 
+        this.form = this.mapHeaderToForm(this.header);
+        this.form.totalQtyBox = totalBox;
+        this.itemKeyword = this.form.itemNo;
+
+        this.fullBoxTagQty = normalQty;
+
+        this.syncFractionHeaderAfterHeaderSave(fractionQty, isEditMode);
+      },
+
+      error: (err): void => {
+        console.error(err);
+        this.isSavingHeader = false;
+
+        const msg =
+          err?.error?.message ||
+          err?.error?.error ||
+          err.message ||
+          'Save Header fail';
+
+        if (msg === 'missing_required_fields') {
+          Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
+          return;
+        }
+
+        if (msg === 'invalid_dateIssue') {
+          Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
+          return;
+        }
+
+        if (msg === 'header_issueTemp_notFound') {
+          Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
+          return;
+        }
+
+        Swal.fire('Error', msg, 'error');
+      },
+    });
   }
-
 
   private syncFractionHeaderAfterHeaderSave(
     fractionQty: number,
@@ -2028,7 +2036,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
               this.fractionQtyBox = 0;
               this.fractionRows = [];
               this.fractionScanForm = this.createEmptyScanForm();
-            
+
               this.finishHeaderSave(isHeaderEditMode);
             },
             error: (err) => {
@@ -2116,7 +2124,8 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     this.form = this.mapHeaderToForm(this.header);
     this.itemKeyword = this.form.itemNo;
     this.fullBoxTagQty = this.header.normalQty ?? null;
-    this.fractionQtyBox = this.fractionHeader?.qtyBox ?? this.fractionQtyBox ?? null;
+    this.fractionQtyBox =
+      this.fractionHeader?.qtyBox ?? this.fractionQtyBox ?? null;
     this.isEditingHeader = true;
   }
 
@@ -2132,7 +2141,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
 
   onDeleteHeaderTemp() {
     if (!this.header) return;
-  
+
     Swal.fire({
       title: 'Delete current Header?',
       html: `
@@ -2154,9 +2163,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isDeletingHeader = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteheaderTemp', {
           headerTempId: this.header!.id,
@@ -2164,14 +2173,14 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         .subscribe({
           next: () => {
             this.isDeletingHeader = false;
-  
+
             this.header = null;
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
-  
+
             this.savedRows = [];
             this.scanForm = this.createEmptyScanForm();
-            
+
             // clear QTY Box เต็ม
             this.fullBoxTagQty = null;
             this.isSavingFullBoxTag = false;
@@ -2181,16 +2190,16 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
             this.fractionQtyBox = null;
             this.fractionRows = [];
             this.fractionScanForm = this.createEmptyScanForm();
-  
+
             this.isEditingHeader = true;
-  
+
             this.toast('success', 'Delete Header Success');
             this.focusQr();
           },
           error: (err) => {
             console.error(err);
             this.isDeletingHeader = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -2204,12 +2213,11 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
   onDeleteFractionHeaderTemp() {
     if (!this.fractionHeader) {
       return this.toast('warning', 'ยังไม่มี Header Box เศษ');
     }
-  
+
     Swal.fire({
       title: 'Delete Header Box เศษ?',
       html: `
@@ -2230,9 +2238,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isDeletingFractionHeader = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteheaderFractionTemp', {
           headerFractionTempId: this.fractionHeader!.id,
@@ -2240,20 +2248,20 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         .subscribe({
           next: () => {
             this.isDeletingFractionHeader = false;
-  
+
             this.fractionHeader = null;
             this.fractionQtyBox = null;
             this.fractionRows = [];
             this.fractionScanForm = this.createEmptyScanForm();
-  
+
             this.toast('success', 'Delete Header Box เศษ Success');
-  
+
             this.fetchWosTemp();
           },
           error: (err) => {
             console.error(err);
             this.isDeletingFractionHeader = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -2267,10 +2275,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
   onClearAllFractionBoxTemp() {
     if (!this.fractionHeader || this.fractionRows.length === 0) return;
-  
+
     Swal.fire({
       title: 'Clear All Box เศษ?',
       html: `
@@ -2288,9 +2295,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isClearingFractionBoxes = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteAllFractionBoxTemp', {
           headerFractionId: this.fractionHeader!.id,
@@ -2298,12 +2305,12 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         .subscribe({
           next: () => {
             this.isClearingFractionBoxes = false;
-  
+
             this.fractionRows = [];
             this.fractionScanForm = this.createEmptyScanForm();
-  
+
             this.toast('success', 'Clear Box เศษ Success');
-  
+
             this.fetchFractionTempList();
             this.fetchWosTemp();
             this.focusFractionFirst();
@@ -2311,7 +2318,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           error: (err) => {
             console.error(err);
             this.isClearingFractionBoxes = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -2325,16 +2332,15 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
   onDeleteFractionBoxTemp(row: FractionTempRow) {
     if (!row) return;
-  
+
     const boxId = Number(row.boxId || row.id);
-  
+
     if (!boxId) {
       return this.toast('warning', 'ไม่พบ Box ID');
     }
-  
+
     Swal.fire({
       title: 'Delete Box เศษ?',
       html: `
@@ -2356,9 +2362,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isDeletingFractionBox = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteFractionBoxTemp', {
           boxId,
@@ -2366,9 +2372,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         .subscribe({
           next: () => {
             this.isDeletingFractionBox = false;
-  
+
             this.toast('success', 'Delete Box เศษ Success');
-  
+
             this.fetchFractionTempList();
             this.fetchWosTemp();
             this.focusFractionFirst();
@@ -2376,7 +2382,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           error: (err) => {
             console.error(err);
             this.isDeletingFractionBox = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -2390,8 +2396,6 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
-
   fetchFractionTempList() {
     if (!this.header) {
       this.fractionHeader = null;
@@ -2400,9 +2404,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       this.isLoadingFractionRows = false;
       return;
     }
-  
+
     this.isLoadingFractionRows = true;
-  
+
     this.http
       .post<FractionTempListResp>(
         config.apiServer + '/api/issue/fractionTempListByHeaderTempId',
@@ -2418,7 +2422,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
             editQty: Number(row.qty || 0),
             isUpdatingQty: false,
           }));
-  
+
           if (this.fractionHeader) {
             this.fractionQtyBox = Number(this.fractionHeader.qtyBox);
             this.showFractionSection = true;
@@ -2426,12 +2430,12 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
             this.fractionQtyBox = null;
             this.fractionRows = [];
           }
-  
+
           this.isLoadingFractionRows = false;
         },
         error: (err) => {
           console.error(err);
-  
+
           this.fractionHeader = null;
           this.fractionQtyBox = null;
           this.fractionRows = [];
@@ -2440,14 +2444,13 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       });
   }
 
-
   toggleFractionSection() {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
-  
+
     this.showFractionSection = !this.showFractionSection;
-  
+
     if (this.showFractionSection && this.fractionHeader) {
       setTimeout(() => {
         this.focusFractionFirst();
@@ -2455,13 +2458,10 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     }
   }
 
-
-
   onSaveFractionHeader() {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
-
 
     if (!this.hasNormalBoxQty) {
       return Swal.fire({
@@ -2482,11 +2482,10 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         confirmButtonColor: '#dc2626',
       });
     }
-  
+
     if (this.fractionQtyBox == null || Number(this.fractionQtyBox) <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY BOX เศษ');
     }
-  
 
     const normalQty = Number(this.fullBoxTagQty || this.header.normalQty || 0);
     const fractionQty = Number(this.fractionQtyBox || 0);
@@ -2495,7 +2494,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     if (normalQty + fractionQty > totalHeaderQty) {
       return this.showBoxQtyOverLimitAlert(normalQty, fractionQty);
     }
-  
+
     if (
       this.fractionHeader &&
       this.fractionScanCount > Number(this.fractionQtyBox)
@@ -2508,15 +2507,15 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           `จึงไม่สามารถแก้เป็น ${this.fractionQtyBox} Box ได้`,
       });
     }
-  
+
     const isEditMode = !!this.fractionHeader;
-  
+
     this.isSavingFractionHeader = true;
-  
+
     const url = isEditMode
       ? config.apiServer + '/api/issue/editFractionTemp'
       : config.apiServer + '/api/issue/createHeaderTempFraction';
-  
+
     const payload = isEditMode
       ? {
           headFractionTempId: this.fractionHeader!.id,
@@ -2527,7 +2526,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           headTempId: this.header.id,
           qtyBox: Number(this.fractionQtyBox),
         };
-  
+
     this.http.post<any>(url, payload).subscribe({
       next: (res) => {
         this.fractionHeader = {
@@ -2537,19 +2536,19 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           timeStmp: res.data.timeStmp,
           status: res.data.status || 'use',
         };
-  
+
         this.fractionQtyBox = this.fractionHeader.qtyBox;
         this.isSavingFractionHeader = false;
-  
+
         this.toast(
           'success',
           isEditMode
             ? 'แก้ไข Header Box เศษสำเร็จ'
             : 'สร้าง Header Box เศษสำเร็จ'
         );
-  
+
         this.fetchFractionTempList();
-  
+
         setTimeout(() => {
           this.focusFractionFirst();
         }, 150);
@@ -2557,13 +2556,13 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       error: (err) => {
         console.error(err);
         this.isSavingFractionHeader = false;
-  
+
         const msg =
           err?.error?.message ||
           err?.error?.error ||
           err?.message ||
           'Save Header Fraction fail';
-  
+
         if (msg === 'qtyBox_less_than_scanned_box') {
           Swal.fire(
             'Warning',
@@ -2572,16 +2571,12 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           );
           return;
         }
-  
+
         if (msg === 'header_issueTemp_fraction_notFound') {
-          Swal.fire(
-            'Warning',
-            'ไม่พบ Header Box เศษนี้ในระบบ',
-            'warning'
-          );
+          Swal.fire('Warning', 'ไม่พบ Header Box เศษนี้ในระบบ', 'warning');
           return;
         }
-  
+
         Swal.fire({
           icon: 'error',
           title: isEditMode
@@ -2593,85 +2588,71 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
-
-
   onUpdateFractionBoxQty(row: FractionTempRow) {
     if (!this.header || !this.fractionHeader) {
       return this.toast('warning', 'ไม่พบ Header Box เศษ');
     }
-  
+
     const boxTempId = Number(row.boxId || row.id);
     const qty = Number(row.editQty);
-  
+
     if (!boxTempId) {
       return this.toast('warning', 'ไม่พบ Box Temp ID');
     }
-  
+
     if (!Number.isFinite(qty) || qty <= 0) {
       row.editQty = row.qty;
-  
+
       return Swal.fire({
         icon: 'warning',
         title: 'QTY ไม่ถูกต้อง',
         text: 'กรุณากรอก QTY มากกว่า 0',
       });
     }
-  
+
     if (qty === Number(row.qty)) {
       return this.toast('info', 'QTY ไม่มีการเปลี่ยนแปลง');
     }
-  
+
     row.isUpdatingQty = true;
-  
+
     this.http
-      .post<any>(
-        config.apiServer + '/api/issue/editFractionBoxTemp',
-        {
-          headFractionTempId: this.fractionHeader.id,
-          headTempId: this.header.id,
-          boxTempId,
-          qty,
-        }
-      )
+      .post<any>(config.apiServer + '/api/issue/editFractionBoxTemp', {
+        headFractionTempId: this.fractionHeader.id,
+        headTempId: this.header.id,
+        boxTempId,
+        qty,
+      })
       .subscribe({
         next: (res) => {
           row.qty = Number(res.data.qty);
           row.editQty = Number(res.data.qty);
           row.isUpdatingQty = false;
-  
+
           this.toast('success', 'แก้ไข QTY Box เศษสำเร็จ');
         },
         error: (err) => {
           console.error(err);
-  
+
           row.editQty = row.qty;
           row.isUpdatingQty = false;
-  
+
           const msg =
             err?.error?.message ||
             err?.error?.error ||
             err?.message ||
             'Update Fraction Box Qty fail';
-  
+
           if (msg === 'map_header_issueFractionTemp_notFound') {
-            Swal.fire(
-              'Warning',
-              'ไม่พบข้อมูล Map ของ Box เศษนี้',
-              'warning'
-            );
+            Swal.fire('Warning', 'ไม่พบข้อมูล Map ของ Box เศษนี้', 'warning');
             return;
           }
-  
+
           if (msg === 'box_issueTemp_notFound') {
-            Swal.fire(
-              'Warning',
-              'ไม่พบ Box เศษนี้ในระบบ',
-              'warning'
-            );
+            Swal.fire('Warning', 'ไม่พบ Box เศษนี้ในระบบ', 'warning');
             return;
           }
-  
+
           Swal.fire({
             icon: 'error',
             title: 'แก้ไข QTY Box เศษไม่สำเร็จ',
@@ -2689,14 +2670,12 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
      QR Scan
   ======================= */
 
-  
-
   onScanEnter(
     field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
     ev: any
   ) {
     if (ev?.key === 'Enter') ev.preventDefault();
-  
+
     if (
       !this.header ||
       this.isEditingHeader ||
@@ -2705,7 +2684,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     ) {
       return;
     }
-  
+
     const requiredOk =
       !!this.scanForm.itemNo &&
       !!this.scanForm.itemName &&
@@ -2715,38 +2694,37 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       !!this.scanForm.lotNo &&
       this.scanForm.qty != null &&
       this.scanForm.qty > 0;
-  
+
     switch (field) {
       case 'itemNo':
         if (!this.scanForm.itemNo) return;
         return this.focusEl(this.scanItemName);
-  
+
       case 'itemName':
         if (!this.scanForm.itemName) return;
         return this.focusEl(this.scanWosNo);
-  
+
       case 'wosNo':
         if (!this.scanForm.wosNo) return;
         return this.focusEl(this.scanDwg);
-  
+
       case 'dwg':
         if (!this.scanForm.dwg) return;
         return this.focusEl(this.scanDieNo);
-  
+
       case 'dieNo':
         if (!this.scanForm.dieNo) return;
         return this.focusEl(this.scanLotNo);
-  
+
       case 'lotNo':
         if (!this.scanForm.lotNo) return;
         return this.focusEl(this.scanQty);
-  
+
       case 'qty':
         if (!requiredOk) return;
         return this.onConfirmScan();
     }
   }
-
 
   onFractionScanEnter(
     field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
@@ -2755,7 +2733,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     if (ev?.key === 'Enter') {
       ev.preventDefault();
     }
-  
+
     if (
       !this.header ||
       this.isEditingHeader ||
@@ -2765,7 +2743,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     ) {
       return;
     }
-  
+
     const requiredOk =
       !!this.fractionScanForm.itemNo &&
       !!this.fractionScanForm.itemName &&
@@ -2775,52 +2753,51 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       !!this.fractionScanForm.lotNo &&
       this.fractionScanForm.qty != null &&
       Number(this.fractionScanForm.qty) > 0;
-  
+
     switch (field) {
       case 'itemNo':
         if (!this.fractionScanForm.itemNo) return;
         return this.focusEl(this.fractionItemName);
-  
+
       case 'itemName':
         if (!this.fractionScanForm.itemName) return;
         return this.focusEl(this.fractionWosNo);
-  
+
       case 'wosNo':
         if (!this.fractionScanForm.wosNo) return;
         return this.focusEl(this.fractionDwg);
-  
+
       case 'dwg':
         if (!this.fractionScanForm.dwg) return;
         return this.focusEl(this.fractionDieNo);
-  
+
       case 'dieNo':
         if (!this.fractionScanForm.dieNo) return;
         return this.focusEl(this.fractionLotNo);
-  
+
       case 'lotNo':
         if (!this.fractionScanForm.lotNo) return;
         return this.focusEl(this.fractionQty);
-  
+
       case 'qty':
         if (!requiredOk) return;
         return this.onConfirmFractionScan();
     }
   }
 
-
   onConfirmFractionScan() {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
-  
+
     if (!this.fractionHeader) {
       return this.toast('warning', 'กรุณาสร้าง Header Box เศษก่อน');
     }
-  
+
     if (this.isFractionFull) {
       return this.toast('info', 'จำนวน Box เศษครบแล้ว');
     }
-  
+
     const data = {
       itemNo: String(this.fractionScanForm.itemNo || '').trim(),
       itemName: String(this.fractionScanForm.itemName || '').trim(),
@@ -2830,24 +2807,24 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       lotNo: String(this.fractionScanForm.lotNo || '').trim(),
       qty: Number(this.fractionScanForm.qty),
     };
-  
+
     if (!data.itemNo) return this.toast('warning', 'กรุณากรอก Item No.');
     if (!data.itemName) return this.toast('warning', 'กรุณากรอก Item Name');
     if (!data.wosNo) return this.toast('warning', 'กรุณากรอก WOS No.');
     if (!data.dwg) return this.toast('warning', 'กรุณากรอก DWG');
     if (!data.dieNo) return this.toast('warning', 'กรุณากรอก Die No.');
     if (!data.lotNo) return this.toast('warning', 'กรุณากรอก Lot No.');
-  
+
     if (!Number.isFinite(data.qty) || data.qty <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY');
     }
-  
+
     const headerItemNo = String(this.header.itemNo || '').trim();
-  
+
     if (data.itemNo !== headerItemNo) {
       document.activeElement instanceof HTMLElement &&
         document.activeElement.blur();
-  
+
       return Swal.fire({
         icon: 'warning',
         title: 'Item No. ของ Box เศษไม่ตรงกับ Header',
@@ -2871,30 +2848,27 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         focusConfirm: true,
       }).then(() => {
         this.fractionScanForm = this.createEmptyScanForm();
-  
+
         setTimeout(() => {
           this.focusFractionFirst();
         }, 150);
       });
     }
-  
+
     this.isSavingFractionScan = true;
-  
+
     this.http
-      .post<any>(
-        config.apiServer + '/api/issue/mapFractionTemp',
-        {
-          headTempId: this.header.id,
-          headFractionId: this.fractionHeader.id,
-          itemNo: data.itemNo,
-          itemName: data.itemName,
-          wosNo: data.wosNo,
-          dwg: data.dwg,
-          dieNo: data.dieNo,
-          lotNo: data.lotNo,
-          qty: data.qty,
-        }
-      )
+      .post<any>(config.apiServer + '/api/issue/mapFractionTemp', {
+        headTempId: this.header.id,
+        headFractionId: this.fractionHeader.id,
+        itemNo: data.itemNo,
+        itemName: data.itemName,
+        wosNo: data.wosNo,
+        dwg: data.dwg,
+        dieNo: data.dieNo,
+        lotNo: data.lotNo,
+        qty: data.qty,
+      })
       .subscribe({
         next: (res) => {
           this.fractionScanForm = this.createEmptyScanForm();
@@ -2912,7 +2886,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         error: (err) => {
           console.error(err);
           this.isSavingFractionScan = false;
-  
+
           Swal.fire({
             icon: 'error',
             title: 'Scan Box เศษไม่สำเร็จ',
@@ -2933,36 +2907,39 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header ให้เสร็จก่อน');
     }
-  
+
     if (this.isBoxFull) {
       return this.toast('info', 'ครบจำนวน BOX แล้ว');
     }
-  
+
     this.scanForm.itemNo = (this.scanForm.itemNo || '').trim();
     this.scanForm.itemName = (this.scanForm.itemName || '').trim();
     this.scanForm.wosNo = (this.scanForm.wosNo || '').trim();
     this.scanForm.dwg = (this.scanForm.dwg || '').trim();
     this.scanForm.dieNo = (this.scanForm.dieNo || '').trim();
     this.scanForm.lotNo = (this.scanForm.lotNo || '').trim();
-  
-    if (!this.scanForm.itemNo) return this.toast('warning', 'กรุณากรอก Item No.');
-    if (!this.scanForm.itemName) return this.toast('warning', 'กรุณากรอก Item Name');
+
+    if (!this.scanForm.itemNo)
+      return this.toast('warning', 'กรุณากรอก Item No.');
+    if (!this.scanForm.itemName)
+      return this.toast('warning', 'กรุณากรอก Item Name');
     if (!this.scanForm.wosNo) return this.toast('warning', 'กรุณากรอก WOS No.');
     if (!this.scanForm.dwg) return this.toast('warning', 'กรุณากรอก DWG');
     if (!this.scanForm.dieNo) return this.toast('warning', 'กรุณากรอก Die No.');
     if (!this.scanForm.lotNo) return this.toast('warning', 'กรุณากรอก Lot No.');
-  
+
     if (this.scanForm.qty == null || this.scanForm.qty <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY');
     }
-  
+
     // เช็ค Item No. ที่ scan ว่าตรงกับ Header ไหม ก่อนส่ง backend
     const headerItemNo = String(this.header.itemNo || '').trim();
     const scanItemNo = String(this.scanForm.itemNo || '').trim();
-  
+
     if (scanItemNo !== headerItemNo) {
-      document.activeElement instanceof HTMLElement && document.activeElement.blur();
-    
+      document.activeElement instanceof HTMLElement &&
+        document.activeElement.blur();
+
       return Swal.fire({
         icon: 'warning',
         title: 'Item No. ไม่ตรงกับ Header',
@@ -2986,15 +2963,15 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         focusConfirm: true,
       }).then(() => {
         this.scanForm = this.createEmptyScanForm();
-    
+
         setTimeout(() => {
           this.focusScanFirst();
         }, 200);
       });
     }
-  
+
     this.isSavingScan = true;
-  
+
     const payload = {
       headTempId: this.header.id,
       itemNo: this.scanForm.itemNo,
@@ -3005,26 +2982,27 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       lotNo: this.scanForm.lotNo,
       qty: this.scanForm.qty,
     };
-  
+
     this.http
       .post<any>(config.apiServer + '/api/issue/createBoxTemp', payload)
       .subscribe({
         next: () => {
           this.toast('success', 'Scan สำเร็จ');
-  
+
           this.scanForm = this.createEmptyScanForm();
           this.isSavingScan = false;
-  
+
           // ดึงจาก backend ใหม่ เพื่อให้ข้อมูลตรงกับ database แน่นอน
           this.fetchWosTemp();
         },
         error: (err) => {
           console.error(err);
           this.isSavingScan = false;
-  
+
           Swal.fire({
             title: 'Error',
-            text: err?.error?.message || err?.message || 'Confirm Scan ไม่สำเร็จ',
+            text:
+              err?.error?.message || err?.message || 'Confirm Scan ไม่สำเร็จ',
             icon: 'error',
           }).then(() => {
             this.scanForm = this.createEmptyScanForm();
@@ -3039,25 +3017,25 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     this.focusScanFirst();
   }
 
-
   onSaveFullBoxTag() {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
-  
+
     if (this.fullBoxTagQty == null || Number(this.fullBoxTagQty) <= 0) {
       return this.toast('warning', 'กรุณากรอก QTY Box เต็ม');
     }
-  
+
     const normalQty = Number(this.fullBoxTagQty);
-    const fractionQty = Number(this.fractionQtyBox || this.fractionHeader?.qtyBox || 0);
+    const fractionQty = Number(
+      this.fractionQtyBox || this.fractionHeader?.qtyBox || 0
+    );
     const totalHeaderQty = Number(this.header.totalQtyBox || 0);
-  
+
     if (!Number.isFinite(normalQty) || normalQty <= 0) {
       return this.toast('warning', 'QTY Box เต็มไม่ถูกต้อง');
     }
-  
-  
+
     if (this.scanCount > normalQty) {
       return Swal.fire({
         icon: 'warning',
@@ -3076,13 +3054,13 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         confirmButtonColor: '#dc2626',
       });
     }
-  
+
     if (normalQty + fractionQty > totalHeaderQty) {
       return this.showBoxQtyOverLimitAlert(normalQty, fractionQty);
     }
-  
+
     this.isSavingFullBoxTag = true;
-  
+
     this.http
       .post<any>(config.apiServer + '/api/issue/addNormalQty', {
         headTempId: this.header.id,
@@ -3091,16 +3069,16 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       .subscribe({
         next: (res) => {
           this.isSavingFullBoxTag = false;
-  
+
           const updatedNormalQty = Number(res?.data?.normalQty ?? normalQty);
-  
+
           this.fullBoxTagQty = updatedNormalQty;
-  
+
           this.header = {
             ...this.header!,
             normalQty: updatedNormalQty,
           };
-  
+
           this.toast('success', 'บันทึก QTY Box เต็มสำเร็จ');
 
           setTimeout(() => {
@@ -3110,18 +3088,18 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
         error: (err) => {
           console.error(err);
           this.isSavingFullBoxTag = false;
-  
+
           const msg =
             err?.error?.message ||
             err?.error?.error ||
             err?.message ||
             'Save Normal QTY fail';
-  
+
           if (msg === 'header_issueTemp_notFound') {
             Swal.fire('Warning', 'ไม่พบ Header นี้ในระบบ', 'warning');
             return;
           }
-  
+
           Swal.fire({
             icon: 'error',
             title: 'บันทึก QTY Box เต็มไม่สำเร็จ',
@@ -3140,13 +3118,16 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       this.savedRows = [];
       return;
     }
-  
+
     this.isLoadingRows = true;
-  
+
     this.http
-      .post<FetchWosTempResp>(config.apiServer + '/api/issue/fetchBoxTempByHeadId', {
-        headerId: this.header.id,
-      })
+      .post<FetchWosTempResp>(
+        config.apiServer + '/api/issue/fetchBoxTempByHeadId',
+        {
+          headerId: this.header.id,
+        }
+      )
       .subscribe({
         next: (res) => {
           this.savedRows = (res.results || []).map((row) => ({
@@ -3161,7 +3142,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           console.error(err);
           this.savedRows = [];
           this.isLoadingRows = false;
-  
+
           Swal.fire({
             title: 'Error',
             text: err?.error?.message || err.message || 'Load Box Temp fail',
@@ -3173,7 +3154,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
 
   onDeleteRow(row: WosTempRow) {
     if (!row?.id) return;
-  
+
     Swal.fire({
       title: 'Delete WOS?',
       html: `
@@ -3193,9 +3174,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isDeletingBox = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteBoxTempIssue', {
           boxTempId: row.id,
@@ -3204,14 +3185,14 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           next: () => {
             this.isDeletingBox = false;
             this.toast('success', 'Delete Box Success');
-  
+
             this.fetchWosTemp();
             this.focusQr();
           },
           error: (err) => {
             console.error(err);
             this.isDeletingBox = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -3225,37 +3206,34 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
-
-
   onUpdateBoxIssueTempQty(row: WosTempRow) {
     if (!this.header) {
       return this.toast('warning', 'ไม่พบ Header');
     }
-  
+
     const boxTempId = Number(row.id);
     const qty = Number(row.editQty);
-  
+
     if (!boxTempId) {
       return this.toast('warning', 'ไม่พบ Box Temp ID');
     }
-  
+
     if (!Number.isFinite(qty) || qty <= 0) {
       row.editQty = row.qty;
-  
+
       return Swal.fire({
         icon: 'warning',
         title: 'QTY ไม่ถูกต้อง',
         text: 'กรุณากรอก QTY มากกว่า 0',
       });
     }
-  
+
     if (qty === Number(row.qty)) {
       return this.toast('info', 'QTY ไม่มีการเปลี่ยนแปลง');
     }
-  
+
     row.isUpdatingQty = true;
-  
+
     this.http
       .post<any>(config.apiServer + '/api/issue/editBoxIssueTemp', {
         headTempId: this.header.id,
@@ -3267,31 +3245,31 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           row.qty = Number(res.data.qty);
           row.editQty = Number(res.data.qty);
           row.isUpdatingQty = false;
-  
+
           this.toast('success', 'แก้ไข QTY Box ปกติสำเร็จ');
         },
         error: (err) => {
           console.error(err);
-  
+
           row.editQty = row.qty;
           row.isUpdatingQty = false;
-  
+
           const msg =
             err?.error?.message ||
             err?.error?.error ||
             err?.message ||
             'Update Box Qty fail';
-  
+
           if (msg === 'box_issueTemp_notFound') {
             Swal.fire('Warning', 'ไม่พบ Box ปกตินี้ในระบบ', 'warning');
             return;
           }
-  
+
           if (msg === 'invalid_qty') {
             Swal.fire('Warning', 'QTY ต้องมากกว่า 0', 'warning');
             return;
           }
-  
+
           Swal.fire({
             icon: 'error',
             title: 'แก้ไข QTY Box ปกติไม่สำเร็จ',
@@ -3305,11 +3283,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     row.editQty = row.qty;
   }
 
-
-
   onClearAllScan() {
     if (!this.header || this.savedRows.length === 0) return;
-  
+
     Swal.fire({
       title: 'Clear All Normal Box?',
       html: `
@@ -3327,9 +3303,9 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
       confirmButtonColor: '#dc2626',
     }).then((r) => {
       if (!r.isConfirmed) return;
-  
+
       this.isClearing = true;
-  
+
       this.http
         .post<any>(config.apiServer + '/api/issue/deleteAllBoxTempIssue', {
           headerTempId: this.header!.id,
@@ -3338,7 +3314,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           next: () => {
             this.isClearing = false;
             this.toast('success', 'Clear Normal Box Success');
-  
+
             this.fetchWosTemp();
             this.fetchFractionTempList();
             this.focusQr();
@@ -3346,7 +3322,7 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
           error: (err) => {
             console.error(err);
             this.isClearing = false;
-  
+
             Swal.fire(
               'Error',
               err?.error?.message ||
@@ -3360,14 +3336,10 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
-
   clearFractionScanForm() {
     this.fractionScanForm = this.createEmptyScanForm();
     this.focusFractionFirst();
   }
-
-
 
   /* =======================
      Issue / Print Label
@@ -3375,15 +3347,20 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
 
   onIssuePallet() {
     if (!this.header) return this.toast('warning', 'ไม่พบ Header');
-    if (this.savedRows.length === 0) return this.toast('warning', 'ยังไม่มีรายการ Scan');
+    if (this.savedRows.length === 0)
+      return this.toast('warning', 'ยังไม่มีรายการ Scan');
 
     Swal.fire({
       title: 'Confirm Issue Pallet?',
       html: `
         <div style="text-align:left">
           <div><b>ID Pallet:</b> ${this.header.idPallet}</div>
-          <div><b>Item:</b> ${this.header.itemNo} - ${this.header.itemName}</div>
-          <div><b>Location:</b> ${this.locationName(this.palletTemp?.mapAreaRackId)}</div>
+          <div><b>Item:</b> ${this.header.itemNo} - ${
+        this.header.itemName
+      }</div>
+          <div><b>Location:</b> ${this.locationName(
+            this.palletTemp?.mapAreaRackId
+          )}</div>
           <div><b>Total WOS:</b> ${this.savedRows.length}</div>
           <div><b>Total QTY:</b> ${this.totalScanQty.toLocaleString()}</div>
         </div>
@@ -3442,41 +3419,42 @@ if (this.header && this.isEditingHeader && this.fractionScanCount > fractionQty)
     });
   }
 
-
   printFullLabel(): void {
     if (!this.header?.id) {
       Swal.fire('Warning', 'ไม่พบ Header สำหรับ Print', 'warning');
       return;
     }
-  
+
     this.isPrinting = true as any;
-  
-    this.http.post(
-      config.apiServer + '/api/issue/printFullLabel',
-      {
-        headerId: this.header.id,
-        labelType: this.labelStockType || 'FG'
-      },
-      { responseType: 'blob' }
-    ).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-  
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 10000);
-  
-        this.isPrinting = false as any;
-      },
-      error: (err) => {
-        this.isPrinting = false as any;
-        Swal.fire('Error', err?.error?.message || 'Print Full Label failed', 'error');
-      }
-    });
+
+    this.http
+      .post(
+        config.apiServer + '/api/issue/printFullLabel',
+        {
+          headerId: this.header.id,
+          labelType: this.labelStockType || 'FG',
+        },
+        { responseType: 'blob' }
+      )
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+          }, 10000);
+
+          this.isPrinting = false as any;
+        },
+        error: (err) => {
+          this.isPrinting = false as any;
+          Swal.fire(
+            'Error',
+            err?.error?.message || 'Print Full Label failed',
+            'error'
+          );
+        },
+      });
   }
-
-
-
-
 }

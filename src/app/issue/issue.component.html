@@ -144,10 +144,15 @@
                     type="button"
                     class="create-rack-slot"
                     *ngFor="let column of rack.columns"
-                    [class.location-exists]="hasCreatePalletLocation(rack, column, row)"
-                    [class.location-missing]="!hasCreatePalletLocation(rack, column, row)"
-                    [class.selected]="isCreatePalletRackSlotSelected(rack, column, row)"
-                    
+                    [class.location-exists]="
+                      hasCreatePalletLocation(rack, column, row)
+                    "
+                    [class.location-missing]="
+                      !hasCreatePalletLocation(rack, column, row)
+                    "
+                    [class.selected]="
+                      isCreatePalletRackSlotSelected(rack, column, row)
+                    "
                     (click)="selectCreatePalletRackSlot(rack, column, row)"
                   >
                     <span class="create-slot-code">
@@ -208,6 +213,7 @@
             class="control"
             name="createPalletDate"
             [(ngModel)]="palletCreateForm.date"
+            [disabled]="isPalletFormLocked || isSavingPalletTemp"
           />
         </div>
 
@@ -220,6 +226,7 @@
             <button
               type="button"
               [class.selected]="palletCreateForm.shift === 'A'"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
               (click)="palletCreateForm.shift = 'A'"
             >
               A
@@ -228,6 +235,7 @@
             <button
               type="button"
               [class.selected]="palletCreateForm.shift === 'B'"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
               (click)="palletCreateForm.shift = 'B'"
             >
               B
@@ -236,6 +244,7 @@
             <button
               type="button"
               [class.selected]="palletCreateForm.shift === 'C'"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
               (click)="palletCreateForm.shift = 'C'"
             >
               C
@@ -252,6 +261,7 @@
             class="control"
             name="createPalletLocation"
             [(ngModel)]="palletCreateForm.locationId"
+            [disabled]="isPalletFormLocked || isSavingPalletTemp"
           >
             <option [ngValue]="null" disabled>Select Location</option>
 
@@ -277,6 +287,7 @@
               type="button"
               class="fg"
               [class.selected]="palletCreateForm.labelType === 'FG'"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
               (click)="palletCreateForm.labelType = 'FG'"
             >
               <i class="fas fa-box"></i>
@@ -288,6 +299,7 @@
               type="button"
               class="wip"
               [class.selected]="palletCreateForm.labelType === 'WIP'"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
               (click)="palletCreateForm.labelType = 'WIP'"
             >
               <i class="fas fa-industry"></i>
@@ -338,16 +350,60 @@
           </div>
         </div>
 
+        <!-- PALLET ACTION -->
+
+        <div class="create-pallet-edit-actions" *ngIf="palletTemp">
+          <!-- EDIT / SAVE EDIT -->
+
+          <button
+            type="button"
+            class="create-pallet-edit-btn"
+            (click)="onEditPalletTemp()"
+            [disabled]="isSavingPalletTemp"
+          >
+            <i
+              class="fas"
+              [class.fa-pen]="!isEditingPalletTemp"
+              [class.fa-save]="isEditingPalletTemp"
+            ></i>
+
+            <span>
+              {{ isEditingPalletTemp ? "Save Edit" : "Edit" }}
+            </span>
+          </button>
+
+          <!-- DELETE -->
+
+          <button
+            type="button"
+            class="create-pallet-delete-btn"
+            (click)="onDeletePalletTemp()"
+            [disabled]="isSavingPalletTemp || isEditingPalletTemp"
+          >
+            <i class="fas fa-trash-alt"></i>
+
+            <span> Delete </span>
+          </button>
+        </div>
+
         <!-- NEXT -->
 
         <button
           type="button"
           class="create-pallet-next"
           (click)="onNextCreatePallet()"
+          [disabled]="isSavingPalletTemp || isEditingPalletTemp"
         >
-          <span> Next </span>
+          <span>
+            {{ isSavingPalletTemp ? "Saving..." : "Next" }}
+          </span>
 
-          <i class="fas fa-arrow-right"></i>
+          <i
+            class="fas"
+            [class.fa-arrow-right]="!isSavingPalletTemp"
+            [class.fa-spinner]="isSavingPalletTemp"
+            [class.fa-spin]="isSavingPalletTemp"
+          ></i>
         </button>
       </div>
     </div>
@@ -423,7 +479,7 @@
 
             <div class="summary-item wide">
               <span>Location FG</span>
-              <b>{{ locationName( palletTemp?.mapAreaRackId) }}</b>
+              <b>{{ locationName(palletTemp?.mapAreaRackId) }}</b>
             </div>
 
             <div class="summary-item">
@@ -572,24 +628,20 @@
 
               <div class="form-field">
                 <label>Location FG</label>
-              
+
                 <input
                   class="control readonly"
                   type="text"
                   [value]="
                     selectedCreatePalletLocation
-                      ? (
-                          selectedCreatePalletLocation.name ||
-                          selectedCreatePalletLocation.locationNo
-                        )
+                      ? selectedCreatePalletLocation.name ||
+                        selectedCreatePalletLocation.locationNo
                       : '-'
                   "
                   readonly
                 />
-              
-                <small class="auto-total-note">
-                  Auto from Create Pallet
-                </small>
+
+                <small class="auto-total-note"> Auto from Create Pallet </small>
               </div>
 
               <div class="form-field">

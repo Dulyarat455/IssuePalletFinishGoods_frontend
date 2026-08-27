@@ -3294,3 +3294,100 @@ td small {
 .create-rack-foot-note i {
   color: #0f766e;
 }
+
+
+
+
+/* =========================================================
+   Create Pallet - Existing Pallet Actions
+========================================================= */
+
+.create-pallet-edit-actions {
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 10px;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.create-pallet-edit-btn,
+.create-pallet-delete-btn {
+  min-height: 40px;
+  padding: 0 16px;
+
+  border-radius: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+
+.create-pallet-edit-btn {
+  border: 1px solid #bfdbfe;
+
+  background: #eff6ff;
+
+  color: #1d4ed8;
+}
+
+
+.create-pallet-edit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px
+    rgba(37, 99, 235, 0.12);
+}
+
+
+.create-pallet-delete-btn {
+  border: 1px solid #fecaca;
+
+  background: #fff7f7;
+
+  color: #dc2626;
+}
+
+
+.create-pallet-delete-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px
+    rgba(220, 38, 38, 0.12);
+}
+
+
+.create-pallet-edit-btn:disabled,
+.create-pallet-delete-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* Rack slot ตอน Pallet ถูก Lock */
+
+.create-rack-slot:disabled {
+  cursor: not-allowed;
+}
