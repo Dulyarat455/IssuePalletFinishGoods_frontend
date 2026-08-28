@@ -254,6 +254,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
   createPalletRackView: IssueRackView[] = [];
   createPalletSelectableLocations: LocationRow[] = [];
 
+  pendingLocation: LocationRow | null = null;
+
+  pendingAreaMode: 'LAMINATION' | 'GEN_PD' | 'GEN_PC' | '' = '';
+
   header: HeaderIssuePalletTemp | null = null;
   headers: HeaderIssuePalletTemp[] = [];
   showHeaderList = false;
@@ -1469,6 +1473,50 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return [];
   }
 
+  private setupPendingAreaMode(): void {
+    const group = this.userGroupName;
+
+    const section = this.userSectionName;
+
+    // ==========================================
+    // CASE 1
+    // Lamination PC / PD / QC
+    // ==========================================
+
+    if (
+      group === 'LAMINATION' &&
+      (section === 'PC' || section === 'PD' || section === 'QC')
+    ) {
+      this.pendingAreaMode = 'LAMINATION';
+
+      return;
+    }
+
+    // ==========================================
+    // CASE 2
+    // General / Stator + PD
+    // ==========================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PD') {
+      this.pendingAreaMode = 'GEN_PD';
+
+      return;
+    }
+
+    // ==========================================
+    // CASE 3
+    // General / Stator + PC
+    // ==========================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PC') {
+      this.pendingAreaMode = 'GEN_PC';
+
+      return;
+    }
+
+    this.pendingAreaMode = '';
+  }
+
   private canSelectRackSlot(rackCode: string, slotCode: string): boolean {
     const group = this.userGroupName;
 
@@ -1617,9 +1665,30 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     const rackDefinitions = this.getCreatePalletRackProfile();
 
+    // ==========================================
+    // Pending Area
+    // Master:
+    // rackName = Pending
+    // areaName = Pending
+    // ==========================================
+
+    this.pendingLocation = locationMap.get('PENDINGPENDING') || null;
+
+    this.setupPendingAreaMode();
+
     const rackView: IssueRackView[] = [];
 
     const selectableLocationMap = new Map<number, LocationRow>();
+
+    // Pending เลือกได้ทุก Role
+    // ที่อยู่ใน Case ของ Layout นี้
+
+    if (this.pendingLocation && this.pendingAreaMode) {
+      selectableLocationMap.set(
+        Number(this.pendingLocation.id),
+        this.pendingLocation
+      );
+    }
 
     // =====================================================
     // 3. Build View
@@ -1701,6 +1770,22 @@ export class IssueComponent implements OnInit, AfterViewInit {
         }
       );
     });
+  }
+
+  selectPendingLocation(): void {
+    if (this.isPalletFormLocked) {
+      return;
+    }
+
+    if (this.isSavingPalletTemp) {
+      return;
+    }
+
+    if (!this.pendingLocation) {
+      return;
+    }
+
+    this.palletCreateForm.locationId = this.pendingLocation.id;
   }
 
   /* =======================
@@ -2083,7 +2168,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
           const rackName = String(rack.rackName || '').trim();
 
           return (rack.areas || []).map((area: any) => {
-            const displayName = `${rackName}-${area.areaName}`;
+            const isPending =
+              String(rackName).trim().toUpperCase() === 'PENDING' &&
+              String(area.areaName).trim().toUpperCase() === 'PENDING';
+
+            const displayName = isPending
+              ? 'Pending'
+              : `${rackName}-${area.areaName}`;
 
             return {
               id: Number(area.mapAreaRackId),

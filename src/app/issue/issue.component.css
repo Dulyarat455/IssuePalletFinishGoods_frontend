@@ -284,7 +284,8 @@
   font-size: 13px;
   font-weight: 950;
   cursor: pointer;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, filter 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease,
+    filter 0.15s ease;
   white-space: nowrap;
 }
 
@@ -1397,7 +1398,15 @@ thead th {
 
 .fake-barcode {
   width: 100%;
-  background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 4px, #111 4px 5px, transparent 5px 8px, #111 8px 11px, transparent 11px 14px);
+  background: repeating-linear-gradient(
+    90deg,
+    #111 0 2px,
+    transparent 2px 4px,
+    #111 4px 5px,
+    transparent 5px 8px,
+    #111 8px 11px,
+    transparent 11px 14px
+  );
   border: 1px solid #ffffff;
 }
 
@@ -1554,7 +1563,8 @@ thead th {
 }
 
 .fake-qr {
-  background: linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px, linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px, #ffffff;
+  background: linear-gradient(90deg, #111 4px, transparent 4px) 0 0 / 10px 10px,
+    linear-gradient(#111 4px, transparent 4px) 0 0 / 10px 10px, #ffffff;
   border: 4px solid #ffffff;
   outline: 1px solid #111827;
 }
@@ -2212,7 +2222,6 @@ td small {
   width: 190px;
 }
 
-
 /* =========================================================
    NEW FIRST PROCESS : CREATE PALLET
    ไม่กระทบ UI เดิม
@@ -2225,17 +2234,12 @@ td small {
 
   background: #ffffff;
 
-  border:
-    1px solid
-    rgba(15, 118, 110, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.12);
 
   border-radius: 18px;
 
-  box-shadow:
-    0 6px 16px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
 }
-
 
 /* =========================================================
    HEADER
@@ -2253,10 +2257,8 @@ td small {
 
   padding-bottom: 16px;
 
-  border-bottom:
-    1px solid #e9eef2;
+  border-bottom: 1px solid #e9eef2;
 }
-
 
 .create-pallet-step-label {
   color: #0f766e;
@@ -2268,7 +2270,6 @@ td small {
   letter-spacing: 1.2px;
 }
 
-
 .create-pallet-first-head h3 {
   margin: 4px 0 3px;
 
@@ -2279,7 +2280,6 @@ td small {
   font-weight: 950;
 }
 
-
 .create-pallet-first-head > div > span {
   color: #64748b;
 
@@ -2287,7 +2287,6 @@ td small {
 
   font-weight: 700;
 }
-
 
 /* =========================================================
    AUTO ID
@@ -2298,14 +2297,12 @@ td small {
 
   padding: 10px 14px;
 
-  border:
-    1px solid #a7f3d0;
+  border: 1px solid #a7f3d0;
 
   border-radius: 14px;
 
   background: #ecfdf5;
 }
-
 
 .create-pallet-auto-id span {
   display: block;
@@ -2316,9 +2313,8 @@ td small {
 
   font-weight: 950;
 
-  letter-spacing: .7px;
+  letter-spacing: 0.7px;
 }
-
 
 .create-pallet-auto-id b {
   display: block;
@@ -2332,7 +2328,6 @@ td small {
   font-weight: 950;
 }
 
-
 /* =========================================================
    MAIN
 ========================================================= */
@@ -2342,13 +2337,12 @@ td small {
 
   grid-template-columns:
     minmax(0, 1.55fr)
-    minmax(330px, .7fr);
+    minmax(330px, 0.7fr);
 
   gap: 18px;
 
   align-items: stretch;
 }
-
 
 /* =========================================================
    COMMON AREA
@@ -2360,14 +2354,12 @@ td small {
 
   padding: 16px;
 
-  border:
-    1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 
   border-radius: 16px;
 
   background: #fbfdfe;
 }
-
 
 /* =========================================================
    RACK HEADER
@@ -2384,7 +2376,6 @@ td small {
   margin-bottom: 14px;
 }
 
-
 .create-pallet-subhead h4,
 .create-pallet-condition-head h4 {
   margin: 0;
@@ -2395,7 +2386,6 @@ td small {
 
   font-weight: 950;
 }
-
 
 .create-pallet-subhead span,
 .create-pallet-condition-head span {
@@ -2410,7 +2400,6 @@ td small {
   font-weight: 700;
 }
 
-
 /* =========================================================
    SELECTED LOCATION
 ========================================================= */
@@ -2420,14 +2409,12 @@ td small {
 
   padding: 7px 10px;
 
-  border:
-    1px solid #a7f3d0;
+  border: 1px solid #a7f3d0;
 
   border-radius: 10px;
 
   background: #ecfdf5;
 }
-
 
 .create-selected-location span {
   margin: 0;
@@ -2438,7 +2425,6 @@ td small {
 
   font-weight: 950;
 }
-
 
 .create-selected-location b {
   display: block;
@@ -2452,7 +2438,6 @@ td small {
   font-weight: 950;
 }
 
-
 /* =========================================================
    RACK
 ========================================================= */
@@ -2464,10 +2449,6 @@ td small {
 
   overflow: auto;
 }
-
-
-
-
 
 .create-rack-title {
   margin-bottom: 6px;
@@ -2485,10 +2466,6 @@ td small {
   font-weight: 950;
 }
 
-
-
-
-
 /* EMPTY */
 
 .create-rack-empty {
@@ -2504,13 +2481,11 @@ td small {
   color: #94a3b8;
 }
 
-
 .create-rack-empty i {
   margin-bottom: 8px;
 
   font-size: 30px;
 }
-
 
 .create-rack-empty b {
   color: #475569;
@@ -2518,13 +2493,11 @@ td small {
   font-size: 12px;
 }
 
-
 .create-rack-empty span {
   margin-top: 3px;
 
   font-size: 10px;
 }
-
 
 /* =========================================================
    CONDITION AREA
@@ -2533,7 +2506,6 @@ td small {
 .create-pallet-condition-area {
   background: #ffffff;
 }
-
 
 .create-pallet-condition-head {
   display: flex;
@@ -2544,7 +2516,6 @@ td small {
 
   margin-bottom: 17px;
 }
-
 
 .create-condition-icon {
   width: 40px;
@@ -2559,23 +2530,16 @@ td small {
 
   border-radius: 11px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #10b981,
-      #14b8a6
-    );
+  background: linear-gradient(135deg, #10b981, #14b8a6);
 
   color: #ffffff;
 
   font-size: 16px;
 }
 
-
 .create-pallet-field {
   margin-bottom: 14px;
 }
-
 
 /* =========================================================
    SHIFT
@@ -2584,21 +2548,15 @@ td small {
 .create-shift-group {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
+  grid-template-columns: repeat(3, 1fr);
 
   gap: 7px;
 }
 
-
 .create-shift-group button {
   height: 42px;
 
-  border:
-    1px solid #d8e3e6;
+  border: 1px solid #d8e3e6;
 
   border-radius: 10px;
 
@@ -2613,11 +2571,9 @@ td small {
   font-weight: 950;
 }
 
-
 .create-shift-group button:hover {
   border-color: #14b8a6;
 }
-
 
 .create-shift-group button.selected {
   border-color: #0d9488;
@@ -2627,7 +2583,6 @@ td small {
   color: #ffffff;
 }
 
-
 /* =========================================================
    LABEL TYPE
 ========================================================= */
@@ -2635,12 +2590,10 @@ td small {
 .create-label-type-group {
   display: grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 
   gap: 8px;
 }
-
 
 .create-label-type-group button {
   height: 44px;
@@ -2652,8 +2605,7 @@ td small {
 
   gap: 7px;
 
-  border:
-    1px solid #d8e3e6;
+  border: 1px solid #d8e3e6;
 
   border-radius: 10px;
 
@@ -2668,9 +2620,7 @@ td small {
   font-weight: 950;
 }
 
-
-.create-label-type-group
-.fg.selected {
+.create-label-type-group .fg.selected {
   border-color: #4ade80;
 
   background: #dcfce7;
@@ -2678,16 +2628,13 @@ td small {
   color: #15803d;
 }
 
-
-.create-label-type-group
-.wip.selected {
+.create-label-type-group .wip.selected {
   border-color: #a78bfa;
 
   background: #ede9fe;
 
   color: #6d28d9;
 }
-
 
 /* =========================================================
    LOCATION LINK
@@ -2705,13 +2652,11 @@ td small {
   font-weight: 700;
 }
 
-
 .create-location-note i {
   margin-right: 4px;
 
   color: #14b8a6;
 }
-
 
 /* =========================================================
    SUMMARY
@@ -2720,8 +2665,7 @@ td small {
 .create-pallet-summary {
   display: grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 
   gap: 7px;
 
@@ -2729,14 +2673,12 @@ td small {
 
   padding: 10px;
 
-  border:
-    1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 
   border-radius: 12px;
 
   background: #f8fafc;
 }
-
 
 .create-pallet-summary span {
   display: block;
@@ -2747,7 +2689,6 @@ td small {
 
   font-weight: 950;
 }
-
 
 .create-pallet-summary b {
   display: block;
@@ -2766,7 +2707,6 @@ td small {
 
   text-overflow: ellipsis;
 }
-
 
 /* =========================================================
    NEXT
@@ -2790,12 +2730,7 @@ td small {
 
   border-radius: 11px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #10b981,
-      #14b8a6
-    );
+  background: linear-gradient(135deg, #10b981, #14b8a6);
 
   color: #ffffff;
 
@@ -2805,40 +2740,28 @@ td small {
 
   font-weight: 950;
 
-  box-shadow:
-    0 6px 14px
-    rgba(20, 184, 166, .18);
+  box-shadow: 0 6px 14px rgba(20, 184, 166, 0.18);
 }
-
 
 .create-pallet-next:hover {
-  filter: brightness(.97);
+  filter: brightness(0.97);
 }
-
 
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media (max-width: 1100px) {
-
   .create-pallet-first-layout {
     grid-template-columns: 1fr;
   }
 
   .create-rack-slots {
-    grid-template-columns:
-      repeat(
-        6,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-
 }
 
-
 @media (max-width: 700px) {
-
   .create-pallet-first-head {
     flex-direction: column;
 
@@ -2850,19 +2773,9 @@ td small {
   }
 
   .create-rack-slots {
-    grid-template-columns:
-      repeat(
-        3,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
 }
-
-
-
-
-
 
 /* =========================================================
    CREATE PALLET - RACK LAYOUT
@@ -2878,11 +2791,8 @@ td small {
 
   overflow: hidden;
 
-  box-shadow:
-    0 2px 6px
-    rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
-
 
 /* =========================================================
    HEADER
@@ -2903,14 +2813,12 @@ td small {
   border-bottom: 1px solid #e5e7eb;
 }
 
-
 .create-rack-panel-title {
   color: #111827;
 
   font-size: 17px;
   font-weight: 900;
 }
-
 
 .create-rack-panel-description {
   margin-top: 3px;
@@ -2920,7 +2828,6 @@ td small {
   font-size: 11px;
   font-weight: 600;
 }
-
 
 /* =========================================================
    SELECTED
@@ -2937,7 +2844,6 @@ td small {
   background: #ecfdf5;
 }
 
-
 .create-selected-location span {
   display: block;
 
@@ -2946,9 +2852,8 @@ td small {
   font-size: 8px;
   font-weight: 900;
 
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
 }
-
 
 .create-selected-location strong {
   display: block;
@@ -2960,7 +2865,6 @@ td small {
   font-size: 13px;
   font-weight: 900;
 }
-
 
 /* =========================================================
    RACK COLORS
@@ -2974,16 +2878,13 @@ td small {
   background-color: #ffd9c2 !important;
 }
 
-
 .create-rack-group-de {
   background-color: #f5b3ed !important;
 }
 
-
 .create-rack-group-fgh {
   background-color: #d6ffb8 !important;
 }
-
 
 /* =========================================================
    LEGEND
@@ -3005,7 +2906,6 @@ td small {
   border-bottom: 1px solid #e5e7eb;
 }
 
-
 .create-rack-legend-item {
   display: flex;
 
@@ -3019,25 +2919,22 @@ td small {
   font-weight: 700;
 }
 
-
 .create-rack-legend-color {
   width: 15px;
   height: 15px;
 
   display: inline-block;
 
-  border: 1px solid rgba(0, 0, 0, .18);
+  border: 1px solid rgba(0, 0, 0, 0.18);
 
   border-radius: 2px;
 }
-
 
 .create-rack-selected-color {
   background: #dbeafe;
 
   border: 2px solid #2563eb;
 }
-
 
 /* =========================================================
    SCROLL
@@ -3054,7 +2951,6 @@ td small {
   padding: 14px;
 }
 
-
 /* =========================================================
    RACK LAYOUT
 ========================================================= */
@@ -3069,7 +2965,6 @@ td small {
   min-width: max-content;
 }
 
-
 /* =========================================================
    RACK BLOCK
 ========================================================= */
@@ -3077,7 +2972,6 @@ td small {
 .create-rack-block {
   flex: 0 0 auto;
 }
-
 
 /* =========================================================
    RACK TITLE
@@ -3103,7 +2997,6 @@ td small {
   font-weight: 900;
 }
 
-
 /* =========================================================
    RACK BODY
 ========================================================= */
@@ -3116,13 +3009,11 @@ td small {
   gap: 4px;
 }
 
-
 .create-rack-row {
   display: flex;
 
   gap: 4px;
 }
-
 
 /* =========================================================
    SLOT
@@ -3153,26 +3044,19 @@ td small {
   font-size: 11px;
   font-weight: 700;
 
-  transition:
-    transform .1s ease,
-    border-color .1s ease,
-    box-shadow .1s ease,
-    background .1s ease;
+  transition: transform 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease,
+    background 0.1s ease;
 }
-
 
 .create-rack-slot:hover:not(:disabled) {
   transform: translateY(-1px);
 
   border-color: #111827;
 
-  box-shadow:
-    0 2px 5px
-    rgba(0, 0, 0, .13);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.13);
 
   z-index: 3;
 }
-
 
 /* =========================================================
    LOCATION EXISTS
@@ -3190,7 +3074,6 @@ td small {
   font-weight: 900;
 }
 
-
 /* =========================================================
    LOCATION ไม่มีใน Master
 ========================================================= */
@@ -3204,9 +3087,8 @@ td small {
 
   cursor: not-allowed;
 
-  opacity: .65;
+  opacity: 0.65;
 }
-
 
 /* =========================================================
    SELECTED
@@ -3219,9 +3101,7 @@ td small {
 
   border: 2px solid #2563eb !important;
 
-  outline:
-    3px solid
-    rgba(37, 99, 235, .22);
+  outline: 3px solid rgba(37, 99, 235, 0.22);
 
   font-weight: 950;
 
@@ -3230,11 +3110,9 @@ td small {
   z-index: 5;
 }
 
-
 .create-slot-code {
   line-height: 1;
 }
-
 
 .create-selected-check {
   width: 12px;
@@ -3263,7 +3141,6 @@ td small {
   z-index: 6;
 }
 
-
 /* =========================================================
    FOOT
 ========================================================= */
@@ -3290,13 +3167,9 @@ td small {
   font-weight: 700;
 }
 
-
 .create-rack-foot-note i {
   color: #0f766e;
 }
-
-
-
 
 /* =========================================================
    Create Pallet - Existing Pallet Actions
@@ -3312,7 +3185,6 @@ td small {
   align-items: center;
   gap: 10px;
 }
-
 
 .create-pallet-edit-btn,
 .create-pallet-delete-btn {
@@ -3331,12 +3203,8 @@ td small {
 
   cursor: pointer;
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
-
 
 .create-pallet-edit-btn {
   border: 1px solid #bfdbfe;
@@ -3346,15 +3214,11 @@ td small {
   color: #1d4ed8;
 }
 
-
 .create-pallet-edit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 5px 12px
-    rgba(37, 99, 235, 0.12);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.12);
 }
-
 
 .create-pallet-delete-btn {
   border: 1px solid #fecaca;
@@ -3364,15 +3228,11 @@ td small {
   color: #dc2626;
 }
 
-
 .create-pallet-delete-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 5px 12px
-    rgba(220, 38, 38, 0.12);
+  box-shadow: 0 5px 12px rgba(220, 38, 38, 0.12);
 }
-
 
 .create-pallet-edit-btn:disabled,
 .create-pallet-delete-btn:disabled {
@@ -3385,21 +3245,16 @@ td small {
   box-shadow: none;
 }
 
-
 /* Rack slot ตอน Pallet ถูก Lock */
 
 .create-rack-slot:disabled {
   cursor: not-allowed;
 }
 
-
-
-
 /* =========================================================
    CREATE PALLET
    READ ONLY STATE : SHIFT + LABEL TYPE
 ========================================================= */
-
 
 /* =========================
    SHIFT - READ ONLY
@@ -3408,7 +3263,6 @@ td small {
 .create-shift-group.readonly-state {
   gap: 8px;
 }
-
 
 .create-shift-group.readonly-state button:disabled {
   opacity: 1 !important;
@@ -3428,7 +3282,6 @@ td small {
   transform: none !important;
 }
 
-
 /* Shift ที่ถูกเลือก */
 
 .create-shift-group.readonly-state button.selected:disabled {
@@ -3443,7 +3296,6 @@ td small {
   box-shadow: none !important;
 }
 
-
 /* ไม่ให้มี Hover */
 
 .create-shift-group.readonly-state button:hover {
@@ -3452,7 +3304,6 @@ td small {
   box-shadow: none !important;
 }
 
-
 /* =========================
    LABEL TYPE - READ ONLY
 ========================= */
@@ -3460,7 +3311,6 @@ td small {
 .create-label-type-group.readonly-state {
   gap: 8px;
 }
-
 
 .create-label-type-group.readonly-state button:disabled {
   opacity: 1 !important;
@@ -3480,7 +3330,6 @@ td small {
   transform: none !important;
 }
 
-
 /* Label Type ที่ถูกเลือก */
 
 .create-label-type-group.readonly-state button.selected:disabled {
@@ -3495,14 +3344,11 @@ td small {
   box-shadow: none !important;
 }
 
-
 /* Icon ของตัวที่เลือก */
 
-.create-label-type-group.readonly-state
-button.selected:disabled i {
+.create-label-type-group.readonly-state button.selected:disabled i {
   color: #475569 !important;
 }
-
 
 /* ไม่ให้มี Hover */
 
@@ -3511,11 +3357,6 @@ button.selected:disabled i {
 
   box-shadow: none !important;
 }
-
-
-
-
-
 
 /* =========================================================
    HEADER LIST BY PALLET
@@ -3530,15 +3371,10 @@ button.selected:disabled i {
 
   background: #ffffff;
 
-  border:
-    1px solid
-    rgba(15, 118, 110, 0.12);
+  border: 1px solid rgba(15, 118, 110, 0.12);
 
-  box-shadow:
-    0 6px 18px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
-
 
 /* ========================
    HEAD
@@ -3549,14 +3385,12 @@ button.selected:disabled i {
 
   align-items: center;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   gap: 18px;
 
   margin-bottom: 18px;
 }
-
 
 .header-list-eyebrow {
   color: #0f766e;
@@ -3568,7 +3402,6 @@ button.selected:disabled i {
   letter-spacing: 1px;
 }
 
-
 .pallet-header-list-head h3 {
   margin: 4px 0;
 
@@ -3579,7 +3412,6 @@ button.selected:disabled i {
   font-weight: 950;
 }
 
-
 .pallet-header-list-head span {
   color: #64748b;
 
@@ -3588,7 +3420,6 @@ button.selected:disabled i {
   font-weight: 700;
 }
 
-
 .header-list-head-actions {
   display: flex;
 
@@ -3596,7 +3427,6 @@ button.selected:disabled i {
 
   gap: 10px;
 }
-
 
 .header-list-count {
   min-width: 80px;
@@ -3607,12 +3437,10 @@ button.selected:disabled i {
 
   background: #ecfdf5;
 
-  border:
-    1px solid #a7f3d0;
+  border: 1px solid #a7f3d0;
 
   text-align: center;
 }
-
 
 .header-list-count span {
   display: block;
@@ -3623,7 +3451,6 @@ button.selected:disabled i {
 
   font-weight: 950;
 }
-
 
 .header-list-count b {
   display: block;
@@ -3637,7 +3464,6 @@ button.selected:disabled i {
   font-weight: 950;
 }
 
-
 .header-list-create-btn {
   min-height: 44px;
 
@@ -3647,12 +3473,7 @@ button.selected:disabled i {
 
   border-radius: 14px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #10b981,
-      #14b8a6
-    );
+  background: linear-gradient(135deg, #10b981, #14b8a6);
 
   color: #ffffff;
 
@@ -3666,7 +3487,6 @@ button.selected:disabled i {
 
   cursor: pointer;
 }
-
 
 /* ========================
    PALLET INFO
@@ -3685,15 +3505,10 @@ button.selected:disabled i {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 12px;
 }
-
 
 .header-list-pallet-info span {
   display: block;
@@ -3704,7 +3519,6 @@ button.selected:disabled i {
 
   font-weight: 950;
 }
-
 
 .header-list-pallet-info b {
   display: block;
@@ -3718,7 +3532,6 @@ button.selected:disabled i {
   font-weight: 950;
 }
 
-
 /* ========================
    CARD GRID
 ======================== */
@@ -3726,15 +3539,10 @@ button.selected:disabled i {
 .header-card-list {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 14px;
 }
-
 
 /* ========================
    HEADER CARD
@@ -3747,8 +3555,7 @@ button.selected:disabled i {
 
   border-radius: 17px;
 
-  border:
-    1px solid #dbe4ea;
+  border: 1px solid #dbe4ea;
 
   background: #ffffff;
 
@@ -3756,27 +3563,19 @@ button.selected:disabled i {
 
   cursor: pointer;
 
-  transition:
-    transform 0.16s ease,
-    border-color 0.16s ease,
+  transition: transform 0.16s ease, border-color 0.16s ease,
     box-shadow 0.16s ease;
 
   overflow: hidden;
 }
 
-
 .header-select-card:hover {
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 
-  border-color:
-    #5eead4;
+  border-color: #5eead4;
 
-  box-shadow:
-    0 10px 22px
-    rgba(15, 118, 110, 0.11);
+  box-shadow: 0 10px 22px rgba(15, 118, 110, 0.11);
 }
-
 
 /* TOP */
 
@@ -3787,7 +3586,6 @@ button.selected:disabled i {
 
   gap: 12px;
 }
-
 
 .header-item-icon {
   width: 46px;
@@ -3809,13 +3607,11 @@ button.selected:disabled i {
   font-size: 18px;
 }
 
-
 .header-item-main {
   flex: 1;
 
   min-width: 0;
 }
-
 
 .header-item-label {
   display: block;
@@ -3826,9 +3622,8 @@ button.selected:disabled i {
 
   font-weight: 950;
 
-  letter-spacing: .7px;
+  letter-spacing: 0.7px;
 }
-
 
 .header-item-no {
   display: block;
@@ -3841,7 +3636,6 @@ button.selected:disabled i {
 
   font-weight: 950;
 }
-
 
 .header-item-name {
   display: block;
@@ -3861,7 +3655,6 @@ button.selected:disabled i {
   text-overflow: ellipsis;
 }
 
-
 .header-open-icon {
   width: 34px;
 
@@ -3878,14 +3671,11 @@ button.selected:disabled i {
   place-items: center;
 }
 
-
-.header-select-card:hover
-.header-open-icon {
+.header-select-card:hover .header-open-icon {
   background: #ccfbf1;
 
   color: #0f766e;
 }
-
 
 /* ========================
    BOX STATUS
@@ -3896,15 +3686,10 @@ button.selected:disabled i {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 10px;
 }
-
 
 .header-box-status-group {
   padding: 11px;
@@ -3912,22 +3697,17 @@ button.selected:disabled i {
   border-radius: 13px;
 }
 
-
 .header-box-status-group.planned {
   background: #f8fafc;
 
-  border:
-    1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 }
-
 
 .header-box-status-group.current {
   background: #f0fdfa;
 
-  border:
-    1px solid #ccfbf1;
+  border: 1px solid #ccfbf1;
 }
-
 
 .header-box-status-title {
   display: flex;
@@ -3943,32 +3723,23 @@ button.selected:disabled i {
   font-weight: 950;
 }
 
-
-.header-box-status-group.current
-.header-box-status-title {
+.header-box-status-group.current .header-box-status-title {
   color: #0f766e;
 }
-
 
 .header-box-number-row {
   margin-top: 9px;
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 8px;
 }
 
-
 .header-box-number-row div {
   min-width: 0;
 }
-
 
 .header-box-number-row span {
   display: block;
@@ -3979,7 +3750,6 @@ button.selected:disabled i {
 
   font-weight: 900;
 }
-
 
 .header-box-number-row b {
   display: block;
@@ -3993,12 +3763,9 @@ button.selected:disabled i {
   font-weight: 950;
 }
 
-
-.header-box-status-group.current
-.header-box-number-row b {
+.header-box-status-group.current .header-box-number-row b {
   color: #047857;
 }
-
 
 /* ========================
    FOOT
@@ -4009,19 +3776,16 @@ button.selected:disabled i {
 
   padding-top: 11px;
 
-  border-top:
-    1px solid #eef2f7;
+  border-top: 1px solid #eef2f7;
 
   display: flex;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   align-items: center;
 
   gap: 10px;
 }
-
 
 .header-select-card-foot span {
   color: #64748b;
@@ -4031,77 +3795,51 @@ button.selected:disabled i {
   font-weight: 750;
 }
 
-
 .header-select-card-foot b {
   color: #0f172a;
 
   font-weight: 950;
 }
 
-
-.header-select-card-foot
-.open-header-text {
+.header-select-card-foot .open-header-text {
   color: #0f766e;
 
   font-weight: 950;
 }
 
-
 /* ========================
    RESPONSIVE
 ======================== */
 
-@media (
-  max-width: 900px
-) {
-
+@media (max-width: 900px) {
   .header-card-list {
-    grid-template-columns:
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
-
   .header-list-pallet-info {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-
-@media (
-  max-width: 600px
-) {
-
+@media (max-width: 600px) {
   .pallet-header-list-head {
-    align-items:
-      flex-start;
+    align-items: flex-start;
 
-    flex-direction:
-      column;
+    flex-direction: column;
   }
-
 
   .header-list-head-actions {
     width: 100%;
   }
 
-
   .header-list-create-btn {
     flex: 1;
   }
 
-
   .header-box-status {
-    grid-template-columns:
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 }
-
-
-
 
 /* =========================================================
    RACK SLOT - NO PERMISSION / DISABLED
@@ -4121,7 +3859,6 @@ button.selected:disabled i {
   transform: none;
 }
 
-
 /* =========================================================
    LOCATION ไม่มีจริงใน Master
 ========================================================= */
@@ -4134,4 +3871,178 @@ button.selected:disabled i {
   color: #e2e8f0;
 
   opacity: 0.55;
+}
+
+/* =========================================================
+   CREATE PALLET - PENDING AREA
+========================================================= */
+
+/* Wrapper:
+   Rack อยู่บน
+   Pending อยู่ล่าง
+*/
+
+.create-rack-layout-container {
+  width: max-content;
+
+  min-width: max-content;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+}
+
+/* =========================================================
+   PENDING ROW
+========================================================= */
+
+.create-pending-row {
+  margin-top: 4px;
+
+  height: 104px;
+
+  display: flex;
+
+  align-items: stretch;
+}
+
+/* =========================================================
+   CASE 1
+   Lamination
+
+   Pending อยู่ใต้ Rack D + Rack G
+========================================================= */
+
+.create-pending-row.lamination {
+  /*
+    ดึง Pending ขึ้นมาอยู่ในช่องว่าง
+    ของ Row 13 - 15 ใต้ Rack D / Rack G
+
+    Slot สูง 32px
+    Gap 4px
+
+    3 Row =
+    32 + 4 +
+    32 + 4 +
+    32
+    = 104px
+  */
+
+  margin-top: -104px;
+
+  margin-left: 762px;
+
+  width: 350px;
+
+  height: 104px;
+}
+
+/* =========================================================
+   CASE 2
+   General / Stator + PD
+
+   Pending อยู่ใต้ Rack E + F
+========================================================= */
+
+.create-pending-row.gen-pd {
+  margin-left: 0;
+
+  width: 200px;
+}
+
+/* =========================================================
+   CASE 3
+   General / Stator + PC
+
+   Pending อยู่ใต้ Rack F + G + H
+========================================================= */
+
+.create-pending-row.gen-pc {
+  margin-left: 0;
+
+  width: 454px;
+}
+
+/* =========================================================
+   PENDING BUTTON
+========================================================= */
+
+.create-pending-area {
+  width: 100%;
+
+  height: 100%;
+
+  position: relative;
+
+  padding: 0;
+
+  border: 1px solid #64748b;
+
+  border-radius: 3px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition: border-color 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.create-pending-area small {
+  color: #64748b;
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+/* Hover */
+
+.create-pending-area:hover:not(:disabled) {
+  border-color: #111827;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.13);
+}
+
+/* Disabled */
+
+.create-pending-area:disabled {
+  background: #f1f5f9;
+
+  border-color: #cbd5e1;
+
+  color: #94a3b8;
+
+  opacity: 1;
+}
+
+/* Selected */
+
+.create-pending-area.selected {
+  background: #dbeafe !important;
+
+  color: #1e3a8a !important;
+
+  border: 2px solid #2563eb !important;
+
+  outline: 3px solid rgba(37, 99, 235, 0.22);
+
+  font-weight: 950;
 }
