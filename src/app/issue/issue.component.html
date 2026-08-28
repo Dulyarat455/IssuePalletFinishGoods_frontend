@@ -240,56 +240,73 @@
           </div>
         </div>
 
-        <!-- DATE -->
+        <!-- =============================================
+     PRODUCTION DATE + SHIFT
+============================================= -->
 
-        <div class="form-field create-pallet-field">
-          <label> Date </label>
+        <div class="create-pallet-date-shift-row">
+          <!-- PRODUCTION DATE -->
 
-          <input
-            type="date"
-            class="control"
-            name="createPalletDate"
-            [(ngModel)]="palletCreateForm.date"
-            [disabled]="isPalletFormLocked || isSavingPalletTemp"
-          />
+          <div class="form-field create-pallet-field">
+            <label> Production Date </label>
+
+            <input
+              type="date"
+              class="control"
+              name="createPalletDate"
+              [(ngModel)]="palletCreateForm.date"
+              readonly
+            />
+
+            <small class="create-shift-time-note">
+              Date calculated by Shift
+            </small>
+          </div>
+
+          <!-- SHIFT -->
+
+          <div class="form-field create-pallet-field">
+            <label> Shift </label>
+
+            <select
+              class="control"
+              name="createPalletShift"
+              [(ngModel)]="palletCreateForm.shift"
+              [disabled]="isPalletFormLocked || isSavingPalletTemp"
+              (ngModelChange)="onPalletShiftChange()"
+            >
+              <option value="A">A — 07:00 - 15:00</option>
+
+              <option value="B">B — 15:00 - 23:00</option>
+
+              <option value="C">C — 23:00 - 07:00</option>
+            </select>
+
+            <small class="create-shift-time-note">
+              A 07:00–15:00 · B 15:00–23:00 · C 23:00–07:00
+            </small>
+          </div>
         </div>
 
-        <!-- SHIFT -->
+        <!-- =============================================
+     CURRENT CALENDAR DATE
+     SHOW ONLY
+============================================= -->
 
-        <div class="form-field create-pallet-field">
-          <label> Shift </label>
-
-          <div
-            class="create-shift-group"
-            [class.readonly-state]="isPalletFormLocked"
-          >
-            <button
-              type="button"
-              [class.selected]="palletCreateForm.shift === 'A'"
-              [disabled]="isPalletFormLocked || isSavingPalletTemp"
-              (click)="palletCreateForm.shift = 'A'"
-            >
-              A
-            </button>
-
-            <button
-              type="button"
-              [class.selected]="palletCreateForm.shift === 'B'"
-              [disabled]="isPalletFormLocked || isSavingPalletTemp"
-              (click)="palletCreateForm.shift = 'B'"
-            >
-              B
-            </button>
-
-            <button
-              type="button"
-              [class.selected]="palletCreateForm.shift === 'C'"
-              [disabled]="isPalletFormLocked || isSavingPalletTemp"
-              (click)="palletCreateForm.shift = 'C'"
-            >
-              C
-            </button>
+        <div class="create-current-date-box">
+          <div class="create-current-date-icon">
+            <i class="fas fa-calendar-day"></i>
           </div>
+
+          <div>
+            <span> CURRENT DATE </span>
+
+            <b>
+              {{ currentCalendarDate }}
+            </b>
+          </div>
+
+          <small> Current calendar date only </small>
         </div>
 
         <!-- LOCATION -->

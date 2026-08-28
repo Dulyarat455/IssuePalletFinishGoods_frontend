@@ -4047,35 +4047,171 @@ td small {
   font-weight: 950;
 }
 
-
-
-
 /* =========================================================
    CENTER SMALL RACK GROUPS
 ========================================================= */
-
 
 /* Case 2
    General / Stator + PD
    Rack E + F
 */
 
-.create-rack-layout-container:has(
-  .create-pending-row.gen-pd
-) {
+.create-rack-layout-container:has(.create-pending-row.gen-pd) {
   margin-left: auto;
   margin-right: auto;
 }
-
 
 /* Case 3
    General / Stator + PC
    Rack F + G + H
 */
 
-.create-rack-layout-container:has(
-  .create-pending-row.gen-pc
-) {
+.create-rack-layout-container:has(.create-pending-row.gen-pc) {
   margin-left: auto;
   margin-right: auto;
+}
+
+/* =========================================================
+   PALLET CONDITION
+   PRODUCTION DATE + SHIFT
+========================================================= */
+
+.create-pallet-date-shift-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 10px;
+
+  align-items: start;
+}
+
+.create-pallet-date-shift-row .create-pallet-field {
+  margin: 0;
+}
+
+/* Production Date เป็น Auto */
+
+.create-pallet-date-shift-row input[readonly] {
+  background: #f8fafc;
+
+  color: #334155;
+
+  cursor: default;
+
+  font-weight: 900;
+}
+
+/* Shift time note */
+
+.create-shift-time-note {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   CURRENT DATE - DISPLAY ONLY
+========================================================= */
+
+.create-current-date-box {
+  width: 100%;
+
+  margin-top: 10px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  display: grid;
+
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.create-current-date-icon {
+  width: 34px;
+
+  height: 34px;
+
+  border-radius: 8px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #e2e8f0;
+
+  color: #475569;
+}
+
+.create-current-date-box span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.5px;
+}
+
+.create-current-date-box b {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #334155;
+
+  font-size: 12px;
+
+  font-weight: 950;
+}
+
+.create-current-date-box small {
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .create-pallet-date-shift-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .create-current-date-box {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .create-current-date-box small {
+    grid-column: 2;
+
+    white-space: normal;
+  }
 }

@@ -301,6 +301,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   palletCreateForm: PalletCreateForm = this.createEmptyPalletCreateForm();
 
+  currentCalendarDate = '';
+
   palletTemp: PalletTempRow | null = null;
 
   isLoadingPalletTemp = false;
@@ -331,6 +333,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
+
+    const now = new Date();
+
+    this.currentCalendarDate = this.formatLocalDate(now);
 
     this.userGroupName = String(
       localStorage.getItem('finish_goods_groupName') || ''
@@ -379,14 +385,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   createEmptyPalletCreateForm(): PalletCreateForm {
-    const d = new Date();
+    const now = new Date();
 
-    const f = (n: number) => String(n).padStart(2, '0');
+    const shift = this.getShiftFromCurrentTime(now);
+
+    const productionDate = this.getProductionDateByShift(now, shift);
 
     return {
-      date: `${d.getFullYear()}-${f(d.getMonth() + 1)}-${f(d.getDate())}`,
+      date: productionDate,
 
-      shift: '',
+      shift: shift,
 
       locationId: null,
 
@@ -1271,6 +1279,85 @@ export class IssueComponent implements OnInit, AfterViewInit {
   nextLabelPage() {
     if (this.activeLabelPageIndex >= this.labelPreviewPageCount - 1) return;
     this.currentLabelPageIndex = this.activeLabelPageIndex + 1;
+  }
+
+
+
+  onPalletShiftChange(): void {
+
+    const shift =
+      this.palletCreateForm.shift;
+  
+  
+    if (
+      shift !== 'A' &&
+      shift !== 'B' &&
+      shift !== 'C'
+    ) {
+      return;
+    }
+  
+  
+    const now =
+      new Date();
+  
+  
+    this.palletCreateForm.date =
+      this.getProductionDateByShift(
+        now,
+        shift
+      );
+  }
+
+
+  private getShiftFromCurrentTime(now: Date): 'A' | 'B' | 'C' {
+    const hour = now.getHours();
+
+    // Shift A
+    // 07:00 - 14:59
+
+    if (hour >= 7 && hour < 15) {
+      return 'A';
+    }
+
+    // Shift B
+    // 15:00 - 22:59
+
+    if (hour >= 15 && hour < 23) {
+      return 'B';
+    }
+
+    // Shift C
+    // 23:00 - 06:59
+
+    return 'C';
+  }
+
+  private getProductionDateByShift(now: Date, shift: 'A' | 'B' | 'C'): string {
+    const productionDate = new Date(now);
+
+    // ===================================
+    // Shift C หลังเที่ยงคืน
+    // 00:00 - 06:59
+    //
+    // ถือเป็น Production Date ของเมื่อวาน
+    // ===================================
+
+    if (shift === 'C' && now.getHours() < 7) {
+      productionDate.setDate(productionDate.getDate() - 1);
+    }
+
+    return this.formatLocalDate(productionDate);
+  }
+
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   private showBoxQtyOverLimitAlert(normalQty: number, fractionQty: number) {
