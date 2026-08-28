@@ -6,9 +6,16 @@
   min-height: calc(100vh - 72px);
   width: 100%;
   padding: 32px 28px;
-  background:
-    radial-gradient(circle at 8% 8%, rgba(16, 185, 129, 0.16), transparent 32%),
-    radial-gradient(circle at 92% 88%, rgba(20, 184, 166, 0.18), transparent 34%),
+  background: radial-gradient(
+      circle at 8% 8%,
+      rgba(16, 185, 129, 0.16),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 92% 88%,
+      rgba(20, 184, 166, 0.18),
+      transparent 34%
+    ),
     linear-gradient(180deg, #f7fffb 0%, #f5fbff 45%, #eef3f8 100%);
   color: #0f172a;
   overflow-x: hidden;
@@ -35,187 +42,1154 @@
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(15, 118, 110, 0.12);
-  box-shadow:
-    0 28px 70px rgba(15, 23, 42, 0.13),
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.13),
     0 2px 0 rgba(255, 255, 255, 0.75) inset;
 }
 
-/* =========================
-   Left Hero
-========================= */
+/* =========================================================
+   LEFT SIDE - FACTORY PALLET ANIMATION
+========================================================= */
 
-.login-hero {
+.login-hero.factory-hero {
   position: relative;
   min-width: 0;
-  padding: 50px 48px;
+  padding: 38px 38px 28px;
+
   color: #ffffff;
-  background:
-    linear-gradient(145deg, rgba(16, 185, 129, 0.96), rgba(20, 184, 166, 0.96)),
-    linear-gradient(180deg, #10b981 0%, #14b8a6 100%);
+
+  background: radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 255, 255, 0.14),
+      transparent 28%
+    ),
+    linear-gradient(145deg, #079669 0%, #0db48c 46%, #0f9f8b 100%);
+
   display: flex;
   flex-direction: column;
-  justify-content: center;
+
+  justify-content: space-between;
+
   overflow: hidden;
 }
 
-.login-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 42px 42px;
-  opacity: 0.24;
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.9), transparent 90%);
-}
+/* =========================================================
+   BACKGROUND
+========================================================= */
 
-.hero-pattern {
+.factory-grid {
   position: absolute;
-  border-radius: 999px;
+
+  inset: 0;
+
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+
+  background-size: 38px 38px;
+
+  opacity: 0.32;
+
   pointer-events: none;
 }
 
-.hero-pattern-one {
-  width: 310px;
-  height: 310px;
-  right: -100px;
-  top: -100px;
-  border: 34px solid rgba(255, 255, 255, 0.16);
+.factory-glow {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
 }
 
-.hero-pattern-two {
-  width: 210px;
-  height: 210px;
-  left: -80px;
-  bottom: -70px;
-  background: rgba(255, 255, 255, 0.12);
+.factory-glow-one {
+  width: 300px;
+  height: 300px;
+
+  right: -150px;
+  top: -120px;
+
+  border: 40px solid rgba(255, 255, 255, 0.09);
 }
 
-.hero-badge {
+.factory-glow-two {
+  width: 220px;
+  height: 220px;
+
+  left: -120px;
+  bottom: -120px;
+
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.factory-heading {
   position: relative;
-  z-index: 1;
-  width: 76px;
-  height: 76px;
-  margin-bottom: 26px;
-  border-radius: 26px;
+
+  z-index: 5;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 17px;
+}
+
+.factory-heading-icon {
+  width: 62px;
+  height: 62px;
+
+  flex: 0 0 62px;
+
   display: grid;
+
   place-items: center;
-  font-size: 31px;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow:
-    0 18px 34px rgba(15, 23, 42, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  font-size: 25px;
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 12px 25px rgba(0, 0, 0, 0.09);
 }
 
-.hero-label {
-  position: relative;
-  z-index: 1;
-  color: rgba(255, 255, 255, 0.94);
-  font-size: 13px;
+.factory-eyebrow {
+  margin-top: 2px;
+
+  color: rgba(255, 255, 255, 0.86);
+
+  font-size: 11px;
+
   font-weight: 950;
-  letter-spacing: 3px;
+
+  letter-spacing: 2.5px;
+
   text-transform: uppercase;
 }
 
-.login-hero h1 {
-  position: relative;
-  z-index: 1;
-  max-width: 520px;
-  margin: 12px 0 14px;
-  font-size: 44px;
+.factory-heading h1 {
+  margin: 6px 0 7px !important;
+
+  font-size: 33px !important;
+
+  line-height: 1 !important;
+
   font-weight: 950;
-  line-height: 1.03;
-  letter-spacing: -1.2px;
+
+  letter-spacing: -0.8px;
 }
 
-.login-hero h1 span {
-  display: block;
+.factory-heading h1 span {
+  display: inline !important;
 }
 
-.login-hero p {
+.factory-heading p {
+  max-width: 410px !important;
+
+  margin: 0 !important;
+
+  color: rgba(255, 255, 255, 0.79) !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.55 !important;
+
+  font-weight: 650 !important;
+}
+
+/* =========================================================
+   ANIMATION CONTAINER
+========================================================= */
+
+.factory-animation {
   position: relative;
-  z-index: 1;
-  max-width: 510px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 15px;
-  font-weight: 650;
-  line-height: 1.75;
+
+  z-index: 5;
+
+  margin-top: 23px;
+
+  padding: 15px;
+
+  border-radius: 22px;
+
+  background: rgba(4, 68, 57, 0.2);
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 15px 35px rgba(0, 0, 0, 0.09);
+
+  backdrop-filter: blur(4px);
 }
 
-/* =========================
-   Hero Stats
-========================= */
+/* =========================================================
+   LIVE TITLE
+========================================================= */
 
-.hero-stats {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 470px;
-  margin-top: 26px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
+.factory-flow-title {
+  min-height: 30px;
 
-.hero-stat {
-  min-height: 76px;
-  padding: 13px 12px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.19);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-
-.hero-stat b {
-  display: block;
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 950;
-  line-height: 1;
-  margin-bottom: 7px;
-}
-
-.hero-stat span {
-  display: block;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 11px;
-  font-weight: 850;
-}
-
-/* =========================
-   Hero Points
-========================= */
-
-.hero-points {
-  position: relative;
-  z-index: 1;
-  margin-top: 24px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 7px;
+
+  padding: 0 4px;
+
+  font-size: 10px;
+
+  font-weight: 950;
+
+  letter-spacing: 1px;
 }
 
-.hero-points div {
-  min-height: 39px;
-  padding: 0 14px;
-  border-radius: 999px;
-  display: inline-flex;
+.factory-flow-title > div {
+  display: flex;
+
   align-items: center;
-  gap: 9px;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.23);
-  font-size: 13px;
+
+  gap: 7px;
+}
+
+.factory-flow-title small {
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 9px;
+
+  letter-spacing: 0.4px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #bbf7d0;
+
+  box-shadow: 0 0 0 4px rgba(187, 247, 208, 0.13),
+    0 0 13px rgba(187, 247, 208, 0.9);
+
+  animation: factoryPulse 1.4s infinite;
+}
+
+@keyframes factoryPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.72);
+  }
+}
+
+/* =========================================================
+   FACTORY FLOOR
+========================================================= */
+
+.factory-floor {
+  position: relative;
+
+  height: 205px;
+
+  border-radius: 17px;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(0, 0, 0, 0.04)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+/* FLOOR LINE */
+
+.factory-floor::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 23px;
+
+  height: 1px;
+
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================================================
+   CONVEYOR
+========================================================= */
+
+.conveyor {
+  position: absolute;
+
+  z-index: 3;
+
+  left: 38px;
+  right: 145px;
+
+  bottom: 44px;
+
+  height: 33px;
+}
+
+.conveyor-belt {
+  position: relative;
+
+  height: 19px;
+
+  overflow: hidden;
+
+  border-radius: 5px;
+
+  background: #184c4b;
+
+  border-top: 3px solid rgba(255, 255, 255, 0.28);
+
+  border-bottom: 3px solid rgba(0, 0, 0, 0.18);
+
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+}
+
+.belt-lines {
+  position: absolute;
+
+  inset: 0;
+
+  width: 200%;
+
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 20px,
+    rgba(255, 255, 255, 0.22) 21px,
+    rgba(255, 255, 255, 0.22) 24px
+  );
+
+  animation: conveyorMove 1.1s linear infinite;
+}
+
+@keyframes conveyorMove {
+  from {
+    transform: translateX(-45px);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.conveyor-leg {
+  position: absolute;
+
+  top: 18px;
+
+  width: 7px;
+  height: 25px;
+
+  border-radius: 0 0 3px 3px;
+
+  background: rgba(15, 66, 64, 0.9);
+}
+
+.leg-one {
+  left: 20px;
+}
+
+.leg-two {
+  left: 48%;
+}
+
+.leg-three {
+  right: 20px;
+}
+
+/* =========================================================
+   MOVING BOX
+========================================================= */
+
+.moving-box {
+  position: absolute;
+
+  z-index: 7;
+
+  left: 38px;
+
+  bottom: 63px;
+
+  width: 45px;
+  height: 41px;
+
+  animation: moveBoxToRack 7s linear infinite,
+    smallBoxBounce 0.55s ease-in-out infinite alternate;
+}
+
+.moving-box-two {
+  animation-delay: -3.5s;
+}
+
+.box-face {
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 45px;
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  border-radius: 4px;
+
+  color: #875c27;
+
+  background: linear-gradient(135deg, #ffdc9f, #eab769);
+
+  border: 1px solid rgba(87, 55, 17, 0.28);
+
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.box-face::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 0;
+  bottom: 0;
+
+  width: 5px;
+
+  transform: translateX(-50%);
+
+  background: rgba(153, 96, 34, 0.16);
+}
+
+.box-top {
+  position: absolute;
+
+  top: 0;
+  left: 4px;
+
+  width: 37px;
+  height: 8px;
+
+  border-radius: 3px;
+
+  background: #f6ce8d;
+
+  transform: skewX(-35deg);
+
+  transform-origin: bottom;
+}
+
+.box-qr {
+  position: relative;
+
+  z-index: 2;
+
+  width: 17px;
+  height: 17px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 2px;
+
+  color: #27313c;
+
+  background: white;
+
+  font-size: 11px;
+}
+
+.box-face span {
+  position: relative;
+
+  z-index: 2;
+
+  font-size: 7px;
+
+  font-weight: 950;
+}
+
+@keyframes smallBoxBounce {
+  from {
+    margin-bottom: 0;
+  }
+
+  to {
+    margin-bottom: 1px;
+  }
+}
+
+@keyframes moveBoxToRack {
+  0% {
+    left: 23px;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  30% {
+    left: 31%;
+  }
+
+  50% {
+    left: 48%;
+  }
+
+  73% {
+    left: 67%;
+  }
+
+  84% {
+    left: 72%;
+    opacity: 1;
+  }
+
+  90% {
+    left: 78%;
+    opacity: 0;
+  }
+
+  100% {
+    left: 78%;
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   INPUT STATION
+========================================================= */
+
+.factory-station {
+  position: absolute;
+
+  z-index: 4;
+
+  left: 12px;
+  top: 28px;
+
+  text-align: center;
+}
+
+.station-icon {
+  width: 44px;
+  height: 44px;
+
+  margin: auto;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.13);
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  font-size: 17px;
+}
+
+.factory-station > span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 7px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   SCANNER
+========================================================= */
+
+.scanner-machine {
+  position: absolute;
+
+  z-index: 6;
+
+  left: 31%;
+
+  bottom: 60px;
+
+  width: 74px;
+  height: 90px;
+}
+
+.scanner-top {
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  border-radius: 8px 8px 2px 2px;
+
+  background: rgba(5, 70, 67, 0.92);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  font-size: 7px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.3px;
+}
+
+.scanner-top i {
+  font-size: 11px;
+}
+
+.scanner-frame {
+  position: relative;
+
+  width: 64px;
+  height: 58px;
+
+  margin: auto;
+
+  border-left: 5px solid rgba(6, 79, 75, 0.94);
+  border-right: 5px solid rgba(6, 79, 75, 0.94);
+
+  border-radius: 0 0 5px 5px;
+}
+
+.scanner-light {
+  position: absolute;
+
+  left: 3px;
+  right: 3px;
+
+  height: 2px;
+
+  top: 10px;
+
+  background: #b7ffdb;
+
+  box-shadow: 0 0 7px #86efac, 0 0 13px rgba(134, 239, 172, 0.7);
+
+  animation: scannerMove 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes scannerMove {
+  from {
+    top: 7px;
+  }
+
+  to {
+    top: 42px;
+  }
+}
+
+/* =========================================================
+   PROCESS PALLET
+========================================================= */
+
+.pallet-machine {
+  position: absolute;
+
+  z-index: 5;
+
+  left: 53%;
+
+  bottom: 67px;
+
+  width: 82px;
+}
+
+.machine-status {
+  width: fit-content;
+
+  margin: 0 auto 7px;
+
+  padding: 4px 7px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  border-radius: 20px;
+
+  background: rgba(4, 69, 61, 0.76);
+
+  font-size: 6px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.4px;
+}
+
+.machine-light {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #bbf7d0;
+
+  box-shadow: 0 0 7px #86efac;
+
+  animation: processLight 0.8s infinite alternate;
+}
+
+@keyframes processLight {
+  from {
+    opacity: 0.35;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.mini-pallet {
+  position: relative;
+
+  height: 48px;
+}
+
+.mini-box {
+  position: absolute;
+
+  width: 24px;
+  height: 22px;
+
+  border-radius: 3px;
+
+  background: linear-gradient(135deg, #ffd28a, #dfa052);
+
+  border: 1px solid rgba(100, 59, 18, 0.2);
+}
+
+.box-a {
+  left: 15px;
+  bottom: 9px;
+}
+
+.box-b {
+  left: 39px;
+  bottom: 9px;
+}
+
+.box-c {
+  left: 27px;
+  bottom: 30px;
+}
+
+.pallet-base {
+  position: absolute;
+
+  left: 8px;
+  right: 8px;
+
+  bottom: 2px;
+
+  height: 7px;
+
+  border-radius: 2px;
+
+  background: #765330;
+
+  box-shadow: 0 3px 0 rgba(75, 52, 28, 0.65);
+}
+
+/* =========================================================
+   RACK
+========================================================= */
+
+.factory-rack {
+  position: absolute;
+
+  z-index: 8;
+
+  width: 112px;
+
+  right: 10px;
+
+  bottom: 39px;
+}
+
+.rack-title {
+  height: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  border-radius: 7px 7px 0 0;
+
+  color: #064e3b;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 8px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.5px;
+}
+
+.rack-body {
+  padding: 5px;
+
+  background: rgba(4, 69, 61, 0.78);
+
+  border: 2px solid rgba(255, 255, 255, 0.27);
+
+  border-top: 0;
+}
+
+.rack-row {
+  height: 29px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 3px;
+
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.rack-row:last-child {
+  border-bottom: 0;
+}
+
+.rack-slot {
+  position: relative;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: center;
+}
+
+.rack-slot.occupied span {
+  width: 24px;
+  height: 19px;
+
+  margin-bottom: 2px;
+
+  border-radius: 2px;
+
+  background: linear-gradient(135deg, #ffd58f, #e3a753);
+
+  border: 1px solid rgba(92, 59, 23, 0.28);
+
+  animation: rackBoxGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes rackBoxGlow {
+  from {
+    filter: brightness(0.92);
+  }
+
+  to {
+    filter: brightness(1.13);
+  }
+}
+
+/* =========================================================
+   PROCESS FLOW
+========================================================= */
+
+.factory-process {
+  margin-top: 12px;
+
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+}
+
+.factory-process-item {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.process-no {
+  width: 25px;
+  height: 25px;
+
+  flex: 0 0 25px;
+
+  border-radius: 8px;
+
+  display: grid;
+
+  place-items: center;
+
+  color: #075c4d;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 8px;
+
+  font-weight: 950;
+}
+
+.factory-process-item b {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.96);
+
+  font-size: 8px;
+
+  font-weight: 950;
+}
+
+.factory-process-item span {
+  display: block;
+
+  margin-top: 1px;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 6px;
+
+  font-weight: 700;
+}
+
+.process-line {
+  position: relative;
+
+  width: 20px;
+  height: 2px;
+
+  flex: 0 0 20px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.process-line span {
+  position: absolute;
+
+  width: 50%;
+  height: 100%;
+
+  background: #bbf7d0;
+
+  animation: flowLine 1.3s linear infinite;
+}
+
+@keyframes flowLine {
+  from {
+    left: -50%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+/* =========================================================
+   BOTTOM
+========================================================= */
+
+.factory-bottom {
+  position: relative;
+
+  z-index: 5;
+
+  margin-top: 16px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.factory-bottom > div {
+  min-height: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  border-radius: 12px;
+
+  color: rgba(255, 255, 255, 0.9);
+
+  background: rgba(255, 255, 255, 0.1);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  font-size: 10px;
+
   font-weight: 900;
 }
 
-.hero-points i {
-  width: 16px;
-  text-align: center;
+.factory-bottom i {
+  font-size: 11px;
+}
+
+/* =========================================================
+   RESPONSIVE FACTORY
+========================================================= */
+
+@media (max-width: 1100px) {
+  .login-hero.factory-hero {
+    padding: 34px 28px 25px;
+  }
+
+  .factory-heading h1 {
+    font-size: 29px !important;
+  }
+
+  .factory-floor {
+    height: 195px;
+  }
+
+  .factory-rack {
+    width: 105px;
+  }
+}
+
+@media (max-width: 920px) {
+  .login-hero.factory-hero {
+    min-height: 520px;
+  }
+
+  .factory-animation {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-hero.factory-hero {
+    padding: 28px 18px 22px;
+  }
+
+  .factory-heading-icon {
+    width: 52px;
+    height: 52px;
+
+    flex-basis: 52px;
+
+    border-radius: 16px;
+
+    font-size: 21px;
+  }
+
+  .factory-heading h1 {
+    font-size: 25px !important;
+  }
+
+  .factory-animation {
+    padding: 10px;
+  }
+
+  .factory-floor {
+    height: 185px;
+  }
+
+  .scanner-machine {
+    left: 27%;
+  }
+
+  .pallet-machine {
+    left: 50%;
+  }
+
+  .factory-rack {
+    width: 95px;
+  }
+
+  .factory-process {
+    gap: 3px;
+  }
+
+  .factory-process-item span {
+    display: none;
+  }
+
+  .process-line {
+    width: 10px;
+    flex-basis: 10px;
+  }
+
+  .factory-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* User prefers reduced animation */
+@media (prefers-reduced-motion: reduce) {
+  .moving-box,
+  .belt-lines,
+  .scanner-light,
+  .machine-light,
+  .live-dot,
+  .process-line span,
+  .rack-slot.occupied span {
+    animation: none !important;
+  }
 }
 
 /* =========================
@@ -225,8 +1199,11 @@
 .login-card {
   min-width: 0;
   padding: 48px 42px;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 28%),
+  background: radial-gradient(
+      circle at top right,
+      rgba(16, 185, 129, 0.08),
+      transparent 28%
+    ),
     #ffffff;
   display: flex;
   flex-direction: column;
@@ -342,9 +1319,7 @@
   font-size: 14px;
   font-weight: 850;
   outline: none;
-  transition:
-    border-color 0.16s ease,
-    box-shadow 0.16s ease,
+  transition: border-color 0.16s ease, box-shadow 0.16s ease,
     background 0.16s ease;
 }
 
@@ -356,8 +1331,7 @@
 
 .input-wrap input:focus {
   border-color: #14b8a6;
-  box-shadow:
-    0 0 0 4px rgba(20, 184, 166, 0.14),
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.14),
     0 12px 22px rgba(15, 23, 42, 0.06);
 }
 
@@ -443,10 +1417,7 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease,
-    background 0.16s ease,
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease,
     opacity 0.16s ease;
 }
 
@@ -515,8 +1486,11 @@
   padding: 36px;
   border-radius: 28px;
   text-align: center;
-  background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.09), transparent 30%),
+  background: radial-gradient(
+      circle at top right,
+      rgba(16, 185, 129, 0.09),
+      transparent 30%
+    ),
     #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 22px 54px rgba(15, 23, 42, 0.11);
@@ -575,10 +1549,7 @@
   place-items: center;
   gap: 9px;
   font-weight: 950;
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease,
-    background 0.16s ease,
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease,
     color 0.16s ease;
 }
 

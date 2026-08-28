@@ -1,200 +1,392 @@
 <div class="fg-login-page">
   @if (token == undefined) {
-    <div class="login-shell">
-      <!-- LEFT HERO -->
-      <section class="login-hero">
-        <div class="hero-pattern hero-pattern-one"></div>
-        <div class="hero-pattern hero-pattern-two"></div>
+  <div class="login-shell">
+    <!-- LEFT HERO -->
+    <section class="login-hero factory-hero">
+      <!-- BACKGROUND DECORATION -->
+      <div class="factory-grid"></div>
+      <div class="factory-glow factory-glow-one"></div>
+      <div class="factory-glow factory-glow-two"></div>
 
-        <div class="hero-badge">
-          <i class="fas fa-pallet"></i>
-        </div>
-
-        <div class="hero-label">Finish Goods Control</div>
-
-        <h1>
-          Issue Pallet
-          <span>Finish Goods</span>
-        </h1>
-
-        <p>
-          Manage FG pallet labels, WOS scanning, issue labels and closed pallet lots
-          with a simple and traceable workflow.
-        </p>
-
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <b>42</b>
-            <span>Max Box / Pallet</span>
-          </div>
-
-          <div class="hero-stat">
-            <b>QR</b>
-            <span>WOS Scan</span>
-          </div>
-
-          <div class="hero-stat">
-            <b>FG</b>
-            <span>Stock Control</span>
-          </div>
-        </div>
-
-        <div class="hero-points">
-          <div>
-            <i class="fas fa-qrcode"></i>
-            <span>QR / RFID Login</span>
-          </div>
-
-          <div>
-            <i class="fas fa-print"></i>
-            <span>Pallet Label</span>
-          </div>
-
-          <div>
-            <i class="fas fa-warehouse"></i>
-            <span>Finish Goods Area</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT LOGIN -->
-      <section class="login-card">
-        <div class="card-top">
-          <div>
-            <span>Welcome back</span>
-            <h2>Sign In</h2>
-            <p>Use RFID card or employee account.</p>
-          </div>
-
-          <div class="card-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-        </div>
-
-        <!-- RFID LOGIN -->
-        <div class="login-section">
-          <div class="section-heading">
-            <span></span>
-            <b>RFID Login</b>
-          </div>
-
-          <div class="input-wrap rfid-wrap">
-            <i class="fas fa-id-card"></i>
-            <input
-              #rfidInput
-              type="password"
-              placeholder="Scan your RFID card"
-              autocomplete="off"
-              [disabled]="isLoading"
-              (input)="onRFIDInput($event)"
-            />
-          </div>
-
-          @if (isLoading) {
-            <div class="loading-text">
-              <i class="fas fa-spinner fa-spin"></i>
-              กำลังตรวจสอบ...
-            </div>
-          }
-        </div>
-
-        <div class="divider">
-          <span>OR</span>
-        </div>
-
-        <!-- EMPLOYEE LOGIN -->
-        <div class="login-section">
-          <div class="section-heading">
-            <span></span>
-            <b>Employee Login</b>
-          </div>
-
-          <div class="input-wrap">
-            <i class="fas fa-user"></i>
-            <input
-              type="text"
-              placeholder="Employee No."
-              [(ngModel)]="empNo"
-              [disabled]="isLoading"
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="input-wrap">
-            <i class="fas fa-lock"></i>
-            <input
-              type="password"
-              placeholder="Password"
-              [(ngModel)]="password"
-              [disabled]="isLoading"
-              (keyup.enter)="signIn()"
-            />
-          </div>
-
-          <div class="button-row">
-            <button
-              type="button"
-              class="btn-login"
-              (click)="signIn()"
-              [disabled]="isLoading"
-            >
-              @if (isLoading) {
-                <i class="fas fa-spinner fa-spin"></i>
-                Processing...
-              } @else {
-                <i class="fas fa-sign-in-alt"></i>
-                Sign In
-              }
-            </button>
-
-            <button
-              type="button"
-              class="btn-clear"
-              (click)="clearInputs()"
-              [disabled]="isLoading"
-            >
-              <i class="fas fa-times"></i>
-              Clear
-            </button>
-          </div>
-        </div>
-
-        <div class="login-footer-note">
-          <i class="fas fa-circle-info"></i>
-          <span>For Finish Goods pallet label operation only.</span>
-        </div>
-      </section>
-    </div>
-  } @else {
-    <div class="welcome-screen">
-      <div class="welcome-card">
-        <div class="welcome-icon">
-          <i class="fas fa-check"></i>
+      <!-- TOP TITLE -->
+      <div class="factory-heading">
+        <div class="factory-heading-icon">
+          <i class="fas fa-industry"></i>
         </div>
 
         <div>
-          <div class="welcome-label">Signed in</div>
-          <h2>Welcome to Finish Goods Control</h2>
-          <p>Emp No: {{ empNo }}</p>
-        </div>
+          <div class="factory-eyebrow">FINISH GOODS CONTROL</div>
 
-        <div class="welcome-actions">
-          <a class="welcome-menu" [routerLink]="['/issue']">
-            <i class="fas fa-qrcode"></i>
-            <span>Issue Pallet</span>
-          </a>
+          <h1>
+            Pallet Flow
+            <span>Management</span>
+          </h1>
 
-          <a class="welcome-menu" [routerLink]="['/dashboard']">
-            <i class="fas fa-chart-line"></i>
-            <span>Dashboard</span>
-          </a>
-
-          <a class="welcome-menu" [routerLink]="['/sign-up']">
-            <i class="fas fa-user-plus"></i>
-            <span>Member</span>
-          </a>
+          <p>
+            Scan WOS boxes, create pallet labels and manage Finish Goods
+            locations with a traceable workflow.
+          </p>
         </div>
       </div>
+
+      <!-- =====================================================
+       FACTORY ANIMATION
+  ====================================================== -->
+
+      <div class="factory-animation">
+        <!-- FLOW LABEL -->
+        <div class="factory-flow-title">
+          <div>
+            <span class="live-dot"></span>
+            LIVE PROCESS
+          </div>
+
+          <small> WOS → Pallet → FG Rack </small>
+        </div>
+
+        <!-- FACTORY FLOOR -->
+        <div class="factory-floor">
+          <!-- =========================
+           START STATION
+      ========================== -->
+
+          <div class="factory-station station-input">
+            <div class="station-icon">
+              <i class="fas fa-box"></i>
+            </div>
+
+            <span>BOX INPUT</span>
+          </div>
+
+          <!-- =========================
+           QR SCANNER
+      ========================== -->
+
+          <div class="scanner-machine">
+            <div class="scanner-top">
+              <i class="fas fa-qrcode"></i>
+
+              <span>WOS SCAN</span>
+            </div>
+
+            <div class="scanner-frame">
+              <div class="scanner-light"></div>
+            </div>
+          </div>
+
+          <!-- =========================
+           PALLET PROCESS
+      ========================== -->
+
+          <div class="pallet-machine">
+            <div class="machine-status">
+              <span class="machine-light"></span>
+
+              PROCESS
+            </div>
+
+            <div class="mini-pallet">
+              <div class="mini-box box-a"></div>
+              <div class="mini-box box-b"></div>
+              <div class="mini-box box-c"></div>
+
+              <div class="pallet-base"></div>
+            </div>
+          </div>
+
+          <!-- =========================
+           FG RACK
+      ========================== -->
+
+          <div class="factory-rack">
+            <div class="rack-title">
+              <i class="fas fa-warehouse"></i>
+
+              FG RACK
+            </div>
+
+            <div class="rack-body">
+              <div class="rack-row">
+                <div class="rack-slot occupied">
+                  <span></span>
+                </div>
+
+                <div class="rack-slot occupied">
+                  <span></span>
+                </div>
+
+                <div class="rack-slot"></div>
+              </div>
+
+              <div class="rack-row">
+                <div class="rack-slot occupied">
+                  <span></span>
+                </div>
+
+                <div class="rack-slot"></div>
+
+                <div class="rack-slot occupied">
+                  <span></span>
+                </div>
+              </div>
+
+              <div class="rack-row">
+                <div class="rack-slot"></div>
+
+                <div class="rack-slot occupied">
+                  <span></span>
+                </div>
+
+                <div class="rack-slot"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================
+           CONVEYOR BELT
+      ========================== -->
+
+          <div class="conveyor">
+            <div class="conveyor-belt">
+              <div class="belt-lines"></div>
+            </div>
+
+            <div class="conveyor-leg leg-one"></div>
+            <div class="conveyor-leg leg-two"></div>
+            <div class="conveyor-leg leg-three"></div>
+          </div>
+
+          <!-- =========================
+           MOVING BOX
+      ========================== -->
+
+          <div class="moving-box">
+            <div class="box-top"></div>
+
+            <div class="box-face">
+              <div class="box-qr">
+                <i class="fas fa-qrcode"></i>
+              </div>
+
+              <span>WOS</span>
+            </div>
+          </div>
+
+          <!-- SECOND BOX -->
+          <div class="moving-box moving-box-two">
+            <div class="box-top"></div>
+
+            <div class="box-face">
+              <div class="box-qr">
+                <i class="fas fa-qrcode"></i>
+              </div>
+
+              <span>WOS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+         FLOW STATUS
+    ====================================================== -->
+
+        <div class="factory-process">
+          <div class="factory-process-item active">
+            <div class="process-no">01</div>
+
+            <div>
+              <b>Scan Box</b>
+              <span>Read WOS QR Code</span>
+            </div>
+          </div>
+
+          <div class="process-line">
+            <span></span>
+          </div>
+
+          <div class="factory-process-item active">
+            <div class="process-no">02</div>
+
+            <div>
+              <b>Create Pallet</b>
+              <span>Full / Fraction Box</span>
+            </div>
+          </div>
+
+          <div class="process-line">
+            <span></span>
+          </div>
+
+          <div class="factory-process-item active">
+            <div class="process-no">03</div>
+
+            <div>
+              <b>FG Storage</b>
+              <span>Move to Rack</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM INFO -->
+
+      <div class="factory-bottom">
+        <div>
+          <i class="fas fa-qrcode"></i>
+
+          <span> WOS Scan </span>
+        </div>
+
+        <div>
+          <i class="fas fa-print"></i>
+
+          <span> Pallet Label </span>
+        </div>
+
+        <div>
+          <i class="fas fa-boxes-stacked"></i>
+
+          <span> WMS </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT LOGIN -->
+    <section class="login-card">
+      <div class="card-top">
+        <div>
+          <span>Welcome back</span>
+          <h2>Sign In</h2>
+          <p>Use RFID card or employee account.</p>
+        </div>
+
+        <div class="card-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+      </div>
+
+      <!-- RFID LOGIN -->
+      <div class="login-section">
+        <div class="section-heading">
+          <span></span>
+          <b>RFID Login</b>
+        </div>
+
+        <div class="input-wrap rfid-wrap">
+          <i class="fas fa-id-card"></i>
+          <input
+            #rfidInput
+            type="password"
+            placeholder="Scan your RFID card"
+            autocomplete="off"
+            [disabled]="isLoading"
+            (input)="onRFIDInput($event)"
+          />
+        </div>
+
+        @if (isLoading) {
+        <div class="loading-text">
+          <i class="fas fa-spinner fa-spin"></i>
+          กำลังตรวจสอบ...
+        </div>
+        }
+      </div>
+
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <!-- EMPLOYEE LOGIN -->
+      <div class="login-section">
+        <div class="section-heading">
+          <span></span>
+          <b>Employee Login</b>
+        </div>
+
+        <div class="input-wrap">
+          <i class="fas fa-user"></i>
+          <input
+            type="text"
+            placeholder="Employee No."
+            [(ngModel)]="empNo"
+            [disabled]="isLoading"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input
+            type="password"
+            placeholder="Password"
+            [(ngModel)]="password"
+            [disabled]="isLoading"
+            (keyup.enter)="signIn()"
+          />
+        </div>
+
+        <div class="button-row">
+          <button
+            type="button"
+            class="btn-login"
+            (click)="signIn()"
+            [disabled]="isLoading"
+          >
+            @if (isLoading) {
+            <i class="fas fa-spinner fa-spin"></i>
+            Processing... } @else {
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In }
+          </button>
+
+          <button
+            type="button"
+            class="btn-clear"
+            (click)="clearInputs()"
+            [disabled]="isLoading"
+          >
+            <i class="fas fa-times"></i>
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer-note">
+        <i class="fas fa-circle-info"></i>
+        <span>For Finish Goods pallet label operation only.</span>
+      </div>
+    </section>
+  </div>
+  } @else {
+  <div class="welcome-screen">
+    <div class="welcome-card">
+      <div class="welcome-icon">
+        <i class="fas fa-check"></i>
+      </div>
+
+      <div>
+        <div class="welcome-label">Signed in</div>
+        <h2>Welcome to Finish Goods Control</h2>
+        <p>Emp No: {{ empNo }}</p>
+      </div>
+
+      <div class="welcome-actions">
+        <a class="welcome-menu" [routerLink]="['/issue']">
+          <i class="fas fa-qrcode"></i>
+          <span>Issue Pallet</span>
+        </a>
+
+        <a class="welcome-menu" [routerLink]="['/dashboard']">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a class="welcome-menu" [routerLink]="['/sign-up']">
+          <i class="fas fa-user-plus"></i>
+          <span>Member</span>
+        </a>
+      </div>
     </div>
+  </div>
   }
 </div>
