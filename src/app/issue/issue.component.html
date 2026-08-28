@@ -118,7 +118,7 @@
 
             <div
               class="create-rack-block"
-              *ngFor="let rack of createPalletRackDefinitions"
+              *ngFor="let rack of createPalletRackView"
             >
               <!-- RACK TITLE -->
 
@@ -134,34 +134,37 @@
               <div class="create-rack-body">
                 <!-- ROW -->
 
-                <div
-                  class="create-rack-row"
-                  *ngFor="let row of getCreatePalletRackRows(rack)"
-                >
-                  <!-- COLUMN -->
+                <div class="create-rack-row" *ngFor="let rackRow of rack.rows">
+                  <!-- SLOT -->
 
                   <button
                     type="button"
                     class="create-rack-slot"
-                    *ngFor="let column of rack.columns"
-                    [class.location-exists]="
-                      hasCreatePalletLocation(rack, column, row)
-                    "
-                    [class.location-missing]="
-                      !hasCreatePalletLocation(rack, column, row)
-                    "
+                    *ngFor="let slot of rackRow.slots"
+                    [class.location-exists]="slot.exists"
+                    [class.location-missing]="!slot.exists"
                     [class.selected]="
-                      isCreatePalletRackSlotSelected(rack, column, row)
+                      slot.locationId !== null &&
+                      palletCreateForm.locationId === slot.locationId
                     "
-                    (click)="selectCreatePalletRackSlot(rack, column, row)"
+                    [disabled]="
+                      isPalletFormLocked ||
+                      isSavingPalletTemp ||
+                      !slot.exists ||
+                      !slot.canSelect
+                    "
+                    (click)="selectCreatePalletRackSlotView(slot)"
                   >
                     <span class="create-slot-code">
-                      {{ buildCreatePalletSlotCode(column, row) }}
+                      {{ slot.code }}
                     </span>
 
                     <span
                       class="create-selected-check"
-                      *ngIf="isCreatePalletRackSlotSelected(rack, column, row)"
+                      *ngIf="
+                        slot.locationId !== null &&
+                        palletCreateForm.locationId === slot.locationId
+                      "
                     >
                       <i class="fas fa-check"></i>
                     </span>
@@ -222,7 +225,7 @@
         <div class="form-field create-pallet-field">
           <label> Shift </label>
 
-          <div 
+          <div
             class="create-shift-group"
             [class.readonly-state]="isPalletFormLocked"
           >
@@ -268,7 +271,7 @@
           >
             <option [ngValue]="null" disabled>Select Location</option>
 
-            <option *ngFor="let location of locations" [ngValue]="location.id">
+            <option *ngFor="let location of createPalletSelectableLocations" [ngValue]="location.id">
               {{ location.name || location.locationNo }}
             </option>
           </select>
@@ -285,7 +288,7 @@
         <div class="form-field create-pallet-field">
           <label> Label Type </label>
 
-          <div 
+          <div
             class="create-label-type-group"
             [class.readonly-state]="isPalletFormLocked"
           >
@@ -419,295 +422,189 @@
      HEADER LIST
 ====================================================== -->
 
-<section
-class="pallet-header-list-panel"
-*ngIf="
-  !showCreatePallet &&
-  showHeaderList
-"
->
-
-<!-- HEADER -->
-
-<div class="pallet-header-list-head">
-
-  <div>
-    <div class="header-list-eyebrow">
-      PALLET HEADER
-    </div>
-
-    <h3>
-      Select Header
-    </h3>
-
-    <span>
-      เลือก Header ที่ต้องการทำงาน
-      สำหรับ Pallet ปัจจุบัน
-    </span>
-  </div>
-
-
-  <div class="header-list-head-actions">
-
-    <div class="header-list-count">
-      <span>HEADERS</span>
-
-      <b>
-        {{
-          currentPalletHeaders.length
-        }}
-      </b>
-    </div>
-
-
-    <button
-      type="button"
-      class="header-list-create-btn"
-      (click)="prepareCreateNewHeader()"
-    >
-      <i class="fas fa-plus"></i>
-
-      New Header
-    </button>
-
-  </div>
-
-</div>
-
-
-<!-- PALLET INFO -->
-
-<div
-  class="header-list-pallet-info"
-  *ngIf="palletTemp"
->
-
-  <div>
-    <span>DATE</span>
-    <b>
-      {{ palletCreateForm.date }}
-    </b>
-  </div>
-
-  <div>
-    <span>SHIFT</span>
-    <b>
-      {{ palletTemp.shift }}
-    </b>
-  </div>
-
-  <div>
-    <span>LOCATION</span>
-    <b>
-      {{
-        locationName(
-          palletTemp.mapAreaRackId
-        )
-      }}
-    </b>
-  </div>
-
-  <div>
-    <span>LABEL TYPE</span>
-    <b>
-      {{ palletTemp.labelType }}
-    </b>
-  </div>
-
-</div>
-
-
-<!-- LIST -->
-
-<div class="header-card-list">
-
-  <button
-    type="button"
-    class="header-select-card"
-    *ngFor="
-      let h of currentPalletHeaders
-    "
-    (click)="
-      selectHeaderFromList(h)
-    "
+  <section
+    class="pallet-header-list-panel"
+    *ngIf="!showCreatePallet && showHeaderList"
   >
+    <!-- HEADER -->
 
-    <!-- TOP -->
+    <div class="pallet-header-list-head">
+      <div>
+        <div class="header-list-eyebrow">PALLET HEADER</div>
 
-    <div class="header-select-card-top">
+        <h3>Select Header</h3>
 
-      <div class="header-item-icon">
-        <i class="fas fa-box"></i>
+        <span> เลือก Header ที่ต้องการทำงาน สำหรับ Pallet ปัจจุบัน </span>
       </div>
 
+      <div class="header-list-head-actions">
+        <div class="header-list-count">
+          <span>HEADERS</span>
 
-      <div class="header-item-main">
+          <b>
+            {{ currentPalletHeaders.length }}
+          </b>
+        </div>
 
-        <span class="header-item-label">
-          ITEM NO.
-        </span>
+        <button
+          type="button"
+          class="header-list-create-btn"
+          (click)="prepareCreateNewHeader()"
+        >
+          <i class="fas fa-plus"></i>
 
-        <b class="header-item-no">
-          {{ h.itemNo }}
-        </b>
-
-        <span class="header-item-name">
-          {{ h.itemName }}
-        </span>
-
+          New Header
+        </button>
       </div>
-
-
-      <div class="header-open-icon">
-        <i
-          class="fas
-                 fa-chevron-right"
-        ></i>
-      </div>
-
     </div>
 
+    <!-- PALLET INFO -->
 
-    <!-- BOX DETAIL -->
-
-    <div class="header-box-status">
-
-      <!-- PLAN -->
-
-      <div
-        class="
-          header-box-status-group
-          planned
-        "
-      >
-
-        <div class="header-box-status-title">
-          <i
-            class="
-              fas
-              fa-clipboard-list
-            "
-          ></i>
-
-          กำหนดไว้
-        </div>
-
-
-        <div class="header-box-number-row">
-
-          <div>
-            <span>BOX เต็ม</span>
-
-            <b>
-              {{
-                h.normalQty || 0
-              }}
-            </b>
-          </div>
-
-
-          <div>
-            <span>BOX เศษ</span>
-
-            <b>
-              {{
-                h.fractionQty || 0
-              }}
-            </b>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- CURRENT -->
-
-      <div
-        class="
-          header-box-status-group
-          current
-        "
-      >
-
-        <div class="header-box-status-title">
-          <i
-            class="
-              fas
-              fa-qrcode
-            "
-          ></i>
-
-          Scan ล่าสุด
-        </div>
-
-
-        <div class="header-box-number-row">
-
-          <div>
-            <span>BOX เต็ม</span>
-
-            <b>
-              {{
-                h.normalScannedQty ||
-                0
-              }}
-            </b>
-          </div>
-
-
-          <div>
-            <span>BOX เศษ</span>
-
-            <b>
-              {{
-                h.fractionScannedQty ||
-                0
-              }}
-            </b>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- FOOT -->
-
-    <div class="header-select-card-foot">
-
-      <span>
-        <i class="fas fa-layer-group"></i>
-
-        Total Plan:
+    <div class="header-list-pallet-info" *ngIf="palletTemp">
+      <div>
+        <span>DATE</span>
         <b>
-          {{ h.totalQtyBox }}
+          {{ palletCreateForm.date }}
         </b>
-        Box
-      </span>
+      </div>
 
+      <div>
+        <span>SHIFT</span>
+        <b>
+          {{ palletTemp.shift }}
+        </b>
+      </div>
 
-      <span class="open-header-text">
-        Open Header
+      <div>
+        <span>LOCATION</span>
+        <b>
+          {{ locationName(palletTemp.mapAreaRackId) }}
+        </b>
+      </div>
 
-        <i
-          class="
-            fas
-            fa-arrow-right
-          "
-        ></i>
-      </span>
-
+      <div>
+        <span>LABEL TYPE</span>
+        <b>
+          {{ palletTemp.labelType }}
+        </b>
+      </div>
     </div>
 
-  </button>
+    <!-- LIST -->
 
-</div>
+    <div class="header-card-list">
+      <button
+        type="button"
+        class="header-select-card"
+        *ngFor="let h of currentPalletHeaders"
+        (click)="selectHeaderFromList(h)"
+      >
+        <!-- TOP -->
 
-</section>
+        <div class="header-select-card-top">
+          <div class="header-item-icon">
+            <i class="fas fa-box"></i>
+          </div>
 
+          <div class="header-item-main">
+            <span class="header-item-label"> ITEM NO. </span>
+
+            <b class="header-item-no">
+              {{ h.itemNo }}
+            </b>
+
+            <span class="header-item-name">
+              {{ h.itemName }}
+            </span>
+          </div>
+
+          <div class="header-open-icon">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+
+        <!-- BOX DETAIL -->
+
+        <div class="header-box-status">
+          <!-- PLAN -->
+
+          <div class="header-box-status-group planned">
+            <div class="header-box-status-title">
+              <i class="fas fa-clipboard-list"></i>
+
+              กำหนดไว้
+            </div>
+
+            <div class="header-box-number-row">
+              <div>
+                <span>BOX เต็ม</span>
+
+                <b>
+                  {{ h.normalQty || 0 }}
+                </b>
+              </div>
+
+              <div>
+                <span>BOX เศษ</span>
+
+                <b>
+                  {{ h.fractionQty || 0 }}
+                </b>
+              </div>
+            </div>
+          </div>
+
+          <!-- CURRENT -->
+
+          <div class="header-box-status-group current">
+            <div class="header-box-status-title">
+              <i class="fas fa-qrcode"></i>
+
+              Scan ล่าสุด
+            </div>
+
+            <div class="header-box-number-row">
+              <div>
+                <span>BOX เต็ม</span>
+
+                <b>
+                  {{ h.normalScannedQty || 0 }}
+                </b>
+              </div>
+
+              <div>
+                <span>BOX เศษ</span>
+
+                <b>
+                  {{ h.fractionScannedQty || 0 }}
+                </b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOT -->
+
+        <div class="header-select-card-foot">
+          <span>
+            <i class="fas fa-layer-group"></i>
+
+            Total Plan:
+            <b>
+              {{ h.totalQtyBox }}
+            </b>
+            Box
+          </span>
+
+          <span class="open-header-text">
+            Open Header
+
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </button>
+    </div>
+  </section>
 
   <ng-container *ngIf="!showCreatePallet && !showHeaderList">
     <div class="layout-grid">
@@ -729,16 +626,14 @@ class="pallet-header-list-panel"
 
             <div class="head-actions">
               <button
-                  type="button"
-                  class="btn ghost"
-                  *ngIf="
-                    currentPalletHeaders.length > 0
-                  "
-                  (click)="backToHeaderList()"
-                >
-                  <i class="fas fa-arrow-left"></i>
+                type="button"
+                class="btn ghost"
+                *ngIf="currentPalletHeaders.length > 0"
+                (click)="backToHeaderList()"
+              >
+                <i class="fas fa-arrow-left"></i>
 
-                  Header List
+                Header List
               </button>
               <button
                 type="button"

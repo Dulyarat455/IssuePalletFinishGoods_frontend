@@ -68,6 +68,35 @@ type IssueRackDefinition = {
   rows: number;
 };
 
+type IssueRackSlotView = {
+  code: string;
+
+  column: number;
+  row: number;
+
+  locationId: number | null;
+
+  exists: boolean;
+
+  canSelect: boolean;
+};
+
+type IssueRackRowView = {
+  row: number;
+
+  slots: IssueRackSlotView[];
+};
+
+type IssueRackView = {
+  name: string;
+
+  rackCode: string;
+
+  rackGroup: IssueRackGroup;
+
+  rows: IssueRackRowView[];
+};
+
 type HeaderIssuePalletTemp = {
   id: number;
 
@@ -219,6 +248,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   userId: number | null = null;
 
+  userGroupName = '';
+  userSectionName = '';
+
+  createPalletRackView: IssueRackView[] = [];
+  createPalletSelectableLocations: LocationRow[] = [];
+
   header: HeaderIssuePalletTemp | null = null;
   headers: HeaderIssuePalletTemp[] = [];
   showHeaderList = false;
@@ -288,69 +323,22 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   isPrinting = false;
 
-  createPalletRackDefinitions: IssueRackDefinition[] = [
-    {
-      name: 'Rack A',
-      rackCode: 'A',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15,
-    },
-    {
-      name: 'Rack B',
-      rackCode: 'B',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15,
-    },
-    {
-      name: 'Rack C',
-      rackCode: 'C',
-      rackGroup: 'ABC',
-      columns: [1, 2, 3, 4, 5],
-      rows: 15,
-    },
-    {
-      name: 'Rack D',
-      rackCode: 'D',
-      rackGroup: 'DE',
-      columns: [1, 2, 3, 4, 5],
-      rows: 12,
-    },
-    {
-      name: 'Rack E',
-      rackCode: 'E',
-      rackGroup: 'DE',
-      columns: [1, 2, 3],
-      rows: 12,
-    },
-    {
-      name: 'Rack F',
-      rackCode: 'F',
-      rackGroup: 'FGH',
-      columns: [1, 2],
-      rows: 12,
-    },
-    {
-      name: 'Rack G',
-      rackCode: 'G',
-      rackGroup: 'FGH',
-      columns: [1, 2, 3, 4],
-      rows: 12,
-    },
-    {
-      name: 'Rack H',
-      rackCode: 'H',
-      rackGroup: 'FGH',
-      columns: [1, 2, 3],
-      rows: 12,
-    },
-  ];
-
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
+
+    this.userGroupName = String(
+      localStorage.getItem('finish_goods_groupName') || ''
+    )
+      .trim()
+      .toUpperCase();
+
+    this.userSectionName = String(
+      localStorage.getItem('finish_goods_sectionName') || ''
+    )
+      .trim()
+      .toUpperCase();
 
     if (!this.userId) {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');
@@ -772,83 +760,28 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return `${column}` + `${row.toString().padStart(2, '0')}`;
   }
 
-  getCreatePalletRackRows(rack: IssueRackDefinition): number[] {
-    return Array.from(
-      {
-        length: rack.rows,
-      },
-      (_, index) => index + 1
-    );
-  }
-
-  getCreatePalletLocationBySlot(
-    rack: IssueRackDefinition,
-    column: number,
-    row: number
-  ): LocationRow | null {
-    const slotCode = this.buildCreatePalletSlotCode(column, row);
-
-    const targetCode = `${rack.rackCode}${slotCode}`
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, '');
-
-    const found = this.locations.find((location) => {
-      const locationText = String(location.name || location.locationNo || '')
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '');
-
-      return locationText === targetCode || locationText.endsWith(targetCode);
-    });
-
-    return found || null;
-  }
-
-  selectCreatePalletRackSlot(
-    rack: IssueRackDefinition,
-    column: number,
-    row: number
-  ): void {
+  selectCreatePalletRackSlotView(slot: IssueRackSlotView): void {
     if (this.isPalletFormLocked) {
       return;
     }
 
-    const location = this.getCreatePalletLocationBySlot(rack, column, row);
-
-    if (!location) {
-      this.toast(
-        'warning',
-        `ไม่พบ Location ${rack.rackCode}${this.buildCreatePalletSlotCode(
-          column,
-          row
-        )} ใน Master`
-      );
-
+    if (this.isSavingPalletTemp) {
       return;
     }
 
-    this.palletCreateForm.locationId = location.id;
-  }
-
-  isCreatePalletRackSlotSelected(
-    rack: IssueRackDefinition,
-    column: number,
-    row: number
-  ): boolean {
-    const location = this.getCreatePalletLocationBySlot(rack, column, row);
-
-    if (!location) {
-      return false;
+    if (!slot.exists) {
+      return;
     }
 
-    return Number(this.palletCreateForm.locationId) === Number(location.id);
-  }
+    if (!slot.canSelect) {
+      return;
+    }
 
-  hasCreatePalletLocation(
-    rack: IssueRackDefinition,
-    column: number,
-    row: number
-  ): boolean {
-    return !!this.getCreatePalletLocationBySlot(rack, column, row);
+    if (slot.locationId == null) {
+      return;
+    }
+
+    this.palletCreateForm.locationId = slot.locationId;
   }
 
   getCreatePalletRackGroupClass(rackGroup: IssueRackGroup): string {
@@ -1361,6 +1294,415 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private getCreatePalletRackProfile(): IssueRackDefinition[] {
+    const group = this.userGroupName;
+
+    const section = this.userSectionName;
+
+    // =====================================================
+    // CASE 1
+    // LAMINATION
+    // PC / PD / QC
+    //
+    // Show:
+    // A B C D G
+    //
+    // G:
+    // 101-112
+    // 201-212
+    // =====================================================
+
+    if (
+      group === 'LAMINATION' &&
+      (section === 'PC' || section === 'PD' || section === 'QC')
+    ) {
+      return [
+        {
+          name: 'Rack A',
+          rackCode: 'A',
+
+          // สีส้ม
+          rackGroup: 'ABC',
+
+          columns: [1, 2, 3, 4, 5],
+          rows: 15,
+        },
+
+        {
+          name: 'Rack B',
+          rackCode: 'B',
+
+          rackGroup: 'ABC',
+
+          columns: [1, 2, 3, 4, 5],
+          rows: 15,
+        },
+
+        {
+          name: 'Rack C',
+          rackCode: 'C',
+
+          rackGroup: 'ABC',
+
+          columns: [1, 2, 3, 4, 5],
+          rows: 15,
+        },
+
+        {
+          name: 'Rack D',
+          rackCode: 'D',
+
+          // Case นี้ D เป็นสีส้ม
+          rackGroup: 'ABC',
+
+          columns: [1, 2, 3, 4, 5],
+          rows: 12,
+        },
+
+        {
+          name: 'Rack G',
+          rackCode: 'G',
+
+          // Case นี้ G เป็นสีส้ม
+          rackGroup: 'ABC',
+
+          // แสดงแค่
+          // 101-112
+          // 201-212
+          columns: [1, 2],
+
+          rows: 12,
+        },
+      ];
+    }
+
+    // =====================================================
+    // CASE 2
+    // GENERAL / STATOR
+    // PD
+    //
+    // Show:
+    // Rack E
+    // Rack F เฉพาะ 301-312
+    // =====================================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PD') {
+      return [
+        {
+          name: 'Rack E',
+          rackCode: 'E',
+
+          // สีชมพู
+          rackGroup: 'DE',
+
+          columns: [1, 2, 3],
+          rows: 12,
+        },
+
+        {
+          name: 'Rack F',
+          rackCode: 'F',
+
+          // Case นี้ F เป็นสีชมพู
+          rackGroup: 'DE',
+
+          // แสดงเฉพาะ
+          // 301-312
+          columns: [3],
+
+          rows: 12,
+        },
+      ];
+    }
+
+    // =====================================================
+    // CASE 3
+    // GENERAL / STATOR
+    // PC
+    //
+    // Show:
+    // F G H
+    //
+    // F:
+    // 101-112
+    // 201-212
+    // =====================================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PC') {
+      return [
+        {
+          name: 'Rack F',
+          rackCode: 'F',
+
+          // สีเขียว
+          rackGroup: 'FGH',
+
+          columns: [1, 2],
+          rows: 12,
+        },
+
+        {
+          name: 'Rack G',
+          rackCode: 'G',
+
+          rackGroup: 'FGH',
+
+          columns: [1, 2, 3, 4],
+          rows: 12,
+        },
+
+        {
+          name: 'Rack H',
+          rackCode: 'H',
+
+          rackGroup: 'FGH',
+
+          columns: [1, 2, 3],
+          rows: 12,
+        },
+      ];
+    }
+
+    // ไม่มีสิทธิ์
+    // ไม่แสดง Rack
+
+    return [];
+  }
+
+  private canSelectRackSlot(rackCode: string, slotCode: string): boolean {
+    const group = this.userGroupName;
+
+    const section = this.userSectionName;
+
+    const rack = String(rackCode).trim().toUpperCase();
+
+    const slot = Number(slotCode);
+
+    // =====================================================
+    // CASE 1
+    // LAMINATION
+    // =====================================================
+
+    if (group === 'LAMINATION') {
+      // ===================================================
+      // QC
+      //
+      // เลือกได้เฉพาะ Rack G
+      //
+      // 101
+      // 102
+      // 103
+      // 201
+      // 202
+      // ===================================================
+
+      if (section === 'QC') {
+        if (rack !== 'G') {
+          return false;
+        }
+
+        return (
+          slot === 101 ||
+          slot === 102 ||
+          slot === 103 ||
+          slot === 201 ||
+          slot === 202
+        );
+      }
+
+      // ===================================================
+      // PD
+      //
+      // เลือกได้เฉพาะ Rack G
+      //
+      // 104 - 112
+      // ===================================================
+
+      if (section === 'PD') {
+        if (rack !== 'G') {
+          return false;
+        }
+
+        return slot >= 104 && slot <= 112;
+      }
+
+      // ===================================================
+      // PC
+      //
+      // ของเดิม
+      //
+      // Rack A / B / C / D
+      // เลือกได้ทั้งหมด
+      //
+      // Rack G
+      // เลือกได้ 203 - 212
+      // ===================================================
+
+      if (section === 'PC') {
+        // A / B / C / D
+
+        if (rack === 'A' || rack === 'B' || rack === 'C' || rack === 'D') {
+          return true;
+        }
+
+        // Rack G
+
+        if (rack === 'G') {
+          return slot >= 203 && slot <= 212;
+        }
+
+        return false;
+      }
+
+      return false;
+    }
+
+    // =====================================================
+    // CASE 2
+    // GENERAL / STATOR + PD
+    //
+    // ของเดิมไม่เปลี่ยน
+    // =====================================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PD') {
+      return rack === 'E' || rack === 'F';
+    }
+
+    // =====================================================
+    // CASE 3
+    // GENERAL / STATOR + PC
+    //
+    // ของเดิมไม่เปลี่ยน
+    // =====================================================
+
+    if ((group === 'GENERAL' || group === 'STATOR') && section === 'PC') {
+      return rack === 'F' || rack === 'G' || rack === 'H';
+    }
+
+    return false;
+  }
+
+  private buildCreatePalletRackView(): void {
+    // =====================================================
+    // 1. สร้าง Map Location ครั้งเดียว
+    //
+    // A101 -> LocationRow
+    // A102 -> LocationRow
+    // B408 -> LocationRow
+    // =====================================================
+
+    const locationMap = new Map<string, LocationRow>();
+
+    for (const location of this.locations) {
+      const rackCode = String(location.rackName || '')
+        .trim()
+        .toUpperCase();
+
+      const areaCode = String(location.areaName || '')
+        .trim()
+        .toUpperCase();
+
+      if (!rackCode || !areaCode) {
+        continue;
+      }
+
+      const key = rackCode + areaCode;
+
+      locationMap.set(key, location);
+    }
+
+    // =====================================================
+    // 2. Rack Profile ของ User
+    // =====================================================
+
+    const rackDefinitions = this.getCreatePalletRackProfile();
+
+    const rackView: IssueRackView[] = [];
+
+    const selectableLocationMap = new Map<number, LocationRow>();
+
+    // =====================================================
+    // 3. Build View
+    //
+    // ทำแค่ครั้งเดียว
+    // หลัง fetchLocations สำเร็จ
+    // =====================================================
+
+    for (const rack of rackDefinitions) {
+      const rows: IssueRackRowView[] = [];
+
+      for (let row = 1; row <= rack.rows; row++) {
+        const slots: IssueRackSlotView[] = [];
+
+        for (const column of rack.columns) {
+          const slotCode = `${column}${String(row).padStart(2, '0')}`;
+
+          const key = `${rack.rackCode}${slotCode}`.toUpperCase();
+
+          const location = locationMap.get(key) || null;
+
+          const canSelect = this.canSelectRackSlot(rack.rackCode, slotCode);
+
+          slots.push({
+            code: slotCode,
+
+            column: column,
+
+            row: row,
+
+            locationId: location ? Number(location.id) : null,
+
+            exists: !!location,
+
+            canSelect: !!location && canSelect,
+          });
+
+          // Dropdown
+          // เก็บเฉพาะ Location
+          // ที่ User เลือกได้
+
+          if (location && canSelect) {
+            selectableLocationMap.set(Number(location.id), location);
+          }
+        }
+
+        rows.push({
+          row: row,
+
+          slots: slots,
+        });
+      }
+
+      rackView.push({
+        name: rack.name,
+
+        rackCode: rack.rackCode,
+
+        rackGroup: rack.rackGroup,
+
+        rows: rows,
+      });
+    }
+
+    // =====================================================
+    // 4. Assign ทีเดียว
+    // =====================================================
+
+    this.createPalletRackView = rackView;
+
+    this.createPalletSelectableLocations = Array.from(
+      selectableLocationMap.values()
+    ).sort((a, b) => {
+      return String(a.name || a.locationNo || '').localeCompare(
+        String(b.name || b.locationNo || ''),
+        undefined,
+        {
+          numeric: true,
+        }
+      );
+    });
+  }
+
   /* =======================
      Create Empty
   ======================= */
@@ -1730,11 +2072,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-  fetchLocations() {
+  fetchLocations(): void {
     this.isLoadingMaster = true;
 
     this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
-      next: (res: any) => {
+      next: (res: any): void => {
         const racks = Array.isArray(res?.results) ? res.results : [];
 
         this.locations = racks.flatMap((rack: any) => {
@@ -1763,19 +2105,31 @@ export class IssueComponent implements OnInit, AfterViewInit {
           });
         });
 
+        // ==================================
+        // Build Rack แค่ครั้งเดียว
+        // ==================================
+
+        this.buildCreatePalletRackView();
+
         this.checkMasterLoadingDone();
       },
 
-      error: (err) => {
+      error: (err: any): void => {
         console.error(err);
 
         this.locations = [];
+
+        this.createPalletRackView = [];
+
+        this.createPalletSelectableLocations = [];
 
         this.checkMasterLoadingDone();
 
         Swal.fire({
           title: 'Error',
-          text: err?.error?.message || err.message || 'Load location fail',
+
+          text: err?.error?.message || err?.message || 'Load location fail',
+
           icon: 'error',
         });
       },
@@ -2293,7 +2647,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       'success',
       isEditMode ? 'Edit Header Success' : 'Save Header Success'
     );
-     // Update Header List
+    // Update Header List
     this.fetchHeader();
 
     this.fetchWosTemp();

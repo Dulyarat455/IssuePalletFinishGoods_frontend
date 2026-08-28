@@ -4099,3 +4099,39 @@ button.selected:disabled i {
       minmax(0, 1fr);
   }
 }
+
+
+
+
+/* =========================================================
+   RACK SLOT - NO PERMISSION / DISABLED
+========================================================= */
+
+.create-rack-slot:disabled {
+  background: #f1f5f9;
+
+  border-color: #cbd5e1;
+
+  color: #94a3b8;
+
+  opacity: 1;
+
+  box-shadow: none;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   LOCATION ไม่มีจริงใน Master
+========================================================= */
+
+.create-rack-slot.location-missing {
+  background: #fafafa;
+
+  border-color: #eeeeee;
+
+  color: #e2e8f0;
+
+  opacity: 0.55;
+}
