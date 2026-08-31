@@ -1071,9 +1071,58 @@ export class IssueComponent implements OnInit, AfterViewInit {
     // =========================
 
     if (!this.isEditingPalletTemp) {
-      this.isEditingPalletTemp = true;
+        // =========================
+  // เปิด Edit Mode
+  // =========================
 
-      return;
+  this.isEditingPalletTemp = true;
+
+
+  // =========================
+  // Refresh Date / Shift
+  // ตามเวลาปัจจุบัน
+  // =========================
+
+  const now =
+    new Date();
+
+
+  const currentShift =
+    this.getShiftFromCurrentTime(
+      now
+    );
+
+
+  const productionDate =
+    this.getProductionDateByShift(
+      now,
+      currentShift
+    );
+
+
+  // Production Date
+
+  this.palletCreateForm.date =
+    productionDate;
+
+
+  // Current Shift
+
+  this.palletCreateForm.shift =
+    currentShift;
+
+
+  // Current Calendar Date
+  // ตัวนี้ Show อย่างเดียว
+  // ไม่ส่ง Backend
+
+  this.currentCalendarDate =
+    this.formatLocalDate(
+      now
+    );
+
+
+  return;
     }
 
     // =========================
