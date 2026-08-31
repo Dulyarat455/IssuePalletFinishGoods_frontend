@@ -1540,7 +1540,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
         },
 
         {
-          name: 'Rack F',
+          name: 'F',
           rackCode: 'F',
 
           // Case นี้ F เป็นสีชมพู

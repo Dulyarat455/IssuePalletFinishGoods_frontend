@@ -4047,29 +4047,8 @@ td small {
   font-weight: 950;
 }
 
-/* =========================================================
-   CENTER SMALL RACK GROUPS
-========================================================= */
 
-/* Case 2
-   General / Stator + PD
-   Rack E + F
-*/
 
-.create-rack-layout-container:has(.create-pending-row.gen-pd) {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Case 3
-   General / Stator + PC
-   Rack F + G + H
-*/
-
-.create-rack-layout-container:has(.create-pending-row.gen-pc) {
-  margin-left: auto;
-  margin-right: auto;
-}
 
 /* =========================================================
    PALLET CONDITION
@@ -4215,3 +4194,26 @@ td small {
     white-space: normal;
   }
 }
+
+
+
+.create-rack-title.single-column-rack-title {
+  width: 46px;
+  min-width: 46px;
+  max-width: 46px;
+}
+
+
+/* ====================
+for 2 case to center
+==================== */
+
+/* .create-rack-layout-container:has(.create-pending-row.gen-pd) {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.create-rack-layout-container:has(.create-pending-row.gen-pc) {
+  margin-left: auto;
+  margin-right: auto;
+} */

@@ -124,11 +124,20 @@
                 <!-- RACK TITLE -->
 
                 <div
-                  class="create-rack-title"
-                  [ngClass]="getCreatePalletRackGroupClass(rack.rackGroup)"
-                >
-                  {{ rack.name }}
-                </div>
+                class="create-rack-title"
+                [ngClass]="[
+                  getCreatePalletRackGroupClass(
+                    rack.rackGroup
+                  ),
+                  rack.rackCode === 'F' &&
+                  rack.rows.length > 0 &&
+                  rack.rows[0].slots.length === 1
+                    ? 'single-column-rack-title'
+                    : ''
+                ]"
+              >
+                {{ rack.name }}
+              </div>
 
                 <!-- RACK BODY -->
 
