@@ -2459,8 +2459,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   onSaveHeader() {
     if (!this.userId) return this.toast('warning', 'ไม่พบ User ID');
-    if (!this.form.issueDate) return this.toast('warning', 'เลือก Date');
-    if (!this.form.shift) return this.toast('warning', 'เลือก Shift');
     if (!this.form.groupId) return this.toast('warning', 'เลือก Group');
     if (!this.form.itemNo) return this.toast('warning', 'เลือก Item No.');
     if (!this.form.itemName) return this.toast('warning', 'ไม่พบ Item Name');

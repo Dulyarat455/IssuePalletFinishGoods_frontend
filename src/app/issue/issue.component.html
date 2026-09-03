@@ -779,52 +779,96 @@
           <div class="section-head label-form-head">
             <div>
               <h3>Input Label Pallet Stock Finish Goods</h3>
-              <span>Create header before scan QR Code</span>
-            </div>
-
-            <div class="label-type-box">
-              <label>Label Type</label>
-
-              <select
-                class="label-type-select"
-                name="labelStockType"
-                [(ngModel)]="labelStockType"
-                [disabled]="isSavingHeader"
-              >
-                <option value="FG">FG</option>
-                <option value="WIP">WIP</option>
-              </select>
+          
+              <span>
+                Recheck pallet information before create Header
+              </span>
             </div>
           </div>
+          <!-- =============================================
+              PALLET REFERENCE
+              SHOW ONLY
+          ============================================= -->
 
+          <div class="header-pallet-reference">
+
+            <div class="header-pallet-reference-head">
+              <div class="header-pallet-reference-icon">
+                <i class="fas fa-pallet"></i>
+              </div>
+
+              <div>
+                <b>Pallet Information</b>
+
+                <span>
+                  ข้อมูลอ้างอิงจาก Pallet ที่เลือกไว้ก่อนหน้า
+                </span>
+              </div>
+            </div>
+
+
+            <div class="header-pallet-reference-grid">
+
+              <!-- DATE -->
+
+              <div class="header-pallet-reference-item">
+                <span>PRODUCTION DATE</span>
+
+                <b>
+                  {{
+                    palletCreateForm.date || "-"
+                  }}
+                </b>
+              </div>
+
+
+              <!-- SHIFT -->
+
+              <div class="header-pallet-reference-item">
+                <span>SHIFT</span>
+
+                <b>
+                  {{
+                    palletCreateForm.shift || "-"
+                  }}
+                </b>
+              </div>
+
+
+              <!-- LOCATION -->
+
+              <div class="header-pallet-reference-item">
+                <span>LOCATION FG</span>
+
+                <b>
+                  {{
+                    selectedCreatePalletLocation
+                      ? selectedCreatePalletLocation.name ||
+                        selectedCreatePalletLocation.locationNo
+                      : "-"
+                  }}
+                </b>
+              </div>
+
+
+              <!-- LABEL TYPE -->
+
+              <div class="header-pallet-reference-item">
+                <span>LABEL TYPE</span>
+
+                <b>
+                  {{
+                    labelStockType || "-"
+                  }}
+                </b>
+              </div>
+
+            </div>
+
+          </div>
           <form class="header-form" autocomplete="off">
-            <div class="form-grid">
-              <div class="form-field">
-                <label>Date</label>
-                <input
-                  class="control"
-                  type="date"
-                  name="issueDate"
-                  [(ngModel)]="form.issueDate"
-                  [disabled]="isSavingHeader"
-                />
-              </div>
-
-              <div class="form-field">
-                <label>Shift</label>
-                <select
-                  class="control"
-                  name="shift"
-                  [(ngModel)]="form.shift"
-                  [disabled]="isSavingHeader"
-                >
-                  <option value="" disabled>Select Shift</option>
-                  <option value="A">Shift A</option>
-                  <option value="B">Shift B</option>
-                  <option value="C">Shift C</option>
-                </select>
-              </div>
-
+            <div class="form-grid">            
+             
               <div class="form-field item-search">
                 <label>Auto Item No.</label>
                 <input
@@ -896,23 +940,7 @@
                 </select>
               </div>
 
-              <div class="form-field">
-                <label>Location FG</label>
-
-                <input
-                  class="control readonly"
-                  type="text"
-                  [value]="
-                    selectedCreatePalletLocation
-                      ? selectedCreatePalletLocation.name ||
-                        selectedCreatePalletLocation.locationNo
-                      : '-'
-                  "
-                  readonly
-                />
-
-                <small class="auto-total-note"> Auto from Create Pallet </small>
-              </div>
+              
 
               <div class="form-field">
                 <label>Movement within 3 month</label>
