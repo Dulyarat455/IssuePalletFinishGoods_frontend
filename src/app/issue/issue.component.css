@@ -4520,6 +4520,54 @@ td small {
 }
 
 
+/* =========================================================
+   HEADER TAG SCANNER
+========================================================= */
+
+.header-tag-scan-area {
+  grid-column: span 7;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 12px;
+}
+
+
+.header-tag-visible-field {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   IMPORTANT
+   ซ่อนจากหน้าจอ แต่ยัง focus ได้
+========================================================= */
+
+.header-tag-hidden-scan {
+  position: fixed !important;
+
+  left: -10000px !important;
+
+  top: 0 !important;
+
+  width: 1px !important;
+
+  height: 1px !important;
+
+  opacity: 0 !important;
+
+  pointer-events: none !important;
+}
+
+
+
+
 /* ====================
 for 2 case to center
 ==================== */

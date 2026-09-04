@@ -25,12 +25,8 @@ type ItemMasterRow = {
   id: number;
   itemNo: string;
   itemName: string;
-};
-
-type ControlLotRow = {
-  id: number;
-  name: string;
-  code?: string;
+  itemClass?: string | null;
+  lotSize?: number | null;
 };
 
 type LocationRow = {
@@ -109,8 +105,7 @@ type HeaderIssuePalletTemp = {
   itemNo: string;
   itemName: string;
 
-  controlLotId: number;
-  controlLotName?: string;
+  controlLot: string;
 
   movementMonth: string;
 
@@ -139,7 +134,7 @@ type HeaderForm = {
   groupId: number | null;
   itemNo: string;
   itemName: string;
-  controlLotId: number | null;
+  controlLot: string;
   locationId: number | null;
   movementMonth: string;
   totalQtyBox: number | null;
@@ -237,6 +232,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
   @ViewChild('scanLotNo') scanLotNo!: ElementRef<HTMLInputElement>;
   @ViewChild('scanQty') scanQty!: ElementRef<HTMLInputElement>;
 
+  @ViewChild('headerTagItemNo') headerTagItemNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagItemName')
+  headerTagItemName!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagWosNo') headerTagWosNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagDwg') headerTagDwg!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagDieNo') headerTagDieNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagLotNo') headerTagLotNo!: ElementRef<HTMLInputElement>;
+  @ViewChild('headerTagQty') headerTagQty!: ElementRef<HTMLInputElement>;
+
   @ViewChild('fractionItemNo') fractionItemNo!: ElementRef<HTMLInputElement>;
   @ViewChild('fractionItemName')
   fractionItemName!: ElementRef<HTMLInputElement>;
@@ -264,9 +268,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
   form: HeaderForm = this.createEmptyHeaderForm();
   scanForm: WosScanForm = this.createEmptyScanForm();
 
+  headerTagScanForm: WosScanForm = this.createEmptyScanForm();
+  headerItemClass = '';
+
   groups: GroupRow[] = [];
   items: ItemMasterRow[] = [];
-  controlLots: ControlLotRow[] = [];
   locations: LocationRow[] = [];
   savedRows: WosTempRow[] = [];
 
@@ -359,7 +365,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     this.fetchGroups();
     this.fetchItems();
-    this.fetchControlLots();
     this.fetchLocations();
 
     this.fetchPalletTemp();
@@ -569,9 +574,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   get previewOqcLot(): string {
-    return this.header
-      ? this.controlLotDisplayName(this.header.controlLotId)
-      : '-';
+    return this.header?.controlLot || '-';
   }
 
   get previewDieNo(): string {
@@ -766,6 +769,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
           )
         ),
       }));
+  }
+
+  get showHeaderControlLot(): boolean {
+    // WIP = ไม่ต้องมี Control Lot
+    if (this.labelStockType === 'WIP') {
+      return false;
+    }
+
+    // FG + G หรือ S = Show
+    return this.headerItemClass === 'G' || this.headerItemClass === 'S';
   }
 
   buildCreatePalletSlotCode(column: number, row: number): string {
@@ -1893,6 +1906,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   createEmptyHeaderForm(): HeaderForm {
     const d = new Date();
+
     const f = (n: number) => String(n).padStart(2, '0');
 
     return {
@@ -1901,7 +1915,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       groupId: null,
       itemNo: '',
       itemName: '',
-      controlLotId: null,
+      controlLot: '',
       locationId: null,
       movementMonth: '',
       totalQtyBox: null,
@@ -2016,11 +2030,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.groups.find((x) => x.id === id)?.name || '-';
   }
 
-  controlLotName(id?: number | null): string {
-    if (!id) return '-';
-    return this.controlLots.find((x) => x.id === id)?.name || '-';
-  }
-
   locationName(id?: number | null): string {
     if (!id) return '-';
 
@@ -2055,9 +2064,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
       itemName: raw.itemName || '',
 
-      controlLotId: Number(raw.controlLotId),
-
-      controlLotName: raw.controlLotName,
+      controlLot: String(raw.controlLot || ''),
 
       palletTempId: Number(raw.palletTempId),
 
@@ -2081,25 +2088,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
     };
   }
 
-  controlLotDisplayName(id?: number | null): string {
-    if (!id) return '-';
-
-    switch (Number(id)) {
-      case 2:
-        return 'Stator, HAL';
-      case 3:
-        return 'Front platate, General';
-      case 4:
-        return 'Part MA';
-      case 5:
-        return 'Part IM';
-      case 6:
-        return 'Part HB';
-      default:
-        return this.controlLotName(id);
-    }
-  }
-
   private mapHeaderToForm(h: HeaderIssuePalletTemp): HeaderForm {
     return {
       // =================================
@@ -2116,7 +2104,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
       itemName: h.itemName,
 
-      controlLotId: h.controlLotId,
+      controlLot: h.controlLot || '',
 
       locationId: this.palletTemp?.mapAreaRackId ?? null,
 
@@ -2190,6 +2178,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return raw;
   }
 
+  private syncHeaderItemClassFromItemNo(): void {
+    const item = this.items.find(
+      (x) => String(x.itemNo).trim() === String(this.form.itemNo).trim()
+    );
+
+    this.headerItemClass = String(item?.itemClass || '')
+      .trim()
+      .toUpperCase();
+
+    this.applyHeaderControlLotRule();
+  }
+
   /* =======================
       Master Data
     ======================= */
@@ -2219,54 +2219,41 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-  fetchItems() {
+  fetchItems(): void {
     this.isLoadingMaster = true;
 
-    this.http.get(config.apiServer + '/api/partMaster/list').subscribe({
-      next: (res: any) => {
-        this.items = (res.results || []).map((r: any) => ({
-          id: r.id,
-          itemNo: r.itemNo,
-          itemName: r.itemName,
-        }));
+    this.http.get<any>(config.apiServer + '/api/partMaster/list').subscribe({
+      next: (res: any): void => {
+        this.items = (res.results || []).map(
+          (r: any): ItemMasterRow => ({
+            id: Number(r.id),
 
-        this.filteredItems = [...this.items];
+            itemNo: String(r.itemNo || '').trim(),
+
+            itemName: String(r.itemName || '').trim(),
+
+            itemClass:
+              r.itemClass == null
+                ? null
+                : String(r.itemClass).trim().toUpperCase(),
+
+            lotSize: r.lotSize == null ? null : Number(r.lotSize),
+          })
+        );
 
         this.checkMasterLoadingDone();
       },
-      error: (err) => {
+
+      error: (err: any): void => {
         console.error(err);
+
+        this.items = [];
+
         this.checkMasterLoadingDone();
 
         Swal.fire({
           title: 'Error',
-          text: err?.error?.message || err.message || 'Load Part Master fail',
-          icon: 'error',
-        });
-      },
-    });
-  }
-
-  fetchControlLots() {
-    this.isLoadingMaster = true;
-
-    this.http.get(config.apiServer + '/api/controlLot/list').subscribe({
-      next: (res: any) => {
-        this.controlLots = (res.results || []).map((r: any) => ({
-          id: r.id,
-          name: r.name,
-          code: r.code,
-        }));
-
-        this.checkMasterLoadingDone();
-      },
-      error: (err) => {
-        console.error(err);
-        this.checkMasterLoadingDone();
-
-        Swal.fire({
-          title: 'Error',
-          text: err?.error?.message || err.message || 'Load control lot fail',
+          text: err?.error?.message || err?.message || 'Load Part Master fail',
           icon: 'error',
         });
       },
@@ -2472,8 +2459,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (!this.form.controlLotId) {
-      this.toast('warning', 'เลือก Control Lot OQC');
+    this.applyHeaderControlLotRule();
+
+    if (
+      this.showHeaderControlLot &&
+      !String(this.form.controlLot || '').trim()
+    ) {
+      this.toast('warning', 'กรอก Control Lot OQC');
 
       return;
     }
@@ -2647,7 +2639,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
       groupId: Number(this.form.groupId),
 
-      controlLotId: Number(this.form.controlLotId),
+      controlLot: this.showHeaderControlLot
+        ? String(this.form.controlLot || '').trim()
+        : '',
 
       totalBox: totalBox,
 
@@ -3006,9 +3000,295 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.focusQr();
   }
 
+  private applyHeaderGroupFromItemClass(itemClass?: string | null): void {
+    const cls = String(itemClass || '')
+      .trim()
+      .toUpperCase();
+
+    this.headerItemClass = cls;
+
+    let targetGroupName = '';
+
+    switch (cls) {
+      case 'L':
+        targetGroupName = 'LAMINATION';
+        break;
+
+      case 'G':
+        targetGroupName = 'GENERAL';
+        break;
+
+      case 'S':
+        targetGroupName = 'STATOR';
+        break;
+
+      default:
+        this.form.groupId = null;
+
+        return;
+    }
+
+    const group = this.groups.find(
+      (g) =>
+        String(g.name || '')
+          .trim()
+          .toUpperCase() === targetGroupName
+    );
+
+    this.form.groupId = group ? Number(group.id) : null;
+
+    this.applyHeaderControlLotRule();
+  }
+
+  private applyHeaderControlLotRule(): void {
+    // =================================
+    // WIP
+    // Control Lot = ""
+    // =================================
+
+    if (this.labelStockType === 'WIP') {
+      this.form.controlLot = '';
+
+      return;
+    }
+
+    // =================================
+    // FG + Lamination
+    // Control Lot = ""
+    // =================================
+
+    if (this.headerItemClass === 'L') {
+      this.form.controlLot = '';
+
+      return;
+    }
+
+    // =================================
+    // FG + General / Stator
+    // ให้ User Input
+    // =================================
+
+    if (this.headerItemClass === 'G' || this.headerItemClass === 'S') {
+      return;
+    }
+
+    this.form.controlLot = '';
+  }
+
+  onHeaderTagScanEnter(
+    field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
+    ev: Event
+  ): void {
+    ev.preventDefault();
+
+    if (this.isSavingHeader) {
+      return;
+    }
+
+    switch (field) {
+      case 'itemNo': {
+        const itemNo = String(this.headerTagScanForm.itemNo || '').trim();
+
+        if (!itemNo) {
+          return;
+        }
+
+        const master = this.items.find(
+          (x) => String(x.itemNo).trim() === itemNo
+        );
+
+        if (!master) {
+          Swal.fire('Warning', 'ไม่พบ Item No. ใน Part Master', 'warning');
+
+          this.headerTagScanForm = this.createEmptyScanForm();
+
+          this.form.itemNo = '';
+
+          this.form.itemName = '';
+
+          this.form.groupId = null;
+
+          this.headerItemClass = '';
+
+          this.form.controlLot = '';
+
+          setTimeout(() => {
+            this.focusEl(this.headerTagItemNo);
+          }, 0);
+
+          return;
+        }
+
+        this.form.itemNo = itemNo;
+
+        this.applyHeaderGroupFromItemClass(master.itemClass);
+
+        this.focusEl(this.headerTagItemName);
+
+        return;
+      }
+
+      case 'itemName': {
+        const itemName = String(this.headerTagScanForm.itemName || '').trim();
+
+        if (!itemName) {
+          return;
+        }
+
+        this.form.itemName = itemName;
+
+        this.focusEl(this.headerTagWosNo);
+
+        return;
+      }
+
+      case 'wosNo':
+        if (!this.headerTagScanForm.wosNo) {
+          return;
+        }
+
+        this.focusEl(this.headerTagDwg);
+
+        return;
+
+      case 'dwg':
+        if (!this.headerTagScanForm.dwg) {
+          return;
+        }
+
+        this.focusEl(this.headerTagDieNo);
+
+        return;
+
+      case 'dieNo':
+        if (!this.headerTagScanForm.dieNo) {
+          return;
+        }
+
+        this.focusEl(this.headerTagLotNo);
+
+        return;
+
+      case 'lotNo':
+        if (!this.headerTagScanForm.lotNo) {
+          return;
+        }
+
+        this.focusEl(this.headerTagQty);
+
+        return;
+
+      case 'qty': {
+        // ==========================================
+        // ตรวจว่าข้อมูลจาก Tag มาครบทั้ง 7 ค่า
+        // ==========================================
+
+        const itemNo = String(this.headerTagScanForm.itemNo || '').trim();
+
+        const itemName = String(this.headerTagScanForm.itemName || '').trim();
+
+        const wosNo = String(this.headerTagScanForm.wosNo || '').trim();
+
+        const dwg = String(this.headerTagScanForm.dwg || '').trim();
+
+        const dieNo = String(this.headerTagScanForm.dieNo || '').trim();
+
+        const lotNo = String(this.headerTagScanForm.lotNo || '').trim();
+
+        const qty = Number(this.headerTagScanForm.qty);
+
+        if (
+          !itemNo ||
+          !itemName ||
+          !wosNo ||
+          !dwg ||
+          !dieNo ||
+          !lotNo ||
+          !Number.isFinite(qty) ||
+          qty <= 0
+        ) {
+          this.toast('warning', 'ข้อมูลจาก Tag ไม่ครบ');
+
+          return;
+        }
+
+        // ==========================================
+        // หา Item จาก Part Master อีกครั้ง
+        //
+        // สำคัญ:
+        // ไม่พึ่ง case itemNo อย่างเดียว
+        // เพราะ Scanner อาจใช้ TAB ระหว่างข้อมูล
+        // ==========================================
+
+        const master = this.items.find(
+          (x) => String(x.itemNo || '').trim() === itemNo
+        );
+
+        if (!master) {
+          Swal.fire(
+            'Warning',
+            `ไม่พบ Item No. ${itemNo} ใน Part Master`,
+            'warning'
+          );
+
+          return;
+        }
+
+        // ==========================================
+        // Sync Item เข้า Header Form
+        // ==========================================
+
+        this.form.itemNo = itemNo;
+
+        this.form.itemName = itemName;
+
+        // ==========================================
+        // Item Class
+        //
+        // L -> Lamination
+        // G -> General
+        // S -> Stator
+        // ==========================================
+
+        this.applyHeaderGroupFromItemClass(master.itemClass);
+
+        // ==========================================
+        // Control Lot Rule
+        // ==========================================
+
+        this.applyHeaderControlLotRule();
+
+        console.log('HEADER TAG COMPLETE', {
+          itemNo: itemNo,
+
+          itemName: itemName,
+
+          itemClass: master.itemClass,
+
+          groupId: this.form.groupId,
+
+          groupName: this.form.groupId
+            ? this.groupName(this.form.groupId)
+            : null,
+
+          labelType: this.labelStockType,
+
+          showControlLot: this.showHeaderControlLot,
+        });
+
+        this.toast('success', 'Scan Tag Complete');
+
+        return;
+      }
+    }
+  }
+
   onEditHeader() {
     if (!this.header) return;
     this.form = this.mapHeaderToForm(this.header);
+    this.headerTagScanForm.itemNo = this.form.itemNo;
+    this.headerTagScanForm.itemName = this.form.itemName;
+    this.syncHeaderItemClassFromItemNo();
     this.itemKeyword = this.form.itemNo;
     this.fullBoxTagQty = this.header.normalQty ?? null;
     this.fractionQtyBox =
@@ -3064,6 +3344,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.header = null;
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
+
+            this.headerTagScanForm =
+            this.createEmptyScanForm();
+            this.headerItemClass = '';
 
             this.savedRows = [];
             this.scanForm = this.createEmptyScanForm();

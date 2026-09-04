@@ -744,7 +744,7 @@
 
             <div class="summary-item">
               <span>Control Lot OQC</span>
-              <b>{{ controlLotDisplayName(header.controlLotId) }}</b>
+              {{ header.controlLot || "-" }}
             </div>
 
             <div class="summary-item wide">
@@ -870,110 +870,227 @@
 
             <div class="form-grid header-input-grid">
           
-              <!-- =========================
-                   ITEM NO
-              ========================== -->
-          
-              <div class="form-field item-search header-field-item-no">
-                <label>Auto Item No.</label>
-          
-                <input
-                  class="control"
-                  type="text"
-                  name="itemKeyword"
-                  placeholder="Search Item No. / Item Name"
-                  [(ngModel)]="itemKeyword"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                  (focus)="showItemDrop = true; filterItems()"
-                  (input)="filterItems()"
-                  (blur)="onItemBlur()"
-                />
-          
-                <div
-                  class="item-drop"
-                  *ngIf="showItemDrop && filteredItems.length"
-                >
-                  <button
-                    type="button"
-                    class="item-option"
-                    *ngFor="let it of filteredItems"
-                    (mousedown)="selectItem(it)"
-                  >
-                    <b>{{ it.itemNo }}</b>
-                    <span>{{ it.itemName }}</span>
-                  </button>
+              <!-- =====================================================
+                  HEADER TAG SCAN
+                  7 FIELD INPUT
+              ===================================================== -->
+
+              <div class="header-tag-scan-area">
+
+                <!-- =================================
+                    ITEM NO - SHOW
+                ================================== -->
+
+                <div class="form-field header-tag-visible-field">
+
+                  <label>
+                    Item No.
+                  </label>
+
+                  <input
+                    #headerTagItemNo
+                    class="control"
+                    type="text"
+                    name="headerTagItemNo"
+                    autocomplete="off"
+                    placeholder="Scan Item No."
+                    [(ngModel)]="
+                      headerTagScanForm.itemNo
+                    "
+                    [disabled]="isSavingHeader"
+                    (keydown.enter)="
+                      onHeaderTagScanEnter(
+                        'itemNo',
+                        $event
+                      )
+                    "
+                  />
+
                 </div>
+
+
+                <!-- =================================
+                    ITEM NAME - SHOW
+                ================================== -->
+
+                <div class="form-field header-tag-visible-field">
+
+                  <label>
+                    Item Name
+                  </label>
+
+                  <input
+                    #headerTagItemName
+                    class="control"
+                    type="text"
+                    name="headerTagItemName"
+                    autocomplete="off"
+                    placeholder="Scan Item Name"
+                    [(ngModel)]="
+                      headerTagScanForm.itemName
+                    "
+                    [disabled]="isSavingHeader"
+                    (keydown.enter)="
+                      onHeaderTagScanEnter(
+                        'itemName',
+                        $event
+                      )
+                    "
+                  />
+
+                </div>
+
+
+                <!-- =================================
+                    WOS NO - HIDDEN VISUALLY
+                    ยัง Focus / Scan ได้
+                ================================== -->
+
+                <input
+                  #headerTagWosNo
+                  class="header-tag-hidden-scan"
+                  type="text"
+                  name="headerTagWosNo"
+                  autocomplete="off"
+                  [(ngModel)]="
+                    headerTagScanForm.wosNo
+                  "
+                  (keydown.enter)="
+                    onHeaderTagScanEnter(
+                      'wosNo',
+                      $event
+                    )
+                  "
+                />
+
+
+                <!-- DWG -->
+
+                <input
+                  #headerTagDwg
+                  class="header-tag-hidden-scan"
+                  type="text"
+                  name="headerTagDwg"
+                  autocomplete="off"
+                  [(ngModel)]="
+                    headerTagScanForm.dwg
+                  "
+                  (keydown.enter)="
+                    onHeaderTagScanEnter(
+                      'dwg',
+                      $event
+                    )
+                  "
+                />
+
+
+                <!-- DIE NO -->
+
+                <input
+                  #headerTagDieNo
+                  class="header-tag-hidden-scan"
+                  type="text"
+                  name="headerTagDieNo"
+                  autocomplete="off"
+                  [(ngModel)]="
+                    headerTagScanForm.dieNo
+                  "
+                  (keydown.enter)="
+                    onHeaderTagScanEnter(
+                      'dieNo',
+                      $event
+                    )
+                  "
+                />
+
+
+                <!-- LOT NO -->
+
+                <input
+                  #headerTagLotNo
+                  class="header-tag-hidden-scan"
+                  type="text"
+                  name="headerTagLotNo"
+                  autocomplete="off"
+                  [(ngModel)]="
+                    headerTagScanForm.lotNo
+                  "
+                  (keydown.enter)="
+                    onHeaderTagScanEnter(
+                      'lotNo',
+                      $event
+                    )
+                  "
+                />
+
+
+                <!-- QTY -->
+
+                <input
+                  #headerTagQty
+                  class="header-tag-hidden-scan"
+                  type="number"
+                  name="headerTagQty"
+                  autocomplete="off"
+                  [(ngModel)]="
+                    headerTagScanForm.qty
+                  "
+                  (keydown.enter)="
+                    onHeaderTagScanEnter(
+                      'qty',
+                      $event
+                    )
+                  "
+                />
+
               </div>
           
           
-              <!-- =========================
-                   ITEM NAME
-              ========================== -->
-          
-              <div class="form-field header-field-item-name">
-                <label>Auto Item Name</label>
-          
+              <div class="form-field header-field-group">
+
+                <label>
+                  Auto Group
+                </label>
+              
                 <input
                   class="control readonly"
                   type="text"
-                  name="itemName"
-                  [(ngModel)]="form.itemName"
+                  [value]="
+                    form.groupId
+                      ? groupName(form.groupId)
+                      : '-'
+                  "
                   readonly
                 />
+              
+                <small class="auto-total-note">
+                  Auto from Item Class
+                </small>
+              
               </div>
           
           
-              <!-- =========================
-                   GROUP
-              ========================== -->
-          
-              <div class="form-field header-field-group">
-                <label>Select Group</label>
-          
-                <select
+              <div
+                class="form-field header-field-control-lot"
+                *ngIf="showHeaderControlLot"
+              >
+
+                <label>
+                  Control Lot OQC
+                </label>
+
+                <input
                   class="control"
-                  name="groupId"
-                  [(ngModel)]="form.groupId"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                >
-                  <option [ngValue]="null" disabled>
-                    Select Group
-                  </option>
-          
-                  <option
-                    *ngFor="let g of groups"
-                    [ngValue]="g.id"
-                  >
-                    {{ g.name }}
-                  </option>
-                </select>
-              </div>
-          
-          
-              <!-- =========================
-                   CONTROL LOT
-              ========================== -->
-          
-              <div class="form-field header-field-control-lot">
-                <label>Select Control Lot OQC</label>
-          
-                <select
-                  class="control"
-                  name="controlLotId"
-                  [(ngModel)]="form.controlLotId"
-                  [disabled]="isSavingHeader || isLoadingMaster"
-                >
-                  <option [ngValue]="null" disabled>
-                    Select Control Lot
-                  </option>
-          
-                  <option
-                    *ngFor="let c of controlLots"
-                    [ngValue]="c.id"
-                  >
-                    {{ controlLotDisplayName(c.id) }}
-                  </option>
-                </select>
+                  type="text"
+                  name="headerControlLot"
+                  autocomplete="off"
+                  placeholder="Input Control Lot OQC"
+                  [(ngModel)]="
+                    form.controlLot
+                  "
+                  [disabled]="isSavingHeader"
+                />
+
               </div>
           
           
