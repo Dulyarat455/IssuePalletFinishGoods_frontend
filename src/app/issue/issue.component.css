@@ -4338,6 +4338,188 @@ td small {
   }
 }
 
+
+/* =========================================================
+   HEADER INPUT - COMPACT GRID
+========================================================= */
+
+.header-form .header-input-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(12, minmax(0, 1fr));
+
+  column-gap: 12px;
+  row-gap: 14px;
+
+  align-items: start;
+}
+
+
+/* =========================================================
+   ROW 1
+========================================================= */
+
+/* Item No. ต้องมีพื้นที่ค้นหาเยอะสุด */
+
+.header-form .header-field-item-no {
+  grid-column: span 4;
+}
+
+
+/* Item Name */
+
+.header-form .header-field-item-name {
+  grid-column: span 3;
+}
+
+
+/* Group */
+
+.header-form .header-field-group {
+  grid-column: span 2;
+}
+
+
+/* Control Lot */
+
+.header-form .header-field-control-lot {
+  grid-column: span 3;
+}
+
+
+/* =========================================================
+   ROW 2
+========================================================= */
+
+/* Movement */
+
+.header-form .header-field-movement {
+  grid-column: span 3;
+}
+
+
+/* QTY เต็ม */
+
+.header-form .header-field-full-box {
+  grid-column: span 2;
+}
+
+
+/* QTY เศษ */
+
+.header-form .header-field-fraction-box {
+  grid-column: span 2;
+}
+
+
+/* Total ไม่ต้องยาวครึ่งหน้าแล้ว */
+
+.header-form .header-field-total-box {
+  grid-column: span 2;
+}
+
+
+/* =========================================================
+   SMALL QTY INPUT
+========================================================= */
+
+.header-field-full-box .control,
+.header-field-fraction-box .control,
+.header-field-total-box .control {
+  font-weight: 950;
+}
+
+
+/* Total */
+
+.header-field-total-box
+.total-box-auto-input {
+  font-size: 16px !important;
+}
+
+
+/* Note ใต้ Total ให้เล็กลง */
+
+.header-field-total-box
+.auto-total-note {
+  margin-top: 5px;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+
+
+/* =========================================================
+   HEADER INPUT RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .header-form .header-field-item-no {
+    grid-column: span 6;
+  }
+
+  .header-form .header-field-item-name {
+    grid-column: span 6;
+  }
+
+  .header-form .header-field-group {
+    grid-column: span 4;
+  }
+
+  .header-form .header-field-control-lot {
+    grid-column: span 4;
+  }
+
+  .header-form .header-field-movement {
+    grid-column: span 4;
+  }
+
+  .header-form .header-field-full-box,
+  .header-form .header-field-fraction-box,
+  .header-form .header-field-total-box {
+    grid-column: span 4;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .header-form .header-input-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .header-form .header-field-item-no,
+  .header-form .header-field-item-name,
+  .header-form .header-field-group,
+  .header-form .header-field-control-lot,
+  .header-form .header-field-movement {
+    grid-column: span 2;
+  }
+
+
+  .header-form .header-field-full-box,
+  .header-form .header-field-fraction-box {
+    grid-column: span 1;
+  }
+
+
+  .header-form .header-field-total-box {
+    grid-column: span 2;
+  }
+
+}
+
+
 /* ====================
 for 2 case to center
 ==================== */

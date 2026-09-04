@@ -867,10 +867,16 @@
 
           </div>
           <form class="header-form" autocomplete="off">
-            <div class="form-grid">            
-             
-              <div class="form-field item-search">
+
+            <div class="form-grid header-input-grid">
+          
+              <!-- =========================
+                   ITEM NO
+              ========================== -->
+          
+              <div class="form-field item-search header-field-item-no">
                 <label>Auto Item No.</label>
+          
                 <input
                   class="control"
                   type="text"
@@ -882,7 +888,7 @@
                   (input)="filterItems()"
                   (blur)="onItemBlur()"
                 />
-
+          
                 <div
                   class="item-drop"
                   *ngIf="showItemDrop && filteredItems.length"
@@ -898,9 +904,15 @@
                   </button>
                 </div>
               </div>
-
-              <div class="form-field">
+          
+          
+              <!-- =========================
+                   ITEM NAME
+              ========================== -->
+          
+              <div class="form-field header-field-item-name">
                 <label>Auto Item Name</label>
+          
                 <input
                   class="control readonly"
                   type="text"
@@ -909,56 +921,96 @@
                   readonly
                 />
               </div>
-
-              <div class="form-field">
+          
+          
+              <!-- =========================
+                   GROUP
+              ========================== -->
+          
+              <div class="form-field header-field-group">
                 <label>Select Group</label>
+          
                 <select
                   class="control"
                   name="groupId"
                   [(ngModel)]="form.groupId"
                   [disabled]="isSavingHeader || isLoadingMaster"
                 >
-                  <option [ngValue]="null" disabled>Select Group</option>
-                  <option *ngFor="let g of groups" [ngValue]="g.id">
+                  <option [ngValue]="null" disabled>
+                    Select Group
+                  </option>
+          
+                  <option
+                    *ngFor="let g of groups"
+                    [ngValue]="g.id"
+                  >
                     {{ g.name }}
                   </option>
                 </select>
               </div>
-
-              <div class="form-field">
+          
+          
+              <!-- =========================
+                   CONTROL LOT
+              ========================== -->
+          
+              <div class="form-field header-field-control-lot">
                 <label>Select Control Lot OQC</label>
+          
                 <select
                   class="control"
                   name="controlLotId"
                   [(ngModel)]="form.controlLotId"
                   [disabled]="isSavingHeader || isLoadingMaster"
                 >
-                  <option [ngValue]="null" disabled>Select Control Lot</option>
-                  <option *ngFor="let c of controlLots" [ngValue]="c.id">
+                  <option [ngValue]="null" disabled>
+                    Select Control Lot
+                  </option>
+          
+                  <option
+                    *ngFor="let c of controlLots"
+                    [ngValue]="c.id"
+                  >
                     {{ controlLotDisplayName(c.id) }}
                   </option>
                 </select>
               </div>
-
-              
-
-              <div class="form-field">
+          
+          
+              <!-- =========================
+                   MOVEMENT
+              ========================== -->
+          
+              <div class="form-field header-field-movement">
                 <label>Movement within 3 month</label>
+          
                 <select
                   class="control"
                   name="movementMonth"
                   [(ngModel)]="form.movementMonth"
                   [disabled]="isSavingHeader"
                 >
-                  <option value="" disabled>Select Month</option>
-                  <option *ngFor="let m of movementMonthOptions" [value]="m">
+                  <option value="" disabled>
+                    Select Month
+                  </option>
+          
+                  <option
+                    *ngFor="let m of movementMonthOptions"
+                    [value]="m"
+                  >
                     {{ m }}
                   </option>
                 </select>
               </div>
-
-              <div class="form-field box-plan-field">
+          
+          
+              <!-- =========================
+                   FULL BOX
+              ========================== -->
+          
+              <div class="form-field box-plan-field header-field-full-box">
                 <label>QTY Box เต็ม</label>
+          
                 <input
                   class="control"
                   type="number"
@@ -970,9 +1022,15 @@
                   [disabled]="isSavingHeader"
                 />
               </div>
-
-              <div class="form-field box-plan-field">
+          
+          
+              <!-- =========================
+                   FRACTION BOX
+              ========================== -->
+          
+              <div class="form-field box-plan-field header-field-fraction-box">
                 <label>QTY Box เศษ</label>
+          
                 <input
                   class="control"
                   type="number"
@@ -984,24 +1042,38 @@
                   [disabled]="isSavingHeader"
                 />
               </div>
-
-              <div class="form-field total-box-auto-field">
+          
+          
+              <!-- =========================
+                   TOTAL BOX
+              ========================== -->
+          
+              <div class="form-field header-field-total-box">
                 <label>Total QTY BOX</label>
+          
                 <input
                   class="control readonly total-box-auto-input"
                   type="number"
                   name="totalQtyBox"
                   [value]="headerPlanTotalBox || ''"
-                  placeholder="Auto: Box เต็ม + Box เศษ"
+                  placeholder="Auto"
                   readonly
                 />
-                <small class="auto-total-note"
-                  >Auto calculated from QTY Box เต็ม + QTY Box เศษ</small
-                >
+          
+                <small class="auto-total-note">
+                  Box เต็ม + Box เศษ
+                </small>
               </div>
+          
             </div>
-
+          
+          
+            <!-- =========================
+                 ACTION
+            ========================== -->
+          
             <div class="form-actions">
+          
               <button
                 type="button"
                 class="btn primary"
@@ -1009,9 +1081,15 @@
                 [disabled]="isSavingHeader"
               >
                 <i class="fas fa-save"></i>
-                {{ isSavingHeader ? "Saving..." : "Save Header" }}
+          
+                {{
+                  isSavingHeader
+                    ? "Saving..."
+                    : "Save Header"
+                }}
               </button>
-
+          
+          
               <button
                 type="button"
                 class="btn ghost"
@@ -1021,7 +1099,9 @@
               >
                 Cancel
               </button>
+          
             </div>
+          
           </form>
         </section>
       </div>
