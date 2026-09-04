@@ -1071,58 +1071,38 @@ export class IssueComponent implements OnInit, AfterViewInit {
     // =========================
 
     if (!this.isEditingPalletTemp) {
-        // =========================
-  // เปิด Edit Mode
-  // =========================
+      // =========================
+      // เปิด Edit Mode
+      // =========================
 
-  this.isEditingPalletTemp = true;
+      this.isEditingPalletTemp = true;
 
+      // =========================
+      // Refresh Date / Shift
+      // ตามเวลาปัจจุบัน
+      // =========================
 
-  // =========================
-  // Refresh Date / Shift
-  // ตามเวลาปัจจุบัน
-  // =========================
+      const now = new Date();
 
-  const now =
-    new Date();
+      const currentShift = this.getShiftFromCurrentTime(now);
 
+      const productionDate = this.getProductionDateByShift(now, currentShift);
 
-  const currentShift =
-    this.getShiftFromCurrentTime(
-      now
-    );
+      // Production Date
 
+      this.palletCreateForm.date = productionDate;
 
-  const productionDate =
-    this.getProductionDateByShift(
-      now,
-      currentShift
-    );
+      // Current Shift
 
+      this.palletCreateForm.shift = currentShift;
 
-  // Production Date
+      // Current Calendar Date
+      // ตัวนี้ Show อย่างเดียว
+      // ไม่ส่ง Backend
 
-  this.palletCreateForm.date =
-    productionDate;
+      this.currentCalendarDate = this.formatLocalDate(now);
 
-
-  // Current Shift
-
-  this.palletCreateForm.shift =
-    currentShift;
-
-
-  // Current Calendar Date
-  // ตัวนี้ Show อย่างเดียว
-  // ไม่ส่ง Backend
-
-  this.currentCalendarDate =
-    this.formatLocalDate(
-      now
-    );
-
-
-  return;
+      return;
     }
 
     // =========================
@@ -1330,34 +1310,17 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.currentLabelPageIndex = this.activeLabelPageIndex + 1;
   }
 
-
-
   onPalletShiftChange(): void {
+    const shift = this.palletCreateForm.shift;
 
-    const shift =
-      this.palletCreateForm.shift;
-  
-  
-    if (
-      shift !== 'A' &&
-      shift !== 'B' &&
-      shift !== 'C'
-    ) {
+    if (shift !== 'A' && shift !== 'B' && shift !== 'C') {
       return;
     }
-  
-  
-    const now =
-      new Date();
-  
-  
-    this.palletCreateForm.date =
-      this.getProductionDateByShift(
-        now,
-        shift
-      );
-  }
 
+    const now = new Date();
+
+    this.palletCreateForm.date = this.getProductionDateByShift(now, shift);
+  }
 
   private getShiftFromCurrentTime(now: Date): 'A' | 'B' | 'C' {
     const hour = now.getHours();
@@ -2075,9 +2038,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return {
       id: Number(raw.id),
 
-      issueDate: raw.issueDate || raw.dateIssue,
+      // Date มาจาก Pallet
 
-      shift: raw.shift || '',
+      issueDate:
+        raw.issueDate || raw.dateIssue || this.palletCreateForm.date || '',
+
+      // Shift มาจาก Pallet
+
+      shift: raw.shift || this.palletCreateForm.shift || '',
 
       groupId: Number(raw.groupId),
 
@@ -2134,14 +2102,26 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   private mapHeaderToForm(h: HeaderIssuePalletTemp): HeaderForm {
     return {
-      issueDate: this.toYmd(h.issueDate),
-      shift: h.shift,
+      // =================================
+      // Date / Shift มาจาก Pallet
+      // =================================
+
+      issueDate: this.palletCreateForm.date || this.toYmd(h.issueDate),
+
+      shift: this.palletCreateForm.shift || h.shift,
+
       groupId: h.groupId,
+
       itemNo: h.itemNo,
+
       itemName: h.itemName,
+
       controlLotId: h.controlLotId,
+
       locationId: this.palletTemp?.mapAreaRackId ?? null,
+
       movementMonth: h.movementMonth,
+
       totalQtyBox: h.totalQtyBox,
     };
   }
@@ -2457,57 +2437,105 @@ export class IssueComponent implements OnInit, AfterViewInit {
       });
   }
 
-  onSaveHeader() {
-    if (!this.userId) return this.toast('warning', 'ไม่พบ User ID');
-    if (!this.form.groupId) return this.toast('warning', 'เลือก Group');
-    if (!this.form.itemNo) return this.toast('warning', 'เลือก Item No.');
-    if (!this.form.itemName) return this.toast('warning', 'ไม่พบ Item Name');
-    if (!this.form.controlLotId)
-      return this.toast('warning', 'เลือก Control Lot OQC');
-    if (!this.form.movementMonth)
-      return this.toast('warning', 'เลือก Movement within 3 month');
+  onSaveHeader(): void {
+    // =====================================================
+    // VALIDATE
+    // =====================================================
 
-    const normalQty = Number(this.fullBoxTagQty || 0);
-    const fractionQty = Number(this.fractionQtyBox || 0);
-    const totalBox = normalQty + fractionQty;
+    if (!this.userId) {
+      this.toast('warning', 'ไม่พบ User ID');
 
-    if (!Number.isFinite(normalQty) || normalQty <= 0) {
-      return this.toast('warning', 'กรอก QTY Box เต็ม');
-    }
-
-    if (!Number.isFinite(fractionQty) || fractionQty < 0) {
-      return this.toast('warning', 'QTY Box เศษไม่ถูกต้อง');
-    }
-
-    if (totalBox <= 0) {
-      return this.toast('warning', 'Total QTY BOX ต้องมากกว่า 0');
+      return;
     }
 
     if (!this.palletTemp?.id) {
-      return this.toast('warning', 'ไม่พบ Pallet Temp');
+      this.toast('warning', 'ไม่พบ Pallet Temp');
+
+      return;
     }
 
-    if (!this.palletTemp?.mapAreaRackId) {
-      return this.toast('warning', 'ไม่พบ Location ของ Pallet');
+    if (!this.form.groupId) {
+      this.toast('warning', 'เลือก Group');
+
+      return;
     }
+
+    if (!this.form.itemNo) {
+      this.toast('warning', 'เลือก Item No.');
+
+      return;
+    }
+
+    if (!this.form.itemName) {
+      this.toast('warning', 'ไม่พบ Item Name');
+
+      return;
+    }
+
+    if (!this.form.controlLotId) {
+      this.toast('warning', 'เลือก Control Lot OQC');
+
+      return;
+    }
+
+    if (!this.form.movementMonth) {
+      this.toast('warning', 'เลือก Movement within 3 month');
+
+      return;
+    }
+
+    // =====================================================
+    // BOX QTY
+    // =====================================================
+
+    const normalQty = Number(this.fullBoxTagQty || 0);
+
+    const fractionQty = Number(this.fractionQtyBox || 0);
+
+    const totalBox = normalQty + fractionQty;
+
+    if (!Number.isFinite(normalQty) || normalQty <= 0) {
+      this.toast('warning', 'กรอก QTY Box เต็ม');
+
+      return;
+    }
+
+    if (!Number.isFinite(fractionQty) || fractionQty < 0) {
+      this.toast('warning', 'QTY Box เศษไม่ถูกต้อง');
+
+      return;
+    }
+
+    if (totalBox <= 0) {
+      this.toast('warning', 'Total QTY BOX ต้องมากกว่า 0');
+
+      return;
+    }
+
+    // =====================================================
+    // EDIT VALIDATION
+    // ห้ามลดจำนวนต่ำกว่า Box ที่ Scan ไปแล้ว
+    // =====================================================
 
     if (this.header && this.isEditingHeader && this.scanCount > normalQty) {
-      return Swal.fire({
+      Swal.fire({
         icon: 'warning',
+
         title: 'QTY Box เต็มน้อยกว่าจำนวนที่ Scan แล้ว',
+
         text:
           `ตอนนี้ Scan Box เต็มแล้ว ${this.scanCount} Box ` +
           `ไม่สามารถแก้ QTY Box เต็มเป็น ${normalQty} ได้`,
       });
+
+      return;
     }
 
-    /*
-  Case พิเศษ:
-  ตอน Edit Header แล้วลด QTY Box เศษเหลือ 0
-  แต่ยังมี Box เศษที่ Scan ค้างอยู่
-  => ห้าม Save Header / ห้ามลบ Header Fraction
-  => แจ้งเตือน แล้วพาไป Panel Scan Box เศษ
-*/
+    // =====================================================
+    // EDIT FRACTION = 0
+    // แต่ยังมี Box เศษ Scan อยู่
+    // =====================================================
+
     if (
       this.header &&
       this.isEditingHeader &&
@@ -2517,21 +2545,47 @@ export class IssueComponent implements OnInit, AfterViewInit {
     ) {
       Swal.fire({
         icon: 'warning',
-        title: 'ยังมี Box เศษที่ Scan ค้างอยู่',
-        html: `
-      <div style="text-align:left">
-        <div>คุณกำลังเปลี่ยน <b>QTY Box เศษ</b> เป็น <b>0</b></div>
-        <div style="margin-top:8px">
-          แต่ตอนนี้ยังมีรายการ Box เศษที่ Scan ค้างอยู่
-          <b>${this.fractionScanCount}</b> รายการ
-        </div>
 
-        <div style="margin-top:12px;color:#b91c1c;font-weight:700">
-          กรุณาไปลบหรือ Clear รายการ Box เศษก่อน แล้วจึงกลับมา Save Header อีกครั้ง
-        </div>
-      </div>
-    `,
+        title: 'ยังมี Box เศษที่ Scan ค้างอยู่',
+
+        html: `
+          <div style="text-align:left">
+  
+            <div>
+              คุณกำลังเปลี่ยน
+              <b>QTY Box เศษ</b>
+              เป็น
+              <b>0</b>
+            </div>
+  
+            <div style="margin-top:8px">
+              แต่ตอนนี้ยังมีรายการ
+              Box เศษที่ Scan ค้างอยู่
+  
+              <b>
+                ${this.fractionScanCount}
+              </b>
+  
+              รายการ
+            </div>
+  
+            <div
+              style="
+                margin-top:12px;
+                color:#b91c1c;
+                font-weight:700
+              "
+            >
+              กรุณาไปลบหรือ Clear
+              รายการ Box เศษก่อน
+              แล้วจึงกลับมา Save Header อีกครั้ง
+            </div>
+  
+          </div>
+        `,
+
         confirmButtonText: 'ไปที่ Scan Box เศษ',
+
         confirmButtonColor: '#ea580c',
       }).then(() => {
         this.goToFractionPanelFromHeaderWarning();
@@ -2540,10 +2594,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    /*
-  Case ทั่วไป:
-  ถ้าลด QTY Box เศษให้น้อยกว่าจำนวนที่ Scan แล้ว
-*/
+    // =====================================================
+    // EDIT FRACTION
+    // ห้ามต่ำกว่าจำนวนที่ Scan แล้ว
+    // =====================================================
+
     if (
       this.header &&
       this.isEditingHeader &&
@@ -2551,90 +2606,161 @@ export class IssueComponent implements OnInit, AfterViewInit {
     ) {
       Swal.fire({
         icon: 'warning',
+
         title: 'QTY Box เศษน้อยกว่าจำนวนที่ Scan แล้ว',
+
         text:
           `ตอนนี้ Scan Box เศษแล้ว ${this.fractionScanCount} Box ` +
           `ไม่สามารถแก้ QTY Box เศษเป็น ${fractionQty} ได้`,
       });
+
       return;
     }
+
+    // =====================================================
+    // UPDATE LOCAL TOTAL
+    // =====================================================
+
     this.form.totalQtyBox = totalBox;
+
     this.isSavingHeader = true;
 
-    const payload = {
-      userId: Number(this.userId),
-      dateIssue: new Date(this.form.issueDate).toISOString(),
-      itemNo: this.form.itemNo,
-      itemName: this.form.itemName,
-      shift: this.form.shift,
-      groupId: Number(this.form.groupId),
-      controlLotId: Number(this.form.controlLotId),
-      normalQty: normalQty,
-      totalBox,
-      moveMentThreeMonth: this.form.movementMonth,
-      palletTempId: Number(this.palletTemp!.id),
-    };
+    // =====================================================
+    // CHECK CREATE / EDIT
+    // =====================================================
 
     const isEditMode = !!this.header && this.isEditingHeader;
+
+    // =====================================================
+    // BASE PAYLOAD
+    //
+    // ใช้ได้ทั้ง Create / Edit
+    // ตรงกับ Backend ใหม่
+    // =====================================================
+
+    const basePayload = {
+      userId: Number(this.userId),
+
+      itemNo: this.form.itemNo,
+
+      itemName: this.form.itemName,
+
+      groupId: Number(this.form.groupId),
+
+      controlLotId: Number(this.form.controlLotId),
+
+      totalBox: totalBox,
+
+      moveMentThreeMonth: this.form.movementMonth,
+
+      normalQty: normalQty,
+
+      palletTempId: Number(this.palletTemp.id),
+    };
+
+    // =====================================================
+    // CREATE / EDIT PAYLOAD
+    // =====================================================
+
+    const finalPayload = isEditMode
+      ? {
+          ...basePayload,
+
+          headerTempId: Number(this.header!.id),
+        }
+      : basePayload;
+
+    // =====================================================
+    // URL
+    // =====================================================
 
     const url = isEditMode
       ? config.apiServer + '/api/issue/editHeaderTemp'
       : config.apiServer + '/api/issue/createHeaderTemp';
 
-    const finalPayload = isEditMode
-      ? {
-          ...payload,
-          headTempId: this.header!.id,
-        }
-      : payload;
+    // =====================================================
+    // CALL API
+    // =====================================================
 
     this.http.post<any>(url, finalPayload).subscribe({
-      next: (res): void => {
-        this.header = this.normalizeHeader(res.data);
+      next: (res: any): void => {
+        // =================================================
+        // Backend Header ไม่มี Date / Shift แล้ว
+        // เพราะอยู่ที่ PalletTemp
+        //
+        // จึงเติมค่าจาก Pallet กลับเข้ามา
+        // สำหรับใช้งานใน Frontend
+        // =================================================
+
+        const rawHeader = {
+          ...res.data,
+
+          issueDate: this.palletCreateForm.date,
+
+          shift: this.palletCreateForm.shift,
+        };
+
+        this.header = this.normalizeHeader(rawHeader);
 
         if (!this.header) {
           this.isSavingHeader = false;
+
           Swal.fire('Error', 'Save Header แล้วไม่พบข้อมูล Header', 'error');
+
           return;
         }
 
+        // =================================================
+        // Sync Value
+        // =================================================
+
         this.header = {
           ...this.header,
+
           totalQtyBox: totalBox,
-          normalQty,
+
+          normalQty: normalQty,
+
+          issueDate: this.palletCreateForm.date,
+
+          shift: this.palletCreateForm.shift,
         };
 
         this.form = this.mapHeaderToForm(this.header);
+
         this.form.totalQtyBox = totalBox;
+
         this.itemKeyword = this.form.itemNo;
 
         this.fullBoxTagQty = normalQty;
 
+        // =================================================
+        // Fraction
+        // =================================================
+
         this.syncFractionHeaderAfterHeaderSave(fractionQty, isEditMode);
       },
 
-      error: (err): void => {
+      error: (err: any): void => {
         console.error(err);
+
         this.isSavingHeader = false;
 
         const msg =
           err?.error?.message ||
           err?.error?.error ||
-          err.message ||
+          err?.message ||
           'Save Header fail';
 
         if (msg === 'missing_required_fields') {
           Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
-          return;
-        }
 
-        if (msg === 'invalid_dateIssue') {
-          Swal.fire('Warning', 'รูปแบบ Date ไม่ถูกต้อง', 'warning');
           return;
         }
 
         if (msg === 'header_issueTemp_notFound') {
           Swal.fire('Warning', 'ไม่พบ Header Temp นี้ในระบบ', 'warning');
+
           return;
         }
 
