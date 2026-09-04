@@ -4567,6 +4567,200 @@ td small {
 
 
 
+/* =========================================================
+   READONLY / AUTO / REFERENCE FIELD
+   สีเขียวอ่อน เพื่อแยกจากช่อง Input
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. INPUT ที่ readonly
+   เช่น Auto Group
+--------------------------------------------------------- */
+
+.header-form .control.readonly,
+.header-form input[readonly] {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+
+  color: #065f46 !important;
+
+  font-weight: 900 !important;
+
+  cursor: default !important;
+}
+
+
+/* ---------------------------------------------------------
+   2. INPUT / SELECT ที่ disabled
+--------------------------------------------------------- */
+
+.header-form .control:disabled {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+
+  color: #065f46 !important;
+
+  opacity: 1 !important;
+
+  cursor: not-allowed !important;
+}
+
+
+/* ---------------------------------------------------------
+   3. Auto Group
+--------------------------------------------------------- */
+
+.header-form
+.header-field-group
+.control {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+
+  color: #065f46 !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* ---------------------------------------------------------
+   4. Total QTY BOX
+   Auto Calculate
+--------------------------------------------------------- */
+
+.header-form
+.header-field-total-box
+.control {
+  background: #d9f7e8 !important;
+
+  border-color: #5fd0a0 !important;
+
+  color: #047857 !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* =========================================================
+   PALLET INFORMATION
+   REFERENCE / RECHECK ONLY
+========================================================= */
+
+
+/* กล่องใหญ่ */
+
+.header-pallet-reference {
+  background: #effcf6 !important;
+
+  border-color: #9edfc1 !important;
+}
+
+
+/* แต่ละ Information Box */
+
+.header-pallet-reference-item {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(16, 185, 129, 0.03);
+}
+
+
+/* หัวข้อ เช่น PRODUCTION DATE */
+
+.header-pallet-reference-item span {
+  color: #47866c !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* Value */
+
+.header-pallet-reference-item b {
+  color: #065f46 !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* Icon Pallet */
+
+.header-pallet-reference-icon {
+  background: #c8f3df !important;
+
+  color: #047857 !important;
+}
+
+
+/* =========================================================
+   PALLET CONDITION - READONLY / LOCKED
+========================================================= */
+
+
+/* Production Date เป็น readonly */
+
+.create-pallet-date-shift-row
+input[readonly] {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+
+  color: #065f46 !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* Current Date ก็เป็นข้อมูล Show Only */
+
+.create-current-date-box {
+  background: #d9f7e8 !important;
+
+  border-color: #86d9b2 !important;
+}
+
+
+.create-current-date-box span {
+  color: #47866c !important;
+}
+
+
+.create-current-date-box b {
+  color: #065f46 !important;
+}
+
+
+/* Pallet Summary */
+
+.create-pallet-summary {
+  background: #eafaf2 !important;
+
+  border-color: #a7e5c7 !important;
+}
+
+
+.create-pallet-summary span {
+  color: #47866c !important;
+}
+
+
+.create-pallet-summary b {
+  color: #065f46 !important;
+}
+
+
+
+
+
+
+
 
 /* ====================
 for 2 case to center
