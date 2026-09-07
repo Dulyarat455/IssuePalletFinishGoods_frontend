@@ -678,27 +678,52 @@
         </div>
 
         <!-- ================= HEADER SUMMARY ================= -->
-        <section class="summary-card" *ngIf="header && !showHeaderForm">
-          <div class="section-head">
-            <div>
-              <h3>Header Saved</h3>
-              <span>Ready for QR scanning</span>
+        <section class="header-saved-compact" *ngIf="header && !showHeaderForm">
+          <!-- =========================================
+       TOP
+  ========================================== -->
+
+          <div class="header-saved-top">
+            <div class="header-saved-status">
+              <div class="header-saved-status-icon">
+                <i class="fas fa-check"></i>
+              </div>
+
+              <div>
+                <div class="header-saved-title">Header Saved</div>
+
+                <div class="header-saved-subtitle">
+                  <span class="header-ready-dot"></span>
+                  Ready for QR scanning
+                </div>
+              </div>
             </div>
 
-            <div class="head-actions">
+            <!-- ACTION -->
+
+            <div class="header-saved-actions">
               <button
                 type="button"
-                class="btn ghost"
+                class="header-saved-action-btn"
                 *ngIf="currentPalletHeaders.length > 0"
                 (click)="backToHeaderList()"
               >
                 <i class="fas fa-arrow-left"></i>
-
                 Header List
               </button>
+
               <button
                 type="button"
-                class="btn ghost danger"
+                class="header-saved-action-btn edit"
+                (click)="onEditHeader()"
+              >
+                <i class="fas fa-pen"></i>
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="header-saved-action-btn delete"
                 (click)="onDeleteHeaderTemp()"
                 [disabled]="isDeletingHeader"
               >
@@ -711,63 +736,105 @@
 
                 {{ isDeletingHeader ? "Deleting..." : "Delete" }}
               </button>
-
-              <button type="button" class="btn ghost" (click)="onEditHeader()">
-                <i class="fas fa-pen"></i>
-                Edit
-              </button>
             </div>
           </div>
 
-          <div class="summary-grid">
-            <div class="summary-item">
-              <span>Date</span>
-              <b>{{ form.issueDate }}</b>
+          <!-- =========================================
+       MAIN INFO
+  ========================================== -->
+
+          <div class="header-saved-main">
+            <!-- ITEM -->
+
+            <div class="header-saved-item-main">
+              <span>ITEM</span>
+
+              <b>
+                {{ header.itemNo }}
+              </b>
+
+              <small>
+                {{ header.itemName }}
+              </small>
             </div>
 
-            <div class="summary-item">
-              <span>Shift</span>
-              <b>{{ header.shift }}</b>
+            <!-- GROUP -->
+
+            <div class="header-saved-info">
+              <span>GROUP</span>
+
+              <b>
+                {{ groupName(header.groupId) }}
+              </b>
             </div>
 
-            <div class="summary-item wide">
-              <span>Item</span>
-              <b>{{ header.itemNo }} / {{ header.itemName }}</b>
+            <!-- LOCATION -->
+
+            <div class="header-saved-info">
+              <span>LOCATION</span>
+
+              <b>
+                {{ locationName(palletTemp?.mapAreaRackId) }}
+              </b>
             </div>
 
-            <div class="summary-item">
-              <span>Group</span>
-              <b>{{ groupName(header.groupId) }}</b>
+            <!-- SHIFT -->
+
+            <div class="header-saved-info">
+              <span>SHIFT</span>
+
+              <b>
+                {{ header.shift }}
+              </b>
             </div>
 
-            <div class="summary-item">
-              <span>Control Lot OQC</span>
-              {{ header.controlLot || "-" }}
+            <!-- DATE -->
+
+            <div class="header-saved-info">
+              <span>DATE</span>
+
+              <b>
+                {{ form.issueDate }}
+              </b>
             </div>
 
-            <div class="summary-item wide">
-              <span>Location FG</span>
-              <b>{{ locationName(palletTemp?.mapAreaRackId) }}</b>
-            </div>
+            <!-- MOVEMENT -->
 
-            <div class="summary-item">
-              <span>Movement</span>
-              <b>{{ header.movementMonth }}</b>
-            </div>
+            <div class="header-saved-info">
+              <span>MOVEMENT</span>
 
-            <div class="summary-item">
-              <span>QTY Box เต็ม</span>
+              <b>
+                {{ header.movementMonth }}
+              </b>
+            </div>
+          </div>
+
+          <!-- =========================================
+       BOX STATUS
+  ========================================== -->
+
+          <div class="header-saved-box-row">
+            <div class="header-saved-box">
+              <span>BOX เต็ม</span>
               <b>{{ normalRequiredBoxQty }}</b>
             </div>
 
-            <div class="summary-item">
-              <span>QTY Box เศษ</span>
+            <div class="header-saved-box">
+              <span>BOX เศษ</span>
               <b>{{ fractionQtyBoxValue }}</b>
             </div>
 
-            <div class="summary-item">
-              <span>Total QTY BOX</span>
+            <div class="header-saved-box total">
+              <span>TOTAL BOX</span>
               <b>{{ header.totalQtyBox }}</b>
+            </div>
+
+            <div class="header-saved-control-lot" *ngIf="header.controlLot">
+              <span>CONTROL LOT OQC</span>
+
+              <b>
+                {{ header.controlLot }}
+              </b>
             </div>
           </div>
         </section>
@@ -858,18 +925,18 @@
                     ITEM NO - SHOW
                 ================================== -->
 
-                <div class="form-field header-tag-visible-field header-item-scan-field">
-
+                <div
+                  class="form-field header-tag-visible-field header-item-scan-field"
+                >
                   <label>
                     <i class="fas fa-qrcode"></i>
                     Item No.
                   </label>
-                
+
                   <div
                     class="header-item-scan-control"
                     [class.scan-complete]="isHeaderTagLocked"
                   >
-                
                     <div class="header-item-scan-icon">
                       <i
                         class="fas"
@@ -877,8 +944,7 @@
                         [class.fa-check]="isHeaderTagLocked"
                       ></i>
                     </div>
-                
-                
+
                     <input
                       #headerTagItemNo
                       class="control"
@@ -887,50 +953,36 @@
                       autocomplete="off"
                       placeholder="Scan Item No."
                       [(ngModel)]="headerTagScanForm.itemNo"
-                      [disabled]="
-                        isSavingHeader ||
-                        isHeaderTagLocked
-                      "
-                      (keydown.enter)="
-                        onHeaderTagScanEnter(
-                          'itemNo',
-                          $event
-                        )
-                      "
+                      [disabled]="isSavingHeader || isHeaderTagLocked"
+                      (keydown.enter)="onHeaderTagScanEnter('itemNo', $event)"
                     />
-                
-                
+
                     <span
                       class="header-item-scan-badge"
                       *ngIf="!isHeaderTagLocked"
                     >
                       READY
                     </span>
-                
+
                     <span
                       class="header-item-scan-badge complete"
                       *ngIf="isHeaderTagLocked"
                     >
                       SCANNED
                     </span>
-                
                   </div>
-                
+
                   <small
                     class="header-item-scan-note"
                     *ngIf="!isHeaderTagLocked"
                   >
                     Scan barcode / QR Tag to start
                   </small>
-                
                 </div>
 
                 <div class="form-field header-tag-visible-field">
+                  <label> Item Name </label>
 
-                  <label>
-                    Item Name
-                  </label>
-                
                   <!-- ก่อน Scan สำเร็จ -->
                   <div
                     class="header-item-name-placeholder"
@@ -938,8 +990,7 @@
                   >
                     Auto after scan
                   </div>
-                
-                
+
                   <!-- หลัง Scan สำเร็จ -->
                   <input
                     *ngIf="isHeaderTagLocked"
@@ -948,26 +999,23 @@
                     [value]="headerTagScanForm.itemName || '-'"
                     readonly
                   />
-                
                 </div>
 
                 <!-- =================================
                     ITEM NAME - SHOW
                 ================================== -->
 
-                
-                  <input
-                    #headerTagItemName
-                    class="header-tag-hidden-scan"
-                    type="text"
-                    name="headerTagItemName"
-                    autocomplete="off"
-                    placeholder="Scan Item Name"
-                    [(ngModel)]="headerTagScanForm.itemName"
-                    [disabled]="isSavingHeader || isHeaderTagLocked"
-                    (keydown.enter)="onHeaderTagScanEnter('itemName', $event)"
-                  />
-                
+                <input
+                  #headerTagItemName
+                  class="header-tag-hidden-scan"
+                  type="text"
+                  name="headerTagItemName"
+                  autocomplete="off"
+                  placeholder="Scan Item Name"
+                  [(ngModel)]="headerTagScanForm.itemName"
+                  [disabled]="isSavingHeader || isHeaderTagLocked"
+                  (keydown.enter)="onHeaderTagScanEnter('itemName', $event)"
+                />
 
                 <!-- =================================
                     WOS NO - HIDDEN VISUALLY

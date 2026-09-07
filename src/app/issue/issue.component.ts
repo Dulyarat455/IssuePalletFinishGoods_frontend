@@ -374,16 +374,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (
-      this.showHeaderForm &&
-      !this.headerTagScanForm.itemNo
-    ) {
-  
+    if (this.showHeaderForm && !this.headerTagScanForm.itemNo) {
       this.focusHeaderItemNoIfNeeded();
-  
+
       return;
     }
-
 
     this.focusQr();
   }
@@ -2203,62 +2198,37 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.applyHeaderControlLotRule();
   }
 
-
   private focusHeaderItemNoIfNeeded(): void {
-
     if (!this.showHeaderForm) {
       return;
     }
-  
-  
+
     if (this.isHeaderTagLocked) {
       return;
     }
-  
-  
-    const itemNo =
-      String(
-        this.headerTagScanForm.itemNo || ''
-      ).trim();
-  
-  
+
+    const itemNo = String(this.headerTagScanForm.itemNo || '').trim();
+
     if (itemNo) {
       return;
     }
-  
-  
-    setTimeout(
-      () => {
-  
-        const el =
-          this.headerTagItemNo
-            ?.nativeElement;
-  
-  
-        if (!el) {
-          return;
-        }
-  
-  
-        if (el.disabled) {
-          return;
-        }
-  
-  
-        el.focus();
-  
-        el.select();
-  
-      },
-      0
-    );
+
+    setTimeout(() => {
+      const el = this.headerTagItemNo?.nativeElement;
+
+      if (!el) {
+        return;
+      }
+
+      if (el.disabled) {
+        return;
+      }
+
+      el.focus();
+
+      el.select();
+    }, 0);
   }
-
-
-
-
-
-
 
   /* =======================
       Master Data
@@ -2494,85 +2464,67 @@ export class IssueComponent implements OnInit, AfterViewInit {
       });
   }
 
-
   onClearHeaderForm(): void {
-
     if (this.isSavingHeader) {
       return;
     }
-  
-  
+
     // ==========================================
     // CLEAR TAG SCAN 7 FIELD
     // ==========================================
-  
-    this.headerTagScanForm =
-      this.createEmptyScanForm();
-  
-  
+
+    this.headerTagScanForm = this.createEmptyScanForm();
+
     // ==========================================
     // CLEAR HEADER ITEM
     // ==========================================
-  
+
     this.form.itemNo = '';
-  
+
     this.form.itemName = '';
-  
+
     this.headerItemClass = '';
-  
+
     this.form.groupId = null;
-  
+
     this.form.controlLot = '';
-  
-  
+
     // ==========================================
     // CLEAR OTHER HEADER INPUT
     // ==========================================
-  
+
     this.form.movementMonth = '';
-  
+
     this.fullBoxTagQty = null;
-  
+
     this.fractionQtyBox = null;
-  
+
     this.form.totalQtyBox = null;
-  
-  
+
     // ==========================================
     // UNLOCK ITEM NO / ITEM NAME
     // ==========================================
-  
+
     this.isHeaderTagLocked = false;
-  
-  
+
     // ==========================================
     // CLEAR OLD SEARCH STATE
     // ==========================================
-  
+
     this.itemKeyword = '';
-  
+
     this.showItemDrop = false;
-  
-  
+
     // ==========================================
     // FOCUS ITEM NO FOR NEW SCAN
     // ==========================================
-  
-    setTimeout(
-      () => {
-        this.focusHeaderItemNoIfNeeded();
-      },
-      0
-    );
-  
-  
-    this.toast(
-      'info',
-      'Clear Header Form'
-    );
+
+    setTimeout(() => {
+      this.focusHeaderItemNoIfNeeded();
+    }, 0);
+
+    this.toast('info', 'Clear Header Form');
   }
-
-
 
   onSaveHeader(): void {
     // =====================================================
@@ -2948,40 +2900,34 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   private resetSelectedHeaderData(): void {
-
     this.header = null;
-  
+
     this.savedRows = [];
-  
-    this.scanForm =
-      this.createEmptyScanForm();
-  
-  
+
+    this.scanForm = this.createEmptyScanForm();
+
     // HEADER TAG
-  
-    this.headerTagScanForm =
-      this.createEmptyScanForm();
-  
+
+    this.headerTagScanForm = this.createEmptyScanForm();
+
     this.headerItemClass = '';
-  
+
     this.isHeaderTagLocked = false;
-  
-  
+
     this.fullBoxTagQty = null;
-  
+
     this.showFractionSection = false;
-  
+
     this.fractionHeader = null;
-  
+
     this.fractionQtyBox = null;
-  
+
     this.fractionRows = [];
-  
-    this.fractionScanForm =
-      this.createEmptyScanForm();
-  
+
+    this.fractionScanForm = this.createEmptyScanForm();
+
     this.isEditingHeader = false;
-  
+
     this.activeIssuePanel = 'normal';
   }
 
@@ -3500,8 +3446,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
             this.headerTagScanForm = this.createEmptyScanForm();
             this.headerItemClass = '';
-            
-             // ปลด Lock Item No. / Item Name
+
+            // ปลด Lock Item No. / Item Name
             this.isHeaderTagLocked = false;
             // ==========================================
             // CLEAR SEARCH STATE
@@ -3525,12 +3471,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.isEditingHeader = true;
 
             this.toast('success', 'Delete Header Success');
-            setTimeout(
-              () => {
-                this.focusHeaderItemNoIfNeeded();
-              },
-              0
-            );
+            setTimeout(() => {
+              this.focusHeaderItemNoIfNeeded();
+            }, 0);
           },
           error: (err) => {
             console.error(err);
@@ -4296,6 +4239,211 @@ export class IssueComponent implements OnInit, AfterViewInit {
         confirmButtonText: 'Scan ใหม่',
         confirmButtonColor: '#dc2626',
         returnFocus: false,
+        focusConfirm: true,
+      }).then(() => {
+        this.scanForm = this.createEmptyScanForm();
+
+        setTimeout(() => {
+          this.focusScanFirst();
+        }, 200);
+      });
+    }
+
+    // =====================================================
+    // CHECK FULL BOX QTY WITH PART MASTER LOT SIZE
+    // =====================================================
+
+    const masterItem = this.items.find(
+      (item) => String(item.itemNo || '').trim() === scanItemNo
+    );
+
+    if (!masterItem) {
+      document.activeElement instanceof HTMLElement &&
+        document.activeElement.blur();
+
+      return Swal.fire({
+        icon: 'warning',
+
+        title: 'ไม่พบ Item ใน Part Master',
+
+        html: `
+    <div style="text-align:left">
+
+      <div>
+        <b>Item No.:</b>
+        ${this.scanForm.itemNo}
+      </div>
+
+      <div>
+        <b>Item Name:</b>
+        ${this.scanForm.itemName}
+      </div>
+
+      <div>
+        <b>WOS No.:</b>
+        ${this.scanForm.wosNo}
+      </div>
+
+      <div
+        style="
+          margin-top:10px;
+          color:#b91c1c;
+          font-weight:700;
+        "
+      >
+        ไม่พบ Item No. นี้ใน Part Master
+      </div>
+
+    </div>
+  `,
+
+        confirmButtonText: 'Scan ใหม่',
+
+        confirmButtonColor: '#dc2626',
+
+        returnFocus: false,
+
+        focusConfirm: true,
+      }).then(() => {
+        this.scanForm = this.createEmptyScanForm();
+
+        setTimeout(() => {
+          this.focusScanFirst();
+        }, 200);
+      });
+    }
+
+    // =====================================================
+    // LOT SIZE
+    // =====================================================
+
+    const masterLotSize = Number(masterItem.lotSize);
+
+    const scannedQty = Number(this.scanForm.qty);
+
+    if (!Number.isFinite(masterLotSize) || masterLotSize <= 0) {
+      document.activeElement instanceof HTMLElement &&
+        document.activeElement.blur();
+
+      return Swal.fire({
+        icon: 'warning',
+
+        title: 'Lot Size ใน Master ไม่ถูกต้อง',
+
+        html: `
+    <div style="text-align:left">
+
+      <div>
+        <b>Item No.:</b>
+        ${this.scanForm.itemNo}
+      </div>
+
+      <div>
+        <b>Item Name:</b>
+        ${this.scanForm.itemName}
+      </div>
+
+      <div>
+        <b>WOS No.:</b>
+        ${this.scanForm.wosNo}
+      </div>
+
+      <div
+        style="
+          margin-top:10px;
+          color:#b91c1c;
+          font-weight:700;
+        "
+      >
+        Item นี้ไม่มี Lot Size ที่ถูกต้องใน Part Master
+      </div>
+
+    </div>
+  `,
+
+        confirmButtonText: 'ตรวจสอบ',
+
+        confirmButtonColor: '#dc2626',
+
+        returnFocus: false,
+      });
+    }
+
+    // =====================================================
+    // COMPARE SCAN QTY VS MASTER LOT SIZE
+    // =====================================================
+
+    if (scannedQty !== masterLotSize) {
+      document.activeElement instanceof HTMLElement &&
+        document.activeElement.blur();
+
+      return Swal.fire({
+        icon: 'warning',
+
+        title: 'จำนวน Box เต็มไม่ถูกต้อง',
+
+        html: `
+    <div style="text-align:left">
+
+      <div>
+        <b>Item No.:</b>
+        ${this.scanForm.itemNo}
+      </div>
+
+      <div>
+        <b>Item Name:</b>
+        ${this.scanForm.itemName}
+      </div>
+
+      <div>
+        <b>WOS No.:</b>
+        ${this.scanForm.wosNo}
+      </div>
+
+
+      <div
+        style="
+          margin-top:12px;
+          padding:10px 12px;
+          background:#fff7ed;
+          border:1px solid #fed7aa;
+          border-radius:8px;
+        "
+      >
+
+        <div>
+          <b>QTY ที่ Scan:</b>
+          ${scannedQty}
+        </div>
+
+        <div>
+          <b>Lot Size Master:</b>
+          ${masterLotSize}
+        </div>
+
+      </div>
+
+
+      <div
+        style="
+          margin-top:10px;
+          color:#b91c1c;
+          font-weight:700;
+        "
+      >
+        Item No., Item Name และ WOS นี้
+        จำนวน Box เต็มไม่ถูกต้อง
+      </div>
+
+    </div>
+  `,
+
+        confirmButtonText: 'Scan ใหม่',
+
+        confirmButtonColor: '#dc2626',
+
+        returnFocus: false,
+
         focusConfirm: true,
       }).then(() => {
         this.scanForm = this.createEmptyScanForm();
