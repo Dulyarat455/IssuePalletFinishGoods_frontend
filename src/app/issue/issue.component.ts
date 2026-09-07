@@ -2198,36 +2198,91 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.applyHeaderControlLotRule();
   }
 
-  private focusHeaderItemNoIfNeeded(): void {
+  private focusHeaderItemNoIfNeeded(
+    retry: number = 0
+  ): void {
+  
+    // ==========================================
+    // HEADER FORM ต้องเปิดอยู่
+    // ==========================================
+  
     if (!this.showHeaderForm) {
       return;
     }
-
+  
+  
+    // ==========================================
+    // ถ้า Scan สำเร็จแล้ว ไม่ต้อง Focus
+    // ==========================================
+  
     if (this.isHeaderTagLocked) {
       return;
     }
-
-    const itemNo = String(this.headerTagScanForm.itemNo || '').trim();
-
+  
+  
+    // ==========================================
+    // ถ้ามี Item No. แล้ว ไม่ต้อง Focus
+    // ==========================================
+  
+    const itemNo =
+      String(
+        this.headerTagScanForm.itemNo || ''
+      ).trim();
+  
+  
     if (itemNo) {
       return;
     }
-
+  
+  
+    // ==========================================
+    // รอ Angular Render DOM
+    // ==========================================
+  
     setTimeout(() => {
-      const el = this.headerTagItemNo?.nativeElement;
-
+  
+      const el =
+        this.headerTagItemNo
+          ?.nativeElement;
+  
+  
+      // ========================================
+      // DOM ยังไม่มา
+      // ให้ลองใหม่ได้สูงสุด 5 รอบ
+      // ========================================
+  
       if (!el) {
+  
+        if (retry < 5) {
+  
+          this.focusHeaderItemNoIfNeeded(
+            retry + 1
+          );
+  
+        }
+  
         return;
       }
-
+  
+  
+      // ========================================
+      // Input Disabled
+      // ========================================
+  
       if (el.disabled) {
         return;
       }
-
+  
+  
+      // ========================================
+      // FOCUS
+      // ========================================
+  
       el.focus();
-
+  
       el.select();
-    }, 0);
+  
+    }, 80);
   }
 
   /* =======================
@@ -2934,6 +2989,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   prepareCreateNewHeader(): void {
     this.resetSelectedHeaderData();
 
+    this.showCreatePallet = false;
     this.showHeaderList = false;
 
     const newForm = this.createEmptyHeaderForm();
@@ -2954,7 +3010,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     this.isEditingHeader = false;
 
-    this.focusHeaderItemNoIfNeeded();
+    // ==========================================
+    // รอ Header Form Render ก่อน Focus
+    // ==========================================
+
+    setTimeout(() => {
+
+      this.focusHeaderItemNoIfNeeded();
+
+    }, 0);
   }
 
   selectHeaderFromList(selectedHeader: HeaderIssuePalletTemp): void {
