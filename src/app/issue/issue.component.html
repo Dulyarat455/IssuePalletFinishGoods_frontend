@@ -685,19 +685,27 @@
 
           <div class="header-saved-top">
             <div class="header-saved-status">
+
               <div class="header-saved-status-icon">
                 <i class="fas fa-check"></i>
               </div>
-
+            
               <div>
-                <div class="header-saved-title">Header Saved</div>
-
+                <div class="header-saved-eyebrow">
+                  SAVED HEADER
+                </div>
+            
+                <div class="header-saved-title">
+                  {{ header.itemNo }}
+                </div>
+            
                 <div class="header-saved-subtitle">
                   <span class="header-ready-dot"></span>
-                  Ready for QR scanning
-                  
+            
+                  {{ header.itemName }}
                 </div>
               </div>
+            
             </div>
 
             <!-- ACTION -->
@@ -745,20 +753,7 @@
   ========================================== -->
 
           <div class="header-saved-main">
-            <!-- ITEM -->
-
-            <div class="header-saved-item-main">
-              <span>ITEM</span>
-
-              <b>
-                {{ header.itemNo }}
-              </b>
-
-              <small>
-                {{ header.itemName }}
-              </small>
-            </div>
-
+            
             <!-- GROUP -->
 
             <div class="header-saved-info">
