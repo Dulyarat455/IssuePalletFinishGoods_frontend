@@ -271,6 +271,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   headerTagScanForm: WosScanForm = this.createEmptyScanForm();
   headerItemClass = '';
 
+  isHeaderTagLocked = false;
+
   groups: GroupRow[] = [];
   items: ItemMasterRow[] = [];
   locations: LocationRow[] = [];
@@ -372,6 +374,17 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    if (
+      this.showHeaderForm &&
+      !this.headerTagScanForm.itemNo
+    ) {
+  
+      this.focusHeaderItemNoIfNeeded();
+  
+      return;
+    }
+
+
     this.focusQr();
   }
 
@@ -2190,6 +2203,63 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.applyHeaderControlLotRule();
   }
 
+
+  private focusHeaderItemNoIfNeeded(): void {
+
+    if (!this.showHeaderForm) {
+      return;
+    }
+  
+  
+    if (this.isHeaderTagLocked) {
+      return;
+    }
+  
+  
+    const itemNo =
+      String(
+        this.headerTagScanForm.itemNo || ''
+      ).trim();
+  
+  
+    if (itemNo) {
+      return;
+    }
+  
+  
+    setTimeout(
+      () => {
+  
+        const el =
+          this.headerTagItemNo
+            ?.nativeElement;
+  
+  
+        if (!el) {
+          return;
+        }
+  
+  
+        if (el.disabled) {
+          return;
+        }
+  
+  
+        el.focus();
+  
+        el.select();
+  
+      },
+      0
+    );
+  }
+
+
+
+
+
+
+
   /* =======================
       Master Data
     ======================= */
@@ -2423,6 +2493,86 @@ export class IssueComponent implements OnInit, AfterViewInit {
         },
       });
   }
+
+
+  onClearHeaderForm(): void {
+
+    if (this.isSavingHeader) {
+      return;
+    }
+  
+  
+    // ==========================================
+    // CLEAR TAG SCAN 7 FIELD
+    // ==========================================
+  
+    this.headerTagScanForm =
+      this.createEmptyScanForm();
+  
+  
+    // ==========================================
+    // CLEAR HEADER ITEM
+    // ==========================================
+  
+    this.form.itemNo = '';
+  
+    this.form.itemName = '';
+  
+    this.headerItemClass = '';
+  
+    this.form.groupId = null;
+  
+    this.form.controlLot = '';
+  
+  
+    // ==========================================
+    // CLEAR OTHER HEADER INPUT
+    // ==========================================
+  
+    this.form.movementMonth = '';
+  
+    this.fullBoxTagQty = null;
+  
+    this.fractionQtyBox = null;
+  
+    this.form.totalQtyBox = null;
+  
+  
+    // ==========================================
+    // UNLOCK ITEM NO / ITEM NAME
+    // ==========================================
+  
+    this.isHeaderTagLocked = false;
+  
+  
+    // ==========================================
+    // CLEAR OLD SEARCH STATE
+    // ==========================================
+  
+    this.itemKeyword = '';
+  
+    this.showItemDrop = false;
+  
+  
+    // ==========================================
+    // FOCUS ITEM NO FOR NEW SCAN
+    // ==========================================
+  
+    setTimeout(
+      () => {
+        this.focusHeaderItemNoIfNeeded();
+      },
+      0
+    );
+  
+  
+    this.toast(
+      'info',
+      'Clear Header Form'
+    );
+  }
+
+
 
   onSaveHeader(): void {
     // =====================================================
@@ -2798,26 +2948,40 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   private resetSelectedHeaderData(): void {
+
     this.header = null;
-
+  
     this.savedRows = [];
-
-    this.scanForm = this.createEmptyScanForm();
-
+  
+    this.scanForm =
+      this.createEmptyScanForm();
+  
+  
+    // HEADER TAG
+  
+    this.headerTagScanForm =
+      this.createEmptyScanForm();
+  
+    this.headerItemClass = '';
+  
+    this.isHeaderTagLocked = false;
+  
+  
     this.fullBoxTagQty = null;
-
+  
     this.showFractionSection = false;
-
+  
     this.fractionHeader = null;
-
+  
     this.fractionQtyBox = null;
-
+  
     this.fractionRows = [];
-
-    this.fractionScanForm = this.createEmptyScanForm();
-
+  
+    this.fractionScanForm =
+      this.createEmptyScanForm();
+  
     this.isEditingHeader = false;
-
+  
     this.activeIssuePanel = 'normal';
   }
 
@@ -2843,6 +3007,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.itemKeyword = '';
 
     this.isEditingHeader = false;
+
+    this.focusHeaderItemNoIfNeeded();
   }
 
   selectHeaderFromList(selectedHeader: HeaderIssuePalletTemp): void {
@@ -3258,23 +3424,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
         this.applyHeaderControlLotRule();
 
-        console.log('HEADER TAG COMPLETE', {
-          itemNo: itemNo,
-
-          itemName: itemName,
-
-          itemClass: master.itemClass,
-
-          groupId: this.form.groupId,
-
-          groupName: this.form.groupId
-            ? this.groupName(this.form.groupId)
-            : null,
-
-          labelType: this.labelStockType,
-
-          showControlLot: this.showHeaderControlLot,
-        });
+        this.isHeaderTagLocked = true;
 
         this.toast('success', 'Scan Tag Complete');
 
@@ -3289,6 +3439,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.headerTagScanForm.itemNo = this.form.itemNo;
     this.headerTagScanForm.itemName = this.form.itemName;
     this.syncHeaderItemClassFromItemNo();
+    // Item เดิมถูก Save มาแล้ว
+    // Lock ไว้ก่อน
+    this.isHeaderTagLocked = true;
     this.itemKeyword = this.form.itemNo;
     this.fullBoxTagQty = this.header.normalQty ?? null;
     this.fractionQtyBox =
@@ -3345,9 +3498,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.form = this.createEmptyHeaderForm();
             this.itemKeyword = '';
 
-            this.headerTagScanForm =
-            this.createEmptyScanForm();
+            this.headerTagScanForm = this.createEmptyScanForm();
             this.headerItemClass = '';
+            
+             // ปลด Lock Item No. / Item Name
+            this.isHeaderTagLocked = false;
+            // ==========================================
+            // CLEAR SEARCH STATE
+            // ==========================================
+            this.filteredItems = [];
+            this.showItemDrop = false;
 
             this.savedRows = [];
             this.scanForm = this.createEmptyScanForm();
@@ -3365,7 +3525,12 @@ export class IssueComponent implements OnInit, AfterViewInit {
             this.isEditingHeader = true;
 
             this.toast('success', 'Delete Header Success');
-            this.focusQr();
+            setTimeout(
+              () => {
+                this.focusHeaderItemNoIfNeeded();
+              },
+              0
+            );
           },
           error: (err) => {
             console.error(err);

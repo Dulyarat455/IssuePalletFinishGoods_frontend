@@ -124,20 +124,18 @@
                 <!-- RACK TITLE -->
 
                 <div
-                class="create-rack-title"
-                [ngClass]="[
-                  getCreatePalletRackGroupClass(
-                    rack.rackGroup
-                  ),
-                  rack.rackCode === 'F' &&
-                  rack.rows.length > 0 &&
-                  rack.rows[0].slots.length === 1
-                    ? 'single-column-rack-title'
-                    : ''
-                ]"
-              >
-                {{ rack.name }}
-              </div>
+                  class="create-rack-title"
+                  [ngClass]="[
+                    getCreatePalletRackGroupClass(rack.rackGroup),
+                    rack.rackCode === 'F' &&
+                    rack.rows.length > 0 &&
+                    rack.rows[0].slots.length === 1
+                      ? 'single-column-rack-title'
+                      : ''
+                  ]"
+                >
+                  {{ rack.name }}
+                </div>
 
                 <!-- RACK BODY -->
 
@@ -779,10 +777,8 @@
           <div class="section-head label-form-head">
             <div>
               <h3>Input Label Pallet Stock Finish Goods</h3>
-          
-              <span>
-                Recheck pallet information before create Header
-              </span>
+
+              <span> Recheck pallet information before create Header </span>
             </div>
           </div>
           <!-- =============================================
@@ -791,7 +787,6 @@
           ============================================= -->
 
           <div class="header-pallet-reference">
-
             <div class="header-pallet-reference-head">
               <div class="header-pallet-reference-icon">
                 <i class="fas fa-pallet"></i>
@@ -800,27 +795,20 @@
               <div>
                 <b>Pallet Information</b>
 
-                <span>
-                  ข้อมูลอ้างอิงจาก Pallet ที่เลือกไว้ก่อนหน้า
-                </span>
+                <span> ข้อมูลอ้างอิงจาก Pallet ที่เลือกไว้ก่อนหน้า </span>
               </div>
             </div>
 
-
             <div class="header-pallet-reference-grid">
-
               <!-- DATE -->
 
               <div class="header-pallet-reference-item">
                 <span>PRODUCTION DATE</span>
 
                 <b>
-                  {{
-                    palletCreateForm.date || "-"
-                  }}
+                  {{ palletCreateForm.date || "-" }}
                 </b>
               </div>
-
 
               <!-- SHIFT -->
 
@@ -828,12 +816,9 @@
                 <span>SHIFT</span>
 
                 <b>
-                  {{
-                    palletCreateForm.shift || "-"
-                  }}
+                  {{ palletCreateForm.shift || "-" }}
                 </b>
               </div>
-
 
               <!-- LOCATION -->
 
@@ -850,96 +835,139 @@
                 </b>
               </div>
 
-
               <!-- LABEL TYPE -->
 
               <div class="header-pallet-reference-item">
                 <span>LABEL TYPE</span>
 
                 <b>
-                  {{
-                    labelStockType || "-"
-                  }}
+                  {{ labelStockType || "-" }}
                 </b>
               </div>
-
             </div>
-
           </div>
           <form class="header-form" autocomplete="off">
-
             <div class="form-grid header-input-grid">
-          
               <!-- =====================================================
                   HEADER TAG SCAN
                   7 FIELD INPUT
               ===================================================== -->
 
               <div class="header-tag-scan-area">
-
                 <!-- =================================
                     ITEM NO - SHOW
                 ================================== -->
 
-                <div class="form-field header-tag-visible-field">
+                <div class="form-field header-tag-visible-field header-item-scan-field">
 
                   <label>
+                    <i class="fas fa-qrcode"></i>
                     Item No.
                   </label>
-
-                  <input
-                    #headerTagItemNo
-                    class="control"
-                    type="text"
-                    name="headerTagItemNo"
-                    autocomplete="off"
-                    placeholder="Scan Item No."
-                    [(ngModel)]="
-                      headerTagScanForm.itemNo
-                    "
-                    [disabled]="isSavingHeader"
-                    (keydown.enter)="
-                      onHeaderTagScanEnter(
-                        'itemNo',
-                        $event
-                      )
-                    "
-                  />
-
+                
+                  <div
+                    class="header-item-scan-control"
+                    [class.scan-complete]="isHeaderTagLocked"
+                  >
+                
+                    <div class="header-item-scan-icon">
+                      <i
+                        class="fas"
+                        [class.fa-qrcode]="!isHeaderTagLocked"
+                        [class.fa-check]="isHeaderTagLocked"
+                      ></i>
+                    </div>
+                
+                
+                    <input
+                      #headerTagItemNo
+                      class="control"
+                      type="text"
+                      name="headerTagItemNo"
+                      autocomplete="off"
+                      placeholder="Scan Item No."
+                      [(ngModel)]="headerTagScanForm.itemNo"
+                      [disabled]="
+                        isSavingHeader ||
+                        isHeaderTagLocked
+                      "
+                      (keydown.enter)="
+                        onHeaderTagScanEnter(
+                          'itemNo',
+                          $event
+                        )
+                      "
+                    />
+                
+                
+                    <span
+                      class="header-item-scan-badge"
+                      *ngIf="!isHeaderTagLocked"
+                    >
+                      READY
+                    </span>
+                
+                    <span
+                      class="header-item-scan-badge complete"
+                      *ngIf="isHeaderTagLocked"
+                    >
+                      SCANNED
+                    </span>
+                
+                  </div>
+                
+                  <small
+                    class="header-item-scan-note"
+                    *ngIf="!isHeaderTagLocked"
+                  >
+                    Scan barcode / QR Tag to start
+                  </small>
+                
                 </div>
-
-
-                <!-- =================================
-                    ITEM NAME - SHOW
-                ================================== -->
 
                 <div class="form-field header-tag-visible-field">
 
                   <label>
                     Item Name
                   </label>
+                
+                  <!-- ก่อน Scan สำเร็จ -->
+                  <div
+                    class="header-item-name-placeholder"
+                    *ngIf="!isHeaderTagLocked"
+                  >
+                    Auto after scan
+                  </div>
+                
+                
+                  <!-- หลัง Scan สำเร็จ -->
+                  <input
+                    *ngIf="isHeaderTagLocked"
+                    class="control readonly"
+                    type="text"
+                    [value]="headerTagScanForm.itemName || '-'"
+                    readonly
+                  />
+                
+                </div>
 
+                <!-- =================================
+                    ITEM NAME - SHOW
+                ================================== -->
+
+                
                   <input
                     #headerTagItemName
-                    class="control"
+                    class="header-tag-hidden-scan"
                     type="text"
                     name="headerTagItemName"
                     autocomplete="off"
                     placeholder="Scan Item Name"
-                    [(ngModel)]="
-                      headerTagScanForm.itemName
-                    "
-                    [disabled]="isSavingHeader"
-                    (keydown.enter)="
-                      onHeaderTagScanEnter(
-                        'itemName',
-                        $event
-                      )
-                    "
+                    [(ngModel)]="headerTagScanForm.itemName"
+                    [disabled]="isSavingHeader || isHeaderTagLocked"
+                    (keydown.enter)="onHeaderTagScanEnter('itemName', $event)"
                   />
-
-                </div>
-
+                
 
                 <!-- =================================
                     WOS NO - HIDDEN VISUALLY
@@ -952,17 +980,9 @@
                   type="text"
                   name="headerTagWosNo"
                   autocomplete="off"
-                  [(ngModel)]="
-                    headerTagScanForm.wosNo
-                  "
-                  (keydown.enter)="
-                    onHeaderTagScanEnter(
-                      'wosNo',
-                      $event
-                    )
-                  "
+                  [(ngModel)]="headerTagScanForm.wosNo"
+                  (keydown.enter)="onHeaderTagScanEnter('wosNo', $event)"
                 />
-
 
                 <!-- DWG -->
 
@@ -972,17 +992,9 @@
                   type="text"
                   name="headerTagDwg"
                   autocomplete="off"
-                  [(ngModel)]="
-                    headerTagScanForm.dwg
-                  "
-                  (keydown.enter)="
-                    onHeaderTagScanEnter(
-                      'dwg',
-                      $event
-                    )
-                  "
+                  [(ngModel)]="headerTagScanForm.dwg"
+                  (keydown.enter)="onHeaderTagScanEnter('dwg', $event)"
                 />
-
 
                 <!-- DIE NO -->
 
@@ -992,17 +1004,9 @@
                   type="text"
                   name="headerTagDieNo"
                   autocomplete="off"
-                  [(ngModel)]="
-                    headerTagScanForm.dieNo
-                  "
-                  (keydown.enter)="
-                    onHeaderTagScanEnter(
-                      'dieNo',
-                      $event
-                    )
-                  "
+                  [(ngModel)]="headerTagScanForm.dieNo"
+                  (keydown.enter)="onHeaderTagScanEnter('dieNo', $event)"
                 />
-
 
                 <!-- LOT NO -->
 
@@ -1012,17 +1016,9 @@
                   type="text"
                   name="headerTagLotNo"
                   autocomplete="off"
-                  [(ngModel)]="
-                    headerTagScanForm.lotNo
-                  "
-                  (keydown.enter)="
-                    onHeaderTagScanEnter(
-                      'lotNo',
-                      $event
-                    )
-                  "
+                  [(ngModel)]="headerTagScanForm.lotNo"
+                  (keydown.enter)="onHeaderTagScanEnter('lotNo', $event)"
                 />
-
 
                 <!-- QTY -->
 
@@ -1032,52 +1028,29 @@
                   type="number"
                   name="headerTagQty"
                   autocomplete="off"
-                  [(ngModel)]="
-                    headerTagScanForm.qty
-                  "
-                  (keydown.enter)="
-                    onHeaderTagScanEnter(
-                      'qty',
-                      $event
-                    )
-                  "
+                  [(ngModel)]="headerTagScanForm.qty"
+                  (keydown.enter)="onHeaderTagScanEnter('qty', $event)"
                 />
-
               </div>
-          
-          
-              <div class="form-field header-field-group">
 
-                <label>
-                  Auto Group
-                </label>
-              
+              <div class="form-field header-field-group">
+                <label> Auto Group </label>
+
                 <input
                   class="control readonly"
                   type="text"
-                  [value]="
-                    form.groupId
-                      ? groupName(form.groupId)
-                      : '-'
-                  "
+                  [value]="form.groupId ? groupName(form.groupId) : '-'"
                   readonly
                 />
-              
-                <small class="auto-total-note">
-                  Auto from Item Class
-                </small>
-              
+
+                <small class="auto-total-note"> Auto from Item Class </small>
               </div>
-          
-          
+
               <div
                 class="form-field header-field-control-lot"
                 *ngIf="showHeaderControlLot"
               >
-
-                <label>
-                  Control Lot OQC
-                </label>
+                <label> Control Lot OQC </label>
 
                 <input
                   class="control"
@@ -1085,49 +1058,39 @@
                   name="headerControlLot"
                   autocomplete="off"
                   placeholder="Input Control Lot OQC"
-                  [(ngModel)]="
-                    form.controlLot
-                  "
+                  [(ngModel)]="form.controlLot"
                   [disabled]="isSavingHeader"
                 />
-
               </div>
-          
-          
+
               <!-- =========================
                    MOVEMENT
               ========================== -->
-          
+
               <div class="form-field header-field-movement">
                 <label>Movement within 3 month</label>
-          
+
                 <select
                   class="control"
                   name="movementMonth"
                   [(ngModel)]="form.movementMonth"
                   [disabled]="isSavingHeader"
                 >
-                  <option value="" disabled>
-                    Select Month
-                  </option>
-          
-                  <option
-                    *ngFor="let m of movementMonthOptions"
-                    [value]="m"
-                  >
+                  <option value="" disabled>Select Month</option>
+
+                  <option *ngFor="let m of movementMonthOptions" [value]="m">
                     {{ m }}
                   </option>
                 </select>
               </div>
-          
-          
+
               <!-- =========================
                    FULL BOX
               ========================== -->
-          
+
               <div class="form-field box-plan-field header-field-full-box">
                 <label>QTY Box เต็ม</label>
-          
+
                 <input
                   class="control"
                   type="number"
@@ -1139,15 +1102,14 @@
                   [disabled]="isSavingHeader"
                 />
               </div>
-          
-          
+
               <!-- =========================
                    FRACTION BOX
               ========================== -->
-          
+
               <div class="form-field box-plan-field header-field-fraction-box">
                 <label>QTY Box เศษ</label>
-          
+
                 <input
                   class="control"
                   type="number"
@@ -1159,15 +1121,14 @@
                   [disabled]="isSavingHeader"
                 />
               </div>
-          
-          
+
               <!-- =========================
                    TOTAL BOX
               ========================== -->
-          
+
               <div class="form-field header-field-total-box">
                 <label>Total QTY BOX</label>
-          
+
                 <input
                   class="control readonly total-box-auto-input"
                   type="number"
@@ -1176,21 +1137,18 @@
                   placeholder="Auto"
                   readonly
                 />
-          
-                <small class="auto-total-note">
-                  Box เต็ม + Box เศษ
-                </small>
+
+                <small class="auto-total-note"> Box เต็ม + Box เศษ </small>
               </div>
-          
             </div>
-          
-          
+
             <!-- =========================
                  ACTION
             ========================== -->
-          
+
             <div class="form-actions">
-          
+              <!-- SAVE -->
+
               <button
                 type="button"
                 class="btn primary"
@@ -1198,15 +1156,25 @@
                 [disabled]="isSavingHeader"
               >
                 <i class="fas fa-save"></i>
-          
-                {{
-                  isSavingHeader
-                    ? "Saving..."
-                    : "Save Header"
-                }}
+
+                {{ isSavingHeader ? "Saving..." : "Save Header" }}
               </button>
-          
-          
+
+              <!-- CLEAR FORM -->
+
+              <button
+                type="button"
+                class="btn header-clear-btn"
+                (click)="onClearHeaderForm()"
+                [disabled]="isSavingHeader"
+              >
+                <i class="fas fa-eraser"></i>
+
+                Clear Form
+              </button>
+
+              <!-- CANCEL EDIT -->
+
               <button
                 type="button"
                 class="btn ghost"
@@ -1216,9 +1184,7 @@
               >
                 Cancel
               </button>
-          
             </div>
-          
           </form>
         </section>
       </div>
