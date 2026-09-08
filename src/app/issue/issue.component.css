@@ -5229,7 +5229,7 @@ input[readonly] {
 
   grid-template-columns:
     repeat(
-      5,
+      6,
       minmax(0, 1fr)
     );
 
@@ -5526,6 +5526,45 @@ input[readonly] {
   box-shadow:
     0 0 0 3px
     rgba(16, 185, 129, 0.10);
+}
+
+
+
+.label-type-info b {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+
+  min-width: 48px;
+
+  padding: 4px 10px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+
+  font-weight: 950;
+}
+
+
+/* FG */
+
+.label-type-info b.label-type-fg {
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+
+/* WIP */
+
+.label-type-info b.label-type-wip {
+  background: #fef3c7;
+
+  color: #b45309;
 }
 
 

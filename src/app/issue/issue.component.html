@@ -769,6 +769,19 @@
               </b>
             </div>
 
+            <!-- LABEL TYPE -->
+
+            <div class="header-saved-info label-type-info">
+              <span>LABEL TYPE</span>
+
+              <b
+                [class.label-type-fg]="palletTemp?.labelType === 'FG'"
+                [class.label-type-wip]="palletTemp?.labelType === 'WIP'"
+              >
+                {{ palletTemp?.labelType || "-" }}
+              </b>
+            </div>
+
             <!-- SHIFT -->
 
             <div class="header-saved-info">
