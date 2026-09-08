@@ -1289,15 +1289,264 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   onDeletePalletTemp(): void {
-    if (!this.palletTemp) {
+    // =====================================================
+    // CHECK PALLET
+    // =====================================================
+
+    if (!this.palletTemp?.id) {
+      this.toast('warning', 'ไม่พบ Pallet Temp');
+
       return;
     }
 
+    if (this.isSavingPalletTemp) {
+      return;
+    }
+
+    const palletTempId = Number(this.palletTemp.id);
+
+    const locationName = this.selectedCreatePalletLocation
+      ? this.selectedCreatePalletLocation.name ||
+        this.selectedCreatePalletLocation.locationNo
+      : '-';
+
+    // =====================================================
+    // CONFIRM DELETE
+    // =====================================================
+
     Swal.fire({
-      icon: 'info',
-      title: 'Delete Pallet',
-      text: 'ฟังก์ชัน Delete Pallet ยังไม่ได้เชื่อมต่อ API',
-      confirmButtonText: 'OK',
+      icon: 'warning',
+
+      title: 'Delete Pallet?',
+
+      html: `
+        <div style="text-align:left">
+  
+          <div>
+            <b>Pallet Temp ID:</b>
+            ${palletTempId}
+          </div>
+  
+          <div style="margin-top:5px">
+            <b>Production Date:</b>
+            ${this.palletCreateForm.date || '-'}
+          </div>
+  
+          <div style="margin-top:5px">
+            <b>Shift:</b>
+            ${this.palletCreateForm.shift || '-'}
+          </div>
+  
+          <div style="margin-top:5px">
+            <b>Location:</b>
+            ${locationName}
+          </div>
+  
+          <div style="margin-top:5px">
+            <b>Label Type:</b>
+            ${this.palletCreateForm.labelType || '-'}
+          </div>
+  
+  
+          <div
+            style="
+              margin-top:14px;
+              padding:10px 12px;
+              border-radius:8px;
+              background:#fff1f2;
+              color:#b91c1c;
+              font-weight:700;
+            "
+          >
+            การลบ Pallet จะลบ Header,
+            Box เต็ม, Header Box เศษ และ Box เศษ
+            ที่อยู่ภายใต้ Pallet นี้ทั้งหมด
+          </div>
+  
+        </div>
+      `,
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Delete Pallet',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#dc2626',
+
+      cancelButtonColor: '#64748b',
+
+      reverseButtons: true,
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      // =====================================================
+      // START DELETE
+      // =====================================================
+
+      this.isSavingPalletTemp = true;
+
+      this.http
+        .post<any>(config.apiServer + '/api/issue/deletePalletTemp', {
+          palletTempId: palletTempId,
+        })
+        .subscribe({
+          // =================================================
+          // SUCCESS
+          // =================================================
+
+          next: (res: any): void => {
+            this.isSavingPalletTemp = false;
+
+            console.log('DELETE PALLET RESULT:', res);
+
+            // ===============================================
+            // CLEAR PALLET
+            // ===============================================
+
+            this.palletTemp = null;
+
+            this.isEditingPalletTemp = false;
+
+            // ===============================================
+            // RESET CREATE PALLET FORM
+            // ใช้ Date / Shift ปัจจุบันใหม่
+            // ===============================================
+
+            this.palletCreateForm = this.createEmptyPalletCreateForm();
+
+            // ===============================================
+            // CLEAR HEADER
+            // ===============================================
+
+            this.header = null;
+
+            this.headers = [];
+
+            this.showHeaderList = false;
+
+            this.form = this.createEmptyHeaderForm();
+
+            // ===============================================
+            // CLEAR HEADER TAG SCAN
+            // ===============================================
+
+            this.headerTagScanForm = this.createEmptyScanForm();
+
+            this.headerItemClass = '';
+
+            this.isHeaderTagLocked = false;
+
+            this.itemKeyword = '';
+
+            this.filteredItems = [];
+
+            this.showItemDrop = false;
+
+            // ===============================================
+            // CLEAR NORMAL BOX
+            // ===============================================
+
+            this.savedRows = [];
+
+            this.scanForm = this.createEmptyScanForm();
+
+            this.fullBoxTagQty = null;
+
+            this.isSavingFullBoxTag = false;
+
+            // ===============================================
+            // CLEAR FRACTION
+            // ===============================================
+
+            this.showFractionSection = false;
+
+            this.fractionHeader = null;
+
+            this.fractionQtyBox = null;
+
+            this.fractionRows = [];
+
+            this.fractionScanForm = this.createEmptyScanForm();
+
+            // ===============================================
+            // RESET OTHER STATE
+            // ===============================================
+
+            this.isEditingHeader = false;
+
+            this.activeIssuePanel = 'normal';
+
+            this.currentLabelPageIndex = 0;
+
+            // ===============================================
+            // STAY CREATE PALLET PAGE
+            // ===============================================
+
+            this.showCreatePallet = true;
+
+            // ===============================================
+            // REBUILD RACK
+            // เพราะ Pallet เดิมถูกลบแล้ว
+            // ===============================================
+
+            this.buildCreatePalletRackView();
+
+            // ===============================================
+            // SUCCESS
+            // ===============================================
+
+            Swal.fire({
+              icon: 'success',
+
+              title: 'Delete Pallet Success',
+
+              text: 'ลบ Pallet และข้อมูลที่เกี่ยวข้องเรียบร้อยแล้ว',
+
+              timer: 1600,
+
+              showConfirmButton: false,
+            });
+          },
+
+          // =================================================
+          // ERROR
+          // =================================================
+
+          error: (err: any): void => {
+            console.error('DELETE PALLET ERROR:', err);
+
+            this.isSavingPalletTemp = false;
+
+            const msg =
+              err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Delete Pallet fail';
+
+            if (msg === 'missing_required_fields') {
+              Swal.fire('Warning', 'ไม่พบ Pallet Temp ID', 'warning');
+
+              return;
+            }
+
+            if (msg === 'invalid_palletTempId') {
+              Swal.fire('Warning', 'Pallet Temp ID ไม่ถูกต้อง', 'warning');
+
+              return;
+            }
+
+            if (msg === 'pallet_temp_not_found') {
+              Swal.fire('Warning', 'ไม่พบ Pallet Temp นี้ในระบบ', 'warning');
+
+              return;
+            }
+
+            Swal.fire('Error', msg, 'error');
+          },
+        });
     });
   }
 
@@ -2198,90 +2447,68 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.applyHeaderControlLotRule();
   }
 
-  private focusHeaderItemNoIfNeeded(
-    retry: number = 0
-  ): void {
-  
+  private focusHeaderItemNoIfNeeded(retry: number = 0): void {
     // ==========================================
     // HEADER FORM ต้องเปิดอยู่
     // ==========================================
-  
+
     if (!this.showHeaderForm) {
       return;
     }
-  
-  
+
     // ==========================================
     // ถ้า Scan สำเร็จแล้ว ไม่ต้อง Focus
     // ==========================================
-  
+
     if (this.isHeaderTagLocked) {
       return;
     }
-  
-  
+
     // ==========================================
     // ถ้ามี Item No. แล้ว ไม่ต้อง Focus
     // ==========================================
-  
-    const itemNo =
-      String(
-        this.headerTagScanForm.itemNo || ''
-      ).trim();
-  
-  
+
+    const itemNo = String(this.headerTagScanForm.itemNo || '').trim();
+
     if (itemNo) {
       return;
     }
-  
-  
+
     // ==========================================
     // รอ Angular Render DOM
     // ==========================================
-  
+
     setTimeout(() => {
-  
-      const el =
-        this.headerTagItemNo
-          ?.nativeElement;
-  
-  
+      const el = this.headerTagItemNo?.nativeElement;
+
       // ========================================
       // DOM ยังไม่มา
       // ให้ลองใหม่ได้สูงสุด 5 รอบ
       // ========================================
-  
+
       if (!el) {
-  
         if (retry < 5) {
-  
-          this.focusHeaderItemNoIfNeeded(
-            retry + 1
-          );
-  
+          this.focusHeaderItemNoIfNeeded(retry + 1);
         }
-  
+
         return;
       }
-  
-  
+
       // ========================================
       // Input Disabled
       // ========================================
-  
+
       if (el.disabled) {
         return;
       }
-  
-  
+
       // ========================================
       // FOCUS
       // ========================================
-  
+
       el.focus();
-  
+
       el.select();
-  
     }, 80);
   }
 
@@ -3015,9 +3242,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
     // ==========================================
 
     setTimeout(() => {
-
       this.focusHeaderItemNoIfNeeded();
-
     }, 0);
   }
 
