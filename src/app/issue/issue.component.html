@@ -685,27 +685,23 @@
 
           <div class="header-saved-top">
             <div class="header-saved-status">
-
               <div class="header-saved-status-icon">
                 <i class="fas fa-check"></i>
               </div>
-            
+
               <div>
-                <div class="header-saved-eyebrow">
-                  SAVED HEADER
-                </div>
-            
+                <div class="header-saved-eyebrow">SAVED HEADER</div>
+
                 <div class="header-saved-title">
                   {{ header.itemNo }}
                 </div>
-            
+
                 <div class="header-saved-subtitle">
                   <span class="header-ready-dot"></span>
-            
+
                   {{ header.itemName }}
                 </div>
               </div>
-            
             </div>
 
             <!-- ACTION -->
@@ -753,7 +749,6 @@
   ========================================== -->
 
           <div class="header-saved-main">
-            
             <!-- GROUP -->
 
             <div class="header-saved-info">
@@ -1239,9 +1234,7 @@
         <div class="issue-menu-head">
           <div>
             <h3>Operation Menu</h3>
-            <span
-              >ขั้นตอนการทำงาน โดย Header Saved จะแสดงอยู่ด้านบนตลอด</span
-            >
+            <span>ขั้นตอนการทำงาน โดย Header Saved จะแสดงอยู่ด้านบนตลอด</span>
           </div>
 
           <div class="issue-menu-current">
@@ -1853,34 +1846,69 @@
                 </div>
 
                 <div class="form-field fraction-qty-field">
-                  <label>QTY</label>
+                  <label>
+                    QTY
+
+                    <span
+                      class="fraction-qty-edit-required"
+                      *ngIf="isFractionTagScanned && !isFractionQtyEdited"
+                    >
+                      กรุณาแก้ QTY
+                    </span>
+
+                    <span
+                      class="fraction-qty-edit-complete"
+                      *ngIf="isFractionTagScanned && isFractionQtyEdited"
+                    >
+                      <i class="fas fa-check"></i>
+                      Edited
+                    </span>
+                  </label>
+
                   <input
                     #fractionQty
                     class="control"
                     type="number"
                     name="fraction_qty"
                     [(ngModel)]="fractionScanForm.qty"
+                    (ngModelChange)="onFractionQtyChange($event)"
+                    [class.fraction-qty-wait-edit]="
+                      isFractionTagScanned && !isFractionQtyEdited
+                    "
+                    [class.fraction-qty-edited]="
+                      isFractionTagScanned && isFractionQtyEdited
+                    "
                     [disabled]="
                       isEditingHeader || isSavingFractionScan || isFractionFull
                     "
                     (keydown.enter)="onFractionScanEnter('qty', $event)"
-                    (keydown.tab)="loopFractionFocusToFirst($event)"
                   />
                 </div>
               </div>
 
               <div class="scan-actions" *ngIf="!isFractionFull">
                 <button
-                  type="button"
-                  class="btn fraction-save"
-                  (click)="onConfirmFractionScan()"
-                  [disabled]="
-                    isEditingHeader || isSavingFractionScan || isFractionFull
-                  "
-                >
-                  <i class="fas fa-check"></i>
-                  {{ isSavingFractionScan ? "Saving..." : "Confirm Box เศษ" }}
-                </button>
+                type="button"
+                class="btn fraction-save"
+              
+                (click)="onConfirmFractionScan()"
+              
+                [disabled]="
+                  isEditingHeader ||
+                  isSavingFractionScan ||
+                  isFractionFull ||
+                  !isFractionTagScanned ||
+                  !isFractionQtyEdited
+                "
+              >
+                <i class="fas fa-check"></i>
+              
+                {{
+                  isSavingFractionScan
+                    ? "Saving..."
+                    : "Confirm Box เศษ"
+                }}
+              </button>
 
                 <button
                   type="button"

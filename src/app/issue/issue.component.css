@@ -5485,6 +5485,51 @@ input[readonly] {
 
 
 
+.fraction-qty-edit-required {
+  margin-left: 8px;
+
+  color: #d97706;
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
+
+.fraction-qty-edit-complete {
+  margin-left: 8px;
+
+  color: #059669;
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
+
+.fraction-qty-wait-edit {
+  border-color: #f59e0b !important;
+
+  background: #fffbeb !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(245, 158, 11, 0.10);
+}
+
+
+.fraction-qty-edited {
+  border-color: #10b981 !important;
+
+  background: #f0fdf4 !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(16, 185, 129, 0.10);
+}
+
+
+
 /* ====================
 for 2 case to center
 ==================== */

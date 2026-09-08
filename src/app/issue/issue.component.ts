@@ -287,6 +287,9 @@ export class IssueComponent implements OnInit, AfterViewInit {
   fractionQtyBox: number | null = null;
 
   fractionScanForm: WosScanForm = this.createEmptyScanForm();
+  isFractionTagScanned = false;
+  fractionTagOriginalQty: number | null = null;
+  isFractionQtyEdited = false;
   fractionRows: FractionTempRow[] = [];
 
   labelStockType: LabelStockType = 'FG';
@@ -4297,7 +4300,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   onFractionScanEnter(
     field: 'itemNo' | 'itemName' | 'wosNo' | 'dwg' | 'dieNo' | 'lotNo' | 'qty',
     ev: any
-  ) {
+  ): void {
     if (ev?.key === 'Enter') {
       ev.preventDefault();
     }
@@ -4312,45 +4315,243 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const requiredOk =
-      !!this.fractionScanForm.itemNo &&
-      !!this.fractionScanForm.itemName &&
-      !!this.fractionScanForm.wosNo &&
-      !!this.fractionScanForm.dwg &&
-      !!this.fractionScanForm.dieNo &&
-      !!this.fractionScanForm.lotNo &&
-      this.fractionScanForm.qty != null &&
-      Number(this.fractionScanForm.qty) > 0;
+    // =====================================================
+    // ถ้า Tag ครบแล้ว
+    // ไม่ให้ scan field 1-6 ต่อ
+    // เหลือแก้ QTY อย่างเดียว
+    // =====================================================
+
+    if (this.isFractionTagScanned && field !== 'qty') {
+      return;
+    }
 
     switch (field) {
+      // ===================================================
+      // ITEM NO
+      // ===================================================
+
       case 'itemNo':
-        if (!this.fractionScanForm.itemNo) return;
+        if (!String(this.fractionScanForm.itemNo || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionItemName);
 
+      // ===================================================
+      // ITEM NAME
+      // ===================================================
+
       case 'itemName':
-        if (!this.fractionScanForm.itemName) return;
+        if (!String(this.fractionScanForm.itemName || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionWosNo);
 
+      // ===================================================
+      // WOS
+      // ===================================================
+
       case 'wosNo':
-        if (!this.fractionScanForm.wosNo) return;
+        if (!String(this.fractionScanForm.wosNo || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionDwg);
 
+      // ===================================================
+      // DWG
+      // ===================================================
+
       case 'dwg':
-        if (!this.fractionScanForm.dwg) return;
+        if (!String(this.fractionScanForm.dwg || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionDieNo);
 
+      // ===================================================
+      // DIE NO
+      // ===================================================
+
       case 'dieNo':
-        if (!this.fractionScanForm.dieNo) return;
+        if (!String(this.fractionScanForm.dieNo || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionLotNo);
 
+      // ===================================================
+      // LOT NO
+      // ===================================================
+
       case 'lotNo':
-        if (!this.fractionScanForm.lotNo) return;
+        if (!String(this.fractionScanForm.lotNo || '').trim()) {
+          return;
+        }
+
         return this.focusEl(this.fractionQty);
 
-      case 'qty':
-        if (!requiredOk) return;
-        return this.onConfirmFractionScan();
+      // ===================================================
+      // QTY
+      //
+      // จุดสำคัญ:
+      // Tag Scan ครบตรงนี้
+      // แต่ยังไม่ยิง API
+      // ===================================================
+
+      case 'qty': {
+        const itemNo = String(this.fractionScanForm.itemNo || '').trim();
+
+        const itemName = String(this.fractionScanForm.itemName || '').trim();
+
+        const wosNo = String(this.fractionScanForm.wosNo || '').trim();
+
+        const dwg = String(this.fractionScanForm.dwg || '').trim();
+
+        const dieNo = String(this.fractionScanForm.dieNo || '').trim();
+
+        const lotNo = String(this.fractionScanForm.lotNo || '').trim();
+
+        const qty = Number(this.fractionScanForm.qty);
+
+        // ===============================================
+        // CHECK TAG 7 FIELD
+        // ===============================================
+
+        if (
+          !itemNo ||
+          !itemName ||
+          !wosNo ||
+          !dwg ||
+          !dieNo ||
+          !lotNo ||
+          !Number.isFinite(qty) ||
+          qty <= 0
+        ) {
+          this.toast('warning', 'ข้อมูล Tag ยังไม่ครบ');
+
+          return;
+        }
+
+        // ===============================================
+        // CHECK ITEM WITH HEADER
+        // ก่อนให้แก้ QTY
+        // ===============================================
+
+        const headerItemNo = String(this.header.itemNo || '').trim();
+
+        if (itemNo !== headerItemNo) {
+          document.activeElement instanceof HTMLElement &&
+            document.activeElement.blur();
+
+          Swal.fire({
+            icon: 'warning',
+
+            title: 'Item No. ของ Box เศษไม่ตรงกับ Header',
+
+            html: `
+              <div style="text-align:left">
+  
+                <div>
+                  <b>Item No. จาก Header:</b>
+                  ${headerItemNo}
+                </div>
+  
+                <div>
+                  <b>Item No. ที่ Scan:</b>
+                  ${itemNo}
+                </div>
+  
+                <div
+                  style="
+                    margin-top:10px;
+                    color:#b91c1c;
+                    font-weight:700;
+                  "
+                >
+                  กรุณาตรวจสอบ Tag
+                  และ Scan ใหม่อีกครั้ง
+                </div>
+  
+              </div>
+            `,
+
+            confirmButtonText: 'Scan ใหม่',
+
+            confirmButtonColor: '#dc2626',
+
+            returnFocus: false,
+          }).then(() => {
+            this.clearFractionScanForm();
+          });
+
+          return;
+        }
+
+        // ===============================================
+        // TAG SCAN COMPLETE
+        // เก็บ QTY ต้นฉบับจาก Tag
+        // ===============================================
+
+        this.fractionTagOriginalQty = qty;
+
+        this.isFractionTagScanned = true;
+
+        // ตอนนี้ยัง "ไม่ได้แก้" QTY
+        this.isFractionQtyEdited = false;
+
+        // ===============================================
+        // Select QTY เพื่อให้ Operator พิมพ์ทับได้เลย
+        // ===============================================
+
+        setTimeout(() => {
+          const el = this.fractionQty?.nativeElement;
+
+          if (!el) {
+            return;
+          }
+
+          el.focus();
+
+          el.select();
+        }, 50);
+
+        this.toast('info', 'Scan Tag สำเร็จ กรุณาแก้ QTY Box เศษ');
+
+        return;
+      }
     }
+  }
+
+  onFractionQtyChange(value: number | string | null): void {
+    // =====================================================
+    // ก่อน Tag Scan Complete
+    // onchange ที่เกิดจากปืน -> ไม่สนใจ
+    // =====================================================
+
+    if (!this.isFractionTagScanned) {
+      this.isFractionQtyEdited = false;
+
+      return;
+    }
+
+    // =====================================================
+    // หลัง Tag Scan Complete แล้ว
+    // ตรงนี้ถือเป็นการแก้ของ Operator
+    // =====================================================
+
+    const currentQty = Number(value);
+
+    const originalQty = Number(this.fractionTagOriginalQty);
+
+    if (!Number.isFinite(currentQty) || currentQty <= 0) {
+      this.isFractionQtyEdited = false;
+
+      return;
+    }
+
+    this.isFractionQtyEdited = currentQty !== originalQty;
   }
 
   onConfirmFractionScan() {
@@ -4360,6 +4561,14 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     if (!this.fractionHeader) {
       return this.toast('warning', 'กรุณาสร้าง Header Box เศษก่อน');
+    }
+
+    if (!this.isFractionTagScanned) {
+      return this.toast('warning', 'กรุณา Scan Tag Box เศษให้ครบก่อน');
+    }
+
+    if (!this.isFractionQtyEdited) {
+      return this.toast('warning', 'กรุณาแก้ QTY Box เศษก่อน Confirm');
     }
 
     if (this.isFractionFull) {
@@ -4416,6 +4625,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
         focusConfirm: true,
       }).then(() => {
         this.fractionScanForm = this.createEmptyScanForm();
+
+        this.isFractionTagScanned = false;
+        this.fractionTagOriginalQty = null;
+        this.isFractionQtyEdited = false;
 
         setTimeout(() => {
           this.focusFractionFirst();
@@ -5109,9 +5322,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-  clearFractionScanForm() {
+  clearFractionScanForm(): void {
     this.fractionScanForm = this.createEmptyScanForm();
-    this.focusFractionFirst();
+
+    this.isFractionTagScanned = false;
+
+    this.fractionTagOriginalQty = null;
+
+    this.isFractionQtyEdited = false;
+
+    setTimeout(() => {
+      this.focusFractionFirst();
+    }, 100);
   }
 
   /* =======================
