@@ -963,11 +963,25 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   backToHeaderList(): void {
+    if (!this.palletTemp) {
+      return;
+    }
+
     this.resetSelectedHeaderData();
 
     this.showCreatePallet = false;
+    this.showHeaderList = false;
 
-    this.showHeaderList = true;
+    this.fetchHeader(() => {
+
+        // หลังโหลดข้อมูลใหม่เสร็จ
+        // ค่อยเปิด Select Header
+
+        this.showHeaderList =
+          true;
+
+      });
+
   }
 
   fetchPalletTemp(): void {
@@ -4672,6 +4686,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
           // ดึงรายการ Box เศษจาก backend ใหม่
           this.fetchFractionTempList();
 
+          this.fetchHeader();
+
           Swal.fire({
             icon: 'success',
 
@@ -5049,6 +5065,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
           // ดึงจาก backend ใหม่
           this.fetchWosTemp();
+
+          this.fetchHeader();
 
           Swal.fire({
             icon: 'success',
