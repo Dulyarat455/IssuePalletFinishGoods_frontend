@@ -4652,17 +4652,80 @@ export class IssueComponent implements OnInit, AfterViewInit {
       })
       .subscribe({
         next: (res) => {
-          this.fractionScanForm = this.createEmptyScanForm();
-          this.isSavingFractionScan = false;
+          const scannedData = {
+            itemNo: data.itemNo,
+            itemName: data.itemName,
+            wosNo: data.wosNo,
+            qty: data.qty,
+          };
 
-          this.toast('success', 'Scan Box เศษสำเร็จ');
+          this.fractionScanForm = this.createEmptyScanForm();
+
+          this.isFractionTagScanned = false;
+
+          this.fractionTagOriginalQty = null;
+
+          this.isFractionQtyEdited = false;
+
+          this.isSavingFractionScan = false;
 
           // ดึงรายการ Box เศษจาก backend ใหม่
           this.fetchFractionTempList();
 
-          setTimeout(() => {
-            this.focusFractionFirst();
-          }, 150);
+          Swal.fire({
+            icon: 'success',
+
+            title: 'Scan Box เศษสำเร็จ',
+
+            html: `
+              <div style="text-align:left">
+        
+                <div>
+                  <b>Item No.:</b>
+                  ${scannedData.itemNo}
+                </div>
+        
+                <div>
+                  <b>Item Name:</b>
+                  ${scannedData.itemName}
+                </div>
+        
+                <div>
+                  <b>WOS No.:</b>
+                  ${scannedData.wosNo}
+                </div>
+        
+                <div
+                  style="
+                    margin-top:12px;
+                    padding:10px 12px;
+                    border-radius:10px;
+                    background:#fff7ed;
+                    color:#c2410c;
+                  "
+                >
+                  <b>QTY Box เศษ:</b>
+                  ${scannedData.qty}
+                </div>
+        
+              </div>
+            `,
+
+            // Auto close
+            timer: 600,
+
+            timerProgressBar: true,
+
+            showConfirmButton: false,
+
+            allowOutsideClick: false,
+
+            returnFocus: false,
+          }).then(() => {
+            setTimeout(() => {
+              this.focusFractionFirst();
+            }, 100);
+          });
         },
         error: (err) => {
           console.error(err);
@@ -4973,13 +5036,77 @@ export class IssueComponent implements OnInit, AfterViewInit {
       .post<any>(config.apiServer + '/api/issue/createBoxTemp', payload)
       .subscribe({
         next: () => {
-          this.toast('success', 'Scan สำเร็จ');
+          const scannedData = {
+            itemNo: this.scanForm.itemNo,
+            itemName: this.scanForm.itemName,
+            wosNo: this.scanForm.wosNo,
+            qty: this.scanForm.qty,
+          };
 
           this.scanForm = this.createEmptyScanForm();
+
           this.isSavingScan = false;
 
-          // ดึงจาก backend ใหม่ เพื่อให้ข้อมูลตรงกับ database แน่นอน
+          // ดึงจาก backend ใหม่
           this.fetchWosTemp();
+
+          Swal.fire({
+            icon: 'success',
+
+            title: 'Scan Box เต็มสำเร็จ',
+
+            html: `
+              <div style="text-align:left">
+        
+                <div>
+                  <b>Item No.:</b>
+                  ${scannedData.itemNo}
+                </div>
+        
+                <div>
+                  <b>Item Name:</b>
+                  ${scannedData.itemName}
+                </div>
+        
+                <div>
+                  <b>WOS No.:</b>
+                  ${scannedData.wosNo}
+                </div>
+        
+                <div
+                  style="
+                    margin-top:12px;
+                    padding:10px 12px;
+                    border-radius:10px;
+                    background:#ecfdf5;
+                    color:#047857;
+                  "
+                >
+                  <b>QTY:</b>
+                  ${scannedData.qty}
+                </div>
+        
+              </div>
+            `,
+
+            // ==============================
+            // AUTO CLOSE
+            // ==============================
+
+            timer: 500,
+
+            timerProgressBar: true,
+
+            showConfirmButton: false,
+
+            allowOutsideClick: false,
+
+            returnFocus: false,
+          }).then(() => {
+            setTimeout(() => {
+              this.focusScanFirst();
+            }, 100);
+          });
         },
         error: (err) => {
           console.error(err);
