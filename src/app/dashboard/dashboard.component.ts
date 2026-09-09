@@ -1,350 +1,1055 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
 import Swal from 'sweetalert2';
+import config from '../../config';
+
 
 type PalletBoxRow = {
   id: number;
-  wosNo: string;
+  headerId: number;
+  headerClosedId: number | null;
+
   itemNo: string;
   itemName: string;
+
+  wosNo: string;
+  dwg: string;
   dieNo: string;
   lotNo: string;
+
   qty: number;
-  boxStatus: 'Open' | 'Closed';
+
+  timeStmp: string;
+  status: string;
+
+  isFraction: boolean;
+  boxType: 'NORMAL' | 'FRACTION';
 };
 
-type IssuedPalletLot = {
-  issueDate: string;
-  issueTime: string;
-  issueNo: string;
-  idPallet: string;
+
+type PalletHeaderRow = {
+  id: number;
+  palletId: number;
+
   itemNo: string;
   itemName: string;
-  dieNo: string;
-  lotOqc: string;
-  location: string;
-  movement: string;
+
+  normalQty: number;
+  fractionQty: number;
+
+  groupId: number;
+
+  controlLot: string;
+  moveMentThreeMonth: string;
+
+  userId: number;
+
+  timeStmp: string;
+  status: string;
+
   totalBox: number;
-  closedBox: number;
+  normalBox: number;
+  fractionBox: number;
   totalQty: number;
-  status: 'Open' | 'Partial Closed' | 'Closed';
-  issueBy: string;
+
   boxes: PalletBoxRow[];
 };
 
-type ClosedPalletLot = {
-  closeDate: string;
-  closeTime: string;
-  closeNo: string;
-  issueNo: string;
-  idPallet: string;
-  closeType: 'Full Pallet' | 'Partial Box';
-  itemNo: string;
-  itemName: string;
-  lotOqc: string;
-  totalCloseBox: number;
-  totalCloseQty: number;
-  closeBy: string;
-  boxes: PalletBoxRow[];
+
+type PalletDashboardRow = {
+  id: number;
+
+  palletNoId: string;
+
+  date: string;
+  shift: string;
+
+  mapAreaRackId: number;
+
+  labelType: string;
+
+  userId: number;
+
+  timeStmp: string;
+
+  totalHeader: number;
+  totalBox: number;
+  normalBox: number;
+  fractionBox: number;
+  totalQty: number;
+
+  headers: PalletHeaderRow[];
 };
 
-type FilterState = {
+
+type DashboardSummary = {
+  totalPallet: number;
+  totalHeader: number;
+  totalBox: number;
+  normalBox: number;
+  fractionBox: number;
+  totalQty: number;
+};
+
+
+type DashboardFilter = {
   dateFrom: string;
   dateTo: string;
-  itemKeyword: string;
-  status: string;
-  closeType: string;
+  keyword: string;
+  shift: string;
+  labelType: string;
 };
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  imports: [
+    CommonModule,
+    FormsModule,
+  ],
+  templateUrl:
+    './dashboard.component.html',
+  styleUrl:
+    './dashboard.component.css',
 })
-export class DashboardComponent {
-  filters: FilterState = this.createDefaultFilters();
+export class DashboardComponent
+  implements OnInit
+{
 
-  expandedIssue: string | null = null;
-  expandedClose: string | null = null;
+  // =====================================================
+  // DATA
+  // =====================================================
 
-  selectedPreview: IssuedPalletLot | null = null;
+  palletsAll:
+    PalletDashboardRow[] = [];
 
-  issuedLotsAll: IssuedPalletLot[] = [
-    {
-      issueDate: '2026-07-15',
-      issueTime: '08:35',
-      issueNo: 'ISS-FG-260715-001',
-      idPallet: 'PALT-260715-001',
-      itemNo: '10000206936',
-      itemName: 'YOKE#1',
-      dieNo: 'D8',
-      lotOqc: 'S67001',
-      location: 'A101',
-      movement: 'Jul-26',
-      totalBox: 6,
-      closedBox: 0,
-      totalQty: 24000,
-      status: 'Open',
-      issueBy: 'Auto / Store',
-      boxes: [
-        { id: 1, wosNo: 'JB615021K002', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-        { id: 2, wosNo: 'JB615021K003', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-        { id: 3, wosNo: 'JB615021K004', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-        { id: 4, wosNo: 'JB615021K005', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-        { id: 5, wosNo: 'JB615021K006', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-        { id: 6, wosNo: 'JB615021K007', itemNo: '10000206936', itemName: 'YOKE#1', dieNo: 'D8', lotNo: 'L26119AB4', qty: 4000, boxStatus: 'Open' },
-      ],
-    },
-    {
-      issueDate: '2026-07-15',
-      issueTime: '10:20',
-      issueNo: 'ISS-FG-260715-002',
-      idPallet: 'PALT-260715-002',
-      itemNo: '10000207111',
-      itemName: 'STATOR CORE',
-      dieNo: 'S5',
-      lotOqc: 'S5X001',
-      location: 'B204',
-      movement: 'Jul-26',
-      totalBox: 8,
-      closedBox: 3,
-      totalQty: 32000,
-      status: 'Partial Closed',
-      issueBy: 'Auto / Store',
-      boxes: [
-        { id: 1, wosNo: 'JB615022K011', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-        { id: 2, wosNo: 'JB615022K012', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-        { id: 3, wosNo: 'JB615022K013', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-        { id: 4, wosNo: 'JB615022K014', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Open' },
-        { id: 5, wosNo: 'JB615022K015', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Open' },
-      ],
-    },
-    {
-      issueDate: '2026-07-14',
-      issueTime: '15:10',
-      issueNo: 'ISS-FG-260714-005',
-      idPallet: 'PALT-260714-005',
-      itemNo: '10000208888',
-      itemName: 'FRONT PLATE',
-      dieNo: 'F6',
-      lotOqc: 'F67001',
-      location: 'C302',
-      movement: 'Jul-26',
-      totalBox: 5,
-      closedBox: 5,
-      totalQty: 20000,
-      status: 'Closed',
-      issueBy: 'Auto / Store',
-      boxes: [
-        { id: 1, wosNo: 'JB615030K001', itemNo: '10000208888', itemName: 'FRONT PLATE', dieNo: 'F6', lotNo: 'L26118AA9', qty: 4000, boxStatus: 'Closed' },
-        { id: 2, wosNo: 'JB615030K002', itemNo: '10000208888', itemName: 'FRONT PLATE', dieNo: 'F6', lotNo: 'L26118AA9', qty: 4000, boxStatus: 'Closed' },
-      ],
-    },
-  ];
+  pallets:
+    PalletDashboardRow[] = [];
 
-  closedLotsAll: ClosedPalletLot[] = [
-    {
-      closeDate: '2026-07-15',
-      closeTime: '11:40',
-      closeNo: 'CLS-FG-260715-001',
-      issueNo: 'ISS-FG-260715-002',
-      idPallet: 'PALT-260715-002',
-      closeType: 'Partial Box',
-      itemNo: '10000207111',
-      itemName: 'STATOR CORE',
-      lotOqc: 'S5X001',
-      totalCloseBox: 3,
-      totalCloseQty: 12000,
-      closeBy: 'Store FG',
-      boxes: [
-        { id: 1, wosNo: 'JB615022K011', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-        { id: 2, wosNo: 'JB615022K012', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-        { id: 3, wosNo: 'JB615022K013', itemNo: '10000207111', itemName: 'STATOR CORE', dieNo: 'S5', lotNo: 'L26120AC1', qty: 4000, boxStatus: 'Closed' },
-      ],
-    },
-    {
-      closeDate: '2026-07-14',
-      closeTime: '16:25',
-      closeNo: 'CLS-FG-260714-003',
-      issueNo: 'ISS-FG-260714-005',
-      idPallet: 'PALT-260714-005',
-      closeType: 'Full Pallet',
-      itemNo: '10000208888',
-      itemName: 'FRONT PLATE',
-      lotOqc: 'F67001',
-      totalCloseBox: 5,
-      totalCloseQty: 20000,
-      closeBy: 'Store FG',
-      boxes: [
-        { id: 1, wosNo: 'JB615030K001', itemNo: '10000208888', itemName: 'FRONT PLATE', dieNo: 'F6', lotNo: 'L26118AA9', qty: 4000, boxStatus: 'Closed' },
-        { id: 2, wosNo: 'JB615030K002', itemNo: '10000208888', itemName: 'FRONT PLATE', dieNo: 'F6', lotNo: 'L26118AA9', qty: 4000, boxStatus: 'Closed' },
-      ],
-    },
-  ];
 
-  get issuedLots(): IssuedPalletLot[] {
-    return this.issuedLotsAll.filter((x) => this.passIssueFilter(x));
+  summary:
+    DashboardSummary = {
+      totalPallet: 0,
+      totalHeader: 0,
+      totalBox: 0,
+      normalBox: 0,
+      fractionBox: 0,
+      totalQty: 0,
+    };
+
+
+  // =====================================================
+  // FILTER
+  // =====================================================
+
+  filters:
+    DashboardFilter =
+      this.createDefaultFilters();
+
+
+  // =====================================================
+  // EXPAND
+  // =====================================================
+
+  expandedPalletIds =
+    new Set<number>();
+
+  expandedHeaderIds =
+    new Set<number>();
+
+
+  // =====================================================
+  // STATE
+  // =====================================================
+
+  isLoading = false;
+
+
+  constructor(
+    private http: HttpClient
+  ) {}
+
+
+  ngOnInit(): void {
+
+    this.fetchPallet();
+
   }
 
-  get closedLots(): ClosedPalletLot[] {
-    return this.closedLotsAll.filter((x) => this.passCloseFilter(x));
+
+  // =====================================================
+  // FETCH PALLET
+  // =====================================================
+
+  fetchPallet(): void {
+
+    if (this.isLoading) {
+      return;
+    }
+
+
+    this.isLoading =
+      true;
+
+
+    this.http
+      .get<any>(
+        config.apiServer +
+          '/api/issue/listPallet',
+        {}
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          this.isLoading =
+            false;
+
+
+          const rows =
+            Array.isArray(
+              res?.results
+            )
+              ? res.results
+              : [];
+
+
+          this.palletsAll =
+            rows.map(
+              (row: any) =>
+                this.normalizePallet(
+                  row
+                )
+            );
+
+
+          this.summary = {
+
+            totalPallet:
+              Number(
+                res?.summary
+                  ?.totalPallet || 0
+              ),
+
+            totalHeader:
+              Number(
+                res?.summary
+                  ?.totalHeader || 0
+              ),
+
+            totalBox:
+              Number(
+                res?.summary
+                  ?.totalBox || 0
+              ),
+
+            normalBox:
+              Number(
+                res?.summary
+                  ?.normalBox || 0
+              ),
+
+            fractionBox:
+              Number(
+                res?.summary
+                  ?.fractionBox || 0
+              ),
+
+            totalQty:
+              Number(
+                res?.summary
+                  ?.totalQty || 0
+              ),
+
+          };
+
+
+          this.applyFilters();
+
+
+          // เปิด Pallet ล่าสุดให้อัตโนมัติ
+          if (
+            this.pallets.length > 0
+          ) {
+
+            this.expandedPalletIds
+              .add(
+                this.pallets[0].id
+              );
+
+          }
+
+        },
+
+
+        error: (err) => {
+
+          console.error(
+            err
+          );
+
+
+          this.isLoading =
+            false;
+
+
+          Swal.fire({
+
+            icon:
+              'error',
+
+            title:
+              'Load Dashboard ไม่สำเร็จ',
+
+            text:
+              err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Fetch Pallet fail',
+
+          });
+
+        },
+
+      });
+
   }
 
-  get totalIssuedPallet(): number {
-    return this.issuedLots.length;
-  }
 
-  get totalOpenPallet(): number {
-    return this.issuedLots.filter((x) => x.status === 'Open').length;
-  }
+  // =====================================================
+  // NORMALIZE
+  // =====================================================
 
-  get totalPartialPallet(): number {
-    return this.issuedLots.filter((x) => x.status === 'Partial Closed').length;
-  }
+  private normalizePallet(
+    raw: any
+  ): PalletDashboardRow {
 
-  get totalClosedPallet(): number {
-    return this.closedLots.length;
-  }
+    const headers:
+      PalletHeaderRow[] =
+      Array.isArray(raw?.headers)
+        ? raw.headers.map(
+            (header: any) =>
+              this.normalizeHeader(
+                header
+              )
+          )
+        : [];
 
-  get totalIssuedBox(): number {
-    return this.issuedLots.reduce((sum, x) => sum + x.totalBox, 0);
-  }
-
-  get totalClosedBox(): number {
-    return this.closedLots.reduce((sum, x) => sum + x.totalCloseBox, 0);
-  }
-
-  get currentPreview(): IssuedPalletLot | null {
-    return this.selectedPreview || this.issuedLots[0] || null;
-  }
-
-  createDefaultFilters(): FilterState {
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
 
     return {
-      dateFrom: this.toYmd(yesterday),
-      dateTo: this.toYmd(today),
-      itemKeyword: '',
-      status: 'All',
-      closeType: 'All',
+
+      id:
+        Number(raw?.id),
+
+      palletNoId:
+        String(
+          raw?.palletNoId || '-'
+        ),
+
+      date:
+        String(
+          raw?.date || ''
+        ),
+
+      shift:
+        String(
+          raw?.shift || '-'
+        ),
+
+      mapAreaRackId:
+        Number(
+          raw?.mapAreaRackId || 0
+        ),
+
+      labelType:
+        String(
+          raw?.labelType || '-'
+        ),
+
+      userId:
+        Number(
+          raw?.userId || 0
+        ),
+
+      timeStmp:
+        String(
+          raw?.timeStmp || ''
+        ),
+
+      totalHeader:
+        Number(
+          raw?.totalHeader || 0
+        ),
+
+      totalBox:
+        Number(
+          raw?.totalBox || 0
+        ),
+
+      normalBox:
+        Number(
+          raw?.normalBox || 0
+        ),
+
+      fractionBox:
+        Number(
+          raw?.fractionBox || 0
+        ),
+
+      totalQty:
+        Number(
+          raw?.totalQty || 0
+        ),
+
+      headers:
+        headers,
+
     };
+
   }
 
-  resetFilters() {
-    this.filters = this.createDefaultFilters();
-    this.selectedPreview = null;
+
+  private normalizeHeader(
+    raw: any
+  ): PalletHeaderRow {
+
+    const boxes:
+      PalletBoxRow[] =
+      Array.isArray(raw?.boxes)
+        ? raw.boxes.map(
+            (box: any) =>
+              this.normalizeBox(
+                box
+              )
+          )
+        : [];
+
+
+    return {
+
+      id:
+        Number(raw?.id),
+
+      palletId:
+        Number(
+          raw?.palletId
+        ),
+
+      itemNo:
+        String(
+          raw?.itemNo || '-'
+        ),
+
+      itemName:
+        String(
+          raw?.itemName || '-'
+        ),
+
+      normalQty:
+        Number(
+          raw?.normalQty || 0
+        ),
+
+      fractionQty:
+        Number(
+          raw?.fractionQty || 0
+        ),
+
+      groupId:
+        Number(
+          raw?.groupId || 0
+        ),
+
+      controlLot:
+        String(
+          raw?.controlLot || ''
+        ),
+
+      moveMentThreeMonth:
+        String(
+          raw?.moveMentThreeMonth ||
+          '-'
+        ),
+
+      userId:
+        Number(
+          raw?.userId || 0
+        ),
+
+      timeStmp:
+        String(
+          raw?.timeStmp || ''
+        ),
+
+      status:
+        String(
+          raw?.status || ''
+        ),
+
+      totalBox:
+        Number(
+          raw?.totalBox || 0
+        ),
+
+      normalBox:
+        Number(
+          raw?.normalBox || 0
+        ),
+
+      fractionBox:
+        Number(
+          raw?.fractionBox || 0
+        ),
+
+      totalQty:
+        Number(
+          raw?.totalQty || 0
+        ),
+
+      boxes:
+        boxes,
+
+    };
+
   }
 
-  toggleIssue(issueNo: string) {
-    this.expandedIssue = this.expandedIssue === issueNo ? null : issueNo;
+
+  private normalizeBox(
+    raw: any
+  ): PalletBoxRow {
+
+    return {
+
+      id:
+        Number(raw?.id),
+
+      headerId:
+        Number(
+          raw?.headerId
+        ),
+
+      headerClosedId:
+        raw?.headerClosedId == null
+          ? null
+          : Number(
+              raw.headerClosedId
+            ),
+
+      itemNo:
+        String(
+          raw?.itemNo || '-'
+        ),
+
+      itemName:
+        String(
+          raw?.itemName || '-'
+        ),
+
+      wosNo:
+        String(
+          raw?.wosNo || '-'
+        ),
+
+      dwg:
+        String(
+          raw?.dwg || '-'
+        ),
+
+      dieNo:
+        String(
+          raw?.dieNo || '-'
+        ),
+
+      lotNo:
+        String(
+          raw?.lotNo || '-'
+        ),
+
+      qty:
+        Number(
+          raw?.qty || 0
+        ),
+
+      timeStmp:
+        String(
+          raw?.timeStmp || ''
+        ),
+
+      status:
+        String(
+          raw?.status || ''
+        ),
+
+      isFraction:
+        Boolean(
+          raw?.isFraction
+        ),
+
+      boxType:
+        raw?.isFraction
+          ? 'FRACTION'
+          : 'NORMAL',
+
+    };
+
   }
 
-  toggleClose(closeNo: string) {
-    this.expandedClose = this.expandedClose === closeNo ? null : closeNo;
+
+  // =====================================================
+  // FILTER
+  // =====================================================
+
+  createDefaultFilters():
+    DashboardFilter {
+
+    return {
+
+      dateFrom:
+        '',
+
+      dateTo:
+        '',
+
+      keyword:
+        '',
+
+      shift:
+        'ALL',
+
+      labelType:
+        'ALL',
+
+    };
+
   }
 
-  isIssueExpanded(issueNo: string): boolean {
-    return this.expandedIssue === issueNo;
+
+  applyFilters(): void {
+
+    const keyword =
+      this.norm(
+        this.filters.keyword
+      );
+
+
+    this.pallets =
+      this.palletsAll.filter(
+        (pallet) => {
+
+
+          // ===============================================
+          // DATE FROM
+          // ===============================================
+
+          const palletDate =
+            this.toYmd(
+              pallet.date
+            );
+
+
+          if (
+            this.filters.dateFrom &&
+            palletDate <
+              this.filters.dateFrom
+          ) {
+
+            return false;
+
+          }
+
+
+          // ===============================================
+          // DATE TO
+          // ===============================================
+
+          if (
+            this.filters.dateTo &&
+            palletDate >
+              this.filters.dateTo
+          ) {
+
+            return false;
+
+          }
+
+
+          // ===============================================
+          // SHIFT
+          // ===============================================
+
+          if (
+            this.filters.shift !==
+              'ALL' &&
+            pallet.shift !==
+              this.filters.shift
+          ) {
+
+            return false;
+
+          }
+
+
+          // ===============================================
+          // LABEL TYPE
+          // ===============================================
+
+          if (
+            this.filters.labelType !==
+              'ALL' &&
+            pallet.labelType !==
+              this.filters.labelType
+          ) {
+
+            return false;
+
+          }
+
+
+          // ===============================================
+          // KEYWORD
+          // ===============================================
+
+          if (!keyword) {
+
+            return true;
+
+          }
+
+
+          let searchText = `
+
+            ${pallet.palletNoId}
+
+            ${pallet.shift}
+
+            ${pallet.labelType}
+
+            ${pallet.mapAreaRackId}
+
+          `;
+
+
+          for (
+            const header
+            of pallet.headers
+          ) {
+
+            searchText += `
+
+              ${header.itemNo}
+
+              ${header.itemName}
+
+              ${header.controlLot}
+
+              ${header.moveMentThreeMonth}
+
+            `;
+
+
+            for (
+              const box
+              of header.boxes
+            ) {
+
+              searchText += `
+
+                ${box.wosNo}
+
+                ${box.itemNo}
+
+                ${box.itemName}
+
+                ${box.dwg}
+
+                ${box.dieNo}
+
+                ${box.lotNo}
+
+              `;
+
+            }
+
+          }
+
+
+          return this
+            .norm(searchText)
+            .includes(keyword);
+
+        }
+      );
+
   }
 
-  isCloseExpanded(closeNo: string): boolean {
-    return this.expandedClose === closeNo;
+
+  resetFilters(): void {
+
+    this.filters =
+      this.createDefaultFilters();
+
+
+    this.applyFilters();
+
   }
 
-  selectPreview(lot: IssuedPalletLot) {
-    this.selectedPreview = lot;
-  }
 
-  showIssueDetail(lot: IssuedPalletLot) {
-    this.selectedPreview = lot;
+  // =====================================================
+  // EXPAND PALLET
+  // =====================================================
 
-    Swal.fire({
-      title: 'Issued Pallet Detail',
-      html: `
-        <div style="text-align:left;font-size:14px;line-height:1.8">
-          <div><b>Issue No:</b> ${lot.issueNo}</div>
-          <div><b>ID Pallet:</b> ${lot.idPallet}</div>
-          <div><b>Item:</b> ${lot.itemNo} / ${lot.itemName}</div>
-          <div><b>Lot OQC:</b> ${lot.lotOqc}</div>
-          <div><b>Location:</b> ${lot.location}</div>
-          <div><b>Box:</b> ${lot.closedBox}/${lot.totalBox}</div>
-          <div><b>Status:</b> ${lot.status}</div>
-        </div>
-      `,
-      icon: 'info',
-      confirmButtonColor: '#10b981',
-    });
-  }
+  togglePallet(
+    palletId: number
+  ): void {
 
-  showCloseDetail(lot: ClosedPalletLot) {
-    Swal.fire({
-      title: 'Closed Pallet Detail',
-      html: `
-        <div style="text-align:left;font-size:14px;line-height:1.8">
-          <div><b>Close No:</b> ${lot.closeNo}</div>
-          <div><b>Issue No:</b> ${lot.issueNo}</div>
-          <div><b>ID Pallet:</b> ${lot.idPallet}</div>
-          <div><b>Close Type:</b> ${lot.closeType}</div>
-          <div><b>Item:</b> ${lot.itemNo} / ${lot.itemName}</div>
-          <div><b>Close Box:</b> ${lot.totalCloseBox}</div>
-          <div><b>Close Qty:</b> ${lot.totalCloseQty.toLocaleString()}</div>
-        </div>
-      `,
-      icon: 'success',
-      confirmButtonColor: '#14b8a6',
-    });
-  }
+    if (
+      this.expandedPalletIds.has(
+        palletId
+      )
+    ) {
 
-  private passIssueFilter(row: IssuedPalletLot): boolean {
-    if (!this.passDate(row.issueDate)) return false;
+      this.expandedPalletIds.delete(
+        palletId
+      );
 
-    const kw = this.norm(this.filters.itemKeyword);
-    if (kw) {
-      const text = this.norm(`${row.issueNo} ${row.idPallet} ${row.itemNo} ${row.itemName} ${row.lotOqc}`);
-      if (!text.includes(kw)) return false;
+      return;
+
     }
 
-    if (this.filters.status !== 'All' && row.status !== this.filters.status) {
-      return false;
+
+    this.expandedPalletIds.add(
+      palletId
+    );
+
+  }
+
+
+  isPalletExpanded(
+    palletId: number
+  ): boolean {
+
+    return this.expandedPalletIds.has(
+      palletId
+    );
+
+  }
+
+
+  // =====================================================
+  // EXPAND HEADER
+  // =====================================================
+
+  toggleHeader(
+    headerId: number
+  ): void {
+
+    if (
+      this.expandedHeaderIds.has(
+        headerId
+      )
+    ) {
+
+      this.expandedHeaderIds.delete(
+        headerId
+      );
+
+      return;
+
     }
 
-    return true;
+
+    this.expandedHeaderIds.add(
+      headerId
+    );
+
   }
 
-  private passCloseFilter(row: ClosedPalletLot): boolean {
-    if (!this.passDate(row.closeDate)) return false;
 
-    const kw = this.norm(this.filters.itemKeyword);
-    if (kw) {
-      const text = this.norm(`${row.closeNo} ${row.issueNo} ${row.idPallet} ${row.itemNo} ${row.itemName} ${row.lotOqc}`);
-      if (!text.includes(kw)) return false;
+  isHeaderExpanded(
+    headerId: number
+  ): boolean {
+
+    return this.expandedHeaderIds.has(
+      headerId
+    );
+
+  }
+
+
+  // =====================================================
+  // OPEN ALL HEADER
+  // =====================================================
+
+  expandAllHeaders(
+    pallet: PalletDashboardRow
+  ): void {
+
+    pallet.headers.forEach(
+      (header) => {
+
+        this.expandedHeaderIds.add(
+          header.id
+        );
+
+      }
+    );
+
+  }
+
+
+  collapseAllHeaders(
+    pallet: PalletDashboardRow
+  ): void {
+
+    pallet.headers.forEach(
+      (header) => {
+
+        this.expandedHeaderIds.delete(
+          header.id
+        );
+
+      }
+    );
+
+  }
+
+
+  // =====================================================
+  // UTIL
+  // =====================================================
+
+  formatDate(
+    value: string
+  ): string {
+
+    if (!value) {
+      return '-';
     }
 
-    if (this.filters.closeType !== 'All' && row.closeType !== this.filters.closeType) {
-      return false;
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return value;
+
     }
 
-    return true;
+
+    return date
+      .toLocaleDateString(
+        'en-GB'
+      );
+
   }
 
-  private passDate(dateStr: string): boolean {
-    const d = new Date(`${dateStr}T00:00:00`);
-    const from = new Date(`${this.filters.dateFrom}T00:00:00`);
-    const to = new Date(`${this.filters.dateTo}T23:59:59`);
-    return d >= from && d <= to;
+
+  formatDateTime(
+    value: string
+  ): string {
+
+    if (!value) {
+      return '-';
+    }
+
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return value;
+
+    }
+
+
+    return date
+      .toLocaleString(
+        'en-GB'
+      );
+
   }
 
-  private norm(v: string): string {
-    return (v || '').trim().toUpperCase();
+
+  private toYmd(
+    value: string
+  ): string {
+
+    if (!value) {
+      return '';
+    }
+
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return '';
+
+    }
+
+
+    const y =
+      date.getFullYear();
+
+
+    const m =
+      String(
+        date.getMonth() + 1
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    const d =
+      String(
+        date.getDate()
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    return `${y}-${m}-${d}`;
+
   }
 
-  private toYmd(d: Date): string {
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+  private norm(
+    value: string
+  ): string {
+
+    return String(
+      value || ''
+    )
+      .trim()
+      .toUpperCase();
+
   }
+
 }
