@@ -5481,80 +5481,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
      Issue / Print Label
   ======================= */
 
-  onIssuePallet() {
-    if (!this.header) return this.toast('warning', 'ไม่พบ Header');
-    if (this.savedRows.length === 0)
-      return this.toast('warning', 'ยังไม่มีรายการ Scan');
-
-    Swal.fire({
-      title: 'Confirm Issue Pallet?',
-      html: `
-        <div style="text-align:left">
-          <div><b>ID Pallet:</b> ${this.header.idPallet}</div>
-          <div><b>Item:</b> ${this.header.itemNo} - ${
-        this.header.itemName
-      }</div>
-          <div><b>Location:</b> ${this.locationName(
-            this.palletTemp?.mapAreaRackId
-          )}</div>
-          <div><b>Total WOS:</b> ${this.savedRows.length}</div>
-          <div><b>Total QTY:</b> ${this.totalScanQty.toLocaleString()}</div>
-        </div>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Issue & Print Label',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#16a34a',
-    }).then((r) => {
-      if (!r.isConfirmed) return;
-
-      this.isIssuing = true;
-
-      Swal.fire({
-        title: 'Issuing...',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      this.http
-        .post<any>(config.apiServer + '/api/issuePallet/createIssuePallet', {
-          userId: this.userId,
-          headerTempId: this.header!.id,
-        })
-        .subscribe({
-          next: (res) => {
-            Swal.close();
-            this.isIssuing = false;
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Issue Success',
-              text: 'สร้าง Pallet Label สำเร็จ',
-              confirmButtonText: 'OK',
-            }).then(() => {
-              if (res?.pdfUrl) {
-                window.open(config.apiServer + res.pdfUrl, '_blank');
-              }
-
-              this.header = null;
-              this.savedRows = [];
-              this.scanForm = this.createEmptyScanForm();
-              this.form = this.createEmptyHeaderForm();
-              this.itemKeyword = '';
-              this.isEditingHeader = true;
-              this.fetchHeader();
-            });
-          },
-          error: (err) => {
-            console.error(err);
-            this.isIssuing = false;
-            Swal.fire('Error', err?.error?.message || 'Issue fail', 'error');
-          },
-        });
-    });
-  }
-
   onSavePallet(): void {
     // =====================================================
     // VALIDATE
@@ -5600,7 +5526,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
     const locationName = this.locationName(this.palletTemp.mapAreaRackId);
 
     // =====================================================
-    // CONFIRM
+    // CONFIRM ISSUE
     // =====================================================
 
     Swal.fire({
@@ -5609,161 +5535,178 @@ export class IssueComponent implements OnInit, AfterViewInit {
       title: 'Confirm Issue Pallet?',
 
       html: `
-      <div style="text-align:left">
-
-        <div
-          style="
-            padding:12px 14px;
-            background:#f8fafc;
-            border:1px solid #e2e8f0;
-            border-radius:12px;
-          "
-        >
-
-          <div>
-            <b>Production Date:</b>
-            ${this.palletCreateForm.date || '-'}
-          </div>
-
-          <div style="margin-top:6px">
-            <b>Shift:</b>
-            ${this.palletTemp.shift || '-'}
-          </div>
-
-          <div style="margin-top:6px">
-            <b>Location:</b>
-            ${locationName}
-          </div>
-
-          <div style="margin-top:6px">
-            <b>Label Type:</b>
-            ${this.palletTemp.labelType}
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            margin-top:12px;
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:8px;
-          "
-        >
-
+        <div style="text-align:left">
+  
           <div
             style="
-              padding:10px;
-              text-align:center;
-              background:#ecfdf5;
-              border-radius:10px;
+              padding:12px 14px;
+              background:#f8fafc;
+              border:1px solid #e2e8f0;
+              border-radius:12px;
             "
           >
-            <div
-              style="
-                font-size:11px;
-                color:#047857;
-                font-weight:700;
-              "
-            >
-              HEADER
+  
+            <div>
+              <b>Production Date:</b>
+              ${this.palletCreateForm.date || '-'}
             </div>
-
-            <div
-              style="
-                margin-top:4px;
-                font-size:20px;
-                font-weight:900;
-                color:#064e3b;
-              "
-            >
-              ${headerCount}
+  
+            <div style="margin-top:6px">
+              <b>Shift:</b>
+              ${this.palletTemp.shift || '-'}
             </div>
+  
+            <div style="margin-top:6px">
+              <b>Location:</b>
+              ${locationName}
+            </div>
+  
+            <div style="margin-top:6px">
+              <b>Label Type:</b>
+              ${this.palletTemp.labelType}
+            </div>
+  
           </div>
-
-
+  
+  
           <div
             style="
-              padding:10px;
-              text-align:center;
-              background:#eff6ff;
-              border-radius:10px;
+              margin-top:12px;
+              display:grid;
+              grid-template-columns:repeat(3,1fr);
+              gap:8px;
             "
           >
+  
+            <!-- HEADER -->
+  
             <div
               style="
-                font-size:11px;
-                color:#1d4ed8;
-                font-weight:700;
+                padding:10px;
+                text-align:center;
+                background:#ecfdf5;
+                border-radius:10px;
               "
             >
-              PLAN BOX
+  
+              <div
+                style="
+                  font-size:11px;
+                  color:#047857;
+                  font-weight:700;
+                "
+              >
+                HEADER
+              </div>
+  
+              <div
+                style="
+                  margin-top:4px;
+                  font-size:20px;
+                  font-weight:900;
+                  color:#064e3b;
+                "
+              >
+                ${headerCount}
+              </div>
+  
             </div>
-
+  
+  
+            <!-- PLAN BOX -->
+  
             <div
               style="
-                margin-top:4px;
-                font-size:20px;
-                font-weight:900;
-                color:#1e3a8a;
+                padding:10px;
+                text-align:center;
+                background:#eff6ff;
+                border-radius:10px;
               "
             >
-              ${totalPlanBox}
+  
+              <div
+                style="
+                  font-size:11px;
+                  color:#1d4ed8;
+                  font-weight:700;
+                "
+              >
+                PLAN BOX
+              </div>
+  
+              <div
+                style="
+                  margin-top:4px;
+                  font-size:20px;
+                  font-weight:900;
+                  color:#1e3a8a;
+                "
+              >
+                ${totalPlanBox}
+              </div>
+  
             </div>
+  
+  
+            <!-- SCANNED -->
+  
+            <div
+              style="
+                padding:10px;
+                text-align:center;
+                background:#fff7ed;
+                border-radius:10px;
+              "
+            >
+  
+              <div
+                style="
+                  font-size:11px;
+                  color:#c2410c;
+                  font-weight:700;
+                "
+              >
+                SCANNED
+              </div>
+  
+              <div
+                style="
+                  margin-top:4px;
+                  font-size:20px;
+                  font-weight:900;
+                  color:#9a3412;
+                "
+              >
+                ${totalScannedBox}
+              </div>
+  
+            </div>
+  
           </div>
-
-
+  
+  
+          <!-- WARNING -->
+  
           <div
             style="
-              padding:10px;
-              text-align:center;
+              margin-top:14px;
+              padding:10px 12px;
+              border-radius:10px;
               background:#fff7ed;
-              border-radius:10px;
+              border:1px solid #fed7aa;
+              color:#9a3412;
+              font-size:12px;
             "
           >
-            <div
-              style="
-                font-size:11px;
-                color:#c2410c;
-                font-weight:700;
-              "
-            >
-              SCANNED
-            </div>
-
-            <div
-              style="
-                margin-top:4px;
-                font-size:20px;
-                font-weight:900;
-                color:#9a3412;
-              "
-            >
-              ${totalScannedBox}
-            </div>
+  
+            หลังจาก Issue Pallet ข้อมูล Temp
+            จะถูกย้ายไปเป็นข้อมูลจริง
+            และ Temp ของ Pallet นี้จะถูกลบออก
+  
           </div>
-
+  
         </div>
-
-
-        <div
-          style="
-            margin-top:14px;
-            padding:10px 12px;
-            border-radius:10px;
-            background:#fff7ed;
-            border:1px solid #fed7aa;
-            color:#9a3412;
-            font-size:12px;
-          "
-        >
-          หลังจาก Issue Pallet ข้อมูล Temp จะถูกย้ายไปเป็นข้อมูลจริง
-          และ Temp ของ Pallet นี้จะถูกลบออก
-        </div>
-
-      </div>
-    `,
+      `,
 
       showCancelButton: true,
 
@@ -5831,61 +5774,80 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
             const createdBoxCount = Number(res?.data?.createdBoxCount || 0);
 
+            // =================================================
+            // SUCCESS POPUP
+            // =================================================
+
             Swal.fire({
               icon: 'success',
 
               title: 'Issue Pallet Success',
 
               html: `
-              <div style="text-align:left">
-
-                <div
-                  style="
-                    margin-bottom:14px;
-                    padding:14px;
-                    border-radius:12px;
-                    background:#ecfdf5;
-                    border:1px solid #a7f3d0;
-                    text-align:center;
-                  "
-                >
-
+                <div style="text-align:left">
+  
                   <div
                     style="
-                      font-size:11px;
-                      color:#047857;
-                      font-weight:800;
+                      margin-bottom:14px;
+                      padding:14px;
+                      border-radius:12px;
+                      background:#ecfdf5;
+                      border:1px solid #a7f3d0;
+                      text-align:center;
                     "
                   >
-                    PALLET NO.
+  
+                    <div
+                      style="
+                        font-size:11px;
+                        color:#047857;
+                        font-weight:800;
+                      "
+                    >
+                      PALLET NO.
+                    </div>
+  
+                    <div
+                      style="
+                        margin-top:4px;
+                        font-size:26px;
+                        color:#064e3b;
+                        font-weight:950;
+                      "
+                    >
+                      ${palletNoId}
+                    </div>
+  
                   </div>
-
+  
+  
+                  <div>
+  
+                    <b>
+                      Header Saved:
+                    </b>
+  
+                    ${createdHeaderCount}
+  
+                  </div>
+  
+  
                   <div
                     style="
-                      margin-top:4px;
-                      font-size:26px;
-                      color:#064e3b;
-                      font-weight:950;
+                      margin-top:6px;
                     "
                   >
-                    ${palletNoId}
+  
+                    <b>
+                      Box Saved:
+                    </b>
+  
+                    ${createdBoxCount}
+  
                   </div>
-
+  
                 </div>
-
-
-                <div>
-                  <b>Header Saved:</b>
-                  ${createdHeaderCount}
-                </div>
-
-                <div style="margin-top:6px">
-                  <b>Box Saved:</b>
-                  ${createdBoxCount}
-                </div>
-
-              </div>
-            `,
+              `,
 
               confirmButtonText: 'OK',
 
@@ -5893,46 +5855,128 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
               allowOutsideClick: false,
             }).then(() => {
-              // ===============================================
-              // CLEAR CURRENT TEMP STATE
-              // เพราะ backend ลบ Temp ไปแล้ว
-              // ===============================================
+              // #################################################
+              //
+              // RESET ALL TEMP STATE
+              //
+              // #################################################
+
+              // =================================================
+              // PALLET
+              // =================================================
 
               this.palletTemp = null;
+
+              this.isEditingPalletTemp = false;
+
+              this.isSavingPalletTemp = false;
+
+              // =================================================
+              // RESET CREATE PALLET FORM
+              //
+              // Date     = Calculate ใหม่
+              // Shift    = Current Shift
+              // Location = null
+              // Label    = FG
+              // =================================================
+
+              this.palletCreateForm = this.createEmptyPalletCreateForm();
+
+              // =================================================
+              // HEADER
+              // =================================================
 
               this.header = null;
 
               this.headers = [];
 
-              this.savedRows = [];
-
-              this.fractionRows = [];
-
-              this.fractionHeader = null;
-
-              this.fullBoxTagQty = null;
-
-              this.fractionQtyBox = null;
-
-              this.scanForm = this.createEmptyScanForm();
-
-              this.fractionScanForm = this.createEmptyScanForm();
-
               this.form = this.createEmptyHeaderForm();
+
+              this.isEditingHeader = false;
+
+              this.isSavingHeader = false;
+
+              // =================================================
+              // HEADER TAG SCAN
+              // =================================================
 
               this.headerTagScanForm = this.createEmptyScanForm();
 
-              this.itemKeyword = '';
+              this.headerItemClass = '';
 
               this.isHeaderTagLocked = false;
 
-              this.showHeaderList = false;
+              this.itemKeyword = '';
 
-              this.showCreatePallet = true;
+              this.filteredItems = [];
+
+              this.showItemDrop = false;
+
+              // =================================================
+              // NORMAL BOX
+              // =================================================
+
+              this.savedRows = [];
+
+              this.scanForm = this.createEmptyScanForm();
+
+              this.fullBoxTagQty = null;
+
+              this.isSavingFullBoxTag = false;
+
+              this.isSavingScan = false;
+
+              // =================================================
+              // FRACTION BOX
+              // =================================================
+
+              this.showFractionSection = false;
+
+              this.fractionHeader = null;
+
+              this.fractionQtyBox = null;
+
+              this.fractionRows = [];
+
+              this.fractionScanForm = this.createEmptyScanForm();
+
+              this.isFractionTagScanned = false;
+
+              this.fractionTagOriginalQty = null;
+
+              this.isFractionQtyEdited = false;
+
+              this.isSavingFractionHeader = false;
+
+              this.isSavingFractionScan = false;
+
+              // =================================================
+              // OTHER STATE
+              // =================================================
+
+              this.currentLabelPageIndex = 0;
 
               this.activeIssuePanel = 'normal';
 
-              // โหลดสถานะใหม่จาก Backend
+              this.showHeaderList = false;
+
+              // =================================================
+              // GO BACK CREATE PALLET
+              // =================================================
+
+              this.showCreatePallet = true;
+
+              // =================================================
+              // REBUILD RACK VIEW
+              // เพราะ Location เก่าถูก Clear แล้ว
+              // =================================================
+
+              this.buildCreatePalletRackView();
+
+              // =================================================
+              // REFRESH BACKEND
+              // =================================================
+
               this.fetchPalletTemp();
 
               this.fetchHeader();
