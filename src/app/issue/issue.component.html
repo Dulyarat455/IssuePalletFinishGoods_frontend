@@ -749,6 +749,20 @@
   ========================================== -->
 
           <div class="header-saved-main">
+
+             <!-- LABEL TYPE -->
+
+             <div class="header-saved-info label-type-info">
+              <span>LABEL TYPE</span>
+
+              <b
+                [class.label-type-fg]="palletTemp?.labelType === 'FG'"
+                [class.label-type-wip]="palletTemp?.labelType === 'WIP'"
+              >
+                {{ palletTemp?.labelType || "-" }}
+              </b>
+            </div>
+
             <!-- GROUP -->
 
             <div class="header-saved-info">
@@ -769,18 +783,7 @@
               </b>
             </div>
 
-            <!-- LABEL TYPE -->
-
-            <div class="header-saved-info label-type-info">
-              <span>LABEL TYPE</span>
-
-              <b
-                [class.label-type-fg]="palletTemp?.labelType === 'FG'"
-                [class.label-type-wip]="palletTemp?.labelType === 'WIP'"
-              >
-                {{ palletTemp?.labelType || "-" }}
-              </b>
-            </div>
+           
 
             <!-- SHIFT -->
 
