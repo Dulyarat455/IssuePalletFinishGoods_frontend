@@ -665,6 +665,70 @@
         </div>
       </button>
     </div>
+
+    <!-- =====================================================
+     FINAL PALLET ACTION
+====================================================== -->
+
+    <div
+      class="header-list-issue-panel"
+      *ngIf="palletTemp && currentPalletHeaders.length > 0"
+    >
+      <!-- LEFT -->
+
+      <div class="header-list-issue-info">
+        <div class="header-list-issue-icon">
+          <i class="fas fa-check-double"></i>
+        </div>
+
+        <div>
+          <span class="header-list-issue-eyebrow"> FINAL PROCESS </span>
+
+          <h4>Ready to Issue Pallet</h4>
+
+          <p>
+            Confirm all Header and Box information before Issue Pallet. After
+            Issue, temporary data will be saved as actual pallet data.
+          </p>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+
+      <div class="header-list-issue-action">
+        <div class="header-list-issue-summary">
+          <span>
+            HEADER
+            <b>{{ currentPalletHeaders.length }}</b>
+          </span>
+
+          <span>
+            LABEL
+            <b>{{ palletTemp.labelType }}</b>
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="header-list-issue-btn"
+          (click)="onSavePallet()"
+          [disabled]="isIssuing"
+        >
+          <i
+            class="fas"
+            [class.fa-truck-loading]="!isIssuing"
+            [class.fa-spinner]="isIssuing"
+            [class.fa-spin]="isIssuing"
+          ></i>
+
+          <span>
+            {{ isIssuing ? "Issuing Pallet..." : "Issue Pallet" }}
+          </span>
+
+          <i class="fas fa-arrow-right" *ngIf="!isIssuing"></i>
+        </button>
+      </div>
+    </div>
   </section>
 
   <ng-container *ngIf="!showCreatePallet && !showHeaderList">
@@ -749,10 +813,9 @@
   ========================================== -->
 
           <div class="header-saved-main">
+            <!-- LABEL TYPE -->
 
-             <!-- LABEL TYPE -->
-
-             <div class="header-saved-info label-type-info">
+            <div class="header-saved-info label-type-info">
               <span>LABEL TYPE</span>
 
               <b
@@ -782,8 +845,6 @@
                 {{ locationName(palletTemp?.mapAreaRackId) }}
               </b>
             </div>
-
-           
 
             <!-- SHIFT -->
 
@@ -1904,27 +1965,21 @@
 
               <div class="scan-actions" *ngIf="!isFractionFull">
                 <button
-                type="button"
-                class="btn fraction-save"
-              
-                (click)="onConfirmFractionScan()"
-              
-                [disabled]="
-                  isEditingHeader ||
-                  isSavingFractionScan ||
-                  isFractionFull ||
-                  !isFractionTagScanned ||
-                  !isFractionQtyEdited
-                "
-              >
-                <i class="fas fa-check"></i>
-              
-                {{
-                  isSavingFractionScan
-                    ? "Saving..."
-                    : "Confirm Box เศษ"
-                }}
-              </button>
+                  type="button"
+                  class="btn fraction-save"
+                  (click)="onConfirmFractionScan()"
+                  [disabled]="
+                    isEditingHeader ||
+                    isSavingFractionScan ||
+                    isFractionFull ||
+                    !isFractionTagScanned ||
+                    !isFractionQtyEdited
+                  "
+                >
+                  <i class="fas fa-check"></i>
+
+                  {{ isSavingFractionScan ? "Saving..." : "Confirm Box เศษ" }}
+                </button>
 
                 <button
                   type="button"

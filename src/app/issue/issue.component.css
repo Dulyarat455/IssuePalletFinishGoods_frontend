@@ -4338,7 +4338,6 @@ td small {
   }
 }
 
-
 /* =========================================================
    HEADER INPUT - COMPACT GRID
 ========================================================= */
@@ -4346,15 +4345,13 @@ td small {
 .header-form .header-input-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 
   column-gap: 12px;
   row-gap: 14px;
 
   align-items: start;
 }
-
 
 /* =========================================================
    ROW 1
@@ -4366,13 +4363,11 @@ td small {
   grid-column: span 4;
 }
 
-
 /* Item Name */
 
 .header-form .header-field-item-name {
   grid-column: span 3;
 }
-
 
 /* Group */
 
@@ -4380,13 +4375,11 @@ td small {
   grid-column: span 2;
 }
 
-
 /* Control Lot */
 
 .header-form .header-field-control-lot {
   grid-column: span 3;
 }
-
 
 /* =========================================================
    ROW 2
@@ -4398,13 +4391,11 @@ td small {
   grid-column: span 3;
 }
 
-
 /* QTY เต็ม */
 
 .header-form .header-field-full-box {
   grid-column: span 2;
 }
-
 
 /* QTY เศษ */
 
@@ -4412,13 +4403,11 @@ td small {
   grid-column: span 2;
 }
 
-
 /* Total ไม่ต้องยาวครึ่งหน้าแล้ว */
 
 .header-form .header-field-total-box {
   grid-column: span 2;
 }
-
 
 /* =========================================================
    SMALL QTY INPUT
@@ -4430,19 +4419,15 @@ td small {
   font-weight: 950;
 }
 
-
 /* Total */
 
-.header-field-total-box
-.total-box-auto-input {
+.header-field-total-box .total-box-auto-input {
   font-size: 16px !important;
 }
 
-
 /* Note ใต้ Total ให้เล็กลง */
 
-.header-field-total-box
-.auto-total-note {
+.header-field-total-box .auto-total-note {
   margin-top: 5px;
 
   font-size: 10px;
@@ -4450,14 +4435,11 @@ td small {
   white-space: nowrap;
 }
 
-
-
 /* =========================================================
    HEADER INPUT RESPONSIVE
 ========================================================= */
 
 @media (max-width: 1100px) {
-
   .header-form .header-field-item-no {
     grid-column: span 6;
   }
@@ -4483,20 +4465,12 @@ td small {
   .header-form .header-field-total-box {
     grid-column: span 4;
   }
-
 }
 
-
 @media (max-width: 700px) {
-
   .header-form .header-input-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 
   .header-form .header-field-item-no,
   .header-form .header-field-item-name,
@@ -4506,19 +4480,15 @@ td small {
     grid-column: span 2;
   }
 
-
   .header-form .header-field-full-box,
   .header-form .header-field-fraction-box {
     grid-column: span 1;
   }
 
-
   .header-form .header-field-total-box {
     grid-column: span 2;
   }
-
 }
-
 
 /* =========================================================
    HEADER TAG SCANNER
@@ -4529,20 +4499,14 @@ td small {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 12px;
 }
 
-
 .header-tag-visible-field {
   min-width: 0;
 }
-
 
 /* =========================================================
    IMPORTANT
@@ -4565,13 +4529,10 @@ td small {
   pointer-events: none !important;
 }
 
-
-
 /* =========================================================
    READONLY / AUTO / REFERENCE FIELD
    สีเขียวอ่อน เพื่อแยกจากช่อง Input
 ========================================================= */
-
 
 /* ---------------------------------------------------------
    1. INPUT ที่ readonly
@@ -4591,7 +4552,6 @@ td small {
   cursor: default !important;
 }
 
-
 /* ---------------------------------------------------------
    2. INPUT / SELECT ที่ disabled
 --------------------------------------------------------- */
@@ -4608,14 +4568,11 @@ td small {
   cursor: not-allowed !important;
 }
 
-
 /* ---------------------------------------------------------
    3. Auto Group
 --------------------------------------------------------- */
 
-.header-form
-.header-field-group
-.control {
+.header-form .header-field-group .control {
   background: #d9f7e8 !important;
 
   border-color: #86d9b2 !important;
@@ -4625,15 +4582,12 @@ td small {
   font-weight: 950 !important;
 }
 
-
 /* ---------------------------------------------------------
    4. Total QTY BOX
    Auto Calculate
 --------------------------------------------------------- */
 
-.header-form
-.header-field-total-box
-.control {
+.header-form .header-field-total-box .control {
   background: #d9f7e8 !important;
 
   border-color: #5fd0a0 !important;
@@ -4643,12 +4597,10 @@ td small {
   font-weight: 950 !important;
 }
 
-
 /* =========================================================
    PALLET INFORMATION
    REFERENCE / RECHECK ONLY
 ========================================================= */
-
 
 /* กล่องใหญ่ */
 
@@ -4658,7 +4610,6 @@ td small {
   border-color: #9edfc1 !important;
 }
 
-
 /* แต่ละ Information Box */
 
 .header-pallet-reference-item {
@@ -4666,11 +4617,8 @@ td small {
 
   border-color: #86d9b2 !important;
 
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(16, 185, 129, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.03);
 }
-
 
 /* หัวข้อ เช่น PRODUCTION DATE */
 
@@ -4680,7 +4628,6 @@ td small {
   font-weight: 950 !important;
 }
 
-
 /* Value */
 
 .header-pallet-reference-item b {
@@ -4688,7 +4635,6 @@ td small {
 
   font-weight: 950 !important;
 }
-
 
 /* Icon Pallet */
 
@@ -4698,16 +4644,13 @@ td small {
   color: #047857 !important;
 }
 
-
 /* =========================================================
    PALLET CONDITION - READONLY / LOCKED
 ========================================================= */
 
-
 /* Production Date เป็น readonly */
 
-.create-pallet-date-shift-row
-input[readonly] {
+.create-pallet-date-shift-row input[readonly] {
   background: #d9f7e8 !important;
 
   border-color: #86d9b2 !important;
@@ -4717,7 +4660,6 @@ input[readonly] {
   font-weight: 950 !important;
 }
 
-
 /* Current Date ก็เป็นข้อมูล Show Only */
 
 .create-current-date-box {
@@ -4726,16 +4668,13 @@ input[readonly] {
   border-color: #86d9b2 !important;
 }
 
-
 .create-current-date-box span {
   color: #47866c !important;
 }
 
-
 .create-current-date-box b {
   color: #065f46 !important;
 }
-
 
 /* Pallet Summary */
 
@@ -4745,17 +4684,13 @@ input[readonly] {
   border-color: #a7e5c7 !important;
 }
 
-
 .create-pallet-summary span {
   color: #47866c !important;
 }
 
-
 .create-pallet-summary b {
   color: #065f46 !important;
 }
-
-
 
 /* =========================================================
    HEADER CLEAR FORM BUTTON
@@ -4769,7 +4704,6 @@ input[readonly] {
   border: 1px solid #fed7aa;
 }
 
-
 .header-clear-btn:hover:not(:disabled) {
   background: #ffedd5;
 
@@ -4778,13 +4712,11 @@ input[readonly] {
   color: #9a3412;
 }
 
-
 .header-clear-btn:disabled {
   opacity: 0.55;
 
   cursor: not-allowed;
 }
-
 
 .header-item-name-placeholder {
   width: 100%;
@@ -4807,10 +4739,6 @@ input[readonly] {
   font-weight: 800;
 }
 
-
-
-
-
 /* =========================================================
    HEADER ITEM NO - SCAN FIELD
 ========================================================= */
@@ -4826,7 +4754,6 @@ input[readonly] {
   font-size: 12px;
 }
 
-
 /* Wrapper */
 
 .header-item-scan-control {
@@ -4834,7 +4761,6 @@ input[readonly] {
   display: flex;
   align-items: center;
 }
-
 
 /* Icon */
 
@@ -4859,7 +4785,6 @@ input[readonly] {
   pointer-events: none;
 }
 
-
 /* Input */
 
 .header-item-scan-control .control {
@@ -4873,18 +4798,15 @@ input[readonly] {
   font-weight: 900;
 }
 
-
 /* Focus */
 
 .header-item-scan-control .control:focus {
   border-color: #10b981;
 
-  box-shadow:
-    0 0 0 4px rgba(16, 185, 129, 0.14);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
 
   background: #ffffff;
 }
-
 
 /* READY */
 
@@ -4905,11 +4827,10 @@ input[readonly] {
   font-size: 8px;
   font-weight: 950;
 
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 
   pointer-events: none;
 }
-
 
 /* SCANNED */
 
@@ -4918,20 +4839,16 @@ input[readonly] {
   color: #065f46;
 }
 
-
 /* Scan Complete */
 
-.header-item-scan-control.scan-complete
-.header-item-scan-icon {
+.header-item-scan-control.scan-complete .header-item-scan-icon {
   background: #bbf7d0;
   color: #047857;
 }
 
-
 /* Disabled after scan */
 
-.header-item-scan-control.scan-complete
-.control {
+.header-item-scan-control.scan-complete .control {
   background: #d9f7e8 !important;
 
   border-color: #86d9b2 !important;
@@ -4940,7 +4857,6 @@ input[readonly] {
 
   opacity: 1 !important;
 }
-
 
 /* Note */
 
@@ -4954,9 +4870,6 @@ input[readonly] {
   font-size: 10px;
   font-weight: 800;
 }
-
-
-
 
 /* =========================================================
    HEADER SAVED - HEADER STYLE
@@ -4977,11 +4890,8 @@ input[readonly] {
 
   border: 1px solid #cfe8df;
 
-  box-shadow:
-    0 5px 16px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
 }
-
 
 /* =========================================================
    TOP HEADER BAND
@@ -5000,16 +4910,10 @@ input[readonly] {
 
   gap: 18px;
 
-  background:
-  linear-gradient(
-    135deg,
-    #0f766e,
-    #15947f
-  );
+  background: linear-gradient(135deg, #0f766e, #15947f);
 
   border-bottom: 0;
 }
-
 
 /* =========================================================
    STATUS LEFT
@@ -5025,7 +4929,6 @@ input[readonly] {
   min-width: 0;
 }
 
-
 .header-saved-status-icon {
   width: 46px;
   height: 46px;
@@ -5038,18 +4941,14 @@ input[readonly] {
   align-items: center;
   justify-content: center;
 
-  background:
-    rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.18);
 
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 
   color: #ffffff;
 
   font-size: 17px;
 }
-
 
 /* Small label */
 
@@ -5065,7 +4964,6 @@ input[readonly] {
   letter-spacing: 1.1px;
 }
 
-
 /* Item No */
 
 .header-saved-title {
@@ -5077,7 +4975,6 @@ input[readonly] {
 
   line-height: 1.15;
 }
-
 
 /* Item Name */
 
@@ -5105,7 +5002,6 @@ input[readonly] {
   white-space: nowrap;
 }
 
-
 .header-ready-dot {
   width: 6px;
   height: 6px;
@@ -5116,11 +5012,8 @@ input[readonly] {
 
   background: #6ee7b7;
 
-  box-shadow:
-    0 0 0 3px
-    rgba(110, 231, 183, 0.15);
+  box-shadow: 0 0 0 3px rgba(110, 231, 183, 0.15);
 }
-
 
 /* =========================================================
    ACTION BUTTONS
@@ -5133,7 +5026,6 @@ input[readonly] {
 
   gap: 7px;
 }
-
 
 .header-saved-action-btn {
   min-width: 96px;
@@ -5151,12 +5043,9 @@ input[readonly] {
 
   gap: 7px;
 
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.32);
 
-  background:
-    rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
 
   color: #ffffff;
 
@@ -5166,25 +5055,18 @@ input[readonly] {
 
   cursor: pointer;
 
-  transition:
-    background .15s ease,
-    transform .15s ease,
-    box-shadow .15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-
 
 .header-saved-action-btn i {
   font-size: 12px;
 }
 
-
 .header-saved-action-btn:hover:not(:disabled) {
-  background:
-    rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.22);
 
   transform: translateY(-1px);
 }
-
 
 /* Edit */
 
@@ -5198,8 +5080,6 @@ input[readonly] {
   color: #0369a1;
 }
 
-
-
 /* Delete */
 
 .header-saved-action-btn.delete {
@@ -5212,13 +5092,11 @@ input[readonly] {
   color: #be123c;
 }
 
-
 .header-saved-action-btn:disabled {
-  opacity: .55;
+  opacity: 0.55;
 
   cursor: not-allowed;
 }
-
 
 /* =========================================================
    MAIN INFORMATION
@@ -5227,11 +5105,7 @@ input[readonly] {
 .header-saved-main {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      6,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 
   gap: 0;
 
@@ -5241,10 +5115,8 @@ input[readonly] {
 
   background: #ffffff;
 
-  border-bottom:
-    1px solid #e8f3ee;
+  border-bottom: 1px solid #e8f3ee;
 }
-
 
 .header-saved-info {
   min-width: 0;
@@ -5257,15 +5129,12 @@ input[readonly] {
 
   border: 0;
 
-  border-right:
-    1px solid #edf2f0;
+  border-right: 1px solid #edf2f0;
 }
-
 
 .header-saved-info:last-child {
   border-right: 0;
 }
-
 
 .header-saved-info span {
   display: block;
@@ -5278,9 +5147,8 @@ input[readonly] {
 
   font-weight: 950;
 
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 }
-
 
 .header-saved-info b {
   display: block;
@@ -5300,7 +5168,6 @@ input[readonly] {
   white-space: nowrap;
 }
 
-
 /* =========================================================
    BOX SUMMARY ROW
 ========================================================= */
@@ -5317,7 +5184,6 @@ input[readonly] {
   background: #f8fffb;
 }
 
-
 .header-saved-box {
   min-width: 110px;
 
@@ -5329,10 +5195,8 @@ input[readonly] {
 
   border: 0;
 
-  border-right:
-    1px solid #dcf3e8;
+  border-right: 1px solid #dcf3e8;
 }
-
 
 .header-saved-box span,
 .header-saved-control-lot span {
@@ -5344,9 +5208,8 @@ input[readonly] {
 
   font-weight: 950;
 
-  letter-spacing: .4px;
+  letter-spacing: 0.4px;
 }
-
 
 .header-saved-box b {
   display: block;
@@ -5360,28 +5223,23 @@ input[readonly] {
   font-weight: 950;
 }
 
-
 /* TOTAL BOX */
 
 .header-saved-box.total {
   background: #dcfce7;
 
-  border-right:
-    1px solid #86efac;
+  border-right: 1px solid #86efac;
 }
-
 
 .header-saved-box.total span {
   color: #15803d;
 }
-
 
 .header-saved-box.total b {
   color: #166534;
 
   font-size: 18px;
 }
-
 
 /* =========================================================
    CONTROL LOT
@@ -5398,15 +5256,12 @@ input[readonly] {
 
   border: 0;
 
-  border-right:
-    1px solid #fed7aa;
+  border-right: 1px solid #fed7aa;
 }
-
 
 .header-saved-control-lot span {
   color: #c2410c;
 }
-
 
 .header-saved-control-lot b {
   display: block;
@@ -5420,59 +5275,38 @@ input[readonly] {
   font-weight: 950;
 }
 
-
-
 @media (max-width: 1100px) {
-
   .header-saved-main {
-    grid-template-columns:
-      repeat(
-        3,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
 
   .header-saved-info {
-    border-bottom:
-      1px solid #edf2f0;
+    border-bottom: 1px solid #edf2f0;
   }
-
 }
 
-
 @media (max-width: 700px) {
-
   .header-saved-top {
     align-items: flex-start;
 
     flex-direction: column;
   }
 
-
   .header-saved-actions {
     width: 100%;
   }
-
 
   .header-saved-action-btn {
     flex: 1;
   }
 
-
   .header-saved-main {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 
   .header-saved-box-row {
     flex-wrap: wrap;
   }
-
 
   .header-saved-box,
   .header-saved-control-lot {
@@ -5480,10 +5314,7 @@ input[readonly] {
 
     min-width: 120px;
   }
-
 }
-
-
 
 .fraction-qty-edit-required {
   margin-left: 8px;
@@ -5495,7 +5326,6 @@ input[readonly] {
   font-weight: 900;
 }
 
-
 .fraction-qty-edit-complete {
   margin-left: 8px;
 
@@ -5506,29 +5336,21 @@ input[readonly] {
   font-weight: 900;
 }
 
-
 .fraction-qty-wait-edit {
   border-color: #f59e0b !important;
 
   background: #fffbeb !important;
 
-  box-shadow:
-    0 0 0 3px
-    rgba(245, 158, 11, 0.10);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
-
 
 .fraction-qty-edited {
   border-color: #10b981 !important;
 
   background: #f0fdf4 !important;
 
-  box-shadow:
-    0 0 0 3px
-    rgba(16, 185, 129, 0.10);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
-
-
 
 .label-type-info b {
   display: inline-flex;
@@ -5549,7 +5371,6 @@ input[readonly] {
   font-weight: 950;
 }
 
-
 /* FG */
 
 .label-type-info b.label-type-fg {
@@ -5557,7 +5378,6 @@ input[readonly] {
 
   color: #1d4ed8;
 }
-
 
 /* WIP */
 
@@ -5567,7 +5387,257 @@ input[readonly] {
   color: #b45309;
 }
 
+/* =========================================================
+   HEADER LIST - FINAL ISSUE PALLET
+========================================================= */
 
+.header-list-issue-panel {
+  width: 100%;
+
+  margin-top: 20px;
+
+  padding: 18px 20px;
+
+  border-radius: 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
+
+  border: 1px solid #fed7aa;
+
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.08);
+}
+
+/* =========================================================
+   LEFT
+========================================================= */
+
+.header-list-issue-info {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.header-list-issue-icon {
+  width: 50px;
+
+  height: 50px;
+
+  min-width: 50px;
+
+  border-radius: 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: linear-gradient(135deg, #f97316, #ea580c);
+
+  color: #ffffff;
+
+  font-size: 19px;
+
+  box-shadow: 0 8px 16px rgba(234, 88, 12, 0.18);
+}
+
+.header-list-issue-eyebrow {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #c2410c;
+
+  font-size: 10px;
+
+  font-weight: 950;
+
+  letter-spacing: 1px;
+}
+
+.header-list-issue-info h4 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 17px;
+
+  font-weight: 950;
+}
+
+.header-list-issue-info p {
+  margin: 4px 0 0;
+
+  max-width: 620px;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  line-height: 1.45;
+}
+
+/* =========================================================
+   RIGHT
+========================================================= */
+
+.header-list-issue-action {
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.header-list-issue-summary {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.header-list-issue-summary span {
+  min-width: 62px;
+
+  padding: 7px 10px;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  border: 1px solid #fed7aa;
+
+  color: #9a3412;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  text-align: center;
+}
+
+.header-list-issue-summary b {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7c2d12;
+
+  font-size: 16px;
+
+  font-weight: 950;
+}
+
+/* =========================================================
+   ISSUE BUTTON
+========================================================= */
+
+.header-list-issue-btn {
+  min-width: 180px;
+
+  min-height: 52px;
+
+  padding: 0 18px;
+
+  border: 0;
+
+  border-radius: 15px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  background: linear-gradient(135deg, #f97316, #ea580c);
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 950;
+
+  cursor: pointer;
+
+  box-shadow: 0 9px 20px rgba(234, 88, 12, 0.22);
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.header-list-issue-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  filter: brightness(0.98);
+
+  box-shadow: 0 12px 24px rgba(234, 88, 12, 0.28);
+}
+
+.header-list-issue-btn:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .header-list-issue-panel {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .header-list-issue-action {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-list-issue-action {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .header-list-issue-summary {
+    width: 100%;
+  }
+
+  .header-list-issue-summary span {
+    flex: 1;
+  }
+
+  .header-list-issue-btn {
+    width: 100%;
+  }
+}
 
 /* ====================
 for 2 case to center

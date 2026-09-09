@@ -973,15 +973,11 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.showHeaderList = false;
 
     this.fetchHeader(() => {
+      // หลังโหลดข้อมูลใหม่เสร็จ
+      // ค่อยเปิด Select Header
 
-        // หลังโหลดข้อมูลใหม่เสร็จ
-        // ค่อยเปิด Select Header
-
-        this.showHeaderList =
-          true;
-
-      });
-
+      this.showHeaderList = true;
+    });
   }
 
   fetchPalletTemp(): void {
@@ -5554,6 +5550,419 @@ export class IssueComponent implements OnInit, AfterViewInit {
             console.error(err);
             this.isIssuing = false;
             Swal.fire('Error', err?.error?.message || 'Issue fail', 'error');
+          },
+        });
+    });
+  }
+
+  onSavePallet(): void {
+    // =====================================================
+    // VALIDATE
+    // =====================================================
+
+    if (!this.userId) {
+      return this.toast('warning', 'ไม่พบ User ID');
+    }
+
+    if (!this.palletTemp) {
+      return this.toast('warning', 'ไม่พบ Pallet Temp');
+    }
+
+    if (this.currentPalletHeaders.length === 0) {
+      return this.toast('warning', 'ยังไม่มี Header ใน Pallet');
+    }
+
+    if (this.isIssuing) {
+      return;
+    }
+
+    // =====================================================
+    // SUMMARY
+    // =====================================================
+
+    const palletTempId = Number(this.palletTemp.id);
+
+    const headerCount = this.currentPalletHeaders.length;
+
+    const totalPlanBox = this.currentPalletHeaders.reduce(
+      (sum, h) => sum + Number(h.totalQtyBox || 0),
+      0
+    );
+
+    const totalScannedBox = this.currentPalletHeaders.reduce(
+      (sum, h) =>
+        sum +
+        Number(h.normalScannedQty || 0) +
+        Number(h.fractionScannedQty || 0),
+      0
+    );
+
+    const locationName = this.locationName(this.palletTemp.mapAreaRackId);
+
+    // =====================================================
+    // CONFIRM
+    // =====================================================
+
+    Swal.fire({
+      icon: 'question',
+
+      title: 'Confirm Issue Pallet?',
+
+      html: `
+      <div style="text-align:left">
+
+        <div
+          style="
+            padding:12px 14px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+          "
+        >
+
+          <div>
+            <b>Production Date:</b>
+            ${this.palletCreateForm.date || '-'}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Shift:</b>
+            ${this.palletTemp.shift || '-'}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Location:</b>
+            ${locationName}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Label Type:</b>
+            ${this.palletTemp.labelType}
+          </div>
+
+        </div>
+
+
+        <div
+          style="
+            margin-top:12px;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:8px;
+          "
+        >
+
+          <div
+            style="
+              padding:10px;
+              text-align:center;
+              background:#ecfdf5;
+              border-radius:10px;
+            "
+          >
+            <div
+              style="
+                font-size:11px;
+                color:#047857;
+                font-weight:700;
+              "
+            >
+              HEADER
+            </div>
+
+            <div
+              style="
+                margin-top:4px;
+                font-size:20px;
+                font-weight:900;
+                color:#064e3b;
+              "
+            >
+              ${headerCount}
+            </div>
+          </div>
+
+
+          <div
+            style="
+              padding:10px;
+              text-align:center;
+              background:#eff6ff;
+              border-radius:10px;
+            "
+          >
+            <div
+              style="
+                font-size:11px;
+                color:#1d4ed8;
+                font-weight:700;
+              "
+            >
+              PLAN BOX
+            </div>
+
+            <div
+              style="
+                margin-top:4px;
+                font-size:20px;
+                font-weight:900;
+                color:#1e3a8a;
+              "
+            >
+              ${totalPlanBox}
+            </div>
+          </div>
+
+
+          <div
+            style="
+              padding:10px;
+              text-align:center;
+              background:#fff7ed;
+              border-radius:10px;
+            "
+          >
+            <div
+              style="
+                font-size:11px;
+                color:#c2410c;
+                font-weight:700;
+              "
+            >
+              SCANNED
+            </div>
+
+            <div
+              style="
+                margin-top:4px;
+                font-size:20px;
+                font-weight:900;
+                color:#9a3412;
+              "
+            >
+              ${totalScannedBox}
+            </div>
+          </div>
+
+        </div>
+
+
+        <div
+          style="
+            margin-top:14px;
+            padding:10px 12px;
+            border-radius:10px;
+            background:#fff7ed;
+            border:1px solid #fed7aa;
+            color:#9a3412;
+            font-size:12px;
+          "
+        >
+          หลังจาก Issue Pallet ข้อมูล Temp จะถูกย้ายไปเป็นข้อมูลจริง
+          และ Temp ของ Pallet นี้จะถูกลบออก
+        </div>
+
+      </div>
+    `,
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Issue Pallet',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#f97316',
+
+      cancelButtonColor: '#64748b',
+
+      reverseButtons: true,
+
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      // =====================================================
+      // LOADING
+      // =====================================================
+
+      this.isIssuing = true;
+
+      Swal.fire({
+        title: 'Issuing Pallet...',
+
+        html: 'กำลังบันทึก Pallet และย้ายข้อมูลจาก Temp',
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        showConfirmButton: false,
+
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      // =====================================================
+      // CALL API
+      // =====================================================
+
+      this.http
+        .post<any>(config.apiServer + '/api/issue/savePallet', {
+          userId: Number(this.userId),
+
+          palletTempId: palletTempId,
+        })
+        .subscribe({
+          // =================================================
+          // SUCCESS
+          // =================================================
+
+          next: (res: any) => {
+            this.isIssuing = false;
+
+            const palletNoId = String(res?.data?.palletNoId || '-');
+
+            const createdHeaderCount = Number(
+              res?.data?.createdHeaderCount || 0
+            );
+
+            const createdBoxCount = Number(res?.data?.createdBoxCount || 0);
+
+            Swal.fire({
+              icon: 'success',
+
+              title: 'Issue Pallet Success',
+
+              html: `
+              <div style="text-align:left">
+
+                <div
+                  style="
+                    margin-bottom:14px;
+                    padding:14px;
+                    border-radius:12px;
+                    background:#ecfdf5;
+                    border:1px solid #a7f3d0;
+                    text-align:center;
+                  "
+                >
+
+                  <div
+                    style="
+                      font-size:11px;
+                      color:#047857;
+                      font-weight:800;
+                    "
+                  >
+                    PALLET NO.
+                  </div>
+
+                  <div
+                    style="
+                      margin-top:4px;
+                      font-size:26px;
+                      color:#064e3b;
+                      font-weight:950;
+                    "
+                  >
+                    ${palletNoId}
+                  </div>
+
+                </div>
+
+
+                <div>
+                  <b>Header Saved:</b>
+                  ${createdHeaderCount}
+                </div>
+
+                <div style="margin-top:6px">
+                  <b>Box Saved:</b>
+                  ${createdBoxCount}
+                </div>
+
+              </div>
+            `,
+
+              confirmButtonText: 'OK',
+
+              confirmButtonColor: '#10b981',
+
+              allowOutsideClick: false,
+            }).then(() => {
+              // ===============================================
+              // CLEAR CURRENT TEMP STATE
+              // เพราะ backend ลบ Temp ไปแล้ว
+              // ===============================================
+
+              this.palletTemp = null;
+
+              this.header = null;
+
+              this.headers = [];
+
+              this.savedRows = [];
+
+              this.fractionRows = [];
+
+              this.fractionHeader = null;
+
+              this.fullBoxTagQty = null;
+
+              this.fractionQtyBox = null;
+
+              this.scanForm = this.createEmptyScanForm();
+
+              this.fractionScanForm = this.createEmptyScanForm();
+
+              this.form = this.createEmptyHeaderForm();
+
+              this.headerTagScanForm = this.createEmptyScanForm();
+
+              this.itemKeyword = '';
+
+              this.isHeaderTagLocked = false;
+
+              this.showHeaderList = false;
+
+              this.showCreatePallet = true;
+
+              this.activeIssuePanel = 'normal';
+
+              // โหลดสถานะใหม่จาก Backend
+              this.fetchPalletTemp();
+
+              this.fetchHeader();
+            });
+          },
+
+          // =================================================
+          // ERROR
+          // =================================================
+
+          error: (err) => {
+            console.error(err);
+
+            this.isIssuing = false;
+
+            const msg =
+              err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Issue Pallet fail';
+
+            Swal.fire({
+              icon: 'error',
+
+              title: 'Issue Pallet ไม่สำเร็จ',
+
+              text: msg,
+
+              confirmButtonText: 'OK',
+            });
           },
         });
     });
