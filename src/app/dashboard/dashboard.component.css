@@ -1242,3 +1242,765 @@ tr.fraction-box-row:hover td {
   }
 
 }
+
+
+
+
+
+/* =========================================================
+   DASHBOARD UI TUNING
+   Keep current rounded design
+   Improve contrast / readability
+========================================================= */
+
+
+/* =========================================================
+   PAGE BACKGROUND
+   ให้ Card ขาวเด่นจาก Background มากขึ้น
+========================================================= */
+
+.pallet-dashboard-page {
+  background: #edf2f6;
+}
+
+
+/* =========================================================
+   HERO
+   เข้มขึ้นนิดเดียว แต่ยัง Theme เดิม
+========================================================= */
+
+.dashboard-hero {
+  background:
+    linear-gradient(
+      135deg,
+      #059669 0%,
+      #0d9488 58%,
+      #0f766e 100%
+    );
+
+  box-shadow:
+    0 10px 25px
+    rgba(15, 118, 110, 0.22);
+}
+
+
+.hero-eyebrow {
+  color: #d7fff6;
+}
+
+
+.dashboard-hero h2 {
+  font-size: 30px;
+  font-weight: 950;
+}
+
+
+.dashboard-hero p {
+  color: #e6fffa;
+  font-weight: 650;
+}
+
+
+/* =========================================================
+   SUMMARY CARD
+   ไม่ให้ทุกใบขาวเหมือนกันทั้งหมด
+========================================================= */
+
+.summary-card {
+  border-color: #d3dde6;
+
+  box-shadow:
+    0 5px 15px
+    rgba(15, 23, 42, 0.07);
+}
+
+
+.summary-card.pallet {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #effcf7
+    );
+}
+
+
+.summary-card.header {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f2f7ff
+    );
+}
+
+
+.summary-card.normal {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f0fdfa
+    );
+}
+
+
+.summary-card.fraction {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fff6ec
+    );
+}
+
+
+.summary-card.total {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f5f3ff
+    );
+}
+
+
+.summary-card.qty {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f1f5f9
+    );
+}
+
+
+/* Label Summary เข้มขึ้น */
+
+.summary-card span {
+  color: #475569;
+
+  font-size: 10px;
+
+  font-weight: 950;
+}
+
+
+/* ตัวเลข Summary เป็นจุดเด่น */
+
+.summary-card b {
+  color: #0f172a;
+
+  font-size: 26px;
+
+  font-weight: 950;
+
+  letter-spacing: -0.4px;
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+.dashboard-card {
+  border-color: #d0dae4;
+
+  box-shadow:
+    0 5px 15px
+    rgba(15, 23, 42, 0.065);
+}
+
+
+.filter-panel {
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fbfcfd
+    );
+}
+
+
+.panel-eyebrow {
+  color: #047857;
+
+  font-weight: 950;
+}
+
+
+.panel-head h3 {
+  color: #0f172a;
+
+  font-size: 19px;
+}
+
+
+.panel-head span {
+  color: #526174;
+
+  font-weight: 750;
+}
+
+
+.filter-field label {
+  color: #334155;
+
+  font-size: 10px;
+
+  font-weight: 950;
+}
+
+
+.filter-field input,
+.filter-field select {
+  border-color: #c6d1dc;
+
+  background: #ffffff;
+
+  color: #172033;
+
+  font-weight: 800;
+}
+
+
+.filter-field input:hover,
+.filter-field select:hover {
+  border-color: #94a3b8;
+}
+
+
+/* =========================================================
+   PALLET CARD
+   จุดนี้สำคัญสุด
+========================================================= */
+
+.pallet-card {
+  border-color:
+    rgba(15, 118, 110, 0.24);
+
+  box-shadow:
+    0 7px 18px
+    rgba(15, 23, 42, 0.075);
+}
+
+
+/* Header ของ Pallet จากเกือบขาว
+   ให้มีเขียวอ่อนเห็น Layer ชัดขึ้น */
+
+.pallet-card-head {
+  background:
+    linear-gradient(
+      135deg,
+      #edfdf7 0%,
+      #f5fcfa 52%,
+      #ffffff 100%
+    );
+}
+
+
+.pallet-card-head:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #e4f8f0,
+      #eefaf6 52%,
+      #fbfefd
+    );
+}
+
+
+/* Pallet No. เน้นเป็นข้อมูลหลัก */
+
+.pallet-main strong {
+  color: #0f172a;
+
+  font-size: 21px;
+
+  font-weight: 950;
+}
+
+
+.pallet-label {
+  color: #047857;
+
+  font-size: 9px;
+
+  font-weight: 950;
+}
+
+
+.pallet-main small {
+  color: #64748b;
+}
+
+
+/* =========================================================
+   PALLET INFORMATION BOX
+========================================================= */
+
+.pallet-info > div {
+  background: #eef3f6;
+
+  border:
+    1px solid #d8e1e8;
+
+  border-radius: 12px;
+}
+
+
+.pallet-info span {
+  color: #64748b;
+
+  font-size: 8px;
+}
+
+
+.pallet-info b {
+  color: #1e293b;
+
+  font-size: 13px;
+
+  font-weight: 950;
+}
+
+
+/* =========================================================
+   PALLET COUNTS
+========================================================= */
+
+.pallet-counts > div {
+  background: #e9f5f1;
+
+  border:
+    1px solid #d2e9e1;
+
+  border-radius: 12px;
+}
+
+
+.pallet-counts span {
+  color: #477064;
+
+  font-size: 8px;
+
+  font-weight: 950;
+}
+
+
+.pallet-counts b {
+  color: #064e3b;
+
+  font-size: 16px;
+
+  font-weight: 950;
+}
+
+
+/* Fraction ยังใช้ Orange แยกชัด */
+
+.pallet-counts .fraction {
+  background: #fff1df;
+
+  border:
+    1px solid #fed7aa;
+}
+
+
+.pallet-counts
+.fraction span {
+  color: #c2410c;
+}
+
+
+.pallet-counts
+.fraction b {
+  color: #9a3412;
+}
+
+
+/* =========================================================
+   PALLET BODY
+   เดิม #f8fafc ใกล้ Card มากเกินไป
+========================================================= */
+
+.pallet-card-body {
+  background: #e9eff3;
+
+  border-top:
+    1px solid #ccd8e0;
+}
+
+
+/* Toolbar */
+
+.pallet-body-toolbar b {
+  color: #0f172a;
+
+  font-size: 15px;
+
+  font-weight: 950;
+}
+
+
+.pallet-body-toolbar span {
+  color: #526174;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   HEADER CARD
+========================================================= */
+
+.header-card {
+  border-color: #c7d5e0;
+
+  box-shadow:
+    0 3px 8px
+    rgba(15, 23, 42, 0.055);
+}
+
+
+/* Header จากขาวล้วน
+   เป็น Blue / Slate tint อ่อน */
+
+.header-card-head {
+  background:
+    linear-gradient(
+      135deg,
+      #eef5fb 0%,
+      #f6f9fc 55%,
+      #ffffff 100%
+    );
+}
+
+
+.header-card-head:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #e4eff8,
+      #eff5fa 55%,
+      #fbfdff
+    );
+}
+
+
+/* Header ID */
+
+.header-number {
+  background: #dbeafe;
+
+  border:
+    1px solid #bfdbfe;
+
+  color: #1d4ed8;
+
+  font-size: 11px;
+
+  font-weight: 950;
+}
+
+
+/* Item No. ต้องเด่น */
+
+.header-item strong {
+  color: #0f172a;
+
+  font-size: 15px;
+
+  font-weight: 950;
+}
+
+
+.header-item span {
+  color: #2563eb;
+}
+
+
+.header-item small {
+  color: #475569;
+
+  font-size: 11px;
+
+  font-weight: 750;
+}
+
+
+/* =========================================================
+   HEADER DATA BLOCK
+========================================================= */
+
+.header-data > div {
+  background: #e9eff5;
+
+  border:
+    1px solid #d7e0e8;
+}
+
+
+.header-data span {
+  color: #64748b;
+
+  font-size: 8px;
+
+  font-weight: 950;
+}
+
+
+.header-data b {
+  color: #1e293b;
+
+  font-size: 12px;
+
+  font-weight: 950;
+}
+
+
+/* Fraction Header */
+
+.header-data .fraction {
+  background: #fff0df;
+
+  border:
+    1px solid #fed7aa;
+}
+
+
+.header-data
+.fraction span {
+  color: #c2410c;
+}
+
+
+.header-data
+.fraction b {
+  color: #9a3412;
+}
+
+
+/* =========================================================
+   BOX AREA
+========================================================= */
+
+.header-box-area {
+  background: #edf2f6;
+
+  border-top:
+    1px solid #c2ced8;
+}
+
+
+/* Box Detail Header
+   ให้เข้มกว่า Header body ชัด ๆ */
+
+.box-list-head {
+  background: #dce5eb;
+
+  border-bottom:
+    1px solid #c3d0da;
+}
+
+
+.box-list-head b {
+  color: #0f172a;
+
+  font-size: 14px;
+
+  font-weight: 950;
+}
+
+
+.box-list-head span {
+  color: #475569;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   BOX TABLE
+========================================================= */
+
+.box-table {
+  background: #ffffff;
+}
+
+
+/* Table Header เดิมอ่อนเกินไป
+   ทำเป็น Slate Blue แต่ไม่ดำจนแข็ง */
+
+.box-table thead th {
+  background: #e2e9ef;
+
+  color: #26384b;
+
+  border-bottom:
+    2px solid #b7c6d2;
+
+  font-size: 10px;
+
+  font-weight: 950;
+}
+
+
+/* Table body เพิ่มขนาดขึ้นนิด */
+
+.box-table tbody td {
+  color: #334155;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  border-bottom:
+    1px solid #dce5ec;
+}
+
+
+/* Zebra row ช่วยอ่านตามแนวนอน */
+
+.box-table tbody
+tr:nth-child(even):not(.fraction-box-row)
+td {
+  background: #f3f6f8;
+}
+
+
+.box-table tbody
+tr:not(.fraction-box-row):hover td {
+  background: #eaf7f3;
+}
+
+
+/* WOS สำคัญ */
+
+.box-table
+td.strong {
+  color: #0f172a !important;
+
+  font-size: 12px;
+
+  font-weight: 950 !important;
+}
+
+
+/* QTY สำคัญ */
+
+.qty-cell {
+  color: #0f172a !important;
+
+  font-size: 13px !important;
+
+  font-weight: 950 !important;
+}
+
+
+/* =========================================================
+   FRACTION ROW
+========================================================= */
+
+.box-table tbody
+tr.fraction-box-row td {
+  background: #fff0df;
+
+  color: #7c2d12;
+
+  border-top:
+    1px solid #fb923c;
+
+  border-bottom:
+    1px solid #fed7aa;
+}
+
+
+.box-table tbody
+tr.fraction-box-row
+td:first-child {
+  border-left:
+    4px solid #f97316;
+}
+
+
+.box-table tbody
+tr.fraction-box-row:hover td {
+  background: #ffe7ca;
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.box-type-badge.normal {
+  background: #dff7ef;
+
+  color: #047857;
+
+  border:
+    1px solid #86d9bc;
+}
+
+
+.box-type-badge.fraction {
+  background: #fed7aa;
+
+  color: #9a3412;
+
+  border:
+    1px solid #fb923c;
+}
+
+
+/* =========================================================
+   EXPAND BUTTON
+========================================================= */
+
+.pallet-expand {
+  background: #d9f3e9;
+
+  border:
+    1px solid #afe0ce;
+
+  color: #047857;
+
+  box-shadow:
+    0 3px 8px
+    rgba(4, 120, 87, 0.10);
+}
+
+
+.header-chevron {
+  color: #2563eb;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   EXPAND / COLLAPSE BUTTON
+========================================================= */
+
+.header-expand-actions button {
+  border-color: #bdc9d4;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+.header-expand-actions
+button:hover {
+  background: #e8eef3;
+
+  border-color: #94a3b8;
+
+  color: #0f172a;
+}
