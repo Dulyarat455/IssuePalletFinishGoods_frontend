@@ -198,7 +198,7 @@ type FetchWosTempResp = {
 
 type LabelStockType = 'FG' | 'WIP';
 
-type IssuePanel = 'normal' | 'fraction' | 'print';
+type IssuePanel = 'normal' | 'fraction' | 'next' | 'print';
 
 type PalletCreateForm = {
   date: string;
@@ -296,6 +296,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
   currentLabelPageIndex = 0;
   activeIssuePanel: IssuePanel = 'normal';
 
+  // =====================================================
+  // TEMP PRINT PANEL
+  //
+  // false = ยังไม่เปิดใช้ใน New Pallet Flow
+  // เก็บ Function / HTML เดิมไว้ก่อน
+  // =====================================================
+  enableTempPrintPanel =  false;
+
+
   labelRowsPerPage = 3;
 
   isSavingFractionHeader = false;
@@ -387,16 +396,59 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   setIssuePanel(panel: IssuePanel): void {
-    this.activeIssuePanel = panel;
+    // =====================================================
+    // NORMAL -> FRACTION
+    // ต้อง Scan Box เต็มให้ครบก่อน
+    // =====================================================
 
-    if (panel === 'normal') {
-      setTimeout(() => this.focusScanFirst(), 0);
+    if (panel === 'fraction' && !this.canGoNextFromNormal) {
       return;
     }
 
+    // =====================================================
+    // FRACTION -> NEXT ACTION
+    // ต้อง Scan Box เศษให้ครบก่อน
+    // =====================================================
+
+    if (panel === 'next' && !this.canGoNextFromFraction) {
+      return;
+    }
+
+    // =====================================================
+    // SET PANEL
+    // =====================================================
+
+    this.activeIssuePanel = panel;
+
+    // =====================================================
+    // NORMAL
+    // =====================================================
+
+    if (panel === 'normal') {
+      setTimeout(() => this.focusScanFirst(), 0);
+
+      return;
+    }
+
+    // =====================================================
+    // FRACTION
+    // =====================================================
+
     if (panel === 'fraction') {
       this.showFractionSection = true;
+
       setTimeout(() => this.focusFractionFirst(), 0);
+
+      return;
+    }
+
+    // =====================================================
+    // NEXT ACTION
+    // =====================================================
+
+    if (panel === 'next') {
+      // ป้องกัน Focus กลับเข้า Scanner
+      return;
     }
   }
 
@@ -729,6 +781,46 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.headers.filter(
       (header) => Number(header.palletTempId) === palletTempId
     );
+  }
+
+  get canGoNextFromNormal(): boolean {
+    // ยังไม่มี Header
+    if (!this.header) {
+      return false;
+    }
+
+    const required = Number(this.normalRequiredBoxQty || 0);
+
+    const scanned = Number(this.scanCount || 0);
+
+    // ถ้า Header กำหนด Box เต็ม = 0
+    // ถือว่าไม่มี Box เต็มที่ต้อง Scan
+    // จึงผ่านไปขั้นต่อไปได้
+    if (required <= 0) {
+      return true;
+    }
+
+    return scanned >= required;
+  }
+
+  get canGoNextFromFraction(): boolean {
+    // ยังไม่มี Header
+    if (!this.header) {
+      return false;
+    }
+
+    const required = Number(this.fractionQtyBoxValue || 0);
+
+    const scanned = Number(this.fractionScanCount || 0);
+
+    // ถ้า Header กำหนด Box เศษ = 0
+    // ไม่ต้อง Scan Box เศษ
+    // สามารถไปขั้นต่อไปได้ทันที
+    if (required <= 0) {
+      return true;
+    }
+
+    return scanned >= required;
   }
 
   get createPalletRackGroups(): {

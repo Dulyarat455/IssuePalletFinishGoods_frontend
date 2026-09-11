@@ -1119,6 +1119,30 @@ thead th {
   box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
 }
 
+
+/* =========================================================
+   NEXT BUTTON DISABLED
+========================================================= */
+
+.normal-next-panel-btn:disabled,
+.fraction-next-panel-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+  filter: grayscale(0.25);
+  box-shadow: none;
+}
+
+
+.normal-next-panel-btn:disabled:hover,
+.fraction-next-panel-btn:disabled:hover {
+  transform: none;
+  filter: grayscale(0.25);
+  box-shadow: none;
+}
+
+
+
 /* =========================================================
    08) Scan Box เศษ
 ========================================================= */
@@ -5638,6 +5662,553 @@ td small {
     width: 100%;
   }
 }
+
+
+
+/* =========================================================
+   NEXT ACTION PANEL
+   หลัง Scan Header ครบ
+========================================================= */
+
+.next-action-panel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(15, 118, 110, 0.14);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 16px
+    rgba(15, 23, 42, 0.06);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.next-action-head {
+  padding: 18px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ecfdf5,
+      #f0fdfa,
+      #ffffff
+    );
+
+  border-bottom:
+    1px solid
+    rgba(20, 184, 166, 0.15);
+}
+
+
+.next-action-head-left {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+.next-action-head-icon {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+
+  border-radius: 16px;
+
+  display: grid;
+  place-items: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #10b981,
+      #14b8a6
+    );
+
+  color: #ffffff;
+
+  font-size: 21px;
+
+  box-shadow:
+    0 8px 18px
+    rgba(20, 184, 166, 0.2);
+}
+
+
+.next-action-eyebrow {
+  color: #059669;
+
+  font-size: 11px;
+  font-weight: 950;
+
+  letter-spacing: 0.8px;
+}
+
+
+.next-action-head h3 {
+  margin: 3px 0 3px;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  font-weight: 950;
+}
+
+
+.next-action-head span {
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.next-action-status {
+  min-width: 180px;
+
+  padding: 11px 14px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #a7f3d0;
+
+  text-align: right;
+}
+
+
+.next-action-status span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.next-action-status b {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #047857;
+
+  font-size: 17px;
+  font-weight: 950;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.next-action-summary {
+  padding: 16px 20px 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+.next-action-summary > div {
+  padding: 12px 14px;
+
+  border-radius: 15px;
+
+  background: #f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+}
+
+
+.next-action-summary span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.next-action-summary b {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #0f172a;
+
+  font-size: 17px;
+  font-weight: 950;
+}
+
+
+/* =========================================================
+   TWO LARGE ACTION BUTTONS
+========================================================= */
+
+.next-action-buttons {
+  padding: 18px 20px 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+
+.next-action-btn {
+  width: 100%;
+
+  min-height: 110px;
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    54px
+    minmax(0, 1fr)
+    42px;
+
+  align-items: center;
+
+  gap: 15px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+/* =========================================================
+   HEADER LIST BUTTON
+========================================================= */
+
+.next-action-btn.header-list {
+  border:
+    1px solid #bfdbfe;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eff6ff,
+      #ffffff
+    );
+
+  color: #1e40af;
+}
+
+
+.next-action-btn.header-list:hover {
+  border-color: #93c5fd;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #ffffff
+    );
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 22px
+    rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   NEW HEADER BUTTON
+========================================================= */
+
+.next-action-btn.new-header {
+  border:
+    1px solid #a7f3d0;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ecfdf5,
+      #ffffff
+    );
+
+  color: #047857;
+}
+
+
+.next-action-btn.new-header:hover {
+  border-color: #6ee7b7;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d1fae5,
+      #ffffff
+    );
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 22px
+    rgba(16, 185, 129, 0.13);
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.next-action-btn-icon {
+  width: 54px;
+  height: 54px;
+
+  border-radius: 17px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 20px;
+}
+
+
+.next-action-btn.header-list
+.next-action-btn-icon {
+  background: #dbeafe;
+
+  color: #2563eb;
+}
+
+
+.next-action-btn.new-header
+.next-action-btn-icon {
+  background: #d1fae5;
+
+  color: #059669;
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.next-action-btn-text {
+  min-width: 0;
+}
+
+
+.next-action-btn-text span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 950;
+
+  letter-spacing: 0.6px;
+}
+
+
+.next-action-btn-text b {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 950;
+}
+
+
+.next-action-btn-text small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   ARROW
+========================================================= */
+
+.next-action-btn-arrow {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  display: grid;
+  place-items: center;
+}
+
+
+.next-action-btn.header-list
+.next-action-btn-arrow {
+  background: #dbeafe;
+
+  color: #2563eb;
+}
+
+
+.next-action-btn.new-header
+.next-action-btn-arrow {
+  background: #d1fae5;
+
+  color: #059669;
+}
+
+
+/* =========================================================
+   STEP 3 ACTIVE
+========================================================= */
+
+.step-indicator-item.next.active {
+  border-color:
+    rgba(16, 185, 129, 0.4);
+
+  background:
+    linear-gradient(
+      135deg,
+      #ecfdf5,
+      #ffffff
+    );
+}
+
+
+.step-indicator-item.next.active
+.step-number {
+  background:
+    linear-gradient(
+      135deg,
+      #10b981,
+      #14b8a6
+    );
+
+  border-color: #99f6e4;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 18px
+    rgba(20, 184, 166, 0.22);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (
+  max-width: 900px
+) {
+
+  .next-action-summary {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .next-action-buttons {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+}
+
+
+@media (
+  max-width: 640px
+) {
+
+  .next-action-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .next-action-status {
+    width: 100%;
+    text-align: left;
+  }
+
+
+  .next-action-summary {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+
+  .next-action-btn {
+    grid-template-columns:
+      48px
+      minmax(0, 1fr)
+      34px;
+
+    min-height: 100px;
+
+    padding: 14px;
+  }
+
+
+  .next-action-btn-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+}
+
+
 
 /* ====================
 for 2 case to center

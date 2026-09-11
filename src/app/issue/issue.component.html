@@ -1355,21 +1355,20 @@
             </div>
           </div>
 
-          <!-- STEP 3 -->
+          <!-- STEP 3 : NEXT ACTION -->
           <div
-            class="issue-menu-tab print step-indicator-item"
-            [class.active]="activeIssuePanel === 'print'"
+            class="issue-menu-tab next step-indicator-item"
+            [class.active]="activeIssuePanel === 'next'"
           >
             <div class="issue-menu-icon step-number">3</div>
 
             <div class="issue-menu-text">
-              <b>Print Label</b>
-              <span>Preview และ Issue & Print Label</span>
+              <b>Next Action</b>
+
+              <span> เลือกทำงานต่อกับ Pallet ปัจจุบัน </span>
             </div>
 
-            <div class="issue-menu-badge">
-              {{ currentLabelPageNo }} / {{ labelPreviewPageCount }}
-            </div>
+            <div class="issue-menu-badge">READY</div>
           </div>
         </div>
       </section>
@@ -1754,8 +1753,10 @@
               type="button"
               class="normal-next-panel-btn"
               (click)="setIssuePanel('fraction')"
+              [disabled]="!canGoNextFromNormal"
             >
-              <span>Next</span>
+              <span> Next </span>
+
               <i class="fas fa-arrow-right"></i>
             </button>
           </div>
@@ -2189,15 +2190,17 @@
             <div class="fraction-next-panel-box">
               <div class="fraction-next-panel-info">
                 <span>ขั้นตอนถัดไป</span>
-                <b>ไปที่ Print Label</b>
+                <b>เลือกการทำงานต่อ</b>
               </div>
 
               <button
                 type="button"
                 class="fraction-next-panel-btn"
-                (click)="setIssuePanel('print')"
+                (click)="setIssuePanel('next')"
+                [disabled]="!canGoNextFromFraction"
               >
-                <span>Next</span>
+                <span> Next </span>
+
                 <i class="fas fa-arrow-right"></i>
               </button>
             </div>
@@ -2205,8 +2208,153 @@
         </div>
       </section>
 
+      <!-- =====================================================
+     NEXT ACTION PANEL
+     หลัง Scan Box เต็ม + Box เศษ ครบ
+====================================================== -->
+
+      <section
+        class="next-action-panel"
+        *ngIf="header && activeIssuePanel === 'next'"
+      >
+        <!-- =================================================
+     HEADER
+================================================== -->
+
+        <div class="next-action-head">
+          <div class="next-action-head-left">
+            <div class="next-action-head-icon">
+              <i class="fas fa-check"></i>
+            </div>
+
+            <div>
+              <div class="next-action-eyebrow">HEADER COMPLETED</div>
+
+              <h3>เลือกขั้นตอนถัดไป</h3>
+
+              <span>
+                ข้อมูล Header และ Box ถูกบันทึกใน Pallet ปัจจุบันเรียบร้อยแล้ว
+              </span>
+            </div>
+          </div>
+
+          <div class="next-action-status">
+            <span> CURRENT HEADER </span>
+
+            <b>
+              {{ header.itemNo }}
+            </b>
+          </div>
+        </div>
+
+        <!-- =================================================
+     SUMMARY
+================================================== -->
+
+        <div class="next-action-summary">
+          <div>
+            <span> BOX เต็ม </span>
+
+            <b>
+              {{ scanCount }}
+              /
+              {{ normalRequiredBoxQty }}
+            </b>
+          </div>
+
+          <div>
+            <span> BOX เศษ </span>
+
+            <b>
+              {{ fractionScanCount }}
+              /
+              {{ fractionQtyBoxValue }}
+            </b>
+          </div>
+
+          <div>
+            <span> TOTAL SCANNED </span>
+
+            <b>
+              {{ totalScannedBoxCount }}
+            </b>
+          </div>
+
+          <div>
+            <span> PALLET HEADER </span>
+
+            <b>
+              {{ currentPalletHeaders.length }}
+            </b>
+          </div>
+        </div>
+
+        <!-- =================================================
+     ACTION
+================================================== -->
+
+        <div class="next-action-buttons">
+          <!-- ===============================================
+       HEADER LIST
+  ================================================ -->
+
+          <button
+            type="button"
+            class="next-action-btn header-list"
+            (click)="backToHeaderList()"
+          >
+            <div class="next-action-btn-icon">
+              <i class="fas fa-list"></i>
+            </div>
+
+            <div class="next-action-btn-text">
+              <span> OPTION 1 </span>
+
+              <b> ไปที่ Header List </b>
+
+              <small>
+                ตรวจสอบ Header ทั้งหมดใน Pallet หรือ Issue Pallet เมื่อข้อมูลครบ
+              </small>
+            </div>
+
+            <div class="next-action-btn-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </button>
+
+          <!-- ===============================================
+       CREATE NEW HEADER
+  ================================================ -->
+
+          <button
+            type="button"
+            class="next-action-btn new-header"
+            (click)="prepareCreateNewHeader()"
+          >
+            <div class="next-action-btn-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+
+            <div class="next-action-btn-text">
+              <span> OPTION 2 </span>
+
+              <b> สร้าง Header ใหม่ </b>
+
+              <small> เพิ่ม Label / Item ถัดไป ลงใน Pallet เดิม </small>
+            </div>
+
+            <div class="next-action-btn-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </button>
+        </div>
+      </section>
+
       <!-- ================= PRINT LABEL PANEL ================= -->
-      <div class="print-label-panel" *ngIf="activeIssuePanel === 'print'">
+      <div
+        class="print-label-panel"
+        *ngIf="enableTempPrintPanel && activeIssuePanel === 'print'"
+      >
         <div class="print-label-main">
           <!-- LEFT : LABEL PREVIEW เดิม ไม่แก้โครงสร้างด้านใน -->
           <section class="preview-card preview-bottom-card print-preview-left">
