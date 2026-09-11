@@ -1072,6 +1072,72 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+  backToCreatePallet(): void {
+
+    if (!this.palletTemp) {
+      return;
+    }
+  
+  
+    // =====================================================
+    // CLEAR SELECTED HEADER STATE
+    // แต่ไม่ลบข้อมูล Pallet / Header ใน Database
+    // =====================================================
+  
+    this.resetSelectedHeaderData();
+  
+  
+    // =====================================================
+    // CHANGE VIEW
+    // =====================================================
+  
+    this.showHeaderList =
+      false;
+  
+  
+    this.showCreatePallet =
+      true;
+  
+  
+    // =====================================================
+    // LOAD CURRENT PALLET TEMP
+    // กลับเข้า Form
+    // =====================================================
+  
+    this.palletCreateForm = {
+  
+      date:
+        this.toYmd(
+          this.palletTemp.date
+        ),
+  
+      shift:
+        this.palletTemp.shift,
+  
+      locationId:
+        Number(
+          this.palletTemp.mapAreaRackId
+        ),
+  
+      labelType:
+        this.palletTemp.labelType,
+  
+    };
+  
+  
+    this.labelStockType =
+      this.palletTemp.labelType;
+  
+  
+    // =====================================================
+    // REBUILD RACK
+    // =====================================================
+  
+    this.buildCreatePalletRackView();
+  
+  }
+
   fetchPalletTemp(): void {
     if (!this.userId) {
       return;

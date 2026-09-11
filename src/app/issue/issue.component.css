@@ -6209,6 +6209,220 @@ td small {
 }
 
 
+/* =========================================================
+   NEXT ACTION - BACK TO FRACTION
+========================================================= */
+
+.next-action-back-panel-box {
+  margin-top: 2px;
+
+  padding: 16px 20px 18px;
+
+  border-top: 1px solid #e2e8f0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+}
+
+
+.next-action-back-panel-btn {
+  min-height: 44px;
+
+  border: 1px solid #dbe4ea;
+
+  border-radius: 999px;
+
+  padding: 0 16px 0 14px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  font-size: 13px;
+
+  font-weight: 950;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 14px
+    rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.next-action-back-panel-btn i {
+  width: 26px;
+
+  height: 26px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+
+.next-action-back-panel-btn span {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  line-height: 1.15;
+}
+
+
+.next-action-back-panel-btn span b {
+  font-size: 13px;
+
+  font-weight: 950;
+
+  color: #0f172a;
+}
+
+
+.next-action-back-panel-btn:hover {
+  transform:
+    translateY(-1px);
+
+  background:
+    #f8fafc;
+
+  box-shadow:
+    0 8px 18px
+    rgba(15, 23, 42, 0.1);
+}
+
+
+
+/* =========================================================
+   HEADER LIST - TITLE AREA
+========================================================= */
+
+.header-list-title-area {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+}
+
+
+.header-list-title-text {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   HEADER LIST - BACK BUTTON
+========================================================= */
+
+.header-list-back-btn {
+  width: 44px;
+
+  height: 44px;
+
+  min-width: 44px;
+
+  border: 1px solid #dbe4ea;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 12px
+    rgba(15, 23, 42, 0.05);
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.header-list-back-btn i {
+  font-size: 14px;
+}
+
+
+.header-list-back-btn:hover {
+  background: #f8fafc;
+
+  border-color: #94a3b8;
+
+  color: #0f172a;
+
+  transform:
+    translateX(-2px);
+
+  box-shadow:
+    0 7px 16px
+    rgba(15, 23, 42, 0.08);
+}
+
+
+
+
+@media (max-width: 600px) {
+
+  .header-list-title-area {
+    width: 100%;
+
+    align-items: flex-start;
+  }
+
+
+  .header-list-back-btn {
+    width: 42px;
+
+    height: 42px;
+
+    min-width: 42px;
+  }
+
+}
+
 
 /* ====================
 for 2 case to center

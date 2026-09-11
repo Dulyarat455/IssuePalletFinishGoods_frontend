@@ -490,17 +490,40 @@
     <!-- HEADER -->
 
     <div class="pallet-header-list-head">
-      <div>
-        <div class="header-list-eyebrow">PALLET HEADER</div>
+      <!-- =================================================
+           LEFT
+      ================================================== -->
 
-        <h3>Select Header</h3>
+      <div class="header-list-title-area">
+        <!-- BACK -->
 
-        <span> เลือก Header ที่ต้องการทำงาน สำหรับ Pallet ปัจจุบัน </span>
+        <button
+          type="button"
+          class="header-list-back-btn"
+          (click)="backToCreatePallet()"
+          title="Back to Create Pallet"
+        >
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <!-- TITLE -->
+
+        <div class="header-list-title-text">
+          <div class="header-list-eyebrow">PALLET HEADER</div>
+
+          <h3>Select Header</h3>
+
+          <span> เลือก Header ที่ต้องการทำงาน สำหรับ Pallet ปัจจุบัน </span>
+        </div>
       </div>
+
+      <!-- =================================================
+           RIGHT
+      ================================================== -->
 
       <div class="header-list-head-actions">
         <div class="header-list-count">
-          <span>HEADERS</span>
+          <span> HEADERS </span>
 
           <b>
             {{ currentPalletHeaders.length }}
@@ -2346,6 +2369,26 @@
             <div class="next-action-btn-arrow">
               <i class="fas fa-arrow-right"></i>
             </div>
+          </button>
+        </div>
+
+        <!-- =================================================
+     BACK TO FRACTION PANEL
+================================================== -->
+
+        <div class="next-action-back-panel-box">
+          <button
+            type="button"
+            class="next-action-back-panel-btn"
+            (click)="setIssuePanel('fraction')"
+          >
+            <i class="fas fa-arrow-left"></i>
+
+            <span>
+              Back
+
+              <b> Scan Box เศษ </b>
+            </span>
           </button>
         </div>
       </section>
