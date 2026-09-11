@@ -5578,8 +5578,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
             "
           >
   
-            <!-- HEADER -->
-  
             <div
               style="
                 padding:10px;
@@ -5588,7 +5586,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
                 border-radius:10px;
               "
             >
-  
               <div
                 style="
                   font-size:11px;
@@ -5609,11 +5606,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
               >
                 ${headerCount}
               </div>
-  
             </div>
   
-  
-            <!-- PLAN BOX -->
   
             <div
               style="
@@ -5623,7 +5617,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
                 border-radius:10px;
               "
             >
-  
               <div
                 style="
                   font-size:11px;
@@ -5644,11 +5637,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
               >
                 ${totalPlanBox}
               </div>
-  
             </div>
   
-  
-            <!-- SCANNED -->
   
             <div
               style="
@@ -5658,7 +5648,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
                 border-radius:10px;
               "
             >
-  
               <div
                 style="
                   font-size:11px;
@@ -5679,13 +5668,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
               >
                 ${totalScannedBox}
               </div>
-  
             </div>
   
           </div>
   
-  
-          <!-- WARNING -->
   
           <div
             style="
@@ -5698,11 +5684,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
               font-size:12px;
             "
           >
-  
-            หลังจาก Issue Pallet ข้อมูล Temp
-            จะถูกย้ายไปเป็นข้อมูลจริง
-            และ Temp ของ Pallet นี้จะถูกลบออก
-  
+            หลังจาก Issue Pallet สำเร็จ
+            ระบบจะสร้างข้อมูลจริงและเปิดใบ Label สำหรับ Print อัตโนมัติ
           </div>
   
         </div>
@@ -5735,7 +5718,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       Swal.fire({
         title: 'Issuing Pallet...',
 
-        html: 'กำลังบันทึก Pallet และย้ายข้อมูลจาก Temp',
+        html: 'กำลังบันทึก Pallet และสร้างใบ Label',
 
         allowOutsideClick: false,
 
@@ -5749,7 +5732,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       });
 
       // =====================================================
-      // CALL API
+      // CALL SAVE PALLET
       // =====================================================
 
       this.http
@@ -5760,11 +5743,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
         })
         .subscribe({
           // =================================================
-          // SUCCESS
+          // SAVE SUCCESS
           // =================================================
 
           next: (res: any) => {
-            this.isIssuing = false;
+            // ===============================================
+            // GET REAL PALLET DATA
+            // ===============================================
+
+            const palletId = Number(res?.data?.palletId || 0);
 
             const palletNoId = String(res?.data?.palletNoId || '-');
 
@@ -5774,217 +5761,57 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
             const createdBoxCount = Number(res?.data?.createdBoxCount || 0);
 
-            // =================================================
-            // SUCCESS POPUP
-            // =================================================
+            // ===============================================
+            // VALIDATE REAL PALLET ID
+            // ===============================================
 
-            Swal.fire({
-              icon: 'success',
+            if (!Number.isInteger(palletId) || palletId <= 0) {
+              this.isIssuing = false;
 
-              title: 'Issue Pallet Success',
+              Swal.fire({
+                icon: 'warning',
 
-              html: `
-                <div style="text-align:left">
+                title: 'Issue Pallet สำเร็จ',
+
+                html: `
+                  <div style="text-align:left">
   
-                  <div
-                    style="
-                      margin-bottom:14px;
-                      padding:14px;
-                      border-radius:12px;
-                      background:#ecfdf5;
-                      border:1px solid #a7f3d0;
-                      text-align:center;
-                    "
-                  >
-  
-                    <div
-                      style="
-                        font-size:11px;
-                        color:#047857;
-                        font-weight:800;
-                      "
-                    >
-                      PALLET NO.
+                    <div>
+                      Pallet No:
+                      <b>${palletNoId}</b>
                     </div>
   
-                    <div
-                      style="
-                        margin-top:4px;
-                        font-size:26px;
-                        color:#064e3b;
-                        font-weight:950;
-                      "
-                    >
-                      ${palletNoId}
+                    <div style="margin-top:8px;color:#b45309">
+                      แต่ไม่พบ palletId จาก API
+                      จึงไม่สามารถ Print Label อัตโนมัติได้
                     </div>
   
                   </div>
-  
-  
-                  <div>
-  
-                    <b>
-                      Header Saved:
-                    </b>
-  
-                    ${createdHeaderCount}
-  
-                  </div>
-  
-  
-                  <div
-                    style="
-                      margin-top:6px;
-                    "
-                  >
-  
-                    <b>
-                      Box Saved:
-                    </b>
-  
-                    ${createdBoxCount}
-  
-                  </div>
-  
-                </div>
-              `,
+                `,
 
-              confirmButtonText: 'OK',
+                confirmButtonText: 'OK',
+              }).then(() => {
+                this.resetAfterIssuePallet();
+              });
 
-              confirmButtonColor: '#10b981',
+              return;
+            }
 
-              allowOutsideClick: false,
-            }).then(() => {
-              // #################################################
-              //
-              // RESET ALL TEMP STATE
-              //
-              // #################################################
+            // ===============================================
+            // PRINT LABEL NEXT
+            // ===============================================
 
-              // =================================================
-              // PALLET
-              // =================================================
+            this.printPalletLabelByPalletId(palletId, {
+              palletNoId: palletNoId,
 
-              this.palletTemp = null;
+              createdHeaderCount: createdHeaderCount,
 
-              this.isEditingPalletTemp = false;
-
-              this.isSavingPalletTemp = false;
-
-              // =================================================
-              // RESET CREATE PALLET FORM
-              //
-              // Date     = Calculate ใหม่
-              // Shift    = Current Shift
-              // Location = null
-              // Label    = FG
-              // =================================================
-
-              this.palletCreateForm = this.createEmptyPalletCreateForm();
-
-              // =================================================
-              // HEADER
-              // =================================================
-
-              this.header = null;
-
-              this.headers = [];
-
-              this.form = this.createEmptyHeaderForm();
-
-              this.isEditingHeader = false;
-
-              this.isSavingHeader = false;
-
-              // =================================================
-              // HEADER TAG SCAN
-              // =================================================
-
-              this.headerTagScanForm = this.createEmptyScanForm();
-
-              this.headerItemClass = '';
-
-              this.isHeaderTagLocked = false;
-
-              this.itemKeyword = '';
-
-              this.filteredItems = [];
-
-              this.showItemDrop = false;
-
-              // =================================================
-              // NORMAL BOX
-              // =================================================
-
-              this.savedRows = [];
-
-              this.scanForm = this.createEmptyScanForm();
-
-              this.fullBoxTagQty = null;
-
-              this.isSavingFullBoxTag = false;
-
-              this.isSavingScan = false;
-
-              // =================================================
-              // FRACTION BOX
-              // =================================================
-
-              this.showFractionSection = false;
-
-              this.fractionHeader = null;
-
-              this.fractionQtyBox = null;
-
-              this.fractionRows = [];
-
-              this.fractionScanForm = this.createEmptyScanForm();
-
-              this.isFractionTagScanned = false;
-
-              this.fractionTagOriginalQty = null;
-
-              this.isFractionQtyEdited = false;
-
-              this.isSavingFractionHeader = false;
-
-              this.isSavingFractionScan = false;
-
-              // =================================================
-              // OTHER STATE
-              // =================================================
-
-              this.currentLabelPageIndex = 0;
-
-              this.activeIssuePanel = 'normal';
-
-              this.showHeaderList = false;
-
-              // =================================================
-              // GO BACK CREATE PALLET
-              // =================================================
-
-              this.showCreatePallet = true;
-
-              // =================================================
-              // REBUILD RACK VIEW
-              // เพราะ Location เก่าถูก Clear แล้ว
-              // =================================================
-
-              this.buildCreatePalletRackView();
-
-              // =================================================
-              // REFRESH BACKEND
-              // =================================================
-
-              this.fetchPalletTemp();
-
-              this.fetchHeader();
+              createdBoxCount: createdBoxCount,
             });
           },
 
           // =================================================
-          // ERROR
+          // SAVE ERROR
           // =================================================
 
           error: (err) => {
@@ -6010,6 +5837,366 @@ export class IssueComponent implements OnInit, AfterViewInit {
           },
         });
     });
+  }
+
+  printPalletLabelByPalletId(
+    palletId: number,
+    issueResult?: {
+      palletNoId: string;
+      createdHeaderCount: number;
+      createdBoxCount: number;
+    }
+  ): void {
+    // =====================================================
+    // VALIDATE
+    // =====================================================
+
+    if (!Number.isInteger(Number(palletId)) || Number(palletId) <= 0) {
+      this.isIssuing = false;
+
+      Swal.fire({
+        icon: 'warning',
+
+        title: 'ไม่พบ Pallet ID',
+
+        text: 'ไม่สามารถสร้างใบ Label ได้',
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // STATE
+    // =====================================================
+
+    this.isPrinting = true;
+
+    // =====================================================
+    // LOADING PRINT
+    // =====================================================
+
+    Swal.fire({
+      title: 'Preparing Label...',
+
+      html: 'Issue Pallet สำเร็จ กำลังสร้างใบ Label สำหรับ Print',
+
+      allowOutsideClick: false,
+
+      allowEscapeKey: false,
+
+      showConfirmButton: false,
+
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // =====================================================
+    // CALL PRINT PALLET LABEL
+    // =====================================================
+
+    this.http
+      .post(
+        config.apiServer + '/api/issue/printPalletLabel',
+
+        {
+          palletId: Number(palletId),
+        },
+
+        {
+          responseType: 'blob',
+        }
+      )
+      .subscribe({
+        // =================================================
+        // PRINT SUCCESS
+        // =================================================
+
+        next: (blob: Blob) => {
+          this.isPrinting = false;
+
+          this.isIssuing = false;
+
+          // ===============================================
+          // CREATE PDF URL
+          // ===============================================
+
+          const url = window.URL.createObjectURL(blob);
+
+          // ===============================================
+          // OPEN PDF
+          // ===============================================
+
+          window.open(url, '_blank');
+
+          // ===============================================
+          // RELEASE URL
+          // ===============================================
+
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+          }, 60000);
+
+          // ===============================================
+          // SUCCESS POPUP
+          // ===============================================
+
+          Swal.fire({
+            icon: 'success',
+
+            title: 'Issue Pallet Success',
+
+            html: `
+              <div style="text-align:left">
+  
+                <div
+                  style="
+                    margin-bottom:14px;
+                    padding:14px;
+                    border-radius:12px;
+                    background:#ecfdf5;
+                    border:1px solid #a7f3d0;
+                    text-align:center;
+                  "
+                >
+  
+                  <div
+                    style="
+                      font-size:11px;
+                      color:#047857;
+                      font-weight:800;
+                    "
+                  >
+                    PALLET NO.
+                  </div>
+  
+                  <div
+                    style="
+                      margin-top:4px;
+                      font-size:26px;
+                      color:#064e3b;
+                      font-weight:950;
+                    "
+                  >
+                    ${issueResult?.palletNoId || '-'}
+                  </div>
+  
+                </div>
+  
+  
+                <div>
+                  <b>Header Saved:</b>
+                  ${issueResult?.createdHeaderCount || 0}
+                </div>
+  
+  
+                <div style="margin-top:6px">
+                  <b>Box Saved:</b>
+                  ${issueResult?.createdBoxCount || 0}
+                </div>
+  
+  
+                <div
+                  style="
+                    margin-top:12px;
+                    padding:10px 12px;
+                    border-radius:10px;
+                    background:#eff6ff;
+                    border:1px solid #bfdbfe;
+                    color:#1e40af;
+                    font-size:12px;
+                  "
+                >
+                  <i class="fas fa-print"></i>
+                  Label PDF เปิดใน Tab ใหม่แล้ว
+                </div>
+  
+              </div>
+            `,
+
+            confirmButtonText: 'OK',
+
+            confirmButtonColor: '#10b981',
+
+            allowOutsideClick: false,
+          }).then(() => {
+            // =============================================
+            // RESET AFTER EVERYTHING SUCCESS
+            // =============================================
+
+            this.resetAfterIssuePallet();
+          });
+        },
+
+        // =================================================
+        // PRINT ERROR
+        //
+        // สำคัญ:
+        // Issue Pallet สำเร็จแล้ว
+        // ห้ามบอกว่า Issue Fail
+        // =================================================
+
+        error: (err) => {
+          console.error('PRINT PALLET LABEL ERROR:', err);
+
+          this.isPrinting = false;
+
+          this.isIssuing = false;
+
+          Swal.fire({
+            icon: 'warning',
+
+            title: 'Issue Pallet สำเร็จ แต่ Print ไม่สำเร็จ',
+
+            html: `
+              <div style="text-align:left">
+  
+                <div>
+                  Pallet No:
+                  <b>
+                    ${issueResult?.palletNoId || '-'}
+                  </b>
+                </div>
+  
+                <div
+                  style="
+                    margin-top:10px;
+                    padding:10px 12px;
+                    background:#fff7ed;
+                    border:1px solid #fed7aa;
+                    border-radius:10px;
+                    color:#9a3412;
+                  "
+                >
+                  ข้อมูล Pallet ถูกบันทึกเรียบร้อยแล้ว
+                  แต่ไม่สามารถสร้าง PDF Label ได้
+                </div>
+  
+              </div>
+            `,
+
+            confirmButtonText: 'OK',
+          }).then(() => {
+            // ถึง Print fail
+            // Save Pallet สำเร็จไปแล้ว
+            // จึงต้อง reset หน้าตามปกติ
+
+            this.resetAfterIssuePallet();
+          });
+        },
+      });
+  }
+
+  resetAfterIssuePallet(): void {
+    // =====================================================
+    // PALLET
+    // =====================================================
+
+    this.palletTemp = null;
+
+    this.isEditingPalletTemp = false;
+
+    this.isSavingPalletTemp = false;
+
+    // =====================================================
+    // CREATE PALLET FORM
+    // =====================================================
+
+    this.palletCreateForm = this.createEmptyPalletCreateForm();
+
+    // =====================================================
+    // HEADER
+    // =====================================================
+
+    this.header = null;
+
+    this.headers = [];
+
+    this.form = this.createEmptyHeaderForm();
+
+    this.isEditingHeader = false;
+
+    this.isSavingHeader = false;
+
+    // =====================================================
+    // HEADER TAG
+    // =====================================================
+
+    this.headerTagScanForm = this.createEmptyScanForm();
+
+    this.headerItemClass = '';
+
+    this.isHeaderTagLocked = false;
+
+    this.itemKeyword = '';
+
+    this.filteredItems = [];
+
+    this.showItemDrop = false;
+
+    // =====================================================
+    // NORMAL BOX
+    // =====================================================
+
+    this.savedRows = [];
+
+    this.scanForm = this.createEmptyScanForm();
+
+    this.fullBoxTagQty = null;
+
+    this.isSavingFullBoxTag = false;
+
+    this.isSavingScan = false;
+
+    // =====================================================
+    // FRACTION
+    // =====================================================
+
+    this.showFractionSection = false;
+
+    this.fractionHeader = null;
+
+    this.fractionQtyBox = null;
+
+    this.fractionRows = [];
+
+    this.fractionScanForm = this.createEmptyScanForm();
+
+    this.isFractionTagScanned = false;
+
+    this.fractionTagOriginalQty = null;
+
+    this.isFractionQtyEdited = false;
+
+    this.isSavingFractionHeader = false;
+
+    this.isSavingFractionScan = false;
+
+    // =====================================================
+    // VIEW STATE
+    // =====================================================
+
+    this.currentLabelPageIndex = 0;
+
+    this.activeIssuePanel = 'normal';
+
+    this.showHeaderList = false;
+
+    this.showCreatePallet = true;
+
+    // =====================================================
+    // REBUILD
+    // =====================================================
+
+    this.buildCreatePalletRackView();
+
+    // =====================================================
+    // REFRESH
+    // =====================================================
+
+    this.fetchPalletTemp();
+
+    this.fetchHeader();
   }
 
   printFullLabel(): void {
