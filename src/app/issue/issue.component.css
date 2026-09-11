@@ -6321,44 +6321,78 @@ td small {
 
 
 
+
 /* =========================================================
-   HEADER LIST - TITLE AREA
+   HEADER LIST - BACK TO CREATE PALLET
+   Bottom Left Navigation
 ========================================================= */
 
-.header-list-title-area {
-  min-width: 0;
+.header-list-back-panel {
+  margin-top: 18px;
+
+  padding: 16px 0 0;
+
+  border-top: 1px solid #e2e8f0;
 
   display: flex;
 
   align-items: center;
 
-  gap: 13px;
-}
-
-
-.header-list-title-text {
-  min-width: 0;
+  justify-content: flex-start;
 }
 
 
 /* =========================================================
-   HEADER LIST - BACK BUTTON
+   BUTTON
 ========================================================= */
 
-.header-list-back-btn {
-  width: 44px;
+.header-list-back-panel-btn {
+  min-height: 48px;
 
-  height: 44px;
-
-  min-width: 44px;
+  padding: 0 18px 0 14px;
 
   border: 1px solid #dbe4ea;
 
-  border-radius: 14px;
+  border-radius: 999px;
 
   background: #ffffff;
 
-  color: #475569;
+  color: #334155;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 11px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 14px
+    rgba(15, 23, 42, 0.06);
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.header-list-back-panel-btn > i {
+  width: 28px;
+
+  height: 28px;
+
+  min-width: 28px;
+
+  border-radius: 50%;
 
   display: inline-flex;
 
@@ -6366,62 +6400,227 @@ td small {
 
   justify-content: center;
 
-  cursor: pointer;
+  background: #f1f5f9;
 
-  box-shadow:
-    0 5px 12px
-    rgba(15, 23, 42, 0.05);
+  color: #475569;
 
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  font-size: 12px;
 }
 
 
-.header-list-back-btn i {
-  font-size: 14px;
+/* =========================================================
+   TEXT
+========================================================= */
+
+.header-list-back-panel-btn > span {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  justify-content: center;
+
+  line-height: 1.12;
 }
 
 
-.header-list-back-btn:hover {
-  background: #f8fafc;
+.header-list-back-panel-btn small {
+  color: #94a3b8;
 
-  border-color: #94a3b8;
+  font-size: 10px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+
+.header-list-back-panel-btn b {
+  margin-top: 2px;
 
   color: #0f172a;
 
-  transform:
-    translateX(-2px);
+  font-size: 13px;
 
-  box-shadow:
-    0 7px 16px
-    rgba(15, 23, 42, 0.08);
+  font-weight: 950;
 }
 
 
+/* =========================================================
+   HOVER
+========================================================= */
 
+.header-list-back-panel-btn:hover {
+  background: #f8fafc;
+
+  border-color: #cbd5e1;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 18px
+    rgba(15, 23, 42, 0.1);
+}
+
+
+.header-list-back-panel-btn:hover > i {
+  background: #e2e8f0;
+
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 600px) {
 
-  .header-list-title-area {
-    width: 100%;
-
-    align-items: flex-start;
+  .header-list-back-panel {
+    padding-top: 14px;
   }
 
 
-  .header-list-back-btn {
-    width: 42px;
+  .header-list-back-panel-btn {
+    min-height: 48px;
 
-    height: 42px;
-
-    min-width: 42px;
+    padding-right: 17px;
   }
 
 }
+
+
+
+/* =========================================================
+   NORMAL SCAN - BACK TO HEADER LIST
+========================================================= */
+
+.normal-back-panel-box {
+  margin-top: 14px;
+
+  padding: 18px 16px;
+
+  border-top: 1px solid #e2e8f0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.normal-back-panel-btn {
+  min-height: 44px;
+
+  border: 1px solid #dbe4ea;
+
+  border-radius: 999px;
+
+  padding: 0 16px 0 14px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  font-size: 13px;
+
+  font-weight: 950;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 14px
+    rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.normal-back-panel-btn i {
+  width: 26px;
+
+  height: 26px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.normal-back-panel-btn span {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  line-height: 1.15;
+}
+
+
+.normal-back-panel-btn span b {
+  font-size: 13px;
+
+  font-weight: 950;
+
+  color: #0f172a;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.normal-back-panel-btn:hover {
+  transform:
+    translateY(-1px);
+
+  background:
+    #f8fafc;
+
+  box-shadow:
+    0 8px 18px
+    rgba(15, 23, 42, 0.1);
+}
+
+
 
 
 /* ====================

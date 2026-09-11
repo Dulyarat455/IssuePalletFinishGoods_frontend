@@ -494,27 +494,12 @@
            LEFT
       ================================================== -->
 
-      <div class="header-list-title-area">
-        <!-- BACK -->
+      <div class="header-list-title-text">
+        <div class="header-list-eyebrow">PALLET HEADER</div>
 
-        <button
-          type="button"
-          class="header-list-back-btn"
-          (click)="backToCreatePallet()"
-          title="Back to Create Pallet"
-        >
-          <i class="fas fa-arrow-left"></i>
-        </button>
+        <h3>Select Header</h3>
 
-        <!-- TITLE -->
-
-        <div class="header-list-title-text">
-          <div class="header-list-eyebrow">PALLET HEADER</div>
-
-          <h3>Select Header</h3>
-
-          <span> เลือก Header ที่ต้องการทำงาน สำหรับ Pallet ปัจจุบัน </span>
-        </div>
+        <span> เลือก Header ที่ต้องการทำงาน สำหรับ Pallet ปัจจุบัน </span>
       </div>
 
       <!-- =================================================
@@ -751,6 +736,26 @@
           <i class="fas fa-arrow-right" *ngIf="!isIssuing"></i>
         </button>
       </div>
+    </div>
+
+    <!-- =====================================================
+     BACK TO CREATE PALLET
+====================================================== -->
+
+    <div class="header-list-back-panel">
+      <button
+        type="button"
+        class="header-list-back-panel-btn"
+        (click)="backToCreatePallet()"
+      >
+        <i class="fas fa-arrow-left"></i>
+
+        <span>
+          <small> Back </small>
+
+          <b> Create Pallet </b>
+        </span>
+      </button>
     </div>
   </section>
 
@@ -1606,12 +1611,31 @@
               </button>
             </div>
 
+
             <div class="note-box">
               <b>Scan Rule:</b>
               ต้อง Save Header ก่อน Scan / QTY Box เต็ม และ QTY Box เศษ กำหนดที่
               Header / ระบบจะกัน WOS ซ้ำ / Total QTY BOX ไม่เกิน 42 Box ต่อครั้ง
             </div>
           </ng-container>
+            <!-- =====================================================
+                BACK TO HEADER LIST
+            ====================================================== -->
+            <div class="normal-back-panel-box">
+              <button
+                type="button"
+                class="normal-back-panel-btn"
+                (click)="backToHeaderList()"
+              >
+                <i class="fas fa-arrow-left"></i>
+
+                <span>
+                  Back
+
+                  <b> Header List </b>
+                </span>
+              </button>
+            </div>
         </section>
 
         <!-- SAVED TABLE -->
