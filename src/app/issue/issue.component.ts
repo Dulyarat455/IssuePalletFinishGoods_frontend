@@ -64,6 +64,25 @@ type IssueRackDefinition = {
   rows: number;
 };
 
+type MapLocationPalletRow = {
+  mapAreaRackId: number;
+
+  rackId: number;
+  areaId: number;
+
+  rackName: string;
+  areaName: string;
+  locationName: string;
+
+  isOccupied: boolean;
+  isEmpty: boolean;
+
+  palletCount: number;
+
+  palletId: number | null;
+  palletNoId: string | null;
+};
+
 type IssueRackSlotView = {
   code: string;
 
@@ -75,6 +94,16 @@ type IssueRackSlotView = {
   exists: boolean;
 
   canSelect: boolean;
+
+  // =====================================================
+  // PALLET OCCUPANCY
+  // =====================================================
+
+  isOccupied: boolean;
+
+  palletId: number | null;
+
+  palletNoId: string | null;
 };
 
 type IssueRackRowView = {
@@ -257,6 +286,16 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   createPalletRackView: IssueRackView[] = [];
   createPalletSelectableLocations: LocationRow[] = [];
+
+  // =====================================================
+  // PALLET OCCUPANCY BY MAP AREA RACK ID
+  // =====================================================
+
+  mapLocationPalletRows: MapLocationPalletRow[] = [];
+
+  mapLocationPalletById = new Map<number, MapLocationPalletRow>();
+
+  isLoadingMapLocationPallet = false;
 
   pendingLocation: LocationRow | null = null;
 
@@ -2149,11 +2188,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   private buildCreatePalletRackView(): void {
     // =====================================================
-    // 1. สร้าง Map Location ครั้งเดียว
+    // 1. LOCATION MASTER MAP
     //
     // A101 -> LocationRow
     // A102 -> LocationRow
-    // B408 -> LocationRow
     // =====================================================
 
     const locationMap = new Map<string, LocationRow>();
@@ -2177,41 +2215,52 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
 
     // =====================================================
-    // 2. Rack Profile ของ User
+    // 2. RACK PROFILE ของ USER
     // =====================================================
 
     const rackDefinitions = this.getCreatePalletRackProfile();
 
-    // ==========================================
-    // Pending Area
-    // Master:
-    // rackName = Pending
-    // areaName = Pending
-    // ==========================================
+    // =====================================================
+    // 3. PENDING AREA
+    // =====================================================
 
     this.pendingLocation = locationMap.get('PENDINGPENDING') || null;
 
     this.setupPendingAreaMode();
 
+    // =====================================================
+    // RESULT
+    // =====================================================
+
     const rackView: IssueRackView[] = [];
 
     const selectableLocationMap = new Map<number, LocationRow>();
 
-    // Pending เลือกได้ทุก Role
-    // ที่อยู่ใน Case ของ Layout นี้
+    // =====================================================
+    // 4. PENDING AREA
+    //
+    // EXCEPTION:
+    //
+    // Pending สามารถมีหลาย Pallet ได้
+    //
+    // - ไม่สนใจ Occupied
+    // - กดเลือกได้เสมอ
+    // - แสดงใน Dropdown เสมอ
+    //
+    // แต่ยังต้องเป็น Pending Area
+    // ที่อยู่ใน Layout ของ User ปัจจุบัน
+    // =====================================================
 
     if (this.pendingLocation && this.pendingAreaMode) {
       selectableLocationMap.set(
         Number(this.pendingLocation.id),
+
         this.pendingLocation
       );
     }
 
     // =====================================================
-    // 3. Build View
-    //
-    // ทำแค่ครั้งเดียว
-    // หลัง fetchLocations สำเร็จ
+    // 5. BUILD RACK VIEW
     // =====================================================
 
     for (const rack of rackDefinitions) {
@@ -2227,7 +2276,42 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
           const location = locationMap.get(key) || null;
 
-          const canSelect = this.canSelectRackSlot(rack.rackCode, slotCode);
+          // ===============================================
+          // USER PERMISSION / RACK PROFILE
+          // ===============================================
+
+          const permissionCanSelect = this.canSelectRackSlot(
+            rack.rackCode,
+            slotCode
+          );
+
+          // ===============================================
+          // OCCUPANCY
+          // ===============================================
+
+          const locationId = location ? Number(location.id) : null;
+
+          const occupancy =
+            locationId !== null
+              ? this.mapLocationPalletById.get(locationId) || null
+              : null;
+
+          const isOccupied = occupancy?.isOccupied === true;
+
+          // ===============================================
+          // FINAL CAN SELECT
+          //
+          // ต้อง:
+          // - Location มีจริง
+          // - User มีสิทธิ์
+          // - ไม่มี Pallet
+          // ===============================================
+
+          const canSelect = !!location && permissionCanSelect && !isOccupied;
+
+          // ===============================================
+          // SLOT
+          // ===============================================
 
           slots.push({
             code: slotCode,
@@ -2236,19 +2320,34 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
             row: row,
 
-            locationId: location ? Number(location.id) : null,
+            locationId: locationId,
 
             exists: !!location,
 
-            canSelect: !!location && canSelect,
+            canSelect: canSelect,
+
+            isOccupied: isOccupied,
+
+            palletId: occupancy?.palletId ?? null,
+
+            palletNoId: occupancy?.palletNoId ?? null,
           });
 
-          // Dropdown
-          // เก็บเฉพาะ Location
-          // ที่ User เลือกได้
+          // ===============================================
+          // DROPDOWN
+          //
+          // เพิ่มเฉพาะ Location ที่:
+          // - มีจริง
+          // - User เลือกได้
+          // - ไม่มี Pallet
+          // ===============================================
 
-          if (location && canSelect) {
-            selectableLocationMap.set(Number(location.id), location);
+          if (location && permissionCanSelect && !isOccupied) {
+            selectableLocationMap.set(
+              Number(location.id),
+
+              location
+            );
           }
         }
 
@@ -2271,17 +2370,25 @@ export class IssueComponent implements OnInit, AfterViewInit {
     }
 
     // =====================================================
-    // 4. Assign ทีเดียว
+    // 6. ASSIGN RACK VIEW
     // =====================================================
 
     this.createPalletRackView = rackView;
+
+    // =====================================================
+    // 7. DROPDOWN
+    //
+    // มีเฉพาะ Location ว่าง
+    // =====================================================
 
     this.createPalletSelectableLocations = Array.from(
       selectableLocationMap.values()
     ).sort((a, b) => {
       return String(a.name || a.locationNo || '').localeCompare(
         String(b.name || b.locationNo || ''),
+
         undefined,
+
         {
           numeric: true,
         }
@@ -2730,12 +2837,137 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+  fetchMapLocationPallet(callback?: () => void): void {
+    // =====================================================
+    // LOADING
+    // =====================================================
+
+    this.isLoadingMapLocationPallet = true;
+
+    // =====================================================
+    // API
+    // =====================================================
+
+    this.http
+      .get<any>(config.apiServer + '/api/location/mapLocationPallet')
+      .subscribe({
+        // =================================================
+        // SUCCESS
+        // =================================================
+
+        next: (res: any): void => {
+          const rows = Array.isArray(res?.results) ? res.results : [];
+
+          // ===============================================
+          // NORMALIZE
+          // ===============================================
+
+          this.mapLocationPalletRows = rows.map(
+            (row: any): MapLocationPalletRow => ({
+              mapAreaRackId: Number(row.mapAreaRackId),
+
+              rackId: Number(row.rackId),
+
+              areaId: Number(row.areaId),
+
+              rackName: String(row.rackName || ''),
+
+              areaName: String(row.areaName || ''),
+
+              locationName: String(row.locationName || ''),
+
+              isOccupied: row.isOccupied === true,
+
+              isEmpty: row.isEmpty === true,
+
+              palletCount: Number(row.palletCount || 0),
+
+              palletId: row.palletId == null ? null : Number(row.palletId),
+
+              palletNoId:
+                row.palletNoId == null ? null : String(row.palletNoId),
+            })
+          );
+
+          // ===============================================
+          // BUILD MAP
+          //
+          // key = MapAreaRack.id
+          // ===============================================
+
+          this.mapLocationPalletById = new Map<number, MapLocationPalletRow>();
+
+          for (const row of this.mapLocationPalletRows) {
+            this.mapLocationPalletById.set(
+              Number(row.mapAreaRackId),
+
+              row
+            );
+          }
+
+          // ===============================================
+          // END LOADING
+          // ===============================================
+
+          this.isLoadingMapLocationPallet = false;
+
+          // ===============================================
+          // CALLBACK
+          // ===============================================
+
+          if (callback) {
+            callback();
+          }
+        },
+
+        // =================================================
+        // ERROR
+        // =================================================
+
+        error: (err: any): void => {
+          console.error('MAP LOCATION PALLET ERROR:', err);
+
+          this.isLoadingMapLocationPallet = false;
+
+          this.mapLocationPalletRows = [];
+
+          this.mapLocationPalletById = new Map<number, MapLocationPalletRow>();
+
+          // ===============================================
+          // ปลอดภัยกว่า:
+          // ถ้าเช็ค Occupied ไม่ได้
+          // ไม่ Build Location ให้เลือก
+          // ===============================================
+
+          this.createPalletRackView = [];
+
+          this.createPalletSelectableLocations = [];
+
+          Swal.fire({
+            icon: 'error',
+
+            title: 'Load Pallet Location Failed',
+
+            text: 'ไม่สามารถตรวจสอบ Location ที่มี Pallet อยู่ได้ กรุณาลองใหม่อีกครั้ง',
+          });
+        },
+      });
+  }
+
   fetchLocations(): void {
     this.isLoadingMaster = true;
 
     this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
+      // =================================================
+      // LOCATION MASTER SUCCESS
+      // =================================================
+
       next: (res: any): void => {
         const racks = Array.isArray(res?.results) ? res.results : [];
+
+        // ===============================================
+        // BUILD LOCATION MASTER
+        // ===============================================
 
         this.locations = racks.flatMap((rack: any) => {
           const rackName = String(rack.rackName || '').trim();
@@ -2769,14 +3001,27 @@ export class IssueComponent implements OnInit, AfterViewInit {
           });
         });
 
-        // ==================================
-        // Build Rack แค่ครั้งเดียว
-        // ==================================
+        // ===============================================
+        // LOAD PALLET OCCUPANCY
+        //
+        // หลัง Location Master พร้อมแล้ว
+        // ===============================================
 
-        this.buildCreatePalletRackView();
+        this.fetchMapLocationPallet(() => {
+          // ===========================================
+          // ทั้ง 2 API พร้อมแล้ว
+          // ค่อย Build Rack
+          // ===========================================
 
-        this.checkMasterLoadingDone();
+          this.buildCreatePalletRackView();
+
+          this.checkMasterLoadingDone();
+        });
       },
+
+      // =================================================
+      // ERROR
+      // =================================================
 
       error: (err: any): void => {
         console.error(err);
@@ -2786,6 +3031,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
         this.createPalletRackView = [];
 
         this.createPalletSelectableLocations = [];
+
+        this.mapLocationPalletRows = [];
+
+        this.mapLocationPalletById = new Map<number, MapLocationPalletRow>();
 
         this.checkMasterLoadingDone();
 

@@ -6623,6 +6623,102 @@ td small {
 
 
 
+
+/* =========================================================
+   CREATE PALLET - OCCUPIED LOCATION
+========================================================= */
+
+/*
+  Location มี Pallet แล้ว
+
+  - Disable
+  - สีตาม Rack Header
+  - ไม่ใช้สีเทา disabled ปกติ
+*/
+
+.create-rack-slot.occupied {
+  cursor: not-allowed !important;
+
+  opacity: 1 !important;
+
+  color: #334155 !important;
+
+  font-weight: 950 !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(15, 23, 42, 0.06) !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   A / B / C
+========================================================= */
+
+.create-rack-slot.occupied.occupied-abc {
+  background:
+    #ffd9c2 !important;
+
+  border-color:
+    #f3a779 !important;
+
+  color:
+    #7c2d12 !important;
+}
+
+
+/* =========================================================
+   D / E
+========================================================= */
+
+.create-rack-slot.occupied.occupied-de {
+  background:
+    #f5b3ed !important;
+
+  border-color:
+    #dd82d1 !important;
+
+  color:
+    #701a75 !important;
+}
+
+
+/* =========================================================
+   F / G / H
+========================================================= */
+
+.create-rack-slot.occupied.occupied-fgh {
+  background:
+    #d6ffb8 !important;
+
+  border-color:
+    #9fd778 !important;
+
+  color:
+    #365314 !important;
+}
+
+
+/* =========================================================
+   OCCUPIED HOVER
+========================================================= */
+
+.create-rack-slot.occupied:hover {
+  transform:
+    none !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(15, 23, 42, 0.06) !important;
+}
+
+
+
+  
+
+
 /* ====================
 for 2 case to center
 ==================== */

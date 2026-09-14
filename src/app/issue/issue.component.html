@@ -145,37 +145,81 @@
                     *ngFor="let rackRow of rack.rows"
                   >
                     <button
-                      type="button"
-                      class="create-rack-slot"
-                      *ngFor="let slot of rackRow.slots"
-                      [class.location-exists]="slot.exists"
-                      [class.location-missing]="!slot.exists"
-                      [class.selected]="
+                    type="button"
+                    class="create-rack-slot"
+                    *ngFor="let slot of rackRow.slots"
+                  
+                    [class.location-exists]="slot.exists"
+                  
+                    [class.location-missing]="
+                      !slot.exists
+                    "
+                  
+                    [class.occupied]="
+                      slot.isOccupied
+                    "
+                  
+                    [class.occupied-abc]="
+                      slot.isOccupied &&
+                      rack.rackGroup === 'ABC'
+                    "
+                  
+                    [class.occupied-de]="
+                      slot.isOccupied &&
+                      rack.rackGroup === 'DE'
+                    "
+                  
+                    [class.occupied-fgh]="
+                      slot.isOccupied &&
+                      rack.rackGroup === 'FGH'
+                    "
+                  
+                    [class.selected]="
+                      slot.locationId !== null &&
+                      palletCreateForm.locationId === slot.locationId
+                    "
+                  
+                    [title]="
+                      slot.isOccupied
+                        ? 'Occupied : ' + (slot.palletNoId || '-')
+                        : slot.exists
+                          ? 'Available'
+                          : 'Location not found'
+                    "
+                  
+                    [disabled]="
+                      isPalletFormLocked ||
+                      isSavingPalletTemp ||
+                      !slot.exists ||
+                      !slot.canSelect
+                    "
+                  
+                    (click)="
+                      selectCreatePalletRackSlotView(slot)
+                    "
+                  >
+                  
+                    <span
+                      class="create-slot-code"
+                    >
+                      {{ slot.code }}
+                    </span>
+                  
+                  
+                    <span
+                      class="create-selected-check"
+                      *ngIf="
+                        !slot.isOccupied &&
                         slot.locationId !== null &&
                         palletCreateForm.locationId === slot.locationId
                       "
-                      [disabled]="
-                        isPalletFormLocked ||
-                        isSavingPalletTemp ||
-                        !slot.exists ||
-                        !slot.canSelect
-                      "
-                      (click)="selectCreatePalletRackSlotView(slot)"
                     >
-                      <span class="create-slot-code">
-                        {{ slot.code }}
-                      </span>
-
-                      <span
-                        class="create-selected-check"
-                        *ngIf="
-                          slot.locationId !== null &&
-                          palletCreateForm.locationId === slot.locationId
-                        "
-                      >
-                        <i class="fas fa-check"></i>
-                      </span>
-                    </button>
+                      <i
+                        class="fas fa-check"
+                      ></i>
+                    </span>
+                  
+                  </button>
                   </div>
                 </div>
               </div>
