@@ -302,8 +302,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   // false = ยังไม่เปิดใช้ใน New Pallet Flow
   // เก็บ Function / HTML เดิมไว้ก่อน
   // =====================================================
-  enableTempPrintPanel =  false;
-
+  enableTempPrintPanel = false;
 
   labelRowsPerPage = 3;
 
@@ -1072,70 +1071,48 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-
   backToCreatePallet(): void {
-
     if (!this.palletTemp) {
       return;
     }
-  
-  
+
     // =====================================================
     // CLEAR SELECTED HEADER STATE
     // แต่ไม่ลบข้อมูล Pallet / Header ใน Database
     // =====================================================
-  
+
     this.resetSelectedHeaderData();
-  
-  
+
     // =====================================================
     // CHANGE VIEW
     // =====================================================
-  
-    this.showHeaderList =
-      false;
-  
-  
-    this.showCreatePallet =
-      true;
-  
-  
+
+    this.showHeaderList = false;
+
+    this.showCreatePallet = true;
+
     // =====================================================
     // LOAD CURRENT PALLET TEMP
     // กลับเข้า Form
     // =====================================================
-  
+
     this.palletCreateForm = {
-  
-      date:
-        this.toYmd(
-          this.palletTemp.date
-        ),
-  
-      shift:
-        this.palletTemp.shift,
-  
-      locationId:
-        Number(
-          this.palletTemp.mapAreaRackId
-        ),
-  
-      labelType:
-        this.palletTemp.labelType,
-  
+      date: this.toYmd(this.palletTemp.date),
+
+      shift: this.palletTemp.shift,
+
+      locationId: Number(this.palletTemp.mapAreaRackId),
+
+      labelType: this.palletTemp.labelType,
     };
-  
-  
-    this.labelStockType =
-      this.palletTemp.labelType;
-  
-  
+
+    this.labelStockType = this.palletTemp.labelType;
+
     // =====================================================
     // REBUILD RACK
     // =====================================================
-  
+
     this.buildCreatePalletRackView();
-  
   }
 
   fetchPalletTemp(): void {
@@ -5997,19 +5974,99 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // =====================================================
+  // CHECK PRINT ERROR ว่าควร AUTO RETRY หรือไม่
+  // =====================================================
+
+  private shouldRetryPrintError(err: any): boolean {
+    const status = Number(err?.status || 0);
+
+    // ===================================================
+    // NETWORK / CONNECTION
+    // Angular มักได้ status = 0
+    // ===================================================
+
+    if (status === 0) {
+      return true;
+    }
+
+    // ===================================================
+    // TEMPORARY ERROR
+    // ===================================================
+
+    return [
+      408, // Request Timeout
+      429, // Too Many Requests
+      500, // Internal Server Error
+      502, // Bad Gateway
+      503, // Service Unavailable
+      504, // Gateway Timeout
+    ].includes(status);
+  }
+
+  // =====================================================
+  // READ ERROR MESSAGE
+  //
+  // print API ใช้ responseType = blob
+  // Backend JSON error จึงอาจถูกส่งมาเป็น Blob
+  // =====================================================
+
+  private async getPrintErrorMessage(err: any): Promise<string> {
+    let message = 'Cannot generate Pallet Label PDF';
+
+    try {
+      // =================================================
+      // ERROR เป็น BLOB
+      // =================================================
+
+      if (err?.error instanceof Blob) {
+        const text = await err.error.text();
+
+        if (!text) {
+          return message;
+        }
+
+        try {
+          const json = JSON.parse(text);
+
+          return json?.message || json?.error || text;
+        } catch {
+          return text;
+        }
+      }
+
+      // =================================================
+      // NORMAL JSON ERROR
+      // =================================================
+
+      return (
+        err?.error?.message || err?.error?.error || err?.message || message
+      );
+    } catch {
+      return message;
+    }
+  }
+
   printPalletLabelByPalletId(
     palletId: number,
+
     issueResult?: {
       palletNoId: string;
       createdHeaderCount: number;
       createdBoxCount: number;
-    }
+    },
+
+    attempt: number = 1,
+
+    maxAttempts: number = 3
   ): void {
     // =====================================================
-    // VALIDATE
+    // VALIDATE PALLET ID
     // =====================================================
 
     if (!Number.isInteger(Number(palletId)) || Number(palletId) <= 0) {
+      this.isPrinting = false;
+
       this.isIssuing = false;
 
       Swal.fire({
@@ -6029,14 +6086,60 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     this.isPrinting = true;
 
+    this.isIssuing = true;
+
     // =====================================================
-    // LOADING PRINT
+    // LOADING POPUP
     // =====================================================
 
     Swal.fire({
-      title: 'Preparing Label...',
+      title:
+        attempt === 1
+          ? 'Preparing Label...'
+          : `Retry Print ${attempt} / ${maxAttempts}`,
 
-      html: 'Issue Pallet สำเร็จ กำลังสร้างใบ Label สำหรับ Print',
+      html: `
+      <div style="text-align:center">
+
+        <div>
+          Issue Pallet สำเร็จแล้ว
+        </div>
+
+        <div
+          style="
+            margin-top:8px;
+            color:#64748b;
+            font-size:13px;
+          "
+        >
+          กำลังสร้างใบ Label สำหรับ Print
+        </div>
+
+        ${
+          attempt > 1
+            ? `
+              <div
+                style="
+                  margin-top:12px;
+                  padding:8px 10px;
+                  border-radius:10px;
+                  background:#fff7ed;
+                  border:1px solid #fed7aa;
+                  color:#9a3412;
+                  font-size:12px;
+                "
+              >
+                Auto Retry:
+                <b>
+                  ${attempt} / ${maxAttempts}
+                </b>
+              </div>
+            `
+            : ''
+        }
+
+      </div>
+    `,
 
       allowOutsideClick: false,
 
@@ -6050,7 +6153,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
 
     // =====================================================
-    // CALL PRINT PALLET LABEL
+    // CALL PRINT API
     // =====================================================
 
     this.http
@@ -6105,72 +6208,110 @@ export class IssueComponent implements OnInit, AfterViewInit {
             title: 'Issue Pallet Success',
 
             html: `
-              <div style="text-align:left">
-  
+            <div style="text-align:left">
+
+              <div
+                style="
+                  margin-bottom:14px;
+                  padding:14px;
+                  border-radius:12px;
+                  background:#ecfdf5;
+                  border:1px solid #a7f3d0;
+                  text-align:center;
+                "
+              >
+
                 <div
                   style="
-                    margin-bottom:14px;
-                    padding:14px;
-                    border-radius:12px;
-                    background:#ecfdf5;
-                    border:1px solid #a7f3d0;
-                    text-align:center;
+                    font-size:11px;
+                    color:#047857;
+                    font-weight:800;
                   "
                 >
-  
-                  <div
-                    style="
-                      font-size:11px;
-                      color:#047857;
-                      font-weight:800;
-                    "
-                  >
-                    PALLET NO.
-                  </div>
-  
-                  <div
-                    style="
-                      margin-top:4px;
-                      font-size:26px;
-                      color:#064e3b;
-                      font-weight:950;
-                    "
-                  >
-                    ${issueResult?.palletNoId || '-'}
-                  </div>
-  
+                  PALLET NO.
                 </div>
-  
-  
-                <div>
-                  <b>Header Saved:</b>
-                  ${issueResult?.createdHeaderCount || 0}
-                </div>
-  
-  
-                <div style="margin-top:6px">
-                  <b>Box Saved:</b>
-                  ${issueResult?.createdBoxCount || 0}
-                </div>
-  
-  
+
                 <div
                   style="
-                    margin-top:12px;
-                    padding:10px 12px;
-                    border-radius:10px;
-                    background:#eff6ff;
-                    border:1px solid #bfdbfe;
-                    color:#1e40af;
-                    font-size:12px;
+                    margin-top:4px;
+                    font-size:26px;
+                    color:#064e3b;
+                    font-weight:950;
                   "
                 >
-                  <i class="fas fa-print"></i>
-                  Label PDF เปิดใน Tab ใหม่แล้ว
+                  ${issueResult?.palletNoId || '-'}
                 </div>
-  
+
               </div>
-            `,
+
+
+              <div>
+
+                <b>
+                  Header Saved:
+                </b>
+
+                ${issueResult?.createdHeaderCount || 0}
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:6px;
+                "
+              >
+
+                <b>
+                  Box Saved:
+                </b>
+
+                ${issueResult?.createdBoxCount || 0}
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:12px;
+                  padding:10px 12px;
+                  border-radius:10px;
+                  background:#eff6ff;
+                  border:1px solid #bfdbfe;
+                  color:#1e40af;
+                  font-size:12px;
+                "
+              >
+
+                <i
+                  class="fas fa-print"
+                ></i>
+
+                Label PDF เปิดใน Tab ใหม่แล้ว
+
+              </div>
+
+
+              ${
+                attempt > 1
+                  ? `
+                    <div
+                      style="
+                        margin-top:8px;
+                        color:#64748b;
+                        font-size:11px;
+                        text-align:center;
+                      "
+                    >
+                      Print สำเร็จหลังจาก Retry
+                      ครั้งที่ ${attempt}
+                    </div>
+                  `
+                  : ''
+              }
+
+            </div>
+          `,
 
             confirmButtonText: 'OK',
 
@@ -6179,7 +6320,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
             allowOutsideClick: false,
           }).then(() => {
             // =============================================
-            // RESET AFTER EVERYTHING SUCCESS
+            // EVERYTHING SUCCESS
             // =============================================
 
             this.resetAfterIssuePallet();
@@ -6188,18 +6329,152 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
         // =================================================
         // PRINT ERROR
-        //
-        // สำคัญ:
-        // Issue Pallet สำเร็จแล้ว
-        // ห้ามบอกว่า Issue Fail
         // =================================================
 
-        error: (err) => {
-          console.error('PRINT PALLET LABEL ERROR:', err);
+        error: async (err: any) => {
+          console.error('PRINT PALLET LABEL ERROR:', {
+            palletId: palletId,
+
+            palletNoId: issueResult?.palletNoId,
+
+            attempt: attempt,
+
+            maxAttempts: maxAttempts,
+
+            status: err?.status,
+
+            error: err,
+          });
+
+          // ===============================================
+          // CHECK RETRY
+          // ===============================================
+
+          const retryable = this.shouldRetryPrintError(err);
+
+          // ===============================================
+          // AUTO RETRY
+          // ===============================================
+
+          if (retryable && attempt < maxAttempts) {
+            const nextAttempt = attempt + 1;
+
+            // =============================================
+            // DELAY
+            //
+            // Retry 2 = 1.2 sec
+            // Retry 3 = 2.5 sec
+            // =============================================
+
+            const retryDelay = nextAttempt === 2 ? 1200 : 2500;
+
+            // =============================================
+            // SHOW RETRY STATUS
+            // =============================================
+
+            Swal.fire({
+              icon: 'info',
+
+              title: 'Network ไม่เสถียร',
+
+              html: `
+              <div style="text-align:center">
+
+                <div>
+                  Pallet ถูกบันทึกเรียบร้อยแล้ว
+                </div>
+
+                <div
+                  style="
+                    margin-top:8px;
+                    color:#64748b;
+                    font-size:13px;
+                  "
+                >
+                  Print Label ไม่สำเร็จ
+                  ระบบกำลังลองใหม่อัตโนมัติ
+                </div>
+
+
+                <div
+                  style="
+                    margin-top:12px;
+                    padding:10px 12px;
+                    background:#eff6ff;
+                    border:1px solid #bfdbfe;
+                    border-radius:10px;
+                    color:#1e40af;
+                    font-size:12px;
+                  "
+                >
+
+                  Retry
+                  <b>
+                    ${nextAttempt}
+                  </b>
+                  /
+                  <b>
+                    ${maxAttempts}
+                  </b>
+
+                </div>
+
+              </div>
+            `,
+
+              allowOutsideClick: false,
+
+              allowEscapeKey: false,
+
+              showConfirmButton: false,
+
+              timer: retryDelay,
+
+              timerProgressBar: true,
+            });
+
+            // =============================================
+            // RETRY SAME PALLET ID
+            // =============================================
+
+            setTimeout(
+              () => {
+                this.printPalletLabelByPalletId(
+                  palletId,
+
+                  issueResult,
+
+                  nextAttempt,
+
+                  maxAttempts
+                );
+              },
+
+              retryDelay
+            );
+
+            return;
+          }
+
+          // ===============================================
+          // AUTO RETRY END
+          // ===============================================
 
           this.isPrinting = false;
 
           this.isIssuing = false;
+
+          // ===============================================
+          // READ BACKEND ERROR
+          // ===============================================
+
+          const backendMessage = await this.getPrintErrorMessage(err);
+
+          const status = Number(err?.status || 0);
+
+          // ===============================================
+          // MANUAL RETRY POPUP
+          // ===============================================
 
           Swal.fire({
             icon: 'warning',
@@ -6207,37 +6482,173 @@ export class IssueComponent implements OnInit, AfterViewInit {
             title: 'Issue Pallet สำเร็จ แต่ Print ไม่สำเร็จ',
 
             html: `
-              <div style="text-align:left">
-  
-                <div>
-                  Pallet No:
-                  <b>
-                    ${issueResult?.palletNoId || '-'}
-                  </b>
-                </div>
-  
+            <div style="text-align:left">
+
+              <div
+                style="
+                  padding:14px;
+                  border-radius:12px;
+                  background:#ecfdf5;
+                  border:1px solid #a7f3d0;
+                  text-align:center;
+                "
+              >
+
                 <div
                   style="
-                    margin-top:10px;
-                    padding:10px 12px;
-                    background:#fff7ed;
-                    border:1px solid #fed7aa;
-                    border-radius:10px;
-                    color:#9a3412;
+                    font-size:11px;
+                    color:#047857;
+                    font-weight:800;
                   "
                 >
-                  ข้อมูล Pallet ถูกบันทึกเรียบร้อยแล้ว
-                  แต่ไม่สามารถสร้าง PDF Label ได้
+                  PALLET CREATED
                 </div>
-  
-              </div>
-            `,
 
-            confirmButtonText: 'OK',
-          }).then(() => {
-            // ถึง Print fail
-            // Save Pallet สำเร็จไปแล้ว
-            // จึงต้อง reset หน้าตามปกติ
+
+                <div
+                  style="
+                    margin-top:4px;
+                    font-size:24px;
+                    color:#064e3b;
+                    font-weight:950;
+                  "
+                >
+                  ${issueResult?.palletNoId || '-'}
+                </div>
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:12px;
+                  padding:10px 12px;
+                  background:#fff7ed;
+                  border:1px solid #fed7aa;
+                  border-radius:10px;
+                  color:#9a3412;
+                "
+              >
+
+                ข้อมูล Pallet ถูกบันทึกเรียบร้อยแล้ว
+                แต่ระบบไม่สามารถโหลด PDF Label ได้
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:10px;
+                  color:#64748b;
+                  font-size:12px;
+                  line-height:1.5;
+                "
+              >
+
+                ${
+                  retryable
+                    ? `
+                      ระบบลอง Print อัตโนมัติ
+                      <b>${maxAttempts}</b>
+                      ครั้งแล้ว
+                    `
+                    : `
+                      Print API ตอบ Error
+                      และไม่ใช่ Error ที่ควร Auto Retry
+                    `
+                }
+
+                <br>
+
+                กรุณาตรวจสอบสัญญาณ Network
+                แล้วกด
+                <b>Retry Print</b>
+
+              </div>
+
+
+              <div
+                style="
+                  margin-top:10px;
+                  padding:9px 10px;
+                  background:#f8fafc;
+                  border:1px solid #e2e8f0;
+                  border-radius:10px;
+                  font-size:11px;
+                  color:#64748b;
+                "
+              >
+
+                <div>
+                  <b>
+                    HTTP Status:
+                  </b>
+
+                  ${status || 'Network Error'}
+                </div>
+
+
+                <div
+                  style="
+                    margin-top:4px;
+                    word-break:break-word;
+                  "
+                >
+                  <b>
+                    Error:
+                  </b>
+
+                  ${backendMessage}
+
+                </div>
+
+              </div>
+
+            </div>
+          `,
+
+            showCancelButton: true,
+
+            confirmButtonText: 'Retry Print',
+
+            cancelButtonText: 'Close',
+
+            confirmButtonColor: '#2563eb',
+
+            cancelButtonColor: '#64748b',
+
+            reverseButtons: true,
+
+            allowOutsideClick: false,
+          }).then((result) => {
+            // ===========================================
+            // MANUAL RETRY
+            //
+            // สำคัญ:
+            // ใช้ palletId เดิม
+            // ไม่ Save Pallet ซ้ำ
+            // ===========================================
+
+            if (result.isConfirmed) {
+              this.printPalletLabelByPalletId(
+                palletId,
+
+                issueResult,
+
+                1,
+
+                maxAttempts
+              );
+
+              return;
+            }
+
+            // ===========================================
+            // USER CLOSE
+            //
+            // Pallet Save ไปแล้ว
+            // จึง Reset หน้าจอได้
+            // ===========================================
 
             this.resetAfterIssuePallet();
           });
