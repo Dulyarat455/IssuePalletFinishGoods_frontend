@@ -497,6 +497,25 @@ export class LayOutComponent implements OnInit {
      ...
   ===================================================== */
 
+  getAreaDisplayCode(
+    areaName: string
+  ): string {
+  
+    const name =
+      String(
+        areaName || ''
+      ).trim();
+  
+    if (
+      name.toUpperCase() === 'PENDING'
+    ) {
+      return 'Pending';
+    }
+  
+    return name;
+  }
+
+
   getAreaRows(rack: RackDefinition): AreaRow[][] {
     const rowMap = new Map<string, AreaRow[]>();
 
@@ -586,6 +605,46 @@ export class LayOutComponent implements OnInit {
     );
   }
 
+
+
+  getLeftRacks(): RackDefinition[] {
+    return this.getMainRacks().filter(
+      (rack) => {
+        const name = String(rack.name || '')
+          .trim()
+          .toUpperCase()
+          .replace('RACK', '')
+          .trim();
+  
+        return (
+          name === 'A' ||
+          name === 'B' ||
+          name === 'C'
+        );
+      }
+    );
+  }
+  
+  
+  getRightRacks(): RackDefinition[] {
+    return this.getMainRacks().filter(
+      (rack) => {
+        const name = String(rack.name || '')
+          .trim()
+          .toUpperCase()
+          .replace('RACK', '')
+          .trim();
+  
+        return (
+          name === 'D' ||
+          name === 'E' ||
+          name === 'F' ||
+          name === 'G' ||
+          name === 'H'
+        );
+      }
+    );
+  }
 
 
 

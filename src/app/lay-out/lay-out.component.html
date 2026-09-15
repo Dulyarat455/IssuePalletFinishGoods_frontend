@@ -114,30 +114,44 @@
 
       <!-- RACK FROM API -->
 
-      <div class="rack-scroll" *ngIf="!isLoadingRack && !rackLoadError">
-        <div class="rack-layout">
+      <div
+      class="rack-scroll"
+      *ngIf="
+        !isLoadingRack &&
+        !rackLoadError
+      "
+    >
+      <div class="rack-layout-shell">
+
+        <!-- =========================================
+             LEFT : RACK A - C
+             สูง 15 Area Row
+        ========================================== -->
+      
+        <div class="rack-left-group">
+      
           <div
             class="rack-block"
-            *ngFor="let rack of rackDefinitions; trackBy: trackByRack"
+            *ngFor="
+              let rack of getLeftRacks();
+              trackBy: trackByRack
+            "
           >
-            <!-- ============================================
-                 RACK TITLE
-
-                 สีหัว Rack เดิมยังอยู่
-            ============================================= -->
-
+      
             <div
               class="rack-title"
-              [ngClass]="getRackGroupClass(rack.rackGroup)"
+              [ngClass]="
+                getRackGroupClass(
+                  rack.rackGroup
+                )
+              "
             >
               {{ rack.name }}
             </div>
-
-            <!-- ============================================
-                 RACK BODY FROM API AREA
-            ============================================= -->
-
+      
+      
             <div class="rack-body">
+      
               <div
                 class="rack-row"
                 *ngFor="
@@ -145,48 +159,311 @@
                   trackBy: trackByAreaRow
                 "
               >
+      
                 <button
                   type="button"
                   class="rack-slot"
-                  *ngFor="let area of areaRow; trackBy: trackByArea"
+      
+                  *ngFor="
+                    let area of areaRow;
+                    trackBy: trackByArea
+                  "
+      
                   [ngClass]="{
-                    'has-pallet': hasPallet(rack, area),
-
-                    selected: isSelected(rack, area),
-
+      
+                    'has-pallet':
+                      hasPallet(
+                        rack,
+                        area
+                      ),
+      
+                    selected:
+                      isSelected(
+                        rack,
+                        area
+                      ),
+      
                     'rack-group-abc':
-                      hasPallet(rack, area) && rack.rackGroup === 'ABC',
-
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'ABC',
+      
                     'rack-group-de':
-                      hasPallet(rack, area) && rack.rackGroup === 'DE',
-
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'DE',
+      
                     'rack-group-fgh':
-                      hasPallet(rack, area) && rack.rackGroup === 'FGH'
+                      hasPallet(
+                        rack,
+                        area
+                      ) &&
+                      rack.rackGroup === 'FGH'
+      
                   }"
-                  (click)="selectSlot(getSlot(rack, area))"
+      
+                  (click)="
+                    selectSlot(
+                      getSlot(
+                        rack,
+                        area
+                      )
+                    )
+                  "
                 >
-                  <!-- AREA NAME FROM API -->
-
+      
                   <span class="slot-code">
                     {{ area.areaName }}
                   </span>
-
-                  <!--
-                    Badge ยังใช้ Mock Pallet เดิม
-                  -->
-
+      
+      
                   <span
                     class="label-count"
-                    *ngIf="getLabelCount(rack, area) > 0"
+      
+                    *ngIf="
+                      getLabelCount(
+                        rack,
+                        area
+                      ) > 0
+                    "
                   >
-                    {{ getLabelCount(rack, area) }}
+                    {{
+                      getLabelCount(
+                        rack,
+                        area
+                      )
+                    }}
                   </span>
+      
                 </button>
+      
               </div>
+      
             </div>
+      
           </div>
+      
         </div>
+      
+      
+        <!-- =========================================
+             RIGHT : RACK D - H
+        ========================================== -->
+      
+        <div class="rack-right-zone">
+      
+          <!-- D - H -->
+      
+          <div class="rack-right-group">
+      
+            <div
+              class="rack-block"
+              *ngFor="
+                let rack of getRightRacks();
+                trackBy: trackByRack
+              "
+            >
+      
+              <div
+                class="rack-title"
+                [ngClass]="
+                  getRackGroupClass(
+                    rack.rackGroup
+                  )
+                "
+              >
+                {{ rack.name }}
+              </div>
+      
+      
+              <div class="rack-body">
+      
+                <div
+                  class="rack-row"
+                  *ngFor="
+                    let areaRow of getAreaRows(rack);
+                    trackBy: trackByAreaRow
+                  "
+                >
+      
+                  <button
+                    type="button"
+                    class="rack-slot"
+      
+                    *ngFor="
+                      let area of areaRow;
+                      trackBy: trackByArea
+                    "
+      
+                    [ngClass]="{
+      
+                      'has-pallet':
+                        hasPallet(
+                          rack,
+                          area
+                        ),
+      
+                      selected:
+                        isSelected(
+                          rack,
+                          area
+                        ),
+      
+                      'rack-group-abc':
+                        hasPallet(
+                          rack,
+                          area
+                        ) &&
+                        rack.rackGroup === 'ABC',
+      
+                      'rack-group-de':
+                        hasPallet(
+                          rack,
+                          area
+                        ) &&
+                        rack.rackGroup === 'DE',
+      
+                      'rack-group-fgh':
+                        hasPallet(
+                          rack,
+                          area
+                        ) &&
+                        rack.rackGroup === 'FGH'
+      
+                    }"
+      
+                    (click)="
+                      selectSlot(
+                        getSlot(
+                          rack,
+                          area
+                        )
+                      )
+                    "
+                  >
+      
+                    <span class="slot-code">
+                      {{ area.areaName }}
+                    </span>
+      
+      
+                    <span
+                      class="label-count"
+      
+                      *ngIf="
+                        getLabelCount(
+                          rack,
+                          area
+                        ) > 0
+                      "
+                    >
+                      {{
+                        getLabelCount(
+                          rack,
+                          area
+                        )
+                      }}
+                    </span>
+      
+                  </button>
+      
+                </div>
+      
+              </div>
+      
+            </div>
+      
+          </div>
+      
+      
+          <!-- =====================================
+               PENDING
+      
+               อยู่ใต้ D - H
+               สูงเท่ากับ 3 Area Row
+               ไม่มี Rack Header
+          ====================================== -->
+      
+          <div
+            class="pending-bottom-area"
+            *ngIf="
+              getPendingRack()
+                as pendingRack
+            "
+          >
+      
+            <button
+              type="button"
+              class="pending-area-button"
+      
+              *ngFor="
+                let area of pendingRack.areas;
+                trackBy: trackByArea
+              "
+      
+              [class.has-pallet]="
+                hasPallet(
+                  pendingRack,
+                  area
+                )
+              "
+      
+              [class.selected]="
+                isSelected(
+                  pendingRack,
+                  area
+                )
+              "
+      
+              (click)="
+                selectSlot(
+                  getSlot(
+                    pendingRack,
+                    area
+                  )
+                )
+              "
+            >
+      
+              <span class="pending-area-name">
+                Pending
+              </span>
+      
+      
+              <span
+                class="pending-pallet-count"
+      
+                *ngIf="
+                  getLabelCount(
+                    pendingRack,
+                    area
+                  ) > 0
+                "
+              >
+                {{
+                  getLabelCount(
+                    pendingRack,
+                    area
+                  )
+                }}
+              </span>
+      
+            </button>
+      
+          </div>
+      
+        </div>
+      
       </div>
+    </div>
+
+
+
+
     </div>
 
     <!-- ===================================================

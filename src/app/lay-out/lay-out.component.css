@@ -254,6 +254,14 @@
    RACK
 ========================================================= */
 
+.rack-layout-shell {
+  position: relative;
+
+  display: inline-block;
+
+  min-width: max-content;
+}
+
 .rack-layout {
   display: flex;
 
@@ -1297,4 +1305,245 @@
 .box-die,
 .box-lot {
   white-space: nowrap;
+}
+
+
+/* =========================================================
+   RACK LAYOUT STRUCTURE
+
+   LEFT
+   A B C
+
+   RIGHT
+   D E F G H
+   PENDING
+========================================================= */
+
+.rack-layout-shell {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 8px;
+
+  min-width: max-content;
+}
+
+
+/* =========================================================
+   LEFT : A - C
+========================================================= */
+
+.rack-left-group {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 8px;
+
+  flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   RIGHT ZONE
+========================================================= */
+
+.rack-right-zone {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: stretch;
+
+  gap: 4px;
+
+  flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   RIGHT : D - H
+========================================================= */
+
+.rack-right-group {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 8px;
+}
+
+
+/* =========================================================
+   RACK BLOCK
+========================================================= */
+
+.rack-block {
+  flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   PENDING
+
+   อยู่ใต้ Rack D - H
+
+   Rack D-H มีถึง Row 12
+   Rack A-C มีถึง Row 15
+
+   ดังนั้น Pending สูงเท่า
+   Row 13 + Row 14 + Row 15
+
+   Rack Slot:
+   32px * 3
+   Gap:
+   4px * 2
+
+   Total = 104px
+========================================================= */
+
+.pending-bottom-area {
+  width: 100%;
+
+  height: 104px;
+
+  display: flex;
+
+  align-items: stretch;
+
+  justify-content: stretch;
+}
+
+
+/* =========================================================
+   PENDING BUTTON
+========================================================= */
+
+.pending-area-button {
+  width: 100%;
+  height: 104px;
+
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #94a3b8;
+
+  border-radius: 3px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  transition:
+    border-color 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+
+.pending-area-button:hover {
+  border-color: #111827;
+
+  box-shadow:
+    0 2px 5px
+    rgba(
+      0,
+      0,
+      0,
+      0.13
+    );
+}
+
+
+/* =========================================================
+   PENDING TEXT
+========================================================= */
+
+.pending-area-name {
+  font-size: 16px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.03em;
+}
+
+
+/* =========================================================
+   PENDING HAS PALLET
+========================================================= */
+
+.pending-area-button.has-pallet {
+  border: 2px solid #475569;
+
+  background: #d6ffb8;
+}
+
+
+/* =========================================================
+   PENDING SELECTED
+========================================================= */
+
+.pending-area-button.selected {
+  border-color: #2563eb;
+
+  outline:
+    3px solid
+    rgba(
+      37,
+      99,
+      235,
+      0.28
+    );
+
+  z-index: 4;
+}
+
+
+/* =========================================================
+   PENDING BADGE
+========================================================= */
+
+.pending-pallet-count {
+  position: absolute;
+
+  top: -8px;
+  right: -7px;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 4px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  border: 2px solid #ffffff;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  z-index: 5;
 }
