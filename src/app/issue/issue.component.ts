@@ -7001,20 +7001,26 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.showHeaderList = false;
 
     this.showCreatePallet = true;
+// =====================================================
+// REFRESH PALLET OCCUPANCY
+//
+// หลัง Issue Pallet สำเร็จ
+// โหลด Location ใหม่ว่า Area ไหนมี Pallet แล้ว
+// แล้วค่อย Build Create Pallet Rack
+// =====================================================
 
-    // =====================================================
-    // REBUILD
-    // =====================================================
+this.fetchMapLocationPallet(() => {
 
-    this.buildCreatePalletRackView();
+  this.buildCreatePalletRackView();
 
-    // =====================================================
-    // REFRESH
-    // =====================================================
+});
 
-    this.fetchPalletTemp();
+// =====================================================
+// REFRESH CURRENT TEMP DATA
+// =====================================================
+this.fetchPalletTemp();
 
-    this.fetchHeader();
+this.fetchHeader();
   }
 
   printFullLabel(): void {
