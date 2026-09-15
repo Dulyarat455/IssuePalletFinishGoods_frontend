@@ -1091,3 +1091,210 @@
 .rack-loading.rack-error i {
   color: #dc2626;
 }
+
+
+
+
+
+/* =========================================================
+   PENDING
+========================================================= */
+
+.rack-group-pending {
+  background-color:
+    #fef3c7 !important;
+}
+
+
+/* =========================================================
+   MULTIPLE PALLET
+========================================================= */
+
+.location-pallet-list {
+  margin-bottom: 12px;
+
+  padding: 12px;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius: 9px;
+
+  background: #f8fafc;
+}
+
+
+.location-pallet-list-title {
+  margin-bottom: 8px;
+
+  color: #64748b;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.04em;
+}
+
+
+.location-pallet-buttons {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(120px, 1fr)
+    );
+
+  gap: 7px;
+}
+
+
+.location-pallet-btn {
+  min-width: 0;
+
+  padding: 9px 10px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+
+.location-pallet-btn:hover {
+  border-color: #64748b;
+}
+
+
+.location-pallet-btn.active {
+  border:
+    2px solid #2563eb;
+
+  background: #eff6ff;
+
+  box-shadow:
+    0 2px 5px
+    rgba(
+      37,
+      99,
+      235,
+      0.12
+    );
+}
+
+
+.location-pallet-btn span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.location-pallet-btn b {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #111827;
+
+  font-size: 13px;
+
+  font-weight: 900;
+}
+
+
+.location-pallet-btn small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 9px;
+}
+
+
+
+/* =========================================================
+   BOX DETAIL COLUMNS
+========================================================= */
+
+.box-table {
+  min-width: 1050px;
+}
+
+
+.col-item-no {
+  min-width: 135px;
+}
+
+
+.col-item-name {
+  min-width: 190px;
+}
+
+
+.col-wos {
+  min-width: 120px;
+}
+
+
+.col-dwg {
+  min-width: 110px;
+}
+
+
+.col-die {
+  min-width: 90px;
+}
+
+
+.col-lot {
+  min-width: 100px;
+}
+
+
+.box-item-no {
+  font-weight: 800;
+
+  color: #111827 !important;
+
+  white-space: nowrap;
+}
+
+
+.box-item-name {
+  min-width: 180px;
+
+  white-space: normal;
+
+  word-break: break-word;
+}
+
+
+.box-wos,
+.box-dwg,
+.box-die,
+.box-lot {
+  white-space: nowrap;
+}

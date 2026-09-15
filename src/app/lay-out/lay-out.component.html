@@ -97,49 +97,29 @@
 
       <!-- LOADING RACK -->
 
-      <div
-        class="rack-loading"
-        *ngIf="isLoadingRack"
-      >
+      <div class="rack-loading" *ngIf="isLoadingRack">
         <i class="fas fa-spinner fa-spin"></i>
         Loading Rack Location...
       </div>
-
 
       <!-- EMPTY / ERROR -->
 
       <div
         class="rack-loading rack-error"
-        *ngIf="
-          !isLoadingRack &&
-          rackLoadError
-        "
+        *ngIf="!isLoadingRack && rackLoadError"
       >
         <i class="fas fa-exclamation-triangle"></i>
         {{ rackLoadError }}
       </div>
 
-
       <!-- RACK FROM API -->
 
-      <div
-        class="rack-scroll"
-        *ngIf="
-          !isLoadingRack &&
-          !rackLoadError
-        "
-      >
-
+      <div class="rack-scroll" *ngIf="!isLoadingRack && !rackLoadError">
         <div class="rack-layout">
-
           <div
             class="rack-block"
-            *ngFor="
-              let rack of rackDefinitions;
-              trackBy: trackByRack
-            "
+            *ngFor="let rack of rackDefinitions; trackBy: trackByRack"
           >
-
             <!-- ============================================
                  RACK TITLE
 
@@ -148,22 +128,16 @@
 
             <div
               class="rack-title"
-              [ngClass]="
-                getRackGroupClass(
-                  rack.rackGroup
-                )
-              "
+              [ngClass]="getRackGroupClass(rack.rackGroup)"
             >
               {{ rack.name }}
             </div>
-
 
             <!-- ============================================
                  RACK BODY FROM API AREA
             ============================================= -->
 
             <div class="rack-body">
-
               <div
                 class="rack-row"
                 *ngFor="
@@ -171,67 +145,31 @@
                   trackBy: trackByAreaRow
                 "
               >
-
                 <button
                   type="button"
                   class="rack-slot"
-
-                  *ngFor="
-                    let area of areaRow;
-                    trackBy: trackByArea
-                  "
-
+                  *ngFor="let area of areaRow; trackBy: trackByArea"
                   [ngClass]="{
-                    'has-pallet':
-                      hasPallet(
-                        rack,
-                        area
-                      ),
+                    'has-pallet': hasPallet(rack, area),
 
-                    selected:
-                      isSelected(
-                        rack,
-                        area
-                      ),
+                    selected: isSelected(rack, area),
 
                     'rack-group-abc':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'ABC',
+                      hasPallet(rack, area) && rack.rackGroup === 'ABC',
 
                     'rack-group-de':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'DE',
+                      hasPallet(rack, area) && rack.rackGroup === 'DE',
 
                     'rack-group-fgh':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'FGH'
+                      hasPallet(rack, area) && rack.rackGroup === 'FGH'
                   }"
-
-                  (click)="
-                    selectSlot(
-                      getSlot(
-                        rack,
-                        area
-                      )
-                    )
-                  "
+                  (click)="selectSlot(getSlot(rack, area))"
                 >
-
                   <!-- AREA NAME FROM API -->
 
                   <span class="slot-code">
                     {{ area.areaName }}
                   </span>
-
 
                   <!--
                     Badge ยังใช้ Mock Pallet เดิม
@@ -239,33 +177,16 @@
 
                   <span
                     class="label-count"
-                    *ngIf="
-                      getLabelCount(
-                        rack,
-                        area
-                      ) > 0
-                    "
+                    *ngIf="getLabelCount(rack, area) > 0"
                   >
-                    {{
-                      getLabelCount(
-                        rack,
-                        area
-                      )
-                    }}
+                    {{ getLabelCount(rack, area) }}
                   </span>
-
                 </button>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
 
     <!-- ===================================================
@@ -301,11 +222,35 @@
             <div class="selected-label">Selected Location</div>
 
             <div class="selected-code">
-              {{ selectedSlot.rack }}
 
-              <span class="selected-slash"> / </span>
-
-              {{ selectedSlot.displayCode }}
+              <ng-container
+                *ngIf="
+                  selectedSlot.rackGroup === 'PENDING';
+                  else normalSelectedLocation
+                "
+              >
+            
+                Pending
+            
+              </ng-container>
+            
+            
+              <ng-template
+                #normalSelectedLocation
+              >
+            
+                {{ selectedSlot.rack }}
+            
+                <span
+                  class="selected-slash"
+                >
+                  /
+                </span>
+            
+                {{ selectedSlot.displayCode }}
+            
+              </ng-template>
+            
             </div>
           </div>
 
@@ -339,7 +284,9 @@
             <div class="slot-summary-item">
               <span> Pallet </span>
 
-              <strong> 1 </strong>
+              <strong>
+                {{ selectedSlotPalletCount | number }}
+              </strong>
             </div>
 
             <div class="slot-summary-item">
@@ -370,6 +317,40 @@
           <!-- =============================================
                PALLET INFORMATION
           ============================================== -->
+
+          <!-- =================================================
+     MULTIPLE PALLET
+================================================== -->
+
+          <div
+            class="location-pallet-list"
+            *ngIf="selectedSlot && selectedSlot.pallets.length > 1"
+          >
+            <div class="location-pallet-list-title">
+              Pallets in this Location
+            </div>
+
+            <div class="location-pallet-buttons">
+              <button
+                type="button"
+                class="location-pallet-btn"
+                *ngFor="let pallet of selectedSlot.pallets"
+                [class.active]="selectedPallet.id === pallet.id"
+                (click)="selectPallet(pallet)"
+              >
+                <span> PALLET </span>
+
+                <b>
+                  {{ pallet.palletId }}
+                </b>
+
+                <small>
+                  {{ pallet.labels.length }}
+                  Label(s)
+                </small>
+              </button>
+            </div>
+          </div>
 
           <div class="pallet-info-card">
             <div>
@@ -502,24 +483,54 @@
             </div>
 
             <div class="box-table-wrap">
+
               <table class="box-table">
+            
                 <thead>
                   <tr>
-                    <th class="col-box-no-index">No.</th>
-
-                    <th>Box No.</th>
-
-                    <th>Lot No.</th>
-
-                    <th class="qty-column">Qty</th>
-
-                    <!-- NEW -->
-
-                    <th class="type-column">Type</th>
+            
+                    <th class="col-box-no-index">
+                      No.
+                    </th>
+            
+                    <th class="col-item-no">
+                      Item No.
+                    </th>
+            
+                    <th class="col-item-name">
+                      Item Name
+                    </th>
+            
+                    <th class="col-wos">
+                      WOS No.
+                    </th>
+            
+                    <th class="col-dwg">
+                      DWG
+                    </th>
+            
+                    <th class="col-die">
+                      Die No.
+                    </th>
+            
+                    <th class="col-lot">
+                      Lot No.
+                    </th>
+            
+                    <th class="qty-column">
+                      Qty
+                    </th>
+            
+                    <th class="type-column">
+                      Type
+                    </th>
+            
                   </tr>
                 </thead>
-
+            
+            
                 <tbody>
+            
                   <tr
                     *ngFor="
                       let box of getSortedBoxes(selectedLabel);
@@ -527,49 +538,89 @@
                       trackBy: trackByBox
                     "
                     [ngClass]="{
-                      'partial-row': box.type === 'PARTIAL',
-
+            
+                      'partial-row':
+                        box.type === 'PARTIAL',
+            
                       'rack-group-abc':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'ABC',
-
+            
                       'rack-group-de':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'DE',
-
+            
                       'rack-group-fgh':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'FGH'
+            
                     }"
                   >
+            
                     <td class="box-index">
                       {{ i + 1 }}
                     </td>
-
-                    <td class="box-no">
-                      {{ box.boxNo }}
+            
+            
+                    <td class="box-item-no">
+                      {{ box.itemNo || "-" }}
                     </td>
-
-                    <td>
-                      {{ box.lotNo }}
+            
+            
+                    <td class="box-item-name">
+                      {{ box.itemName || "-" }}
                     </td>
-
+            
+            
+                    <td class="box-wos">
+                      {{ box.wosNo || "-" }}
+                    </td>
+            
+            
+                    <td class="box-dwg">
+                      {{ box.dwg || "-" }}
+                    </td>
+            
+            
+                    <td class="box-die">
+                      {{ box.dieNo || "-" }}
+                    </td>
+            
+            
+                    <td class="box-lot">
+                      {{ box.lotNo || "-" }}
+                    </td>
+            
+            
                     <td class="qty-column">
                       {{ box.qty | number }}
                     </td>
-
+            
+            
                     <td class="type-column">
+            
                       <span
                         class="box-type"
-                        [class.full]="box.type === 'FULL'"
-                        [class.partial]="box.type === 'PARTIAL'"
+                        [class.full]="
+                          box.type === 'FULL'
+                        "
+                        [class.partial]="
+                          box.type === 'PARTIAL'
+                        "
                       >
+            
                         {{ box.type }}
+            
                       </span>
+            
                     </td>
+            
                   </tr>
+            
                 </tbody>
+            
               </table>
+            
             </div>
           </ng-container>
         </ng-container>

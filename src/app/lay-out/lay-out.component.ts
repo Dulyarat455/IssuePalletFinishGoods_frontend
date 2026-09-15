@@ -5,64 +5,134 @@ import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import config from '../../config';
 
-type RackGroup = 'ABC' | 'DE' | 'FGH';
+type RackGroup = 'ABC' | 'DE' | 'FGH' | 'PENDING';
 
 type BoxType = 'FULL' | 'PARTIAL';
 
 type BoxItem = {
+  boxId: number;
+
   boxNo: string;
+
+  wosNo: string;
+
   lotNo: string;
+
   qty: number;
+
+  dieNo: string;
+
+  dwg: string;
+
+  itemNo: string;
+
+  itemName: string;
+
   type: BoxType;
 };
 
 type LabelItem = {
+  headerId: number;
+
   labelId: string;
+
   itemNo: string;
+
   itemName: string;
+
   dieNo: string;
+
   oqcLotNo: string;
+
   qty: number;
+
+  fullBoxCount: number;
+
+  partialBoxCount: number;
+
   boxes: BoxItem[];
 };
 
 type PalletItem = {
+  id: number;
+
   palletId: string;
+
+  palletNoId: string;
+
   receivedDate: string;
+
+  shift: string;
+
+  labelType: string;
+
+  mapAreaRackId: number;
+
+  qty: number;
+
   labels: LabelItem[];
 };
 
 type AreaRow = {
   areaId: number;
-  areaName: string;
-};
 
-type RackApiRow = {
-  rackId: number;
-  rackName: string;
-  areas: AreaRow[];
+  areaName: string;
+
+  mapAreaRackId: number;
 };
 
 type RackSlot = {
   rackId: number;
+
   areaId: number;
 
+  mapAreaRackId: number;
+
   rack: string;
+
   code: string;
+
   displayCode: string;
+
   rackGroup: RackGroup;
 
-  /*
-    1 Rack No = 1 Pallet เท่านั้น
-  */
+  pallets: PalletItem[];
+
   pallet: PalletItem | null;
 };
 
 type RackDefinition = {
   rackId: number;
+
   name: string;
+
   rackGroup: RackGroup;
+
   areas: AreaRow[];
+};
+
+type MapLocationPalletBoxRow = {
+  mapAreaRackId: number;
+
+  rackId: number;
+
+  areaId: number;
+
+  rackName: string;
+
+  areaName: string;
+
+  locationName: string;
+
+  isPending: boolean;
+
+  isOccupied: boolean;
+
+  isEmpty: boolean;
+
+  palletCount: number;
+
+  pallets: PalletItem[];
 };
 
 @Component({
@@ -79,72 +149,282 @@ export class LayOutComponent implements OnInit {
 
   rackDefinitions: RackDefinition[] = [];
 
+  layoutLocations: MapLocationPalletBoxRow[] = [];
+
+  locationByMapAreaRackId = new Map<number, MapLocationPalletBoxRow>();
+
   isLoadingRack = false;
 
   rackLoadError = '';
 
+  selectedSlot: RackSlot | null = null;
+
+  selectedPallet: PalletItem | null = null;
+
+  selectedLabel: LabelItem | null = null;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.fetchLocations();
+    this.fetchLayoutData();
   }
 
   /* =====================================================
      LOAD RACK / AREA
   ===================================================== */
 
-  fetchLocations(): void {
+  fetchLayoutData(): void {
     this.isLoadingRack = true;
 
     this.rackLoadError = '';
 
-    this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
-      next: (res: any) => {
-        const rows: RackApiRow[] = Array.isArray(res?.results)
-          ? res.results
-          : [];
+    this.http
+      .get<any>(config.apiServer + '/api/location/mapLocationPalletBox')
+      .subscribe({
+        next: (res: any): void => {
+          const rows = Array.isArray(res?.results) ? res.results : [];
 
-        this.rackDefinitions = rows.map((rack: RackApiRow) => ({
-          rackId: Number(rack.rackId),
+          // =================================================
+          // NORMALIZE API DATA
+          // =================================================
 
-          name: String(rack.rackName || '').trim(),
+          this.layoutLocations = rows.map(
+            (row: any): MapLocationPalletBoxRow => {
+              const pallets: PalletItem[] = Array.isArray(row?.pallets)
+                ? row.pallets.map(
+                    (pallet: any): PalletItem => ({
+                      id: Number(pallet.id),
 
-          rackGroup: this.getRackGroupByName(rack.rackName),
+                      palletId: String(
+                        pallet.palletId || pallet.palletNoId || ''
+                      ),
 
-          areas: Array.isArray(rack.areas)
-            ? [...rack.areas]
-                .map((area) => ({
-                  areaId: Number(area.areaId),
+                      palletNoId: String(
+                        pallet.palletNoId || pallet.palletId || ''
+                      ),
 
-                  areaName: String(area.areaName || '').trim(),
-                }))
-                .sort((a, b) => this.compareAreaName(a.areaName, b.areaName))
-            : [],
-        }));
+                      receivedDate: this.formatApiDate(
+                        pallet.receivedDate || pallet.date
+                      ),
 
-        this.isLoadingRack = false;
-      },
+                      shift: String(pallet.shift || ''),
 
-      error: (err) => {
-        console.error('Load Rack Location Error:', err);
+                      labelType: String(pallet.labelType || ''),
 
-        this.rackDefinitions = [];
+                      mapAreaRackId: Number(pallet.mapAreaRackId),
 
-        this.isLoadingRack = false;
+                      qty: Number(pallet.qty || 0),
 
-        this.rackLoadError =
-          err?.error?.error ||
-          err?.error?.message ||
-          err?.message ||
-          'Load rack location fail';
+                      labels: Array.isArray(pallet.labels)
+                        ? pallet.labels.map(
+                            (label: any): LabelItem => ({
+                              headerId: Number(label.headerId),
 
-        Swal.fire({
-          title: 'Error',
-          text: this.rackLoadError,
-          icon: 'error',
-        });
-      },
-    });
+                              labelId: String(
+                                label.labelId || label.labelNo || ''
+                              ),
+
+                              itemNo: String(label.itemNo || ''),
+
+                              itemName: String(label.itemName || ''),
+
+                              dieNo: String(label.dieNo || ''),
+
+                              oqcLotNo: String(
+                                label.oqcLotNo || label.controlLot || ''
+                              ),
+
+                              qty: Number(label.qty || 0),
+
+                              fullBoxCount: Number(label.fullBoxCount || 0),
+
+                              partialBoxCount: Number(
+                                label.partialBoxCount || 0
+                              ),
+
+                              boxes: Array.isArray(label.boxes)
+                                ? label.boxes.map(
+                                    (box: any): BoxItem => ({
+                                      boxId: Number(box.boxId),
+
+                                      boxNo: String(
+                                        box.boxNo ||
+                                          box.wosNo ||
+                                          box.boxId ||
+                                          ''
+                                      ),
+
+                                      wosNo: String(box.wosNo || ''),
+
+                                      lotNo: String(box.lotNo || ''),
+
+                                      qty: Number(box.qty || 0),
+
+                                      dieNo: String(box.dieNo || ''),
+
+                                      dwg: String(box.dwg || ''),
+
+                                      itemNo: String(box.itemNo || ''),
+
+                                      itemName: String(box.itemName || ''),
+
+                                      type:
+                                        String(box.type || 'FULL')
+                                          .trim()
+                                          .toUpperCase() === 'PARTIAL'
+                                          ? 'PARTIAL'
+                                          : 'FULL',
+                                    })
+                                  )
+                                : [],
+                            })
+                          )
+                        : [],
+                    })
+                  )
+                : [];
+
+              return {
+                mapAreaRackId: Number(row.mapAreaRackId),
+
+                rackId: Number(row.rackId),
+
+                areaId: Number(row.areaId),
+
+                rackName: String(row.rackName || '').trim(),
+
+                areaName: String(row.areaName || '').trim(),
+
+                locationName: String(row.locationName || '').trim(),
+
+                isPending: row.isPending === true,
+
+                isOccupied: pallets.length > 0,
+
+                isEmpty: pallets.length === 0,
+
+                palletCount: pallets.length,
+
+                pallets: pallets,
+              };
+            }
+          );
+
+          // =================================================
+          // LOCATION MAP
+          // =================================================
+
+          this.locationByMapAreaRackId = new Map<
+            number,
+            MapLocationPalletBoxRow
+          >();
+
+          for (const location of this.layoutLocations) {
+            this.locationByMapAreaRackId.set(
+              Number(location.mapAreaRackId),
+
+              location
+            );
+          }
+
+          // =================================================
+          // BUILD RACK DEFINITIONS
+          // =================================================
+
+          const rackMap = new Map<number, RackDefinition>();
+
+          for (const location of this.layoutLocations) {
+            const rackId = Number(location.rackId);
+
+            if (!rackMap.has(rackId)) {
+              rackMap.set(rackId, {
+                rackId: rackId,
+
+                name: location.rackName,
+
+                rackGroup: this.getRackGroupByName(location.rackName),
+
+                areas: [],
+              });
+            }
+
+            rackMap.get(rackId)!.areas.push({
+              areaId: Number(location.areaId),
+
+              areaName: location.areaName,
+
+              mapAreaRackId: Number(location.mapAreaRackId),
+            });
+          }
+
+          // =================================================
+          // SORT
+          // =================================================
+
+          this.rackDefinitions = Array.from(rackMap.values())
+            .map(
+              (rack): RackDefinition => ({
+                ...rack,
+
+                areas: [...rack.areas].sort((a, b) =>
+                  this.compareAreaName(a.areaName, b.areaName)
+                ),
+              })
+            )
+            .sort((a, b) =>
+              String(a.name).localeCompare(String(b.name), undefined, {
+                numeric: true,
+              })
+            );
+
+          // =================================================
+          // RESET SELECT
+          // =================================================
+
+          this.selectedSlot = null;
+
+          this.selectedPallet = null;
+
+          this.selectedLabel = null;
+
+          this.isLoadingRack = false;
+        },
+
+        error: (err: any): void => {
+          console.error('Load Layout Error:', err);
+
+          this.layoutLocations = [];
+
+          this.rackDefinitions = [];
+
+          this.locationByMapAreaRackId = new Map<
+            number,
+            MapLocationPalletBoxRow
+          >();
+
+          this.selectedSlot = null;
+
+          this.selectedPallet = null;
+
+          this.selectedLabel = null;
+
+          this.isLoadingRack = false;
+
+          this.rackLoadError =
+            err?.error?.error ||
+            err?.error?.message ||
+            err?.message ||
+            'Load rack inventory fail';
+
+          Swal.fire({
+            title: 'Error',
+
+            text: this.rackLoadError,
+
+            icon: 'error',
+          });
+        },
+      });
   }
 
   /* =====================================================
@@ -158,19 +438,9 @@ export class LayOutComponent implements OnInit {
       .trim()
       .toUpperCase();
 
-    /*
-      รองรับทั้ง
-  
-      A
-      B
-      C
-  
-      และ
-  
-      Rack A
-      Rack B
-      Rack C
-    */
+    if (name === 'PENDING') {
+      return 'PENDING';
+    }
 
     const rackCode = name
       .replace('RACK', '')
@@ -197,6 +467,26 @@ export class LayOutComponent implements OnInit {
       numeric: true,
       sensitivity: 'base',
     });
+  }
+
+  formatApiDate(value: any): string {
+    if (!value) {
+      return '-';
+    }
+
+    const d = new Date(value);
+
+    if (Number.isNaN(d.getTime())) {
+      return String(value);
+    }
+
+    const yyyy = d.getFullYear();
+
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+
+    const dd = String(d.getDate()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   /* =====================================================
@@ -239,390 +529,70 @@ export class LayOutComponent implements OnInit {
     return [...normalRows, ...fallbackRows];
   }
 
-  /* =====================================================
-     MOCK INVENTORY
-
-     IMPORTANT:
-     1 Rack No = 1 Pallet เท่านั้น
-  ===================================================== */
-
-  mockInventory: Record<string, PalletItem> = {
-    /* =================================================
-       Rack A-101
-       มี 1 Pallet
-       มี 2 Label / Model
-    ================================================= */
-
-    'Rack A-101': {
-      palletId: '26801001',
-      receivedDate: '2026-08-11',
-
-      labels: [
-        {
-          labelId: '26801004',
-          itemNo: '2605025005E',
-          itemName: '99TL-PL35L024-VLA6',
-          dieNo: 'B0595',
-          oqcLotNo: 'S67258',
-          qty: 3700,
-
-          boxes: [
-            {
-              boxNo: 'BOX-001',
-              lotNo: '24X24',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-002',
-              lotNo: '24X24',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-003',
-              lotNo: '24X27',
-              qty: 1000,
-              type: 'FULL',
-            },
-
-            /*
-              Fraction / Partial
-            */
-            {
-              boxNo: 'BOX-004',
-              lotNo: '24X28',
-              qty: 400,
-              type: 'PARTIAL',
-            },
-            {
-              boxNo: 'BOX-005',
-              lotNo: '24X28',
-              qty: 300,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-
-        {
-          labelId: '26801005',
-          itemNo: '2605025010A',
-          itemName: '31ST-PL35L-024-1Y-2-CAR-D2',
-          dieNo: 'P1078',
-          oqcLotNo: 'S67259',
-          qty: 2800,
-
-          boxes: [
-            {
-              boxNo: 'BOX-006',
-              lotNo: '24Y01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-007',
-              lotNo: '24Y01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-008',
-              lotNo: '24Y01',
-              qty: 800,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-      ],
-    },
-
-    /* =================================================
-       Rack A-201
-    ================================================= */
-
-    'Rack A-201': {
-      palletId: '26802001',
-      receivedDate: '2026-08-13',
-
-      labels: [
-        {
-          labelId: '26802002',
-          itemNo: '2208011055A',
-          itemName: 'GENERATOR PLATE ASSY',
-          dieNo: 'D8820',
-          oqcLotNo: 'S68001',
-          qty: 3000,
-
-          boxes: [
-            {
-              boxNo: 'BOX-101',
-              lotNo: '25A01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-102',
-              lotNo: '25A01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-103',
-              lotNo: '25A01',
-              qty: 1000,
-              type: 'FULL',
-            },
-          ],
-        },
-      ],
-    },
-
-    /* =================================================
-       Rack B-305
-    ================================================= */
-
-    'Rack B-305': {
-      palletId: '26803001',
-      receivedDate: '2026-08-14',
-
-      labels: [
-        {
-          labelId: '26803002',
-          itemNo: '3102040007B',
-          itemName: 'LAMINATION CORE',
-          dieNo: 'L9012',
-          oqcLotNo: 'S68120',
-          qty: 1900,
-
-          boxes: [
-            {
-              boxNo: 'BOX-201',
-              lotNo: '25B11',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-202',
-              lotNo: '25B11',
-              qty: 500,
-              type: 'PARTIAL',
-            },
-            {
-              boxNo: 'BOX-203',
-              lotNo: '25B11',
-              qty: 400,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-      ],
-    },
-
-    /* =================================================
-       Rack D-401
-       กลุ่ม DE
-    ================================================= */
-
-    'Rack D-401': {
-      palletId: '26804001',
-      receivedDate: '2026-08-15',
-
-      labels: [
-        {
-          labelId: '26804002',
-          itemNo: '4201023001C',
-          itemName: 'STATOR COMPONENT',
-          dieNo: 'S3301',
-          oqcLotNo: 'S68200',
-          qty: 5500,
-
-          boxes: [
-            {
-              boxNo: 'BOX-301',
-              lotNo: '25C20',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-302',
-              lotNo: '25C20',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-303',
-              lotNo: '25C20',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-304',
-              lotNo: '25C20',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-305',
-              lotNo: '25C20',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-306',
-              lotNo: '25C20',
-              qty: 500,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-
-        {
-          labelId: '26804003',
-          itemNo: '4201023002B',
-          itemName: 'STATOR CORE',
-          dieNo: 'S3302',
-          oqcLotNo: 'S68201',
-          qty: 1700,
-
-          boxes: [
-            {
-              boxNo: 'BOX-307',
-              lotNo: '25C21',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-308',
-              lotNo: '25C21',
-              qty: 700,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-      ],
-    },
-
-    /* =================================================
-       Rack F-202
-       กลุ่ม FGH
-    ================================================= */
-
-    'Rack F-202': {
-      palletId: '26805001',
-      receivedDate: '2026-08-17',
-
-      labels: [
-        {
-          labelId: '26805002',
-          itemNo: '5501001120A',
-          itemName: 'GENERATOR CORE',
-          dieNo: 'G5100',
-          oqcLotNo: 'S69010',
-          qty: 2300,
-
-          boxes: [
-            {
-              boxNo: 'BOX-401',
-              lotNo: '26D01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-402',
-              lotNo: '26D01',
-              qty: 1000,
-              type: 'FULL',
-            },
-            {
-              boxNo: 'BOX-403',
-              lotNo: '26D01',
-              qty: 300,
-              type: 'PARTIAL',
-            },
-          ],
-        },
-      ],
-    },
-  };
-
-  /* =====================================================
-     STATE
-  ===================================================== */
-
-  selectedSlot: RackSlot | null = null;
-
-  selectedLabel: LabelItem | null = null;
-
-  /* =====================================================
-     GET SLOT FROM API AREA
-
-     Mock Pallet ยังใช้ key เดิม:
-     Rack A-101
-     Rack A-201
-     ...
-  ===================================================== */
-
   getSlot(rack: RackDefinition, area: AreaRow): RackSlot {
-    /*
-      Area จาก API
-  
-      เช่น
-      101
-      201
-      305
-    */
+    const location =
+      this.locationByMapAreaRackId.get(Number(area.mapAreaRackId)) || null;
 
-    const displayCode = String(area.areaName || '').trim();
+    const pallets = location?.pallets || [];
 
-    /*
-      Rack API อาจส่ง
-  
-      A
-      B
-      C
-  
-      หรือ
-  
-      Rack A
-      Rack B
-  
-      เราจะบังคับให้ Mock Key
-      กลับเป็นรูปแบบเดิมเสมอ
-  
-      Rack A-101
-    */
+    const isPending =
+      String(rack.name || '')
+        .trim()
+        .toUpperCase() === 'PENDING';
 
-    let rackCode = String(rack.name || '')
-      .trim()
-      .toUpperCase();
-
-    rackCode = rackCode
-      .replace('RACK', '')
-      .replace(/[^A-Z]/g, '')
-      .trim();
-
-    const mockRackName = `Rack ${rackCode}`;
-
-    const key = `${mockRackName}-${displayCode}`;
-
-    const pallet = this.mockInventory[key] || null;
+    const displayCode = isPending
+      ? 'Pending'
+      : String(area.areaName || '').trim();
 
     return {
-      rackId: rack.rackId,
+      rackId: Number(rack.rackId),
 
-      areaId: area.areaId,
+      areaId: Number(area.areaId),
+
+      mapAreaRackId: Number(area.mapAreaRackId),
 
       rack: rack.name,
 
-      code: key,
+      code:
+        location?.locationName ||
+        (isPending ? 'Pending' : `${rack.name}${displayCode}`),
 
       displayCode: displayCode,
 
       rackGroup: rack.rackGroup,
 
-      pallet: pallet,
+      pallets: pallets,
+
+      pallet: pallets.length > 0 ? pallets[0] : null,
     };
   }
+
+
+  isPendingRackName(rackName: string): boolean {
+    return String(rackName || '').trim().toUpperCase() === 'PENDING';
+  }
+  
+  getMainRacks(): RackDefinition[] {
+    return this.rackDefinitions.filter(
+      rack => !this.isPendingRackName(rack.name)
+    );
+  }
+  
+  getPendingRack(): RackDefinition | null {
+    return (
+      this.rackDefinitions.find(
+        rack => this.isPendingRackName(rack.name)
+      ) || null
+    );
+  }
+
+
+
+
+
+
+
+
 
   /* =====================================================
      SELECT SLOT
@@ -631,8 +601,20 @@ export class LayOutComponent implements OnInit {
   selectSlot(slot: RackSlot): void {
     this.selectedSlot = slot;
 
-    if (slot.pallet && slot.pallet.labels.length > 0) {
-      this.selectedLabel = slot.pallet.labels[0];
+    this.selectedPallet = slot.pallets.length > 0 ? slot.pallets[0] : null;
+
+    if (this.selectedPallet && this.selectedPallet.labels.length > 0) {
+      this.selectedLabel = this.selectedPallet.labels[0];
+    } else {
+      this.selectedLabel = null;
+    }
+  }
+
+  selectPallet(pallet: PalletItem): void {
+    this.selectedPallet = pallet;
+
+    if (pallet.labels.length > 0) {
+      this.selectedLabel = pallet.labels[0];
     } else {
       this.selectedLabel = null;
     }
@@ -651,7 +633,11 @@ export class LayOutComponent implements OnInit {
   ===================================================== */
 
   hasPallet(rack: RackDefinition, area: AreaRow): boolean {
-    return this.getSlot(rack, area).pallet !== null;
+    const location = this.locationByMapAreaRackId.get(
+      Number(area.mapAreaRackId)
+    );
+
+    return Number(location?.palletCount || 0) > 0;
   }
 
   /* =====================================================
@@ -659,13 +645,18 @@ export class LayOutComponent implements OnInit {
   ===================================================== */
 
   getLabelCount(rack: RackDefinition, area: AreaRow): number {
-    const pallet = this.getSlot(rack, area).pallet;
+    const location = this.locationByMapAreaRackId.get(
+      Number(area.mapAreaRackId)
+    );
 
-    if (!pallet) {
+    if (!location) {
       return 0;
     }
 
-    return pallet.labels.length;
+    return location.pallets.reduce(
+      (sum, pallet) => sum + pallet.labels.length,
+      0
+    );
   }
 
   /* =====================================================
@@ -737,32 +728,38 @@ export class LayOutComponent implements OnInit {
      SELECTED SLOT SUMMARY
   ===================================================== */
 
-  get selectedPallet(): PalletItem | null {
-    return this.selectedSlot?.pallet || null;
+  get selectedSlotPalletCount(): number {
+    return this.selectedSlot?.pallets.length || 0;
   }
 
   get selectedSlotLabelCount(): number {
-    return this.selectedPallet?.labels.length || 0;
-  }
-
-  get selectedSlotBoxCount(): number {
-    if (!this.selectedPallet) {
+    if (!this.selectedSlot) {
       return 0;
     }
 
-    return this.selectedPallet.labels.reduce(
-      (sum, label) => sum + label.boxes.length,
+    return this.selectedSlot.pallets.reduce(
+      (sum, pallet) => sum + pallet.labels.length,
       0
     );
   }
 
-  get selectedSlotQty(): number {
-    if (!this.selectedPallet) {
+  get selectedSlotBoxCount(): number {
+    if (!this.selectedSlot) {
       return 0;
     }
 
-    return this.selectedPallet.labels.reduce(
-      (sum, label) => sum + label.qty,
+    return this.selectedSlot.pallets
+      .flatMap((pallet) => pallet.labels)
+      .reduce((sum, label) => sum + label.boxes.length, 0);
+  }
+
+  get selectedSlotQty(): number {
+    if (!this.selectedSlot) {
+      return 0;
+    }
+
+    return this.selectedSlot.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.qty || 0),
       0
     );
   }
@@ -772,26 +769,29 @@ export class LayOutComponent implements OnInit {
   ===================================================== */
 
   get totalPallets(): number {
-    return Object.keys(this.mockInventory).length;
-  }
-
-  get totalLabels(): number {
-    return Object.values(this.mockInventory).reduce(
-      (sum, pallet) => sum + pallet.labels.length,
+    return this.layoutLocations.reduce(
+      (sum, location) => sum + location.pallets.length,
       0
     );
   }
 
+  get totalLabels(): number {
+    return this.layoutLocations
+      .flatMap((location) => location.pallets)
+      .reduce((sum, pallet) => sum + pallet.labels.length, 0);
+  }
+
   get totalBoxes(): number {
-    return Object.values(this.mockInventory)
+    return this.layoutLocations
+      .flatMap((location) => location.pallets)
       .flatMap((pallet) => pallet.labels)
       .reduce((sum, label) => sum + label.boxes.length, 0);
   }
 
   get totalQty(): number {
-    return Object.values(this.mockInventory)
-      .flatMap((pallet) => pallet.labels)
-      .reduce((sum, label) => sum + label.qty, 0);
+    return this.layoutLocations
+      .flatMap((location) => location.pallets)
+      .reduce((sum, pallet) => sum + Number(pallet.qty || 0), 0);
   }
 
   /* =====================================================
@@ -808,6 +808,9 @@ export class LayOutComponent implements OnInit {
 
       case 'FGH':
         return 'rack-group-fgh';
+
+      case 'PENDING':
+        return 'rack-group-pending';
 
       default:
         return '';
