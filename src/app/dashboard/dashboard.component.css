@@ -1535,6 +1535,40 @@ tr.fraction-box-row:hover td {
 }
 
 
+
+.pallet-main-content {
+  min-width: 0;
+}
+
+
+.pallet-timestamp {
+  display: flex !important;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 5px;
+
+  margin-left: 4px;
+
+  color: #64748b !important;
+
+  font-size: 13px !important;
+
+  font-weight: 750 !important;
+
+  white-space: nowrap;
+}
+
+
+.pallet-timestamp i {
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+
 /* =========================================================
    PALLET INFORMATION BOX
 ========================================================= */

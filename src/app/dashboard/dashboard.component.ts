@@ -98,6 +98,13 @@ type DashboardFilter = {
   labelType: string;
 };
 
+type DashboardLocationRow = {
+  mapAreaRackId: number;
+  rackName: string;
+  areaName: string;
+  displayName: string;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -132,10 +139,9 @@ export class DashboardComponent implements OnInit {
   // =====================================================
   // EXPAND
   // =====================================================
-
   expandedPalletIds = new Set<number>();
-
   expandedHeaderIds = new Set<number>();
+  locationByMapAreaRackId = new Map<number, DashboardLocationRow>();
 
   // =====================================================
   // STATE
@@ -146,6 +152,8 @@ export class DashboardComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
+    this.fetchLocations();
+
     this.fetchPallet();
   }
 
@@ -210,6 +218,54 @@ export class DashboardComponent implements OnInit {
           });
         },
       });
+  }
+
+  fetchLocations(): void {
+    this.http.get<any>(config.apiServer + '/api/location/list').subscribe({
+      next: (res: any): void => {
+        const racks = Array.isArray(res?.results) ? res.results : [];
+
+        const map = new Map<number, DashboardLocationRow>();
+
+        for (const rack of racks) {
+          const rackName = String(rack?.rackName || '').trim();
+
+          const areas = Array.isArray(rack?.areas) ? rack.areas : [];
+
+          for (const area of areas) {
+            const mapAreaRackId = Number(area?.mapAreaRackId || 0);
+
+            if (!mapAreaRackId) {
+              continue;
+            }
+
+            const areaName = String(area?.areaName || '').trim();
+
+            const isPending = rackName.toUpperCase() === 'PENDING';
+
+            const displayName = isPending ? rackName : `${rackName}${areaName}`;
+
+            map.set(mapAreaRackId, {
+              mapAreaRackId: mapAreaRackId,
+
+              rackName: rackName,
+
+              areaName: areaName,
+
+              displayName: displayName,
+            });
+          }
+        }
+
+        this.locationByMapAreaRackId = map;
+      },
+
+      error: (err: any): void => {
+        console.error('Load Location Error:', err);
+
+        this.locationByMapAreaRackId = new Map<number, DashboardLocationRow>();
+      },
+    });
   }
 
   // =====================================================
@@ -325,6 +381,16 @@ export class DashboardComponent implements OnInit {
 
       boxType: raw?.isFraction ? 'FRACTION' : 'NORMAL',
     };
+  }
+
+  getLocationName(mapAreaRackId: number): string {
+    const location = this.locationByMapAreaRackId.get(Number(mapAreaRackId));
+
+    if (!location) {
+      return '-';
+    }
+
+    return location.displayName || '-';
   }
 
   // =====================================================
@@ -529,7 +595,19 @@ export class DashboardComponent implements OnInit {
       return value;
     }
 
-    return date.toLocaleString('en-GB');
+    const dd = String(date.getDate()).padStart(2, '0');
+
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+
+    const yyyy = date.getFullYear();
+
+    const hh = String(date.getHours()).padStart(2, '0');
+
+    const min = String(date.getMinutes()).padStart(2, '0');
+
+    const ss = String(date.getSeconds()).padStart(2, '0');
+
+    return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
   }
 
   private toYmd(value: string): string {

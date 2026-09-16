@@ -216,12 +216,18 @@
             <i class="fas fa-pallet"></i>
           </div>
 
-          <div>
+          <div class="pallet-main-content">
             <span class="pallet-label"> PALLET NO. </span>
 
             <strong>
               {{ pallet.palletNoId }}
             </strong>
+
+            <small class="pallet-timestamp">
+              <i class="far fa-clock"></i>
+
+              {{ formatDateTime(pallet.timeStmp) }}
+            </small>
           </div>
         </div>
 
@@ -249,8 +255,12 @@
           </div>
 
           <div>
-            <span>LOCATION ID</span>
-            <b>{{ pallet.mapAreaRackId }}</b>
+            <span>LOCATION</span>
+            <b>  {{
+              getLocationName(
+                pallet.mapAreaRackId
+              )
+            }}</b>
           </div>
         </div>
 
@@ -326,21 +336,25 @@
               class="header-card-head"
               (click)="toggleHeader(header.id)"
             >
-              <div class="header-item">
-                <div class="header-number">H{{ header.id }}</div>
+             <div class="header-item">
 
-                <div>
-                  <span> ITEM NO. </span>
-
-                  <strong>
-                    {{ header.itemNo }}
-                  </strong>
-
-                  <small>
-                    {{ header.itemName }}
-                  </small>
-                </div>
+              <div>
+                <span>
+                  ITEM NO.
+                </span>
+            
+                <strong>    
+                  {{ header.itemNo }}
+                </strong>
+            
+                <small>
+                  {{ header.itemName }}
+                </small>
               </div>
+            
+            </div>
+
+
 
               <div class="header-data">
                 <div>
@@ -416,7 +430,6 @@
                 <table class="box-table">
                   <thead>
                     <tr>
-
                       <th>TYPE</th>
 
                       <th>WOS NO.</th>
@@ -440,7 +453,6 @@
                       *ngFor="let box of header.boxes"
                       [class.fraction-box-row]="box.isFraction"
                     >
-
                       <td>
                         <span
                           class="box-type-badge"
