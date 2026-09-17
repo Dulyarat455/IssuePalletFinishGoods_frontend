@@ -555,14 +555,18 @@
           <span> HEADERS </span>
 
           <b>
-            {{ currentPalletHeaders.length }}
+            {{
+              issueMode === "ACTUAL"
+                ? actualHeaders.length
+                : currentPalletHeaders.length
+            }}
           </b>
         </div>
 
         <button
           type="button"
           class="header-list-create-btn"
-          (click)="prepareCreateNewHeader()"
+          (click)="onCreateNewHeaderByMode()"
         >
           <i class="fas fa-plus"></i>
 
@@ -603,9 +607,70 @@
       </div>
     </div>
 
+
+    <div
+  class="header-list-pallet-info actual"
+  *ngIf="
+    issueMode === 'ACTUAL' &&
+    actualPallet
+  "
+>
+
+  <div>
+    <span>PALLET NO.</span>
+
+    <b>
+      {{ actualPallet.palletNoId }}
+    </b>
+  </div>
+
+
+  <div>
+    <span>DATE</span>
+
+    <b>
+      {{ palletCreateForm.date }}
+    </b>
+  </div>
+
+
+  <div>
+    <span>SHIFT</span>
+
+    <b>
+      {{ actualPallet.shift }}
+    </b>
+  </div>
+
+
+  <div>
+    <span>LOCATION</span>
+
+    <b>
+      {{
+        locationName(
+          actualPallet.mapAreaRackId
+        )
+      }}
+    </b>
+  </div>
+
+
+  <div>
+    <span>LABEL TYPE</span>
+
+    <b>
+      {{ actualPallet.labelType }}
+    </b>
+  </div>
+
+</div>
+
     <!-- LIST -->
 
-    <div class="header-card-list">
+    <div class="header-card-list"
+      *ngIf="issueMode === 'TEMP'"
+    >
       <button
         type="button"
         class="header-select-card"
@@ -718,13 +783,225 @@
       </button>
     </div>
 
+
+    <!-- =====================================================
+     ACTUAL HEADER LIST
+====================================================== -->
+
+<div
+class="header-card-list"
+*ngIf="
+  issueMode === 'ACTUAL'
+"
+>
+
+<button
+  type="button"
+  class="header-select-card"
+
+  *ngFor="
+    let h of actualHeaders
+  "
+
+  (click)="
+    selectActualHeaderFromList(
+      h
+    )
+  "
+>
+
+  <!-- TOP -->
+
+  <div class="header-select-card-top">
+
+    <div class="header-item-icon">
+      <i class="fas fa-box"></i>
+    </div>
+
+
+    <div class="header-item-main">
+
+      <span class="header-item-label">
+        ITEM NO.
+      </span>
+
+
+      <b class="header-item-no">
+        {{ h.itemNo }}
+      </b>
+
+
+      <span class="header-item-name">
+        {{ h.itemName }}
+      </span>
+
+    </div>
+
+
+    <div class="header-open-icon">
+      <i class="fas fa-chevron-right"></i>
+    </div>
+
+  </div>
+
+
+  <!-- BOX DETAIL -->
+
+  <div class="header-box-status">
+
+    <!-- PLAN -->
+
+    <div class="header-box-status-group planned">
+
+      <div class="header-box-status-title">
+
+        <i class="fas fa-clipboard-list"></i>
+
+        กำหนดไว้
+
+      </div>
+
+
+      <div class="header-box-number-row">
+
+        <div>
+
+          <span>
+            BOX เต็ม
+          </span>
+
+          <b>
+            {{ h.normalQty }}
+          </b>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            BOX เศษ
+          </span>
+
+          <b>
+            {{ h.fractionQty }}
+          </b>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CURRENT -->
+
+    <div class="header-box-status-group current">
+
+      <div class="header-box-status-title">
+
+        <i class="fas fa-boxes-stacked"></i>
+
+        Actual
+
+      </div>
+
+
+      <div class="header-box-number-row">
+
+        <div>
+
+          <span>
+            BOX เต็ม
+          </span>
+
+          <b>
+            {{ h.normalBox }}
+          </b>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            BOX เศษ
+          </span>
+
+          <b>
+            {{ h.fractionBox }}
+          </b>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FOOT -->
+
+  <div class="header-select-card-foot">
+
+    <span>
+
+      <i class="fas fa-layer-group"></i>
+
+      Total Actual:
+
+      <b>
+        {{ h.totalBox }}
+      </b>
+
+      Box
+
+    </span>
+
+
+    <span class="open-header-text">
+
+      Open Header
+
+      <i class="fas fa-arrow-right"></i>
+
+    </span>
+
+  </div>
+
+</button>
+
+
+<div
+  class="empty-header-list"
+  *ngIf="
+    actualHeaders.length === 0
+  "
+>
+
+  <i class="fas fa-box-open"></i>
+
+  <span>
+    Pallet นี้ยังไม่มี Header
+  </span>
+
+</div>
+
+</div>
+
+
     <!-- =====================================================
      FINAL PALLET ACTION
 ====================================================== -->
 
     <div
       class="header-list-issue-panel"
-      *ngIf="palletTemp && currentPalletHeaders.length > 0"
+      *ngIf="
+        issueMode === 'TEMP' &&
+        palletTemp &&
+        currentPalletHeaders.length > 0
+      "
     >
       <!-- LEFT -->
 
@@ -786,7 +1063,8 @@
      BACK TO CREATE PALLET
 ====================================================== -->
 
-    <div class="header-list-back-panel">
+    <div class="header-list-back-panel" 
+    *ngIf="issueMode === 'TEMP'">
       <button
         type="button"
         class="header-list-back-panel-btn"
@@ -801,6 +1079,40 @@
         </span>
       </button>
     </div>
+
+    <div
+  class="header-list-back-panel"
+  *ngIf="
+    issueMode === 'ACTUAL'
+  "
+>
+
+  <button
+    type="button"
+    class="header-list-back-panel-btn"
+    (click)="backToDashboard()"
+  >
+
+    <i class="fas fa-arrow-left"></i>
+
+
+    <span>
+
+      <small>
+        Back
+      </small>
+
+      <b>
+        Dashboard
+      </b>
+
+    </span>
+
+  </button>
+
+</div>
+
+
   </section>
 
   <ng-container *ngIf="!showCreatePallet && !showHeaderList">
@@ -846,7 +1158,10 @@
               <button
                 type="button"
                 class="header-saved-action-btn"
-                *ngIf="currentPalletHeaders.length > 0"
+                *ngIf="
+                    issueMode === 'ACTUAL' ||
+                    currentPalletHeaders.length > 0
+                  "
                 (click)="backToHeaderList()"
               >
                 <i class="fas fa-arrow-left"></i>
@@ -856,6 +1171,7 @@
               <button
                 type="button"
                 class="header-saved-action-btn edit"
+                *ngIf="issueMode === 'TEMP'"
                 (click)="onEditHeader()"
               >
                 <i class="fas fa-pen"></i>
@@ -865,6 +1181,7 @@
               <button
                 type="button"
                 class="header-saved-action-btn delete"
+                *ngIf="issueMode === 'TEMP'"
                 (click)="onDeleteHeaderTemp()"
                 [disabled]="isDeletingHeader"
               >
@@ -891,10 +1208,16 @@
               <span>LABEL TYPE</span>
 
               <b
-                [class.label-type-fg]="palletTemp?.labelType === 'FG'"
-                [class.label-type-wip]="palletTemp?.labelType === 'WIP'"
-              >
-                {{ palletTemp?.labelType || "-" }}
+                [class.label-type-fg]="
+                  currentPalletLabelType === 'FG'
+                "
+                [class.label-type-wip]="
+                  currentPalletLabelType === 'WIP'
+                "
+                >
+                  {{
+                    currentPalletLabelType
+                  }}
               </b>
             </div>
 

@@ -2038,3 +2038,67 @@ button:hover {
 
   color: #0f172a;
 }
+
+
+
+/* =========================================================
+   EDIT ACTUAL PALLET
+========================================================= */
+
+.pallet-card {
+  position: relative;
+}
+
+
+.pallet-edit-action {
+  position: absolute;
+
+  top: 10px;
+
+  right: 60px;
+
+  z-index: 20;
+}
+
+
+.pallet-edit-btn {
+  min-height: 34px;
+
+  padding: 0 12px;
+
+  border: 1px solid #bfdbfe;
+
+  border-radius: 10px;
+
+  background: #eff6ff;
+
+  color: #1d4ed8;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.pallet-edit-btn:hover {
+  background: #dbeafe;
+
+  border-color: #93c5fd;
+
+  transform: translateY(-1px);
+}

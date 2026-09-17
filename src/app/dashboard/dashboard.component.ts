@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import Swal from 'sweetalert2';
@@ -149,7 +150,10 @@ export class DashboardComponent implements OnInit {
 
   isLoading = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.fetchLocations();
@@ -565,6 +569,47 @@ export class DashboardComponent implements OnInit {
       this.expandedHeaderIds.delete(header.id);
     });
   }
+
+
+
+  // =====================================================
+// EDIT ACTUAL PALLET
+// =====================================================
+
+    editActualPallet(
+      pallet: PalletDashboardRow
+    ): void {
+
+      if (
+        !pallet ||
+        !pallet.id
+      ) {
+        return;
+      }
+
+
+      this.router.navigate(
+        ['/issue'],
+        {
+          state: {
+
+            fromDashboard: true,
+
+            mode: 'ACTUAL_PALLET',
+
+            palletId:
+              Number(
+                pallet.id
+              ),
+
+            palletNoId:
+              pallet.palletNoId,
+
+          },
+        }
+      );
+    }
+
 
   // =====================================================
   // UTIL

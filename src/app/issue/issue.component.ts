@@ -8,6 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
 import config from '../../config';
@@ -227,6 +228,122 @@ type FetchWosTempResp = {
 
 type LabelStockType = 'FG' | 'WIP';
 
+// =====================================================
+// ISSUE WORK MODE
+// =====================================================
+
+type IssueWorkMode = 'TEMP' | 'ACTUAL';
+
+// =====================================================
+// ACTUAL PALLET BOX
+// =====================================================
+
+type ActualPalletBoxRow = {
+  id: number;
+
+  headerId: number;
+
+  headerClosedId: number | null;
+
+  itemNo: string;
+
+  itemName: string;
+
+  wosNo: string;
+
+  dwg: string;
+
+  dieNo: string;
+
+  lotNo: string;
+
+  qty: number;
+
+  timeStmp: string;
+
+  status: string;
+
+  isFraction: boolean;
+
+  boxType: 'NORMAL' | 'FRACTION';
+};
+
+// =====================================================
+// ACTUAL HEADER
+// =====================================================
+
+type ActualPalletHeaderRow = {
+  id: number;
+
+  palletId: number;
+
+  labelNo?: string;
+
+  itemNo: string;
+
+  itemName: string;
+
+  normalQty: number;
+
+  fractionQty: number;
+
+  groupId: number;
+
+  controlLot: string;
+
+  moveMentThreeMonth: string;
+
+  userId: number;
+
+  timeStmp: string;
+
+  status: string;
+
+  totalBox: number;
+
+  normalBox: number;
+
+  fractionBox: number;
+
+  totalQty: number;
+
+  boxes: ActualPalletBoxRow[];
+};
+
+// =====================================================
+// ACTUAL PALLET
+// =====================================================
+
+type ActualPalletRow = {
+  id: number;
+
+  palletNoId: string;
+
+  date: string;
+
+  shift: string;
+
+  mapAreaRackId: number;
+
+  labelType: LabelStockType;
+
+  userId: number;
+
+  timeStmp: string;
+
+  totalHeader: number;
+
+  totalBox: number;
+
+  normalBox: number;
+
+  fractionBox: number;
+
+  totalQty: number;
+
+  headers: ActualPalletHeaderRow[];
+};
+
 type IssuePanel = 'normal' | 'fraction' | 'next' | 'print';
 
 type PalletCreateForm = {
@@ -363,6 +480,26 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   palletTemp: PalletTempRow | null = null;
 
+  // =====================================================
+  // ISSUE MODE
+  // =====================================================
+
+  issueMode: IssueWorkMode = 'TEMP';
+
+  // =====================================================
+  // ACTUAL PALLET
+  // =====================================================
+
+  actualPalletId: number | null = null;
+
+  actualPallet: ActualPalletRow | null = null;
+
+  actualHeaders: ActualPalletHeaderRow[] = [];
+
+  actualHeader: ActualPalletHeaderRow | null = null;
+
+  isLoadingActualPallet = false;
+
   isLoadingPalletTemp = false;
   isSavingPalletTemp = false;
 
@@ -387,9 +524,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   isPrinting = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
+    // =====================================================
+    // USER
+    // =====================================================
+
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
 
     const now = new Date();
@@ -410,16 +551,76 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     if (!this.userId) {
       Swal.fire('Error', 'ไม่พบ User ID กรุณา Login ใหม่', 'error');
+
       return;
     }
+
+    // =====================================================
+    // MASTER DATA
+    //
+    // TEMP / ACTUAL ใช้ร่วมกัน
+    // =====================================================
 
     this.generateMovementMonthOptions();
 
     this.fetchGroups();
+
     this.fetchItems();
+
     this.fetchLocations();
 
+    // =====================================================
+    // READ ROUTER STATE
+    // =====================================================
+
+    const navigation = this.router.getCurrentNavigation();
+
+    const state = navigation?.extras?.state || history.state;
+
+    const mode = String(state?.['mode'] || '')
+      .trim()
+      .toUpperCase();
+
+    const palletId = Number(state?.['palletId'] || 0);
+
+    // =====================================================
+    // ACTUAL PALLET MODE
+    // =====================================================
+
+    if (
+      mode === 'ACTUAL_PALLET' &&
+      Number.isInteger(palletId) &&
+      palletId > 0
+    ) {
+      this.issueMode = 'ACTUAL';
+
+      this.actualPalletId = palletId;
+
+      this.showCreatePallet = false;
+
+      this.showHeaderList = true;
+
+      this.loadActualPallet(palletId);
+
+      return;
+    }
+
+    // =====================================================
+    // NORMAL TEMP MODE
+    // =====================================================
+
+    this.issueMode = 'TEMP';
+
+    this.actualPalletId = null;
+
+    this.actualPallet = null;
+
+    this.actualHeaders = [];
+
+    this.actualHeader = null;
+
     this.fetchPalletTemp();
+
     this.fetchHeader();
   }
 
@@ -511,6 +712,26 @@ export class IssueComponent implements OnInit, AfterViewInit {
   /* =======================
      Getter
   ======================= */
+
+  get isActualMode(): boolean {
+    return this.issueMode === 'ACTUAL';
+  }
+
+  get isTempMode(): boolean {
+    return this.issueMode === 'TEMP';
+  }
+
+  get currentActualHeaderCount(): number {
+    return this.actualHeaders.length;
+  }
+
+  get currentPalletLabelType(): string {
+    if (this.issueMode === 'ACTUAL') {
+      return this.actualPallet?.labelType || '-';
+    }
+
+    return this.palletTemp?.labelType || '-';
+  }
 
   get showHeaderForm(): boolean {
     return !this.header || this.isEditingHeader;
@@ -1093,6 +1314,30 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   backToHeaderList(): void {
+    // =====================================================
+    // ACTUAL PALLET
+    // =====================================================
+
+    if (this.issueMode === 'ACTUAL') {
+      this.resetSelectedHeaderData();
+
+      this.actualHeader = null;
+
+      this.header = null;
+
+      this.showCreatePallet = false;
+
+      this.showHeaderList = true;
+
+      this.activeIssuePanel = 'normal';
+
+      return;
+    }
+
+    // =====================================================
+    // TEMP PALLET
+    // =====================================================
+
     if (!this.palletTemp) {
       return;
     }
@@ -1100,12 +1345,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.resetSelectedHeaderData();
 
     this.showCreatePallet = false;
+
     this.showHeaderList = false;
 
     this.fetchHeader(() => {
-      // หลังโหลดข้อมูลใหม่เสร็จ
-      // ค่อยเปิด Select Header
-
       this.showHeaderList = true;
     });
   }
@@ -7001,26 +7244,24 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.showHeaderList = false;
 
     this.showCreatePallet = true;
-// =====================================================
-// REFRESH PALLET OCCUPANCY
-//
-// หลัง Issue Pallet สำเร็จ
-// โหลด Location ใหม่ว่า Area ไหนมี Pallet แล้ว
-// แล้วค่อย Build Create Pallet Rack
-// =====================================================
+    // =====================================================
+    // REFRESH PALLET OCCUPANCY
+    //
+    // หลัง Issue Pallet สำเร็จ
+    // โหลด Location ใหม่ว่า Area ไหนมี Pallet แล้ว
+    // แล้วค่อย Build Create Pallet Rack
+    // =====================================================
 
-this.fetchMapLocationPallet(() => {
+    this.fetchMapLocationPallet(() => {
+      this.buildCreatePalletRackView();
+    });
 
-  this.buildCreatePalletRackView();
+    // =====================================================
+    // REFRESH CURRENT TEMP DATA
+    // =====================================================
+    this.fetchPalletTemp();
 
-});
-
-// =====================================================
-// REFRESH CURRENT TEMP DATA
-// =====================================================
-this.fetchPalletTemp();
-
-this.fetchHeader();
+    this.fetchHeader();
   }
 
   printFullLabel(): void {
@@ -7061,4 +7302,431 @@ this.fetchHeader();
         },
       });
   }
+
+  // =====================================================
+  // LOAD ACTUAL PALLET BY ID
+  // =====================================================
+
+  loadActualPallet(palletId: number): void {
+    if (this.isLoadingActualPallet) {
+      return;
+    }
+
+    if (!Number.isInteger(Number(palletId)) || Number(palletId) <= 0) {
+      Swal.fire('Warning', 'Pallet ID ไม่ถูกต้อง', 'warning');
+
+      return;
+    }
+
+    this.isLoadingActualPallet = true;
+
+    this.http
+      .post<any>(config.apiServer + '/api/issue/listPalletById', {
+        palletId: Number(palletId),
+      })
+      .subscribe({
+        next: (res: any): void => {
+          this.isLoadingActualPallet = false;
+
+          const rows = Array.isArray(res?.results) ? res.results : [];
+
+          if (rows.length === 0) {
+            this.actualPallet = null;
+
+            this.actualHeaders = [];
+
+            Swal.fire('Warning', 'ไม่พบข้อมูล Pallet', 'warning');
+
+            return;
+          }
+
+          // API listPalletById
+          // มี Pallet เดียว
+          const raw = rows[0];
+
+          const pallet = this.normalizeActualPallet(raw);
+
+          this.actualPallet = pallet;
+
+          this.actualPalletId = pallet.id;
+
+          this.actualHeaders = pallet.headers;
+
+          this.actualHeader = null;
+
+          // =================================================
+          // SYNC PALLET DATA
+          // =================================================
+
+          this.palletCreateForm = {
+            date: this.toYmd(pallet.date),
+
+            shift: pallet.shift,
+
+            locationId: pallet.mapAreaRackId,
+
+            labelType: pallet.labelType,
+          };
+
+          this.labelStockType = pallet.labelType;
+
+          // =================================================
+          // RESET HEADER
+          // =================================================
+
+          this.header = null;
+
+          this.savedRows = [];
+
+          this.fractionRows = [];
+
+          this.showCreatePallet = false;
+
+          this.showHeaderList = true;
+
+          this.activeIssuePanel = 'normal';
+        },
+
+        error: (err: any): void => {
+          console.error('LOAD ACTUAL PALLET ERROR:', err);
+
+          this.isLoadingActualPallet = false;
+
+          this.actualPallet = null;
+
+          this.actualHeaders = [];
+
+          Swal.fire(
+            'Error',
+            err?.error?.message ||
+              err?.error?.error ||
+              err?.message ||
+              'Load Actual Pallet fail',
+            'error'
+          );
+        },
+      });
+  }
+
+  private normalizeActualPallet(raw: any): ActualPalletRow {
+    const headers: ActualPalletHeaderRow[] = Array.isArray(raw?.headers)
+      ? raw.headers.map((header: any) => this.normalizeActualHeader(header))
+      : [];
+
+    return {
+      id: Number(raw?.id || 0),
+
+      palletNoId: String(raw?.palletNoId || '-'),
+
+      date: String(raw?.date || ''),
+
+      shift: String(raw?.shift || ''),
+
+      mapAreaRackId: Number(raw?.mapAreaRackId || 0),
+
+      labelType: raw?.labelType === 'WIP' ? 'WIP' : 'FG',
+
+      userId: Number(raw?.userId || 0),
+
+      timeStmp: String(raw?.timeStmp || ''),
+
+      totalHeader: Number(raw?.totalHeader || 0),
+
+      totalBox: Number(raw?.totalBox || 0),
+
+      normalBox: Number(raw?.normalBox || 0),
+
+      fractionBox: Number(raw?.fractionBox || 0),
+
+      totalQty: Number(raw?.totalQty || 0),
+
+      headers: headers,
+    };
+  }
+
+  private normalizeActualHeader(raw: any): ActualPalletHeaderRow {
+    const boxes: ActualPalletBoxRow[] = Array.isArray(raw?.boxes)
+      ? raw.boxes.map((box: any) => this.normalizeActualBox(box))
+      : [];
+
+    return {
+      id: Number(raw?.id || 0),
+
+      palletId: Number(raw?.palletId || 0),
+
+      labelNo: raw?.labelNo == null ? undefined : String(raw.labelNo),
+
+      itemNo: String(raw?.itemNo || ''),
+
+      itemName: String(raw?.itemName || ''),
+
+      normalQty: Number(raw?.normalQty || 0),
+
+      fractionQty: Number(raw?.fractionQty || 0),
+
+      groupId: Number(raw?.groupId || 0),
+
+      controlLot: String(raw?.controlLot || ''),
+
+      moveMentThreeMonth: String(raw?.moveMentThreeMonth || ''),
+
+      userId: Number(raw?.userId || 0),
+
+      timeStmp: String(raw?.timeStmp || ''),
+
+      status: String(raw?.status || ''),
+
+      totalBox: Number(raw?.totalBox || 0),
+
+      normalBox: Number(raw?.normalBox || 0),
+
+      fractionBox: Number(raw?.fractionBox || 0),
+
+      totalQty: Number(raw?.totalQty || 0),
+
+      boxes: boxes,
+    };
+  }
+
+  private normalizeActualBox(raw: any): ActualPalletBoxRow {
+    const isFraction = Boolean(raw?.isFraction);
+
+    return {
+      id: Number(raw?.id || 0),
+
+      headerId: Number(raw?.headerId || 0),
+
+      headerClosedId:
+        raw?.headerClosedId == null ? null : Number(raw.headerClosedId),
+
+      itemNo: String(raw?.itemNo || ''),
+
+      itemName: String(raw?.itemName || ''),
+
+      wosNo: String(raw?.wosNo || ''),
+
+      dwg: String(raw?.dwg || ''),
+
+      dieNo: String(raw?.dieNo || ''),
+
+      lotNo: String(raw?.lotNo || ''),
+
+      qty: Number(raw?.qty || 0),
+
+      timeStmp: String(raw?.timeStmp || ''),
+
+      status: String(raw?.status || ''),
+
+      isFraction: isFraction,
+
+      boxType: isFraction ? 'FRACTION' : 'NORMAL',
+    };
+  }
+
+  // =====================================================
+  // SELECT ACTUAL HEADER
+  // =====================================================
+
+  selectActualHeaderFromList(selectedHeader: ActualPalletHeaderRow): void {
+    if (!this.actualPallet) {
+      return;
+    }
+
+    this.actualHeader = selectedHeader;
+
+    this.showHeaderList = false;
+
+    this.showCreatePallet = false;
+
+    // =====================================================
+    // แปลง Actual Header
+    // ให้ Panel เดิมสามารถแสดงผลได้
+    // =====================================================
+
+    this.header = {
+      id: selectedHeader.id,
+
+      issueDate: this.toYmd(this.actualPallet.date),
+
+      shift: this.actualPallet.shift,
+
+      groupId: selectedHeader.groupId,
+
+      itemNo: selectedHeader.itemNo,
+
+      itemName: selectedHeader.itemName,
+
+      controlLot: selectedHeader.controlLot,
+
+      movementMonth: selectedHeader.moveMentThreeMonth,
+
+      totalQtyBox:
+        Number(selectedHeader.normalQty || 0) +
+        Number(selectedHeader.fractionQty || 0),
+
+      normalQty: selectedHeader.normalQty,
+
+      fractionQty: selectedHeader.fractionQty,
+
+      normalScannedQty: selectedHeader.normalBox,
+
+      fractionScannedQty: selectedHeader.fractionBox,
+
+      // Actual ไม่มี PalletTemp
+      palletTempId: 0,
+
+      idPallet: this.actualPallet.palletNoId,
+
+      userId: selectedHeader.userId,
+
+      status: selectedHeader.status,
+    };
+
+    // =====================================================
+    // HEADER FORM
+    // =====================================================
+
+    this.form = {
+      issueDate: this.toYmd(this.actualPallet.date),
+
+      shift: this.actualPallet.shift,
+
+      groupId: selectedHeader.groupId,
+
+      itemNo: selectedHeader.itemNo,
+
+      itemName: selectedHeader.itemName,
+
+      controlLot: selectedHeader.controlLot,
+
+      locationId: this.actualPallet.mapAreaRackId,
+
+      movementMonth: selectedHeader.moveMentThreeMonth,
+
+      totalQtyBox:
+        Number(selectedHeader.normalQty || 0) +
+        Number(selectedHeader.fractionQty || 0),
+    };
+
+    this.itemKeyword = selectedHeader.itemNo;
+
+    this.fullBoxTagQty = Number(selectedHeader.normalQty || 0);
+
+    this.fractionQtyBox = Number(selectedHeader.fractionQty || 0);
+
+    // =====================================================
+    // NORMAL BOX
+    // =====================================================
+
+    this.savedRows = selectedHeader.boxes
+      .filter((box) => !box.isFraction)
+      .map((box) => ({
+        id: box.id,
+
+        headerId: box.headerId,
+
+        itemNo: box.itemNo,
+
+        itemName: box.itemName,
+
+        wosNo: box.wosNo,
+
+        dwg: box.dwg,
+
+        dieNo: box.dieNo,
+
+        lotNo: box.lotNo,
+
+        qty: box.qty,
+
+        editQty: box.qty,
+
+        isUpdatingQty: false,
+      }));
+
+    // =====================================================
+    // FRACTION BOX
+    // =====================================================
+
+    this.fractionRows = selectedHeader.boxes
+      .filter((box) => box.isFraction)
+      .map((box) => ({
+        id: box.id,
+
+        headerId: box.headerId,
+
+        boxId: box.id,
+
+        itemNo: box.itemNo,
+
+        itemName: box.itemName,
+
+        wosNo: box.wosNo,
+
+        dwg: box.dwg,
+
+        dieNo: box.dieNo,
+
+        lotNo: box.lotNo,
+
+        qty: box.qty,
+
+        editQty: box.qty,
+
+        isUpdatingQty: false,
+      }));
+
+    this.showFractionSection = Number(selectedHeader.fractionQty || 0) > 0;
+
+    this.isEditingHeader = false;
+
+    this.activeIssuePanel = 'normal';
+  }
+
+  onCreateNewHeaderByMode(): void {
+
+    // =====================================================
+    // ACTUAL
+    // =====================================================
+  
+    if (
+      this.issueMode ===
+      'ACTUAL'
+    ) {
+  
+      Swal.fire({
+        icon: 'info',
+  
+        title:
+          'Actual Pallet',
+  
+        text:
+          'API สำหรับเพิ่ม Header ลง Pallet จริงยังไม่ได้สร้าง',
+      });
+  
+  
+      return;
+    }
+  
+  
+    // =====================================================
+    // TEMP
+    // =====================================================
+  
+    this.prepareCreateNewHeader();
+  }
+
+
+  backToDashboard(): void {
+
+    this.router.navigate(
+      ['/dashboard']
+    );
+  }
+
+
+
+
+
+
 }
