@@ -114,174 +114,26 @@
 
       <!-- RACK FROM API -->
 
-      <div
-      class="rack-scroll"
-      *ngIf="
-        !isLoadingRack &&
-        !rackLoadError
-      "
-    >
-      <div class="rack-layout-shell">
-
-        <!-- =========================================
+      <div class="rack-scroll" *ngIf="!isLoadingRack && !rackLoadError">
+        <div class="rack-layout-shell">
+          <!-- =========================================
              LEFT : RACK A - C
              สูง 15 Area Row
         ========================================== -->
-      
-        <div class="rack-left-group">
-      
-          <div
-            class="rack-block"
-            *ngFor="
-              let rack of getLeftRacks();
-              trackBy: trackByRack
-            "
-          >
-      
-            <div
-              class="rack-title"
-              [ngClass]="
-                getRackGroupClass(
-                  rack.rackGroup
-                )
-              "
-            >
-              {{ rack.name }}
-            </div>
-      
-      
-            <div class="rack-body">
-      
-              <div
-                class="rack-row"
-                *ngFor="
-                  let areaRow of getAreaRows(rack);
-                  trackBy: trackByAreaRow
-                "
-              >
-      
-                <button
-                  type="button"
-                  class="rack-slot"
-      
-                  *ngFor="
-                    let area of areaRow;
-                    trackBy: trackByArea
-                  "
-      
-                  [ngClass]="{
-      
-                    'has-pallet':
-                      hasPallet(
-                        rack,
-                        area
-                      ),
-      
-                    selected:
-                      isSelected(
-                        rack,
-                        area
-                      ),
-      
-                    'rack-group-abc':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'ABC',
-      
-                    'rack-group-de':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'DE',
-      
-                    'rack-group-fgh':
-                      hasPallet(
-                        rack,
-                        area
-                      ) &&
-                      rack.rackGroup === 'FGH'
-      
-                  }"
-      
-                  (click)="
-                    selectSlot(
-                      getSlot(
-                        rack,
-                        area
-                      )
-                    )
-                  "
-                >
-      
-                  <span class="slot-code">
-                    {{ area.areaName }}
-                  </span>
-      
-      
-                  <span
-                    class="label-count"
-      
-                    *ngIf="
-                      getLabelCount(
-                        rack,
-                        area
-                      ) > 0
-                    "
-                  >
-                    {{
-                      getLabelCount(
-                        rack,
-                        area
-                      )
-                    }}
-                  </span>
-      
-                </button>
-      
-              </div>
-      
-            </div>
-      
-          </div>
-      
-        </div>
-      
-      
-        <!-- =========================================
-             RIGHT : RACK D - H
-        ========================================== -->
-      
-        <div class="rack-right-zone">
-      
-          <!-- D - H -->
-      
-          <div class="rack-right-group">
-      
+
+          <div class="rack-left-group">
             <div
               class="rack-block"
-              *ngFor="
-                let rack of getRightRacks();
-                trackBy: trackByRack
-              "
+              *ngFor="let rack of getLeftRacks(); trackBy: trackByRack"
             >
-      
               <div
                 class="rack-title"
-                [ngClass]="
-                  getRackGroupClass(
-                    rack.rackGroup
-                  )
-                "
+                [ngClass]="getRackGroupClass(rack.rackGroup)"
               >
                 {{ rack.name }}
               </div>
-      
-      
+
               <div class="rack-body">
-      
                 <div
                   class="rack-row"
                   *ngFor="
@@ -289,181 +141,138 @@
                     trackBy: trackByAreaRow
                   "
                 >
-      
                   <button
                     type="button"
                     class="rack-slot"
-      
-                    *ngFor="
-                      let area of areaRow;
-                      trackBy: trackByArea
-                    "
-      
+                    *ngFor="let area of areaRow; trackBy: trackByArea"
                     [ngClass]="{
-      
-                      'has-pallet':
-                        hasPallet(
-                          rack,
-                          area
-                        ),
-      
-                      selected:
-                        isSelected(
-                          rack,
-                          area
-                        ),
-      
+                      'has-pallet': hasPallet(rack, area),
+
+                      selected: isSelected(rack, area),
+
                       'rack-group-abc':
-                        hasPallet(
-                          rack,
-                          area
-                        ) &&
-                        rack.rackGroup === 'ABC',
-      
+                        hasPallet(rack, area) && rack.rackGroup === 'ABC',
+
                       'rack-group-de':
-                        hasPallet(
-                          rack,
-                          area
-                        ) &&
-                        rack.rackGroup === 'DE',
-      
+                        hasPallet(rack, area) && rack.rackGroup === 'DE',
+
                       'rack-group-fgh':
-                        hasPallet(
-                          rack,
-                          area
-                        ) &&
-                        rack.rackGroup === 'FGH'
-      
+                        hasPallet(rack, area) && rack.rackGroup === 'FGH'
                     }"
-      
-                    (click)="
-                      selectSlot(
-                        getSlot(
-                          rack,
-                          area
-                        )
-                      )
-                    "
+                    (click)="selectSlot(getSlot(rack, area))"
                   >
-      
                     <span class="slot-code">
                       {{ area.areaName }}
                     </span>
-      
-      
+
                     <span
                       class="label-count"
-      
-                      *ngIf="
-                        getLabelCount(
-                          rack,
-                          area
-                        ) > 0
-                      "
+                      *ngIf="getLabelCount(rack, area) > 0"
                     >
-                      {{
-                        getLabelCount(
-                          rack,
-                          area
-                        )
-                      }}
+                      {{ getLabelCount(rack, area) }}
                     </span>
-      
                   </button>
-      
                 </div>
-      
               </div>
-      
             </div>
-      
           </div>
-      
-      
-          <!-- =====================================
+
+          <!-- =========================================
+             RIGHT : RACK D - H
+        ========================================== -->
+
+          <div class="rack-right-zone">
+            <!-- D - H -->
+
+            <div class="rack-right-group">
+              <div
+                class="rack-block"
+                *ngFor="let rack of getRightRacks(); trackBy: trackByRack"
+              >
+                <div
+                  class="rack-title"
+                  [ngClass]="getRackGroupClass(rack.rackGroup)"
+                >
+                  {{ rack.name }}
+                </div>
+
+                <div class="rack-body">
+                  <div
+                    class="rack-row"
+                    *ngFor="
+                      let areaRow of getAreaRows(rack);
+                      trackBy: trackByAreaRow
+                    "
+                  >
+                    <button
+                      type="button"
+                      class="rack-slot"
+                      *ngFor="let area of areaRow; trackBy: trackByArea"
+                      [ngClass]="{
+                        'has-pallet': hasPallet(rack, area),
+
+                        selected: isSelected(rack, area),
+
+                        'rack-group-abc':
+                          hasPallet(rack, area) && rack.rackGroup === 'ABC',
+
+                        'rack-group-de':
+                          hasPallet(rack, area) && rack.rackGroup === 'DE',
+
+                        'rack-group-fgh':
+                          hasPallet(rack, area) && rack.rackGroup === 'FGH'
+                      }"
+                      (click)="selectSlot(getSlot(rack, area))"
+                    >
+                      <span class="slot-code">
+                        {{ area.areaName }}
+                      </span>
+
+                      <span
+                        class="label-count"
+                        *ngIf="getLabelCount(rack, area) > 0"
+                      >
+                        {{ getLabelCount(rack, area) }}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- =====================================
                PENDING
       
                อยู่ใต้ D - H
                สูงเท่ากับ 3 Area Row
                ไม่มี Rack Header
           ====================================== -->
-      
-          <div
-            class="pending-bottom-area"
-            *ngIf="
-              getPendingRack()
-                as pendingRack
-            "
-          >
-      
-            <button
-              type="button"
-              class="pending-area-button"
-      
-              *ngFor="
-                let area of pendingRack.areas;
-                trackBy: trackByArea
-              "
-      
-              [class.has-pallet]="
-                hasPallet(
-                  pendingRack,
-                  area
-                )
-              "
-      
-              [class.selected]="
-                isSelected(
-                  pendingRack,
-                  area
-                )
-              "
-      
-              (click)="
-                selectSlot(
-                  getSlot(
-                    pendingRack,
-                    area
-                  )
-                )
-              "
+
+            <div
+              class="pending-bottom-area"
+              *ngIf="getPendingRack() as pendingRack"
             >
-      
-              <span class="pending-area-name">
-                Pending
-              </span>
-      
-      
-              <span
-                class="pending-pallet-count"
-      
-                *ngIf="
-                  getLabelCount(
-                    pendingRack,
-                    area
-                  ) > 0
-                "
+              <button
+                type="button"
+                class="pending-area-button"
+                *ngFor="let area of pendingRack.areas; trackBy: trackByArea"
+                [class.has-pallet]="hasPallet(pendingRack, area)"
+                [class.selected]="isSelected(pendingRack, area)"
+                (click)="selectSlot(getSlot(pendingRack, area))"
               >
-                {{
-                  getLabelCount(
-                    pendingRack,
-                    area
-                  )
-                }}
-              </span>
-      
-            </button>
-      
+                <span class="pending-area-name"> Pending </span>
+
+                <span
+                  class="pending-pallet-count"
+                  *ngIf="getLabelCount(pendingRack, area) > 0"
+                >
+                  {{ getLabelCount(pendingRack, area) }}
+                </span>
+              </button>
+            </div>
           </div>
-      
         </div>
-      
       </div>
-    </div>
-
-
-
-
     </div>
 
     <!-- ===================================================
@@ -499,35 +308,22 @@
             <div class="selected-label">Selected Location</div>
 
             <div class="selected-code">
-
               <ng-container
                 *ngIf="
                   selectedSlot.rackGroup === 'PENDING';
                   else normalSelectedLocation
                 "
               >
-            
                 Pending
-            
               </ng-container>
-            
-            
-              <ng-template
-                #normalSelectedLocation
-              >
-            
+
+              <ng-template #normalSelectedLocation>
                 {{ selectedSlot.rack }}
-            
-                <span
-                  class="selected-slash"
-                >
-                  /
-                </span>
-            
+
+                <span class="selected-slash"> / </span>
+
                 {{ selectedSlot.displayCode }}
-            
               </ng-template>
-            
             </div>
           </div>
 
@@ -629,21 +425,49 @@
             </div>
           </div>
 
-          <div class="pallet-info-card">
-            <div>
-              <div class="info-caption">Pallet ID</div>
+          <!-- =============================================
+     PALLET INFORMATION
+============================================== -->
 
-              <div class="pallet-id-main">
-                {{ selectedPallet.palletId }}
+          <div class="pallet-info-card">
+            <!-- HEADER -->
+
+            <div class="pallet-info-card-head">
+              <div class="pallet-info-card-title">
+                <i class="fas fa-pallet"></i>
+
+                <span> Pallet Information </span>
               </div>
+
+              <button
+                type="button"
+                class="layout-edit-pallet-btn"
+                (click)="editActualPallet()"
+              >
+                <i class="fas fa-pen"></i>
+
+                <span> Edit Pallet </span>
+              </button>
             </div>
 
-            <div class="pallet-date">
-              <span> Received </span>
+            <!-- DATA -->
 
-              <strong>
-                {{ selectedPallet.receivedDate }}
-              </strong>
+            <div class="pallet-info-card-body">
+              <div class="pallet-info-value">
+                <div class="info-caption">Pallet ID</div>
+
+                <div class="pallet-id-main">
+                  {{ selectedPallet.palletId }}
+                </div>
+              </div>
+
+              <div class="pallet-info-value received">
+                <div class="info-caption">Received</div>
+
+                <div class="pallet-received-value">
+                  {{ selectedPallet.receivedDate }}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -760,54 +584,30 @@
             </div>
 
             <div class="box-table-wrap">
-
               <table class="box-table">
-            
                 <thead>
                   <tr>
-            
-                    <th class="col-box-no-index">
-                      No.
-                    </th>
-            
-                    <th class="col-item-no">
-                      Item No.
-                    </th>
-            
-                    <th class="col-item-name">
-                      Item Name
-                    </th>
-            
-                    <th class="col-wos">
-                      WOS No.
-                    </th>
-            
-                    <th class="col-dwg">
-                      DWG
-                    </th>
-            
-                    <th class="col-die">
-                      Die No.
-                    </th>
-            
-                    <th class="col-lot">
-                      Lot No.
-                    </th>
-            
-                    <th class="qty-column">
-                      Qty
-                    </th>
-            
-                    <th class="type-column">
-                      Type
-                    </th>
-            
+                    <th class="col-box-no-index">No.</th>
+
+                    <th class="col-item-no">Item No.</th>
+
+                    <th class="col-item-name">Item Name</th>
+
+                    <th class="col-wos">WOS No.</th>
+
+                    <th class="col-dwg">DWG</th>
+
+                    <th class="col-die">Die No.</th>
+
+                    <th class="col-lot">Lot No.</th>
+
+                    <th class="qty-column">Qty</th>
+
+                    <th class="type-column">Type</th>
                   </tr>
                 </thead>
-            
-            
+
                 <tbody>
-            
                   <tr
                     *ngFor="
                       let box of getSortedBoxes(selectedLabel);
@@ -815,89 +615,65 @@
                       trackBy: trackByBox
                     "
                     [ngClass]="{
-            
-                      'partial-row':
-                        box.type === 'PARTIAL',
-            
+                      'partial-row': box.type === 'PARTIAL',
+
                       'rack-group-abc':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'ABC',
-            
+
                       'rack-group-de':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'DE',
-            
+
                       'rack-group-fgh':
                         box.type === 'PARTIAL' &&
                         selectedSlot.rackGroup === 'FGH'
-            
                     }"
                   >
-            
                     <td class="box-index">
                       {{ i + 1 }}
                     </td>
-            
-            
+
                     <td class="box-item-no">
                       {{ box.itemNo || "-" }}
                     </td>
-            
-            
+
                     <td class="box-item-name">
                       {{ box.itemName || "-" }}
                     </td>
-            
-            
+
                     <td class="box-wos">
                       {{ box.wosNo || "-" }}
                     </td>
-            
-            
+
                     <td class="box-dwg">
                       {{ box.dwg || "-" }}
                     </td>
-            
-            
+
                     <td class="box-die">
                       {{ box.dieNo || "-" }}
                     </td>
-            
-            
+
                     <td class="box-lot">
                       {{ box.lotNo || "-" }}
                     </td>
-            
-            
+
                     <td class="qty-column">
                       {{ box.qty | number }}
                     </td>
-            
-            
+
                     <td class="type-column">
-            
                       <span
                         class="box-type"
-                        [class.full]="
-                          box.type === 'FULL'
-                        "
-                        [class.partial]="
-                          box.type === 'PARTIAL'
-                        "
+                        [class.full]="box.type === 'FULL'"
+                        [class.partial]="box.type === 'PARTIAL'"
                       >
-            
                         {{ box.type }}
-            
                       </span>
-            
                     </td>
-            
                   </tr>
-            
                 </tbody>
-            
               </table>
-            
             </div>
           </ng-container>
         </ng-container>

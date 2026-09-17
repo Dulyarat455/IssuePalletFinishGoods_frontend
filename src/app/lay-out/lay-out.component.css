@@ -641,21 +641,81 @@
 ========================================================= */
 
 .pallet-info-card {
-  display: flex;
+  padding: 0;
 
-  justify-content: space-between;
+  margin-bottom: 14px;
+
+  border:
+    1px solid #dbe2ea;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 2px 6px
+    rgba(
+      15,
+      23,
+      42,
+      0.04
+    );
+}
+
+/* =========================================================
+   PALLET INFO HEADER
+========================================================= */
+
+.pallet-info-card-head {
+  min-height: 44px;
+
+  padding: 8px 10px 8px 13px;
+
+  display: flex;
 
   align-items: center;
 
-  gap: 18px;
+  justify-content: space-between;
 
-  padding: 12px 14px;
+  gap: 12px;
 
-  border: 1px solid #dbe2ea;
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc,
+      #eef5f2
+    );
 
-  border-radius: 9px;
+  border-bottom:
+    1px solid #dbe5e1;
+}
 
-  background: #f8fafc;
+
+.pallet-info-card-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #475569;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.05em;
+}
+
+
+.pallet-info-card-title i {
+  color: #0f766e;
+
+  font-size: 11px;
 }
 
 .info-caption {
@@ -680,27 +740,7 @@
   color: #111827;
 }
 
-.pallet-date {
-  text-align: right;
-}
 
-.pallet-date span {
-  display: block;
-
-  font-size: 10px;
-
-  color: #6b7280;
-}
-
-.pallet-date strong {
-  display: block;
-
-  margin-top: 3px;
-
-  font-size: 12px;
-
-  color: #374151;
-}
 
 /* =========================================================
    SECTION TITLE
@@ -1547,3 +1587,160 @@
 
   z-index: 5;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   EDIT PALLET
+========================================================= */
+
+.layout-edit-pallet-btn {
+  height: 30px;
+
+  padding: 0 10px;
+
+  border:
+    1px solid #bfdbfe;
+
+  border-radius: 8px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 850;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+
+
+.layout-edit-pallet-btn i {
+  font-size: 10px;
+}
+
+
+.layout-edit-pallet-btn:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #e0ecff
+    );
+
+  border-color: #93c5fd;
+
+  box-shadow:
+    0 4px 10px
+    rgba(
+      37,
+      99,
+      235,
+      0.13
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+
+/* =========================================================
+   PALLET INFO BODY
+========================================================= */
+
+.pallet-info-card-body {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: end;
+
+  gap: 20px;
+
+  padding: 11px 14px 12px;
+}
+
+
+.pallet-info-value {
+  min-width: 0;
+}
+
+
+.pallet-info-value.received {
+  text-align: right;
+}
+
+
+.pallet-received-value {
+  margin-top: 4px;
+
+  color: #334155;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+
+
+
+/* =========================================================
+   PALLET INFO RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .pallet-info-card-head {
+    gap: 8px;
+  }
+
+
+  .pallet-info-card-body {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    gap: 10px;
+  }
+
+
+  .pallet-info-value.received {
+    text-align: left;
+  }
+
+}
+
+
+

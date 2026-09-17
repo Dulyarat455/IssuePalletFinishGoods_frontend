@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
 import config from '../../config';
@@ -163,7 +164,10 @@ export class LayOutComponent implements OnInit {
 
   selectedLabel: LabelItem | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.fetchLayoutData();
@@ -427,6 +431,8 @@ export class LayOutComponent implements OnInit {
       });
   }
 
+  
+
   /* =====================================================
      RACK GROUP
 
@@ -678,6 +684,59 @@ export class LayOutComponent implements OnInit {
       this.selectedLabel = null;
     }
   }
+
+
+
+  // =====================================================
+// EDIT ACTUAL PALLET
+// =====================================================
+
+editActualPallet(): void {
+
+  if (
+    !this.selectedPallet ||
+    !this.selectedPallet.id
+  ) {
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'No Pallet Selected',
+      text: 'กรุณาเลือก Pallet ก่อน',
+    });
+
+    return;
+  }
+
+
+  this.router.navigate(
+    ['/issue'],
+    {
+      state: {
+
+        fromLayout: true,
+
+        mode:
+          'ACTUAL_PALLET',
+
+        palletId:
+          Number(
+            this.selectedPallet.id
+          ),
+
+        palletNoId:
+          this.selectedPallet
+            .palletNoId,
+
+        mapAreaRackId:
+          this.selectedPallet
+            .mapAreaRackId,
+
+      },
+    }
+  );
+}
+
+
 
   /* =====================================================
      SELECT LABEL
