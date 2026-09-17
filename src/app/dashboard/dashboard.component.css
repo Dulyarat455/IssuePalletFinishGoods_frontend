@@ -636,19 +636,6 @@
   color: #c2410c;
 }
 
-.pallet-expand {
-  width: 35px;
-  height: 35px;
-
-  border-radius: 11px;
-
-  background: #ecfdf5;
-
-  color: #047857;
-
-  display: grid;
-  place-items: center;
-}
 
 
 /* =========================================================
@@ -1157,9 +1144,7 @@ tr.fraction-box-row:hover td {
       minmax(0, 1fr);
   }
 
-  .pallet-expand {
-    position: absolute;
-  }
+ 
 
   .header-card-head {
     grid-template-columns:
@@ -1988,22 +1973,7 @@ tr.fraction-box-row:hover td {
 }
 
 
-/* =========================================================
-   EXPAND BUTTON
-========================================================= */
 
-.pallet-expand {
-  background: #d9f3e9;
-
-  border:
-    1px solid #afe0ce;
-
-  color: #047857;
-
-  box-shadow:
-    0 3px 8px
-    rgba(4, 120, 87, 0.10);
-}
 
 
 .header-chevron {
@@ -2045,53 +2015,56 @@ button:hover {
    EDIT ACTUAL PALLET
 ========================================================= */
 
-.pallet-card {
-  position: relative;
-}
 
 
-.pallet-edit-action {
-  position: absolute;
 
-  top: 10px;
 
-  right: 60px;
-
-  z-index: 20;
-}
-
+/* =========================================================
+   EDIT PALLET BUTTON
+========================================================= */
 
 .pallet-edit-btn {
-  min-height: 34px;
+  width: 100%;
 
-  padding: 0 12px;
+  height: 34px;
 
-  border: 1px solid #bfdbfe;
+  padding: 0 8px;
+
+  border:
+    1px solid #bfdbfe;
 
   border-radius: 10px;
 
   background: #eff6ff;
 
-  color: #1d4ed8;
+  color: #2563eb;
 
-  display: inline-flex;
+  display: flex;
 
   align-items: center;
 
   justify-content: center;
 
-  gap: 6px;
+  gap: 5px;
 
-  font-size: 11px;
+  font-size: 10px;
 
-  font-weight: 900;
+  font-weight: 950;
+
+  white-space: nowrap;
 
   cursor: pointer;
 
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
+    box-shadow 0.15s ease,
     transform 0.15s ease;
+}
+
+
+.pallet-edit-btn i {
+  font-size: 10px;
 }
 
 
@@ -2100,5 +2073,304 @@ button:hover {
 
   border-color: #93c5fd;
 
-  transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px
+    rgba(
+      37,
+      99,
+      235,
+      0.12
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+
+
+
+
+/* =========================================================
+   PALLET HEAD ROW
+
+   LEFT  = Click to expand
+   RIGHT = Edit + Expand Button
+========================================================= */
+
+.pallet-card-head-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    88px;
+
+  align-items: stretch;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f8fffb
+    );
+}
+
+
+/* =========================================================
+   PALLET CLICK AREA
+========================================================= */
+
+.pallet-card-head {
+  width: 100%;
+
+  min-width: 0;
+
+  padding: 16px 14px 16px 18px;
+
+  border: 0;
+
+  background: transparent;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(230px, 1fr)
+    minmax(360px, 1.5fr)
+    minmax(330px, 1fr);
+
+  align-items: center;
+
+  gap: 18px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.pallet-card-head:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        248,
+        255,
+        251,
+        0.4
+      ),
+      #ecfdf5
+    );
+}
+
+
+/* =========================================================
+   RIGHT ACTION AREA
+========================================================= */
+
+.pallet-card-actions {
+  width: 88px;
+
+  padding: 10px 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border-left:
+    1px solid #dbe5e1;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fffc 0%,
+      #f5faf8 100%
+    );
+}
+
+
+/* =========================================================
+   PALLET EXPAND BUTTON
+========================================================= */
+
+.pallet-expand-btn {
+  width: 34px;
+
+  height: 34px;
+
+  padding: 0;
+
+  border:
+    1px solid #a7e2ca;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ecfdf5,
+      #dff7ef
+    );
+
+  color: #047857;
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 8px
+    rgba(
+      4,
+      120,
+      87,
+      0.10
+    );
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.pallet-expand-btn:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #d1fae5,
+      #c9f3df
+    );
+
+  border-color: #6ee7b7;
+
+  box-shadow:
+    0 5px 12px
+    rgba(
+      4,
+      120,
+      87,
+      0.16
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+.pallet-expand-btn i {
+  pointer-events: none;
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+
+
+.pallet-expand-btn.open {
+  background:
+    linear-gradient(
+      135deg,
+      #d1fae5,
+      #bbf7d0
+    );
+
+  border-color: #6ee7b7;
+
+  color: #065f46;
+
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(
+        5,
+        150,
+        105,
+        0.08
+      );
+}
+
+
+
+/* =========================================================
+   ACTION RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .pallet-card-head-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      78px;
+  }
+
+
+  .pallet-card-actions {
+    width: 78px;
+
+    padding:
+      9px 7px;
+  }
+
+
+  .pallet-edit-btn {
+    font-size: 9px;
+  }
+
+}
+
+
+@media (max-width: 768px) {
+
+  .pallet-card-head-row {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+
+  .pallet-card-actions {
+    width: 100%;
+
+    padding:
+      8px 12px;
+
+    flex-direction: row;
+
+    justify-content: flex-end;
+
+    border-left: 0;
+
+    border-top:
+      1px solid #dbe5e1;
+  }
+
+
+  .pallet-edit-btn {
+    width: auto;
+
+    min-width: 84px;
+  }
+
+
+  .pallet-expand-btn {
+    width: 34px;
+
+    min-width: 34px;
+
+    flex:
+      0 0 34px;
+  }
+
 }

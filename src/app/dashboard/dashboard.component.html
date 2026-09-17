@@ -206,108 +206,227 @@
            PALLET HEADER
       ================================================== -->
 
-      <div class="pallet-edit-action">
+      <div class="pallet-card-head-row">
 
+        <!-- ===============================================
+             CLICK AREA
+             กดตรงไหนในข้อมูลก็ Expand / Collapse
+        ================================================ -->
+    
         <button
           type="button"
-          class="pallet-edit-btn"
-          (click)="editActualPallet(pallet)"
+          class="pallet-card-head"
+          (click)="togglePallet(pallet.id)"
         >
-          <i class="fas fa-pen"></i>
     
-          Edit Pallet
+          <!-- PALLET -->
+    
+          <div class="pallet-main">
+    
+            <div class="pallet-icon">
+              <i class="fas fa-pallet"></i>
+            </div>
+    
+    
+            <div class="pallet-main-content">
+    
+              <span class="pallet-label">
+                PALLET NO.
+              </span>
+    
+    
+              <strong>
+                {{ pallet.palletNoId }}
+              </strong>
+    
+    
+              <small class="pallet-timestamp">
+    
+                <i class="far fa-clock"></i>
+    
+                {{
+                  formatDateTime(
+                    pallet.timeStmp
+                  )
+                }}
+    
+              </small>
+    
+            </div>
+    
+          </div>
+    
+    
+          <!-- PALLET INFO -->
+    
+          <div class="pallet-info">
+    
+            <div>
+              <span>DATE</span>
+    
+              <b>
+                {{ formatDate(pallet.date) }}
+              </b>
+            </div>
+    
+    
+            <div>
+              <span>SHIFT</span>
+    
+              <b>
+                {{ pallet.shift }}
+              </b>
+            </div>
+    
+    
+            <div>
+    
+              <span>LABEL</span>
+    
+              <b
+                class="label-type"
+                [class.fg]="pallet.labelType === 'FG'"
+                [class.wip]="pallet.labelType === 'WIP'"
+              >
+                {{ pallet.labelType }}
+              </b>
+    
+            </div>
+    
+    
+            <div>
+    
+              <span>LOCATION</span>
+    
+              <b>
+                {{
+                  getLocationName(
+                    pallet.mapAreaRackId
+                  )
+                }}
+              </b>
+    
+            </div>
+    
+          </div>
+    
+    
+          <!-- COUNT -->
+    
+          <div class="pallet-counts">
+    
+            <div>
+              <span>HEADER</span>
+    
+              <b>
+                {{ pallet.totalHeader }}
+              </b>
+            </div>
+    
+    
+            <div>
+              <span>BOX</span>
+    
+              <b>
+                {{ pallet.totalBox }}
+              </b>
+            </div>
+    
+    
+            <div class="fraction">
+    
+              <span>FRACTION</span>
+    
+              <b>
+                {{ pallet.fractionBox }}
+              </b>
+    
+            </div>
+    
+    
+            <div>
+    
+              <span>QTY</span>
+    
+              <b>
+                {{ pallet.totalQty | number }}
+              </b>
+    
+            </div>
+    
+          </div>
+    
         </button>
     
-      </div>
+    
+        <!-- ===============================================
+             RIGHT ACTION
+             ไม่อยู่ใน Expand button
+        ================================================ -->
+    
+        <div class="pallet-card-actions">
+    
+          <button
+            type="button"
+            class="pallet-edit-btn"
+            (click)="editActualPallet(pallet)"
+          >
+    
+            <i class="fas fa-pen"></i>
+    
+            <span>
+              Edit
+            </span>
+    
+          </button>
+    
+    
+          <button
+              type="button"
+              class="pallet-expand-btn"
 
-      <button
-        type="button"
-        class="pallet-card-head"
-        (click)="togglePallet(pallet.id)"
-      >
-        <div class="pallet-main">
-          <div class="pallet-icon">
-            <i class="fas fa-pallet"></i>
-          </div>
+              [class.open]="
+                isPalletExpanded(
+                  pallet.id
+                )
+              "
 
-          <div class="pallet-main-content">
-            <span class="pallet-label"> PALLET NO. </span>
+              (click)="
+                togglePallet(
+                  pallet.id
+                )
+              "
 
-            <strong>
-              {{ pallet.palletNoId }}
-            </strong>
-
-            <small class="pallet-timestamp">
-              <i class="far fa-clock"></i>
-
-              {{ formatDateTime(pallet.timeStmp) }}
-            </small>
-          </div>
-        </div>
-
-        <div class="pallet-info">
-          <div>
-            <span>DATE</span>
-            <b>{{ formatDate(pallet.date) }}</b>
-          </div>
-
-          <div>
-            <span>SHIFT</span>
-            <b>{{ pallet.shift }}</b>
-          </div>
-
-          <div>
-            <span>LABEL</span>
-
-            <b
-              class="label-type"
-              [class.fg]="pallet.labelType === 'FG'"
-              [class.wip]="pallet.labelType === 'WIP'"
+              [attr.aria-label]="
+                isPalletExpanded(
+                  pallet.id
+                )
+                  ? 'Collapse Pallet'
+                  : 'Expand Pallet'
+              "
             >
-              {{ pallet.labelType }}
-            </b>
-          </div>
 
-          <div>
-            <span>LOCATION</span>
-            <b>  {{
-              getLocationName(
-                pallet.mapAreaRackId
-              )
-            }}</b>
-          </div>
+              <i
+                class="fas"
+
+                [class.fa-chevron-down]="
+                  !isPalletExpanded(
+                    pallet.id
+                  )
+                "
+
+                [class.fa-chevron-up]="
+                  isPalletExpanded(
+                    pallet.id
+                  )
+                "
+              ></i>
+
+            </button>
+    
         </div>
-
-        <div class="pallet-counts">
-          <div>
-            <span>HEADER</span>
-            <b>{{ pallet.totalHeader }}</b>
-          </div>
-
-          <div>
-            <span>BOX</span>
-            <b>{{ pallet.totalBox }}</b>
-          </div>
-
-          <div class="fraction">
-            <span>FRACTION</span>
-            <b>{{ pallet.fractionBox }}</b>
-          </div>
-
-          <div>
-            <span>QTY</span>
-            <b>{{ pallet.totalQty | number }}</b>
-          </div>
-        </div>
-
-        <div class="pallet-expand">
-          <i
-            class="fas"
-            [class.fa-chevron-down]="!isPalletExpanded(pallet.id)"
-            [class.fa-chevron-up]="isPalletExpanded(pallet.id)"
-          ></i>
-        </div>
-      </button>
+    
+      </div>
 
       <!-- =================================================
            PALLET BODY
