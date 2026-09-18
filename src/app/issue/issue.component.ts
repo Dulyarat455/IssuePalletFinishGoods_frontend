@@ -7488,6 +7488,7 @@ printActualHeaderLabel(): void {
 
 // =====================================================
 // CALL PRINT CURRENT ACTUAL HEADER API
+// AUTO RETRY 3 TIMES
 // =====================================================
 
 private callPrintActualHeaderLabel(
@@ -7495,452 +7496,845 @@ private callPrintActualHeaderLabel(
   headerId: number
 ): void {
 
+  // =====================================================
+  // CONFIG
+  // =====================================================
+
+  const MAX_RETRY = 3;
+
+  const RETRY_DELAY_MS = 1000;
+
+  const TOTAL_ATTEMPTS =
+    MAX_RETRY + 1;
+
+
   this.isPrinting =
     true;
 
 
   // =====================================================
-  // LOADING
+  // REQUEST FUNCTION
   // =====================================================
 
-  Swal.fire({
+  const requestPrint = (
+    attempt: number
+  ): void => {
 
-    title:
-      'Preparing Label...',
+    // ===================================================
+    // LOADING
+    // ===================================================
 
-    html: `
-      <div style="text-align:center">
+    Swal.fire({
 
-        <div>
-          กำลังสร้าง Label PDF
+      title:
+        attempt === 1
+          ? 'Preparing Label...'
+          : 'Retrying Label...',
+
+      html: `
+        <div style="text-align:center">
+
+          <div>
+            กำลังสร้าง Label PDF
+          </div>
+
+
+          <div
+            style="
+              margin-top:8px;
+              color:#64748b;
+              font-size:12px;
+            "
+          >
+            Pallet :
+            <b>
+              ${
+                this.actualPallet
+                  ?.palletNoId ||
+                '-'
+              }
+            </b>
+          </div>
+
+
+          <div
+            style="
+              margin-top:4px;
+              color:#64748b;
+              font-size:12px;
+            "
+          >
+            Header :
+            <b>
+              ${
+                this.actualHeader
+                  ?.itemNo ||
+                this.header
+                  ?.itemNo ||
+                '-'
+              }
+            </b>
+          </div>
+
+
+          <div
+            style="
+              margin-top:10px;
+              color:#94a3b8;
+              font-size:11px;
+            "
+          >
+            Attempt
+            <b>
+              ${attempt}
+            </b>
+            /
+            ${TOTAL_ATTEMPTS}
+          </div>
+
         </div>
+      `,
 
-        <div
-          style="
-            margin-top:8px;
-            color:#64748b;
-            font-size:12px;
-          "
-        >
-          Pallet :
-          <b>
-            ${
-              this.actualPallet
-                ?.palletNoId ||
-              '-'
-            }
-          </b>
-        </div>
+      allowOutsideClick:
+        false,
 
-        <div
-          style="
-            margin-top:4px;
-            color:#64748b;
-            font-size:12px;
-          "
-        >
-          Header :
-          <b>
-            ${
-              this.actualHeader
-                ?.itemNo ||
-              this.header
-                ?.itemNo ||
-              '-'
-            }
-          </b>
-        </div>
+      allowEscapeKey:
+        false,
 
-      </div>
-    `,
+      showConfirmButton:
+        false,
 
-    allowOutsideClick:
-      false,
+      didOpen: () => {
 
-    allowEscapeKey:
-      false,
-
-    showConfirmButton:
-      false,
-
-    didOpen: () => {
-
-      Swal.showLoading();
-
-    },
-
-  });
-
-
-  // =====================================================
-  // API
-  // =====================================================
-
-  this.http
-    .post(
-      config.apiServer +
-        '/api/issue/printLabelInPallet',
-
-      {
-
-        palletId:
-          Number(
-            palletId
-          ),
-
-        headerId:
-          Number(
-            headerId
-          ),
-
-      },
-
-      {
-        responseType:
-          'blob',
-      }
-    )
-    .subscribe({
-
-      // =================================================
-      // SUCCESS
-      // =================================================
-
-      next: (
-        blob: Blob
-      ): void => {
-
-        this.isPrinting =
-          false;
-
-
-        // ===============================================
-        // CREATE PDF URL
-        // ===============================================
-
-        const url =
-          window.URL
-            .createObjectURL(
-              blob
-            );
-
-
-        // ===============================================
-        // OPEN PDF
-        // ===============================================
-
-        window.open(
-          url,
-          '_blank'
-        );
-
-
-        // ===============================================
-        // RELEASE URL
-        // ===============================================
-
-        setTimeout(
-          () => {
-
-            window.URL
-              .revokeObjectURL(
-                url
-              );
-
-          },
-          60000
-        );
-
-
-        // ===============================================
-        // SUCCESS
-        //
-        // สำคัญ:
-        // ไม่ Reset หน้า Actual
-        // Header ที่เปิดอยู่ยังคงอยู่
-        // ===============================================
-
-        Swal.fire({
-
-          icon: 'success',
-
-          title: 'Label Ready',
-
-          html: `
-            <div style="text-align:center">
-
-              <div
-                style="
-                  color:#64748b;
-                  font-size:11px;
-                "
-              >
-                HEADER LABEL
-              </div>
-
-              <div
-                style="
-                  margin-top:5px;
-                  color:#7c3aed;
-                  font-size:21px;
-                  font-weight:950;
-                "
-              >
-                ${
-                  this.actualHeader
-                    ?.itemNo ||
-                  this.header
-                    ?.itemNo ||
-                  '-'
-                }
-              </div>
-
-              <div
-                style="
-                  margin-top:10px;
-                  color:#2563eb;
-                  font-size:12px;
-                "
-              >
-                PDF เปิดใน Tab ใหม่แล้ว
-              </div>
-
-            </div>
-          `,
-
-          confirmButtonText:
-            'OK',
-
-          confirmButtonColor:
-            '#7c3aed',
-
-        });
-
-      },
-
-
-      // =================================================
-      // ERROR
-      // =================================================
-
-      error: async (
-        err: any
-      ): Promise<void> => {
-
-        console.error(
-          'PRINT ACTUAL HEADER LABEL ERROR:',
-          {
-            palletId:
-              palletId,
-
-            headerId:
-              headerId,
-
-            error:
-              err,
-          }
-        );
-
-
-        this.isPrinting =
-          false;
-
-
-        const message =
-          await this
-            .getPrintErrorMessage(
-              err
-            );
-
-
-        Swal.fire({
-
-          icon:
-            'error',
-
-          title:
-            'Print Label Fail',
-
-          text:
-            message,
-
-        });
+        Swal.showLoading();
 
       },
 
     });
+
+
+    // ===================================================
+    // API
+    // ===================================================
+
+    this.http
+      .post(
+        config.apiServer +
+          '/api/issue/printLabelInPallet',
+
+        {
+
+          palletId:
+            Number(
+              palletId
+            ),
+
+          headerId:
+            Number(
+              headerId
+            ),
+
+        },
+
+        {
+          responseType:
+            'blob',
+        }
+      )
+      .subscribe({
+
+        // ===============================================
+        // SUCCESS
+        // ===============================================
+
+        next: (
+          blob: Blob
+        ): void => {
+
+          this.isPrinting =
+            false;
+
+
+          // =============================================
+          // CREATE PDF URL
+          // =============================================
+
+          const url =
+            window.URL
+              .createObjectURL(
+                blob
+              );
+
+
+          // =============================================
+          // OPEN PDF
+          // =============================================
+
+          window.open(
+            url,
+            '_blank'
+          );
+
+
+          // =============================================
+          // RELEASE URL
+          // =============================================
+
+          setTimeout(
+            () => {
+
+              window.URL
+                .revokeObjectURL(
+                  url
+                );
+
+            },
+            60000
+          );
+
+
+          // =============================================
+          // SUCCESS
+          // =============================================
+
+          Swal.fire({
+
+            icon:
+              'success',
+
+            title:
+              'Label Ready',
+
+            html: `
+
+              <div style="text-align:center">
+
+                <div
+                  style="
+                    color:#64748b;
+                    font-size:11px;
+                  "
+                >
+                  HEADER LABEL
+                </div>
+
+                <div
+                  style="
+                    margin-top:5px;
+                    color:#7c3aed;
+                    font-size:21px;
+                    font-weight:950;
+                  "
+                >
+                  ${
+                    this.actualHeader
+                      ?.itemNo ||
+                    this.header
+                      ?.itemNo ||
+                    '-'
+                  }
+                </div>
+
+
+                ${
+                  attempt > 1
+                    ? `
+                      <div
+                        style="
+                          margin-top:8px;
+                          color:#f59e0b;
+                          font-size:11px;
+                        "
+                      >
+                        Print สำเร็จใน Attempt ${attempt}
+                      </div>
+                    `
+                    : ''
+                }
+
+
+                <div
+                  style="
+                    margin-top:10px;
+                    color:#2563eb;
+                    font-size:12px;
+                  "
+                >
+                  PDF เปิดใน Tab ใหม่แล้ว
+                </div>
+
+              </div>
+            `,
+
+            confirmButtonText:
+              'OK',
+
+            confirmButtonColor:
+              '#7c3aed',
+
+          });
+
+        },
+
+
+        // ===============================================
+        // ERROR
+        // ===============================================
+
+        error: async (
+          err: any
+        ): Promise<void> => {
+
+          console.error(
+            `PRINT ACTUAL HEADER LABEL ERROR - ATTEMPT ${attempt}:`,
+            {
+              palletId:
+                palletId,
+
+              headerId:
+                headerId,
+
+              error:
+                err,
+            }
+          );
+
+
+          // =============================================
+          // RETRY
+          // =============================================
+
+          if (
+            attempt <=
+            MAX_RETRY
+          ) {
+
+            console.warn(
+              `Retry Print Header Label ${attempt}/${MAX_RETRY}`
+            );
+
+
+            Swal.update({
+
+              title:
+                'Print ไม่สำเร็จ กำลัง Retry...',
+
+              html: `
+                <div style="text-align:center">
+
+                  <div
+                    style="
+                      color:#ef4444;
+                      font-weight:900;
+                    "
+                  >
+                    Attempt ${attempt} Fail
+                  </div>
+
+                  <div
+                    style="
+                      margin-top:8px;
+                      color:#64748b;
+                      font-size:12px;
+                    "
+                  >
+                    กำลังลองใหม่
+                    ${attempt + 1}
+                    /
+                    ${TOTAL_ATTEMPTS}
+                  </div>
+
+                </div>
+              `,
+
+            });
+
+
+            setTimeout(
+              () => {
+
+                requestPrint(
+                  attempt + 1
+                );
+
+              },
+              RETRY_DELAY_MS
+            );
+
+
+            return;
+          }
+
+
+          // =============================================
+          // ALL RETRY FAILED
+          // =============================================
+
+          this.isPrinting =
+            false;
+
+
+          const message =
+            await this
+              .getPrintErrorMessage(
+                err
+              );
+
+
+          Swal.fire({
+
+            icon:
+              'error',
+
+            title:
+              'Print Label Fail',
+
+            html: `
+              <div style="text-align:center">
+
+                <div>
+                  ${message}
+                </div>
+
+                <div
+                  style="
+                    margin-top:10px;
+                    color:#ef4444;
+                    font-size:12px;
+                    font-weight:800;
+                  "
+                >
+                  ลอง Print แล้ว
+                  ${TOTAL_ATTEMPTS}
+                  ครั้ง
+                </div>
+
+              </div>
+            `,
+
+          });
+
+        },
+
+      });
+
+  };
+
+
+  // =====================================================
+  // FIRST ATTEMPT
+  // =====================================================
+
+  requestPrint(
+    1
+  );
+
 }
 
 
 
   // =====================================================
-  // CALL PRINT ACTUAL PALLET API
+// CALL PRINT ACTUAL PALLET API
+// AUTO RETRY 3 TIMES
+// =====================================================
+
+private callPrintActualPallet(
+  palletId: number
+): void {
+
+  // =====================================================
+  // CONFIG
   // =====================================================
 
-  private callPrintActualPallet(palletId: number): void {
-    this.isPrinting = true;
+  const MAX_RETRY = 3;
 
-    // =====================================================
+  const RETRY_DELAY_MS = 1000;
+
+  const TOTAL_ATTEMPTS =
+    MAX_RETRY + 1;
+
+
+  this.isPrinting =
+    true;
+
+
+  // =====================================================
+  // REQUEST FUNCTION
+  // =====================================================
+
+  const requestPrint = (
+    attempt: number
+  ): void => {
+
+    // ===================================================
     // LOADING
-    // =====================================================
+    // ===================================================
 
     Swal.fire({
-      title: 'Preparing Pallet Label...',
+
+      title:
+        attempt === 1
+          ? 'Preparing Pallet Label...'
+          : 'Retrying Pallet Label...',
 
       html: `
-      <div style="text-align:center">
+        <div style="text-align:center">
 
-        <div>
-          กำลังสร้าง Label PDF
+          <div>
+            กำลังสร้าง Label PDF
+          </div>
+
+          <div
+            style="
+              margin-top:7px;
+              color:#64748b;
+              font-size:12px;
+            "
+          >
+            Pallet :
+            <b>
+              ${
+                this.actualPallet
+                  ?.palletNoId ||
+                '-'
+              }
+            </b>
+          </div>
+
+
+          <div
+            style="
+              margin-top:10px;
+              font-size:11px;
+              color:#94a3b8;
+            "
+          >
+            Attempt
+            <b>
+              ${attempt}
+            </b>
+            /
+            ${TOTAL_ATTEMPTS}
+          </div>
+
         </div>
+      `,
 
-        <div
-          style="
-            margin-top:7px;
-            color:#64748b;
-            font-size:12px;
-          "
-        >
-          Pallet :
-          <b>
-            ${this.actualPallet?.palletNoId || '-'}
-          </b>
-        </div>
+      allowOutsideClick:
+        false,
 
-      </div>
-    `,
+      allowEscapeKey:
+        false,
 
-      allowOutsideClick: false,
-
-      allowEscapeKey: false,
-
-      showConfirmButton: false,
+      showConfirmButton:
+        false,
 
       didOpen: () => {
+
         Swal.showLoading();
+
       },
+
     });
 
-    // =====================================================
+
+    // ===================================================
     // API
-    // =====================================================
+    // ===================================================
 
     this.http
       .post(
-        config.apiServer + '/api/issue/printPalletLabel',
+        config.apiServer +
+          '/api/issue/printPalletLabel',
 
         {
-          palletId: Number(palletId),
+          palletId:
+            Number(
+              palletId
+            ),
         },
 
         {
-          responseType: 'blob',
+          responseType:
+            'blob',
         }
       )
       .subscribe({
-        // =================================================
+
+        // ===============================================
         // SUCCESS
-        // =================================================
+        // ===============================================
 
-        next: (blob: Blob): void => {
-          this.isPrinting = false;
+        next: (
+          blob: Blob
+        ): void => {
 
-          // ===============================================
+          this.isPrinting =
+            false;
+
+
+          // =============================================
           // CREATE PDF URL
-          // ===============================================
+          // =============================================
 
-          const url = window.URL.createObjectURL(blob);
+          const url =
+            window.URL
+              .createObjectURL(
+                blob
+              );
 
-          // ===============================================
+
+          // =============================================
           // OPEN PDF
-          // ===============================================
+          // =============================================
 
-          window.open(url, '_blank');
+          window.open(
+            url,
+            '_blank'
+          );
 
-          // ===============================================
+
+          // =============================================
           // RELEASE
-          // ===============================================
+          // =============================================
 
-          setTimeout(() => {
-            window.URL.revokeObjectURL(url);
-          }, 60000);
+          setTimeout(
+            () => {
 
-          // ===============================================
+              window.URL
+                .revokeObjectURL(
+                  url
+                );
+
+            },
+            60000
+          );
+
+
+          // =============================================
           // SUCCESS
-          //
-          // สำคัญ:
-          // Actual Mode ไม่ reset หน้า
-          // ===============================================
+          // =============================================
 
           Swal.fire({
-            icon: 'success',
 
-            title: 'Print Ready',
+            icon:
+              'success',
+
+            title:
+              'Print Ready',
 
             html: `
 
-            <div style="text-align:center">
+              <div style="text-align:center">
 
-              <div
-                style="
-                  color:#64748b;
-                  font-size:12px;
-                "
-              >
-                Pallet Label
+                <div
+                  style="
+                    color:#64748b;
+                    font-size:12px;
+                  "
+                >
+                  Pallet Label
+                </div>
+
+                <div
+                  style="
+                    margin-top:5px;
+                    font-size:23px;
+                    font-weight:950;
+                    color:#064e3b;
+                  "
+                >
+                  ${
+                    this.actualPallet
+                      ?.palletNoId ||
+                    '-'
+                  }
+                </div>
+
+                ${
+                  attempt > 1
+                    ? `
+                      <div
+                        style="
+                          margin-top:8px;
+                          color:#f59e0b;
+                          font-size:11px;
+                        "
+                      >
+                        Print สำเร็จใน Attempt ${attempt}
+                      </div>
+                    `
+                    : ''
+                }
+
+                <div
+                  style="
+                    margin-top:12px;
+                    color:#2563eb;
+                    font-size:12px;
+                  "
+                >
+                  PDF เปิดใน Tab ใหม่แล้ว
+                </div>
+
               </div>
+            `,
 
-              <div
-                style="
-                  margin-top:5px;
-                  font-size:23px;
-                  font-weight:950;
-                  color:#064e3b;
-                "
-              >
-                ${this.actualPallet?.palletNoId || '-'}
-              </div>
+            confirmButtonText:
+              'OK',
 
-              <div
-                style="
-                  margin-top:12px;
-                  color:#2563eb;
-                  font-size:12px;
-                "
-              >
-                PDF เปิดใน Tab ใหม่แล้ว
-              </div>
+            confirmButtonColor:
+              '#10b981',
 
-            </div>
-          `,
-
-            confirmButtonText: 'OK',
-
-            confirmButtonColor: '#10b981',
           });
+
         },
 
-        // =================================================
+
+        // ===============================================
         // ERROR
-        // =================================================
+        // ===============================================
 
-        error: async (err: any): Promise<void> => {
-          console.error('PRINT ACTUAL PALLET ERROR:', err);
+        error: async (
+          err: any
+        ): Promise<void> => {
 
-          this.isPrinting = false;
+          console.error(
+            `PRINT ACTUAL PALLET ERROR - ATTEMPT ${attempt}:`,
+            err
+          );
 
-          const message = await this.getPrintErrorMessage(err);
+
+          // =============================================
+          // RETRY
+          // =============================================
+
+          if (
+            attempt <=
+            MAX_RETRY
+          ) {
+
+            console.warn(
+              `Retry Print Pallet ${attempt}/${MAX_RETRY}`
+            );
+
+
+            Swal.update({
+
+              title:
+                'Print ไม่สำเร็จ กำลัง Retry...',
+
+              html: `
+                <div style="text-align:center">
+
+                  <div
+                    style="
+                      color:#ef4444;
+                      font-weight:900;
+                    "
+                  >
+                    Attempt ${attempt} Fail
+                  </div>
+
+                  <div
+                    style="
+                      margin-top:8px;
+                      color:#64748b;
+                      font-size:12px;
+                    "
+                  >
+                    กำลังลองใหม่
+                    ${attempt + 1}
+                    /
+                    ${TOTAL_ATTEMPTS}
+                  </div>
+
+                </div>
+              `,
+
+            });
+
+
+            setTimeout(
+              () => {
+
+                requestPrint(
+                  attempt + 1
+                );
+
+              },
+              RETRY_DELAY_MS
+            );
+
+
+            return;
+          }
+
+
+          // =============================================
+          // ALL RETRY FAILED
+          // =============================================
+
+          this.isPrinting =
+            false;
+
+
+          const message =
+            await this
+              .getPrintErrorMessage(
+                err
+              );
+
 
           Swal.fire({
-            icon: 'error',
 
-            title: 'Print Pallet Label Fail',
+            icon:
+              'error',
 
-            text: message,
+            title:
+              'Print Pallet Label Fail',
+
+            html: `
+              <div style="text-align:center">
+
+                <div>
+                  ${message}
+                </div>
+
+                <div
+                  style="
+                    margin-top:10px;
+                    color:#ef4444;
+                    font-size:12px;
+                    font-weight:800;
+                  "
+                >
+                  ลอง Print แล้ว
+                  ${TOTAL_ATTEMPTS}
+                  ครั้ง
+                </div>
+
+              </div>
+            `,
+
           });
+
         },
+
       });
-  }
+
+  };
+
+
+  // =====================================================
+  // FIRST ATTEMPT
+  // =====================================================
+
+  requestPrint(
+    1
+  );
+
+}
 
   resetAfterIssuePallet(): void {
     // =====================================================
