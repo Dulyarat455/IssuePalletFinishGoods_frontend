@@ -3512,6 +3512,117 @@ td small {
   cursor: pointer;
 }
 
+
+
+/* =========================================================
+   HEADER LIST - PRINT ACTUAL PALLET
+========================================================= */
+
+.header-list-print-pallet-btn {
+  min-height: 44px;
+
+  padding:
+    0 16px;
+
+  border:
+    1px solid #bfdbfe;
+
+  border-radius:
+    14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eff6ff,
+      #dbeafe
+    );
+
+  color:
+    #1d4ed8;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    8px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    12px;
+
+  font-weight:
+    950;
+
+  white-space:
+    nowrap;
+
+  cursor:
+    pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.header-list-print-pallet-btn i {
+  font-size:
+    12px;
+}
+
+
+.header-list-print-pallet-btn:hover:not(:disabled) {
+
+  background:
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #bfdbfe
+    );
+
+  border-color:
+    #93c5fd;
+
+  box-shadow:
+    0 5px 12px
+    rgba(
+      37,
+      99,
+      235,
+      0.14
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+.header-list-print-pallet-btn:disabled {
+  opacity:
+    0.55;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none;
+
+  box-shadow:
+    none;
+}
+
+
+
 /* ========================
    PALLET INFO
 ======================== */
@@ -3854,8 +3965,15 @@ td small {
 
   .header-list-head-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
 
+  .header-list-count {
+    flex:
+      0 0 80px;
+  }
+
+  .header-list-print-pallet-btn,
   .header-list-create-btn {
     flex: 1;
   }

@@ -7148,6 +7148,413 @@ export class IssueComponent implements OnInit, AfterViewInit {
       });
   }
 
+
+
+// =====================================================
+// PRINT ACTUAL PALLET
+// =====================================================
+
+printActualPallet(): void {
+
+  // =====================================================
+  // ONLY ACTUAL MODE
+  // =====================================================
+
+  if (
+    this.issueMode !==
+    'ACTUAL'
+  ) {
+    return;
+  }
+
+
+  // =====================================================
+  // GET PALLET ID
+  // =====================================================
+
+  const palletId =
+    Number(
+      this.actualPallet?.id ||
+      this.actualPalletId ||
+      0
+    );
+
+
+  // =====================================================
+  // VALIDATE
+  // =====================================================
+
+  if (
+    !Number.isInteger(
+      palletId
+    ) ||
+    palletId <= 0
+  ) {
+
+    Swal.fire({
+      icon: 'warning',
+
+      title:
+        'ไม่พบ Pallet ID',
+
+      text:
+        'ไม่สามารถ Print Pallet Label ได้',
+    });
+
+    return;
+  }
+
+
+  if (
+    this.isPrinting
+  ) {
+    return;
+  }
+
+
+  // =====================================================
+  // CONFIRM
+  // =====================================================
+
+  Swal.fire({
+
+    icon: 'question',
+
+    title:
+      'Print Pallet Label ?',
+
+    html: `
+      <div style="text-align:center">
+
+        <div
+          style="
+            font-size:12px;
+            color:#64748b;
+          "
+        >
+          PALLET NO.
+        </div>
+
+        <div
+          style="
+            margin-top:5px;
+            font-size:24px;
+            font-weight:950;
+            color:#0f172a;
+          "
+        >
+          ${
+            this.actualPallet
+              ?.palletNoId ||
+            '-'
+          }
+        </div>
+
+        <div
+          style="
+            margin-top:12px;
+            color:#64748b;
+            font-size:12px;
+          "
+        >
+          ระบบจะสร้าง Label PDF
+          ของ Pallet นี้ใหม่ทั้งหมด
+        </div>
+
+      </div>
+    `,
+
+    showCancelButton: true,
+
+    confirmButtonText:
+      'Print',
+
+    cancelButtonText:
+      'Cancel',
+
+    confirmButtonColor:
+      '#2563eb',
+
+    cancelButtonColor:
+      '#64748b',
+
+  }).then(
+    (
+      result
+    ) => {
+
+      if (
+        !result.isConfirmed
+      ) {
+        return;
+      }
+
+
+      this.callPrintActualPallet(
+        palletId
+      );
+
+    }
+  );
+}
+
+
+
+// =====================================================
+// CALL PRINT ACTUAL PALLET API
+// =====================================================
+
+private callPrintActualPallet(
+  palletId: number
+): void {
+
+  this.isPrinting =
+    true;
+
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  Swal.fire({
+
+    title:
+      'Preparing Pallet Label...',
+
+    html: `
+      <div style="text-align:center">
+
+        <div>
+          กำลังสร้าง Label PDF
+        </div>
+
+        <div
+          style="
+            margin-top:7px;
+            color:#64748b;
+            font-size:12px;
+          "
+        >
+          Pallet :
+          <b>
+            ${
+              this.actualPallet
+                ?.palletNoId ||
+              '-'
+            }
+          </b>
+        </div>
+
+      </div>
+    `,
+
+    allowOutsideClick:
+      false,
+
+    allowEscapeKey:
+      false,
+
+    showConfirmButton:
+      false,
+
+    didOpen: () => {
+
+      Swal.showLoading();
+
+    },
+
+  });
+
+
+  // =====================================================
+  // API
+  // =====================================================
+
+  this.http
+    .post(
+      config.apiServer +
+        '/api/issue/printPalletLabel',
+
+      {
+        palletId:
+          Number(
+            palletId
+          ),
+      },
+
+      {
+        responseType:
+          'blob',
+      }
+    )
+    .subscribe({
+
+      // =================================================
+      // SUCCESS
+      // =================================================
+
+      next: (
+        blob: Blob
+      ): void => {
+
+        this.isPrinting =
+          false;
+
+
+        // ===============================================
+        // CREATE PDF URL
+        // ===============================================
+
+        const url =
+          window.URL
+            .createObjectURL(
+              blob
+            );
+
+
+        // ===============================================
+        // OPEN PDF
+        // ===============================================
+
+        window.open(
+          url,
+          '_blank'
+        );
+
+
+        // ===============================================
+        // RELEASE
+        // ===============================================
+
+        setTimeout(
+          () => {
+
+            window.URL
+              .revokeObjectURL(
+                url
+              );
+
+          },
+          60000
+        );
+
+
+        // ===============================================
+        // SUCCESS
+        //
+        // สำคัญ:
+        // Actual Mode ไม่ reset หน้า
+        // ===============================================
+
+        Swal.fire({
+
+          icon:
+            'success',
+
+          title:
+            'Print Ready',
+
+          html: `
+
+            <div style="text-align:center">
+
+              <div
+                style="
+                  color:#64748b;
+                  font-size:12px;
+                "
+              >
+                Pallet Label
+              </div>
+
+              <div
+                style="
+                  margin-top:5px;
+                  font-size:23px;
+                  font-weight:950;
+                  color:#064e3b;
+                "
+              >
+                ${
+                  this.actualPallet
+                    ?.palletNoId ||
+                  '-'
+                }
+              </div>
+
+              <div
+                style="
+                  margin-top:12px;
+                  color:#2563eb;
+                  font-size:12px;
+                "
+              >
+                PDF เปิดใน Tab ใหม่แล้ว
+              </div>
+
+            </div>
+          `,
+
+          confirmButtonText:
+            'OK',
+
+          confirmButtonColor:
+            '#10b981',
+
+        });
+
+      },
+
+
+      // =================================================
+      // ERROR
+      // =================================================
+
+      error: async (
+        err: any
+      ): Promise<void> => {
+
+        console.error(
+          'PRINT ACTUAL PALLET ERROR:',
+          err
+        );
+
+
+        this.isPrinting =
+          false;
+
+
+        const message =
+          await this
+            .getPrintErrorMessage(
+              err
+            );
+
+
+        Swal.fire({
+
+          icon:
+            'error',
+
+          title:
+            'Print Pallet Label Fail',
+
+          text:
+            message,
+
+        });
+
+      },
+
+    });
+}
+
+
+
+
+
+
+
   resetAfterIssuePallet(): void {
     // =====================================================
     // PALLET

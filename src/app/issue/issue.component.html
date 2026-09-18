@@ -551,9 +551,15 @@
       ================================================== -->
 
       <div class="header-list-head-actions">
-        <div class="header-list-count">
-          <span> HEADERS </span>
 
+        <!-- HEADER COUNT -->
+      
+        <div class="header-list-count">
+      
+          <span>
+            HEADERS
+          </span>
+      
           <b>
             {{
               issueMode === "ACTUAL"
@@ -561,17 +567,73 @@
                 : currentPalletHeaders.length
             }}
           </b>
+      
         </div>
-
+      
+      
+        <!-- =============================================
+             ACTUAL : PRINT PALLET
+        ============================================== -->
+      
+        <button
+          type="button"
+          class="header-list-print-pallet-btn"
+      
+          *ngIf="
+            issueMode === 'ACTUAL' &&
+            actualPallet
+          "
+      
+          [disabled]="
+            isPrinting
+          "
+      
+          (click)="
+            printActualPallet()
+          "
+        >
+      
+          <i
+            class="fas"
+            [class.fa-print]="
+              !isPrinting
+            "
+            [class.fa-spinner]="
+              isPrinting
+            "
+            [class.fa-spin]="
+              isPrinting
+            "
+          ></i>
+      
+      
+          <span>
+            {{
+              isPrinting
+                ? "Printing..."
+                : "Print Pallet"
+            }}
+          </span>
+      
+        </button>
+      
+      
+        <!-- NEW HEADER -->
+      
         <button
           type="button"
           class="header-list-create-btn"
-          (click)="onCreateNewHeaderByMode()"
+          (click)="
+            onCreateNewHeaderByMode()
+          "
         >
+      
           <i class="fas fa-plus"></i>
-
+      
           New Header
+      
         </button>
+      
       </div>
     </div>
 
