@@ -6833,7 +6833,101 @@ td small {
 }
 
 
+/* =========================================================
+   NEXT ACTION - ACTUAL MODE
+   3 ACTIONS
+========================================================= */
 
+.next-action-buttons.actual-mode {
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+}
+
+
+
+
+
+/* =========================================================
+   PRINT CURRENT HEADER LABEL
+========================================================= */
+
+.next-action-btn.print-header {
+  border:
+    1px solid #ddd6fe;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f5f3ff,
+      #ffffff
+    );
+
+  color:
+    #6d28d9;
+}
+
+
+.next-action-btn.print-header:hover:not(:disabled) {
+  border-color:
+    #c4b5fd;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ede9fe,
+      #ffffff
+    );
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 22px
+    rgba(
+      124,
+      58,
+      237,
+      0.13
+    );
+}
+
+
+.next-action-btn.print-header
+.next-action-btn-icon {
+  background:
+    #ede9fe;
+
+  color:
+    #7c3aed;
+}
+
+
+.next-action-btn.print-header
+.next-action-btn-arrow {
+  background:
+    #ede9fe;
+
+  color:
+    #7c3aed;
+}
+
+
+.next-action-btn.print-header:disabled {
+  opacity:
+    0.55;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none;
+
+  box-shadow:
+    none;
+}
   
 
 
