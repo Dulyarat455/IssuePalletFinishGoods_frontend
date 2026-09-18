@@ -7251,113 +7251,77 @@ export class IssueComponent implements OnInit, AfterViewInit {
     });
   }
 
-
   // =====================================================
-// PRINT CURRENT ACTUAL HEADER LABEL
-// =====================================================
-
-printActualHeaderLabel(): void {
-
-  // =====================================================
-  // ONLY ACTUAL MODE
+  // PRINT CURRENT ACTUAL HEADER LABEL
   // =====================================================
 
-  if (
-    this.issueMode !==
-    'ACTUAL'
-  ) {
-    return;
-  }
+  printActualHeaderLabel(): void {
+    // =====================================================
+    // ONLY ACTUAL MODE
+    // =====================================================
 
+    if (this.issueMode !== 'ACTUAL') {
+      return;
+    }
 
-  // =====================================================
-  // PALLET ID
-  // =====================================================
+    // =====================================================
+    // PALLET ID
+    // =====================================================
 
-  const palletId =
-    Number(
-      this.actualPallet?.id ||
-      this.actualPalletId ||
-      0
-    );
+    const palletId = Number(this.actualPallet?.id || this.actualPalletId || 0);
 
+    // =====================================================
+    // HEADER ID
+    // =====================================================
 
-  // =====================================================
-  // HEADER ID
-  // =====================================================
+    const headerId = Number(this.actualHeader?.id || this.header?.id || 0);
 
-  const headerId =
-    Number(
-      this.actualHeader?.id ||
-      this.header?.id ||
-      0
-    );
+    // =====================================================
+    // VALIDATE PALLET
+    // =====================================================
 
+    if (!Number.isInteger(palletId) || palletId <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Pallet ID',
+        text: 'ไม่สามารถ Print Label ได้',
+      });
 
-  // =====================================================
-  // VALIDATE PALLET
-  // =====================================================
+      return;
+    }
 
-  if (
-    !Number.isInteger(
-      palletId
-    ) ||
-    palletId <= 0
-  ) {
+    // =====================================================
+    // VALIDATE HEADER
+    // =====================================================
+
+    if (!Number.isInteger(headerId) || headerId <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Header ID',
+        text: 'กรุณาเลือก Header ก่อน Print Label',
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // PREVENT DOUBLE PRINT
+    // =====================================================
+
+    if (this.isPrinting) {
+      return;
+    }
+
+    // =====================================================
+    // CONFIRM
+    // =====================================================
 
     Swal.fire({
-      icon: 'warning',
-      title: 'ไม่พบ Pallet ID',
-      text: 'ไม่สามารถ Print Label ได้',
-    });
+      icon: 'question',
 
-    return;
-  }
+      title: 'Print This Label ?',
 
-
-  // =====================================================
-  // VALIDATE HEADER
-  // =====================================================
-
-  if (
-    !Number.isInteger(
-      headerId
-    ) ||
-    headerId <= 0
-  ) {
-
-    Swal.fire({
-      icon: 'warning',
-      title: 'ไม่พบ Header ID',
-      text: 'กรุณาเลือก Header ก่อน Print Label',
-    });
-
-    return;
-  }
-
-
-  // =====================================================
-  // PREVENT DOUBLE PRINT
-  // =====================================================
-
-  if (
-    this.isPrinting
-  ) {
-    return;
-  }
-
-
-  // =====================================================
-  // CONFIRM
-  // =====================================================
-
-  Swal.fire({
-
-    icon: 'question',
-
-    title: 'Print This Label ?',
-
-    html: `
+      html: `
       <div style="text-align:center">
 
         <div
@@ -7378,11 +7342,7 @@ printActualHeaderLabel(): void {
             color:#0f172a;
           "
         >
-          ${
-            this.actualPallet
-              ?.palletNoId ||
-            '-'
-          }
+          ${this.actualPallet?.palletNoId || '-'}
         </div>
 
 
@@ -7413,13 +7373,7 @@ printActualHeaderLabel(): void {
               color:#1d4ed8;
             "
           >
-            ${
-              this.actualHeader
-                ?.itemNo ||
-              this.header
-                ?.itemNo ||
-              '-'
-            }
+            ${this.actualHeader?.itemNo || this.header?.itemNo || '-'}
           </div>
 
           <div
@@ -7429,13 +7383,7 @@ printActualHeaderLabel(): void {
               color:#64748b;
             "
           >
-            ${
-              this.actualHeader
-                ?.itemName ||
-              this.header
-                ?.itemName ||
-              ''
-            }
+            ${this.actualHeader?.itemName || this.header?.itemName || ''}
           </div>
 
         </div>
@@ -7454,84 +7402,55 @@ printActualHeaderLabel(): void {
       </div>
     `,
 
-    showCancelButton: true,
+      showCancelButton: true,
 
-    confirmButtonText: 'Print Label',
+      confirmButtonText: 'Print Label',
 
-    cancelButtonText: 'Cancel',
+      cancelButtonText: 'Cancel',
 
-    confirmButtonColor: '#7c3aed',
+      confirmButtonColor: '#7c3aed',
 
-    cancelButtonColor: '#64748b',
-
-  }).then(
-    (
-      result
-    ) => {
-
-      if (
-        !result.isConfirmed
-      ) {
+      cancelButtonColor: '#64748b',
+    }).then((result) => {
+      if (!result.isConfirmed) {
         return;
       }
 
-
-      this.callPrintActualHeaderLabel(
-        palletId,
-        headerId
-      );
-
-    }
-  );
-}
-
-
-// =====================================================
-// CALL PRINT CURRENT ACTUAL HEADER API
-// AUTO RETRY 3 TIMES
-// =====================================================
-
-private callPrintActualHeaderLabel(
-  palletId: number,
-  headerId: number
-): void {
+      this.callPrintActualHeaderLabel(palletId, headerId);
+    });
+  }
 
   // =====================================================
-  // CONFIG
+  // CALL PRINT CURRENT ACTUAL HEADER API
+  // AUTO RETRY 3 TIMES
   // =====================================================
 
-  const MAX_RETRY = 3;
+  private callPrintActualHeaderLabel(palletId: number, headerId: number): void {
+    // =====================================================
+    // CONFIG
+    // =====================================================
 
-  const RETRY_DELAY_MS = 1000;
+    const MAX_RETRY = 3;
 
-  const TOTAL_ATTEMPTS =
-    MAX_RETRY + 1;
+    const RETRY_DELAY_MS = 1000;
 
+    const TOTAL_ATTEMPTS = MAX_RETRY + 1;
 
-  this.isPrinting =
-    true;
+    this.isPrinting = true;
 
+    // =====================================================
+    // REQUEST FUNCTION
+    // =====================================================
 
-  // =====================================================
-  // REQUEST FUNCTION
-  // =====================================================
+    const requestPrint = (attempt: number): void => {
+      // ===================================================
+      // LOADING
+      // ===================================================
 
-  const requestPrint = (
-    attempt: number
-  ): void => {
+      Swal.fire({
+        title: attempt === 1 ? 'Preparing Label...' : 'Retrying Label...',
 
-    // ===================================================
-    // LOADING
-    // ===================================================
-
-    Swal.fire({
-
-      title:
-        attempt === 1
-          ? 'Preparing Label...'
-          : 'Retrying Label...',
-
-      html: `
+        html: `
         <div style="text-align:center">
 
           <div>
@@ -7548,11 +7467,7 @@ private callPrintActualHeaderLabel(
           >
             Pallet :
             <b>
-              ${
-                this.actualPallet
-                  ?.palletNoId ||
-                '-'
-              }
+              ${this.actualPallet?.palletNoId || '-'}
             </b>
           </div>
 
@@ -7566,13 +7481,7 @@ private callPrintActualHeaderLabel(
           >
             Header :
             <b>
-              ${
-                this.actualHeader
-                  ?.itemNo ||
-                this.header
-                  ?.itemNo ||
-                '-'
-              }
+              ${this.actualHeader?.itemNo || this.header?.itemNo || '-'}
             </b>
           </div>
 
@@ -7595,117 +7504,73 @@ private callPrintActualHeaderLabel(
         </div>
       `,
 
-      allowOutsideClick:
-        false,
+        allowOutsideClick: false,
 
-      allowEscapeKey:
-        false,
+        allowEscapeKey: false,
 
-      showConfirmButton:
-        false,
+        showConfirmButton: false,
 
-      didOpen: () => {
-
-        Swal.showLoading();
-
-      },
-
-    });
-
-
-    // ===================================================
-    // API
-    // ===================================================
-
-    this.http
-      .post(
-        config.apiServer +
-          '/api/issue/printLabelInPallet',
-
-        {
-
-          palletId:
-            Number(
-              palletId
-            ),
-
-          headerId:
-            Number(
-              headerId
-            ),
-
+        didOpen: () => {
+          Swal.showLoading();
         },
+      });
 
-        {
-          responseType:
-            'blob',
-        }
-      )
-      .subscribe({
+      // ===================================================
+      // API
+      // ===================================================
 
-        // ===============================================
-        // SUCCESS
-        // ===============================================
+      this.http
+        .post(
+          config.apiServer + '/api/issue/printLabelInPallet',
 
-        next: (
-          blob: Blob
-        ): void => {
+          {
+            palletId: Number(palletId),
 
-          this.isPrinting =
-            false;
+            headerId: Number(headerId),
+          },
 
-
-          // =============================================
-          // CREATE PDF URL
-          // =============================================
-
-          const url =
-            window.URL
-              .createObjectURL(
-                blob
-              );
-
-
-          // =============================================
-          // OPEN PDF
-          // =============================================
-
-          window.open(
-            url,
-            '_blank'
-          );
-
-
-          // =============================================
-          // RELEASE URL
-          // =============================================
-
-          setTimeout(
-            () => {
-
-              window.URL
-                .revokeObjectURL(
-                  url
-                );
-
-            },
-            60000
-          );
-
-
-          // =============================================
+          {
+            responseType: 'blob',
+          }
+        )
+        .subscribe({
+          // ===============================================
           // SUCCESS
-          // =============================================
+          // ===============================================
 
-          Swal.fire({
+          next: (blob: Blob): void => {
+            this.isPrinting = false;
 
-            icon:
-              'success',
+            // =============================================
+            // CREATE PDF URL
+            // =============================================
 
-            title:
-              'Label Ready',
+            const url = window.URL.createObjectURL(blob);
 
-            html: `
+            // =============================================
+            // OPEN PDF
+            // =============================================
+
+            window.open(url, '_blank');
+
+            // =============================================
+            // RELEASE URL
+            // =============================================
+
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url);
+            }, 60000);
+
+            // =============================================
+            // SUCCESS
+            // =============================================
+
+            Swal.fire({
+              icon: 'success',
+
+              title: 'Label Ready',
+
+              html: `
 
               <div style="text-align:center">
 
@@ -7726,13 +7591,7 @@ private callPrintActualHeaderLabel(
                     font-weight:950;
                   "
                 >
-                  ${
-                    this.actualHeader
-                      ?.itemNo ||
-                    this.header
-                      ?.itemNo ||
-                    '-'
-                  }
+                  ${this.actualHeader?.itemNo || this.header?.itemNo || '-'}
                 </div>
 
 
@@ -7766,60 +7625,39 @@ private callPrintActualHeaderLabel(
               </div>
             `,
 
-            confirmButtonText:
-              'OK',
+              confirmButtonText: 'OK',
 
-            confirmButtonColor:
-              '#7c3aed',
+              confirmButtonColor: '#7c3aed',
+            });
+          },
 
-          });
+          // ===============================================
+          // ERROR
+          // ===============================================
 
-        },
+          error: async (err: any): Promise<void> => {
+            console.error(
+              `PRINT ACTUAL HEADER LABEL ERROR - ATTEMPT ${attempt}:`,
+              {
+                palletId: palletId,
 
+                headerId: headerId,
 
-        // ===============================================
-        // ERROR
-        // ===============================================
-
-        error: async (
-          err: any
-        ): Promise<void> => {
-
-          console.error(
-            `PRINT ACTUAL HEADER LABEL ERROR - ATTEMPT ${attempt}:`,
-            {
-              palletId:
-                palletId,
-
-              headerId:
-                headerId,
-
-              error:
-                err,
-            }
-          );
-
-
-          // =============================================
-          // RETRY
-          // =============================================
-
-          if (
-            attempt <=
-            MAX_RETRY
-          ) {
-
-            console.warn(
-              `Retry Print Header Label ${attempt}/${MAX_RETRY}`
+                error: err,
+              }
             );
 
+            // =============================================
+            // RETRY
+            // =============================================
 
-            Swal.update({
+            if (attempt <= MAX_RETRY) {
+              console.warn(`Retry Print Header Label ${attempt}/${MAX_RETRY}`);
 
-              title:
-                'Print ไม่สำเร็จ กำลัง Retry...',
+              Swal.update({
+                title: 'Print ไม่สำเร็จ กำลัง Retry...',
 
-              html: `
+                html: `
                 <div style="text-align:center">
 
                   <div
@@ -7846,50 +7684,29 @@ private callPrintActualHeaderLabel(
 
                 </div>
               `,
+              });
 
-            });
+              setTimeout(() => {
+                requestPrint(attempt + 1);
+              }, RETRY_DELAY_MS);
 
+              return;
+            }
 
-            setTimeout(
-              () => {
+            // =============================================
+            // ALL RETRY FAILED
+            // =============================================
 
-                requestPrint(
-                  attempt + 1
-                );
+            this.isPrinting = false;
 
-              },
-              RETRY_DELAY_MS
-            );
+            const message = await this.getPrintErrorMessage(err);
 
+            Swal.fire({
+              icon: 'error',
 
-            return;
-          }
+              title: 'Print Label Fail',
 
-
-          // =============================================
-          // ALL RETRY FAILED
-          // =============================================
-
-          this.isPrinting =
-            false;
-
-
-          const message =
-            await this
-              .getPrintErrorMessage(
-                err
-              );
-
-
-          Swal.fire({
-
-            icon:
-              'error',
-
-            title:
-              'Print Label Fail',
-
-            html: `
+              html: `
               <div style="text-align:center">
 
                 <div>
@@ -7911,73 +7728,52 @@ private callPrintActualHeaderLabel(
 
               </div>
             `,
+            });
+          },
+        });
+    };
 
-          });
+    // =====================================================
+    // FIRST ATTEMPT
+    // =====================================================
 
-        },
-
-      });
-
-  };
-
-
-  // =====================================================
-  // FIRST ATTEMPT
-  // =====================================================
-
-  requestPrint(
-    1
-  );
-
-}
-
-
+    requestPrint(1);
+  }
 
   // =====================================================
-// CALL PRINT ACTUAL PALLET API
-// AUTO RETRY 3 TIMES
-// =====================================================
-
-private callPrintActualPallet(
-  palletId: number
-): void {
-
-  // =====================================================
-  // CONFIG
+  // CALL PRINT ACTUAL PALLET API
+  // AUTO RETRY 3 TIMES
   // =====================================================
 
-  const MAX_RETRY = 3;
+  private callPrintActualPallet(palletId: number): void {
+    // =====================================================
+    // CONFIG
+    // =====================================================
 
-  const RETRY_DELAY_MS = 1000;
+    const MAX_RETRY = 3;
 
-  const TOTAL_ATTEMPTS =
-    MAX_RETRY + 1;
+    const RETRY_DELAY_MS = 1000;
 
+    const TOTAL_ATTEMPTS = MAX_RETRY + 1;
 
-  this.isPrinting =
-    true;
+    this.isPrinting = true;
 
+    // =====================================================
+    // REQUEST FUNCTION
+    // =====================================================
 
-  // =====================================================
-  // REQUEST FUNCTION
-  // =====================================================
+    const requestPrint = (attempt: number): void => {
+      // ===================================================
+      // LOADING
+      // ===================================================
 
-  const requestPrint = (
-    attempt: number
-  ): void => {
+      Swal.fire({
+        title:
+          attempt === 1
+            ? 'Preparing Pallet Label...'
+            : 'Retrying Pallet Label...',
 
-    // ===================================================
-    // LOADING
-    // ===================================================
-
-    Swal.fire({
-
-      title:
-        attempt === 1
-          ? 'Preparing Pallet Label...'
-          : 'Retrying Pallet Label...',
-
-      html: `
+        html: `
         <div style="text-align:center">
 
           <div>
@@ -7993,11 +7789,7 @@ private callPrintActualPallet(
           >
             Pallet :
             <b>
-              ${
-                this.actualPallet
-                  ?.palletNoId ||
-                '-'
-              }
+              ${this.actualPallet?.palletNoId || '-'}
             </b>
           </div>
 
@@ -8020,110 +7812,71 @@ private callPrintActualPallet(
         </div>
       `,
 
-      allowOutsideClick:
-        false,
+        allowOutsideClick: false,
 
-      allowEscapeKey:
-        false,
+        allowEscapeKey: false,
 
-      showConfirmButton:
-        false,
+        showConfirmButton: false,
 
-      didOpen: () => {
-
-        Swal.showLoading();
-
-      },
-
-    });
-
-
-    // ===================================================
-    // API
-    // ===================================================
-
-    this.http
-      .post(
-        config.apiServer +
-          '/api/issue/printPalletLabel',
-
-        {
-          palletId:
-            Number(
-              palletId
-            ),
+        didOpen: () => {
+          Swal.showLoading();
         },
+      });
 
-        {
-          responseType:
-            'blob',
-        }
-      )
-      .subscribe({
+      // ===================================================
+      // API
+      // ===================================================
 
-        // ===============================================
-        // SUCCESS
-        // ===============================================
+      this.http
+        .post(
+          config.apiServer + '/api/issue/printPalletLabel',
 
-        next: (
-          blob: Blob
-        ): void => {
+          {
+            palletId: Number(palletId),
+          },
 
-          this.isPrinting =
-            false;
-
-
-          // =============================================
-          // CREATE PDF URL
-          // =============================================
-
-          const url =
-            window.URL
-              .createObjectURL(
-                blob
-              );
-
-
-          // =============================================
-          // OPEN PDF
-          // =============================================
-
-          window.open(
-            url,
-            '_blank'
-          );
-
-
-          // =============================================
-          // RELEASE
-          // =============================================
-
-          setTimeout(
-            () => {
-
-              window.URL
-                .revokeObjectURL(
-                  url
-                );
-
-            },
-            60000
-          );
-
-
-          // =============================================
+          {
+            responseType: 'blob',
+          }
+        )
+        .subscribe({
+          // ===============================================
           // SUCCESS
-          // =============================================
+          // ===============================================
 
-          Swal.fire({
+          next: (blob: Blob): void => {
+            this.isPrinting = false;
 
-            icon:
-              'success',
+            // =============================================
+            // CREATE PDF URL
+            // =============================================
 
-            title:
-              'Print Ready',
+            const url = window.URL.createObjectURL(blob);
 
-            html: `
+            // =============================================
+            // OPEN PDF
+            // =============================================
+
+            window.open(url, '_blank');
+
+            // =============================================
+            // RELEASE
+            // =============================================
+
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url);
+            }, 60000);
+
+            // =============================================
+            // SUCCESS
+            // =============================================
+
+            Swal.fire({
+              icon: 'success',
+
+              title: 'Print Ready',
+
+              html: `
 
               <div style="text-align:center">
 
@@ -8144,11 +7897,7 @@ private callPrintActualPallet(
                     color:#064e3b;
                   "
                 >
-                  ${
-                    this.actualPallet
-                      ?.palletNoId ||
-                    '-'
-                  }
+                  ${this.actualPallet?.palletNoId || '-'}
                 </div>
 
                 ${
@@ -8180,51 +7929,33 @@ private callPrintActualPallet(
               </div>
             `,
 
-            confirmButtonText:
-              'OK',
+              confirmButtonText: 'OK',
 
-            confirmButtonColor:
-              '#10b981',
+              confirmButtonColor: '#10b981',
+            });
+          },
 
-          });
+          // ===============================================
+          // ERROR
+          // ===============================================
 
-        },
-
-
-        // ===============================================
-        // ERROR
-        // ===============================================
-
-        error: async (
-          err: any
-        ): Promise<void> => {
-
-          console.error(
-            `PRINT ACTUAL PALLET ERROR - ATTEMPT ${attempt}:`,
-            err
-          );
-
-
-          // =============================================
-          // RETRY
-          // =============================================
-
-          if (
-            attempt <=
-            MAX_RETRY
-          ) {
-
-            console.warn(
-              `Retry Print Pallet ${attempt}/${MAX_RETRY}`
+          error: async (err: any): Promise<void> => {
+            console.error(
+              `PRINT ACTUAL PALLET ERROR - ATTEMPT ${attempt}:`,
+              err
             );
 
+            // =============================================
+            // RETRY
+            // =============================================
 
-            Swal.update({
+            if (attempt <= MAX_RETRY) {
+              console.warn(`Retry Print Pallet ${attempt}/${MAX_RETRY}`);
 
-              title:
-                'Print ไม่สำเร็จ กำลัง Retry...',
+              Swal.update({
+                title: 'Print ไม่สำเร็จ กำลัง Retry...',
 
-              html: `
+                html: `
                 <div style="text-align:center">
 
                   <div
@@ -8251,50 +7982,29 @@ private callPrintActualPallet(
 
                 </div>
               `,
+              });
 
-            });
+              setTimeout(() => {
+                requestPrint(attempt + 1);
+              }, RETRY_DELAY_MS);
 
+              return;
+            }
 
-            setTimeout(
-              () => {
+            // =============================================
+            // ALL RETRY FAILED
+            // =============================================
 
-                requestPrint(
-                  attempt + 1
-                );
+            this.isPrinting = false;
 
-              },
-              RETRY_DELAY_MS
-            );
+            const message = await this.getPrintErrorMessage(err);
 
+            Swal.fire({
+              icon: 'error',
 
-            return;
-          }
+              title: 'Print Pallet Label Fail',
 
-
-          // =============================================
-          // ALL RETRY FAILED
-          // =============================================
-
-          this.isPrinting =
-            false;
-
-
-          const message =
-            await this
-              .getPrintErrorMessage(
-                err
-              );
-
-
-          Swal.fire({
-
-            icon:
-              'error',
-
-            title:
-              'Print Pallet Label Fail',
-
-            html: `
+              html: `
               <div style="text-align:center">
 
                 <div>
@@ -8316,25 +8026,17 @@ private callPrintActualPallet(
 
               </div>
             `,
+            });
+          },
+        });
+    };
 
-          });
+    // =====================================================
+    // FIRST ATTEMPT
+    // =====================================================
 
-        },
-
-      });
-
-  };
-
-
-  // =====================================================
-  // FIRST ATTEMPT
-  // =====================================================
-
-  requestPrint(
-    1
-  );
-
-}
+    requestPrint(1);
+  }
 
   resetAfterIssuePallet(): void {
     // =====================================================
