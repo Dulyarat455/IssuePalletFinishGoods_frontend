@@ -1111,7 +1111,13 @@
               <span>LOCATION</span>
 
               <b>
-                {{ locationName(palletTemp?.mapAreaRackId) }}
+                {{
+                  locationName(
+                    issueMode === "ACTUAL"
+                      ? actualPallet?.mapAreaRackId
+                      : palletTemp?.mapAreaRackId
+                  )
+                }}
               </b>
             </div>
 
