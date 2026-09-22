@@ -6441,72 +6441,44 @@ export class IssueComponent implements OnInit, AfterViewInit {
           // SAVE ERROR
           // =================================================
 
-          error: (
-            err: any
-          ): void => {
-          
-            console.error(
-              'SAVE PALLET ERROR:',
-              err
-            );
-          
-          
+          error: (err: any): void => {
+            console.error('SAVE PALLET ERROR:', err);
+
             // =====================================================
             // STOP LOADING
             // =====================================================
-          
-            this.isIssuing =
-              false;
-          
-          
+
+            this.isIssuing = false;
+
             // =====================================================
             // BACKEND MESSAGE
             // =====================================================
-          
-            const errorCode =
-              String(
-                err?.error?.message ||
-                ''
-              )
-                .trim();
-          
-          
-            const displayMessage =
-              String(
-                err?.error?.displayMessage ||
-                ''
-              )
-                .trim();
-          
-          
+
+            const errorCode = String(err?.error?.message || '').trim();
+
+            const displayMessage = String(
+              err?.error?.displayMessage || ''
+            ).trim();
+
             // =====================================================
             // AREA ALREADY OCCUPIED
             // =====================================================
-          
-            if (
-              errorCode ===
-              'area_already_occupied'
-            ) {
-          
+
+            if (errorCode === 'area_already_occupied') {
               // ===================================================
               // CLOSE CURRENT LOADING POPUP
               // ===================================================
-          
+
               Swal.close();
-          
-          
+
               // ===================================================
               // MOVE BACK TO CREATE PALLET PANEL
               // ===================================================
-          
-              this.showHeaderList =
-                false;
-          
-          
-              this.showCreatePallet =
-                true;
-          
-          
+
+              this.showHeaderList = false;
+
+              this.showCreatePallet = true;
+
               // ===================================================
               // ENABLE PALLET EDIT MODE
               //
@@ -6514,56 +6486,39 @@ export class IssueComponent implements OnInit, AfterViewInit {
               // ถ้าไม่เปิด Edit Mode
               // Location จะยัง Lock อยู่
               // ===================================================
-          
-              this.isEditingPalletTemp =
-                true;
-          
-          
+
+              this.isEditingPalletTemp = true;
+
               // ===================================================
               // CLEAR OLD LOCATION
               //
               // บังคับให้ User เลือก Location ใหม่
               // ===================================================
-          
-              this.palletCreateForm
-                .locationId =
-                  null;
-          
-          
-              this.form
-                .locationId =
-                  null;
-          
-          
+
+              this.palletCreateForm.locationId = null;
+
+              this.form.locationId = null;
+
               // ===================================================
               // REFRESH LOCATION OCCUPANCY
               //
               // เพื่อให้ Area ที่ถูกใช้ไปแล้ว
               // แสดงเป็น Occupied ทันที
               // ===================================================
-          
-              this.fetchMapLocationPallet(
-                () => {
-          
-                  this
-                    .buildCreatePalletRackView();
-          
-                }
-              );
-          
-          
+
+              this.fetchMapLocationPallet(() => {
+                this.buildCreatePalletRackView();
+              });
+
               // ===================================================
               // SHOW WARNING
               // ===================================================
-          
+
               Swal.fire({
-          
-                icon:
-                  'warning',
-          
-                title:
-                  'Location ถูกใช้งานแล้ว',
-          
+                icon: 'warning',
+
+                title: 'Location ถูกใช้งานแล้ว',
+
                 html: `
                   <div style="text-align:center">
           
@@ -6575,8 +6530,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
                       "
                     >
                       ${
-                        displayMessage ||
-                        'Location นี้มี Pallet ใช้งานอยู่แล้ว'
+                        displayMessage || 'Location นี้มี Pallet ใช้งานอยู่แล้ว'
                       }
                     </div>
           
@@ -6597,73 +6551,48 @@ export class IssueComponent implements OnInit, AfterViewInit {
           
                   </div>
                 `,
-          
-                confirmButtonText:
-                  'เลือก Location ใหม่',
-          
-                confirmButtonColor:
-                  '#f97316',
-          
-                allowOutsideClick:
-                  false,
-          
-              }).then(
-                () => {
-          
-                  // ===============================================
-                  // SCROLL TO CREATE PALLET
-                  // ===============================================
-          
-                  setTimeout(
-                    () => {
-          
-                      window.scrollTo({
-                        top:
-                          0,
-          
-                        behavior:
-                          'smooth',
-                      });
-          
-                    },
-                    100
-                  );
-          
-                }
-              );
-          
-          
+
+                confirmButtonText: 'เลือก Location ใหม่',
+
+                confirmButtonColor: '#f97316',
+
+                allowOutsideClick: false,
+              }).then(() => {
+                // ===============================================
+                // SCROLL TO CREATE PALLET
+                // ===============================================
+
+                setTimeout(() => {
+                  window.scrollTo({
+                    top: 0,
+
+                    behavior: 'smooth',
+                  });
+                }, 100);
+              });
+
               return;
             }
-          
-          
+
             // =====================================================
             // NORMAL ERROR
             // =====================================================
-          
+
             const msg =
               errorCode ||
               err?.error?.error ||
               err?.message ||
               'Issue Pallet fail';
-          
-          
+
             Swal.fire({
-          
-              icon:
-                'error',
-          
-              title:
-                'Issue Pallet ไม่สำเร็จ',
-          
-              text:
-                msg,
-          
-              confirmButtonText:
-                'OK',
-          
+              icon: 'error',
+
+              title: 'Issue Pallet ไม่สำเร็จ',
+
+              text: msg,
+
+              confirmButtonText: 'OK',
             });
-          
           },
         });
     });
