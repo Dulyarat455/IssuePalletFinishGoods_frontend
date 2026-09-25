@@ -522,6 +522,10 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   isDeletingFractionBox = false;
 
+  isDeletingActualHeader = false;
+
+  deletingActualHeaderId: number | null = null;
+
   isPrinting = false;
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -8426,6 +8430,339 @@ export class IssueComponent implements OnInit, AfterViewInit {
               'Load Actual Pallet fail',
             'error'
           );
+        },
+      });
+  }
+
+  // =====================================================
+  // DELETE ACTUAL HEADER + BOX
+  // =====================================================
+
+  deleteActualHeaderInPallet(selectedHeader: ActualPalletHeaderRow): void {
+    // =====================================================
+    // ONLY ACTUAL MODE
+    // =====================================================
+
+    if (this.issueMode !== 'ACTUAL') {
+      return;
+    }
+
+    // =====================================================
+    // VALIDATE PALLET
+    // =====================================================
+
+    const palletId = Number(this.actualPallet?.id || this.actualPalletId || 0);
+
+    if (!Number.isInteger(palletId) || palletId <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Pallet ID',
+        text: 'ไม่สามารถลบ Header ได้',
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // VALIDATE HEADER
+    // =====================================================
+
+    const headerId = Number(selectedHeader?.id || 0);
+
+    if (!Number.isInteger(headerId) || headerId <= 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Header ID',
+        text: 'ไม่สามารถลบ Header ได้',
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // PREVENT DOUBLE DELETE
+    // =====================================================
+
+    if (this.isDeletingActualHeader) {
+      return;
+    }
+
+    // =====================================================
+    // CONFIRM
+    // =====================================================
+
+    Swal.fire({
+      icon: 'warning',
+
+      title: 'Delete Header ?',
+
+      html: `
+      <div style="text-align:left">
+
+        <div
+          style="
+            padding:12px 14px;
+            border-radius:12px;
+            background:#fff7f7;
+            border:1px solid #fecaca;
+          "
+        >
+
+          <div>
+            <b>Item No:</b>
+            ${selectedHeader.itemNo || '-'}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Item Name:</b>
+            ${selectedHeader.itemName || '-'}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Label No:</b>
+            ${selectedHeader.labelNo || '-'}
+          </div>
+
+          <div style="margin-top:6px">
+            <b>Total Box:</b>
+            ${Number(selectedHeader.totalBox || 0)}
+          </div>
+
+        </div>
+
+
+        <div
+          style="
+            margin-top:12px;
+            padding:10px 12px;
+            border-radius:10px;
+            background:#fef2f2;
+            border:1px solid #fecaca;
+            color:#991b1b;
+            font-size:12px;
+            font-weight:800;
+          "
+        >
+          ระบบจะลบ Header นี้ รวมถึง Box และ Fraction Mapping
+          ที่อยู่ภายใต้ Header นี้ทั้งหมด
+        </div>
+
+      </div>
+    `,
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Delete Header',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#dc2626',
+
+      cancelButtonColor: '#64748b',
+
+      reverseButtons: true,
+
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      this.callDeleteActualHeaderInPallet(palletId, headerId);
+    });
+  }
+
+  // =====================================================
+  // CALL DELETE ACTUAL HEADER API
+  // =====================================================
+
+  private callDeleteActualHeaderInPallet(
+    palletId: number,
+    headerId: number
+  ): void {
+    // =====================================================
+    // STATE
+    // =====================================================
+
+    this.isDeletingActualHeader = true;
+
+    this.deletingActualHeaderId = headerId;
+
+    // =====================================================
+    // LOADING
+    // =====================================================
+
+    Swal.fire({
+      title: 'Deleting Header...',
+
+      html: 'กำลังลบ Header และ Box ที่เกี่ยวข้อง',
+
+      allowOutsideClick: false,
+
+      allowEscapeKey: false,
+
+      showConfirmButton: false,
+
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // =====================================================
+    // API
+    // =====================================================
+
+    this.http
+      .post<any>(
+        config.apiServer + '/api/issue/deleteHeaderBoxInPallet',
+
+        {
+          palletId: Number(palletId),
+
+          headerId: Number(headerId),
+        }
+      )
+      .subscribe({
+        // =================================================
+        // SUCCESS
+        // =================================================
+
+        next: (res: any): void => {
+          this.isDeletingActualHeader = false;
+
+          this.deletingActualHeaderId = null;
+
+          // ===============================================
+          // CLEAR SELECTED HEADER
+          // ===============================================
+
+          if (Number(this.actualHeader?.id || 0) === Number(headerId)) {
+            this.actualHeader = null;
+
+            this.header = null;
+
+            this.savedRows = [];
+
+            this.fractionRows = [];
+          }
+
+          // ===============================================
+          // RELOAD PALLET
+          //
+          // ใช้ API listPalletById เดิม
+          // เพื่อให้ Header count / Box count ใหม่ทั้งหมด
+          // ===============================================
+
+          this.loadActualPallet(palletId);
+
+          // ===============================================
+          // SUCCESS
+          // ===============================================
+
+          Swal.fire({
+            icon: 'success',
+
+            title: 'Delete Header Success',
+
+            html: `
+            <div style="text-align:center">
+
+              <div>
+                ลบ Header เรียบร้อยแล้ว
+              </div>
+
+              <div
+                style="
+                  margin-top:8px;
+                  color:#64748b;
+                  font-size:12px;
+                "
+              >
+                Box ที่ลบ:
+                <b>
+                  ${Number(res?.data?.deletedBoxCount || 0)}
+                </b>
+              </div>
+
+            </div>
+          `,
+
+            confirmButtonText: 'OK',
+
+            confirmButtonColor: '#10b981',
+          });
+        },
+
+        // =================================================
+        // ERROR
+        // =================================================
+
+        error: (err: any): void => {
+          console.error('DELETE ACTUAL HEADER ERROR:', err);
+
+          this.isDeletingActualHeader = false;
+
+          this.deletingActualHeaderId = null;
+
+          const errorCode = String(err?.error?.message || '').trim();
+
+          // ===============================================
+          // FOREIGN KEY
+          // ===============================================
+
+          if (errorCode === 'header_or_box_is_still_in_use') {
+            Swal.fire({
+              icon: 'warning',
+
+              title: 'ไม่สามารถลบ Header ได้',
+
+              text: 'Header หรือ Box นี้ถูกใช้งานในกระบวนการอื่นแล้ว',
+
+              confirmButtonText: 'OK',
+            });
+
+            return;
+          }
+
+          // ===============================================
+          // HEADER NOT FOUND
+          // ===============================================
+
+          if (errorCode === 'header_not_found_in_pallet') {
+            Swal.fire({
+              icon: 'warning',
+
+              title: 'ไม่พบ Header',
+
+              text: 'Header นี้อาจถูกลบไปแล้ว กรุณา Refresh ข้อมูล',
+
+              confirmButtonText: 'OK',
+            }).then(() => {
+              this.loadActualPallet(palletId);
+            });
+
+            return;
+          }
+
+          // ===============================================
+          // OTHER ERROR
+          // ===============================================
+
+          const message =
+            err?.error?.error ||
+            err?.error?.message ||
+            err?.message ||
+            'Delete Header fail';
+
+          Swal.fire({
+            icon: 'error',
+
+            title: 'Delete Header Fail',
+
+            text: message,
+
+            confirmButtonText: 'OK',
+          });
         },
       });
   }

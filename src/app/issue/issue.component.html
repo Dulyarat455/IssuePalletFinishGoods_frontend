@@ -772,19 +772,27 @@
      ACTUAL HEADER LIST
 ====================================================== -->
 
+    <!-- =====================================================
+     ACTUAL HEADER LIST
+====================================================== -->
+
     <div class="header-card-list" *ngIf="issueMode === 'ACTUAL'">
-      <button
-        type="button"
-        class="header-select-card"
+      <div
+        class="header-select-card actual-header-card"
         *ngFor="let h of actualHeaders"
-        (click)="selectActualHeaderFromList(h)"
       >
-        <!-- TOP -->
+        <!-- =================================================
+       TOP
+  ================================================== -->
 
         <div class="header-select-card-top">
+          <!-- ICON -->
+
           <div class="header-item-icon">
             <i class="fas fa-box"></i>
           </div>
+
+          <!-- ITEM -->
 
           <div class="header-item-main">
             <span class="header-item-label"> ITEM NO. </span>
@@ -798,14 +806,49 @@
             </span>
           </div>
 
-          <div class="header-open-icon">
-            <i class="fas fa-chevron-right"></i>
+          <!-- ACTION -->
+
+          <div class="actual-header-card-actions">
+            <!-- DELETE -->
+
+            <button
+              type="button"
+              class="actual-header-delete-btn"
+              [disabled]="isDeletingActualHeader"
+              [title]="
+                deletingActualHeaderId === h.id
+                  ? 'Deleting...'
+                  : 'Delete Header'
+              "
+              (click)="deleteActualHeaderInPallet(h)"
+            >
+              <i
+                class="fas"
+                [class.fa-trash-alt]="deletingActualHeaderId !== h.id"
+                [class.fa-spinner]="deletingActualHeaderId === h.id"
+                [class.fa-spin]="deletingActualHeaderId === h.id"
+              ></i>
+            </button>
+
+            <!-- OPEN -->
+
+            <button
+              type="button"
+              class="header-open-icon actual-header-open-btn"
+              [disabled]="isDeletingActualHeader"
+              title="Open Header"
+              (click)="selectActualHeaderFromList(h)"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
 
-        <!-- BOX DETAIL -->
+        <!-- =================================================
+       BOX DETAIL
+  ================================================== -->
 
-        <div class="header-box-status">
+        <div class="header-box-status" (click)="selectActualHeaderFromList(h)">
           <!-- PLAN -->
 
           <div class="header-box-status-group planned">
@@ -834,7 +877,7 @@
             </div>
           </div>
 
-          <!-- CURRENT -->
+          <!-- ACTUAL -->
 
           <div class="header-box-status-group current">
             <div class="header-box-status-title">
@@ -863,7 +906,9 @@
           </div>
         </div>
 
-        <!-- FOOT -->
+        <!-- =================================================
+       FOOT
+  ================================================== -->
 
         <div class="header-select-card-foot">
           <span>
@@ -878,13 +923,20 @@
             Box
           </span>
 
-          <span class="open-header-text">
-            Open Header
+          <button
+            type="button"
+            class="actual-header-open-link"
+            [disabled]="isDeletingActualHeader"
+            (click)="selectActualHeaderFromList(h)"
+          >
+            <span> Open Header </span>
 
             <i class="fas fa-arrow-right"></i>
-          </span>
+          </button>
         </div>
-      </button>
+      </div>
+
+      <!-- EMPTY -->
 
       <div class="empty-header-list" *ngIf="actualHeaders.length === 0">
         <i class="fas fa-box-open"></i>
@@ -2586,8 +2638,9 @@
      ACTION
 ================================================== -->
 
-        <div class="next-action-buttons"
-        [class.actual-mode]="issueMode === 'ACTUAL'"
+        <div
+          class="next-action-buttons"
+          [class.actual-mode]="issueMode === 'ACTUAL'"
         >
           <!-- ===============================================
        HEADER LIST

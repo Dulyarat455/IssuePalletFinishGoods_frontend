@@ -6931,6 +6931,224 @@ td small {
   
 
 
+
+
+/* =========================================================
+   ACTUAL HEADER CARD ACTION
+========================================================= */
+
+.actual-header-card {
+  cursor:
+    default;
+}
+
+
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
+
+.actual-header-card-actions {
+  margin-left:
+    auto;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+}
+
+
+/* =========================================================
+   DELETE HEADER BUTTON
+========================================================= */
+
+.actual-header-delete-btn {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  min-width:
+    34px;
+
+  border:
+    1px solid #fecaca;
+
+  border-radius:
+    50%;
+
+  background:
+    #fff7f7;
+
+  color:
+    #dc2626;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    0;
+
+  cursor:
+    pointer;
+
+  font-size:
+    13px;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.actual-header-delete-btn:hover:not(:disabled) {
+  background:
+    #fee2e2;
+
+  border-color:
+    #fca5a5;
+
+  color:
+    #b91c1c;
+
+  box-shadow:
+    0 5px 12px
+    rgba(
+      220,
+      38,
+      38,
+      0.14
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+.actual-header-delete-btn:disabled {
+  opacity:
+    0.5;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none;
+
+  box-shadow:
+    none;
+}
+
+
+/* =========================================================
+   OPEN HEADER ICON BUTTON
+========================================================= */
+
+.actual-header-open-btn {
+  border:
+    0;
+
+  padding:
+    0;
+
+  cursor:
+    pointer;
+}
+
+
+.actual-header-open-btn:disabled {
+  opacity:
+    0.5;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* =========================================================
+   ACTUAL CARD CONTENT CLICK
+========================================================= */
+
+.actual-header-card
+.header-box-status {
+  cursor:
+    pointer;
+}
+
+
+/* =========================================================
+   FOOT OPEN HEADER
+========================================================= */
+
+.actual-header-open-link {
+  border:
+    0;
+
+  background:
+    transparent;
+
+  color:
+    #0f766e;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    6px;
+
+  padding:
+    4px 0;
+
+  font-family:
+    inherit;
+
+  font-size:
+    11px;
+
+  font-weight:
+    950;
+
+  cursor:
+    pointer;
+}
+
+
+.actual-header-open-link:hover:not(:disabled) {
+  color:
+    #0d9488;
+}
+
+
+.actual-header-open-link:disabled {
+  opacity:
+    0.5;
+
+  cursor:
+    not-allowed;
+}
+
+
+
+
+
+
 /* ====================
 for 2 case to center
 ==================== */
