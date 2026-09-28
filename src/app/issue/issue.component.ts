@@ -700,39 +700,35 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (panel === 'next' && !this.canGoNextFromFraction) {
       return;
     }
-
-    // =====================================================
     // SET PANEL
-    // =====================================================
-
     this.activeIssuePanel = panel;
-
-    // =====================================================
     // NORMAL
-    // =====================================================
-
     if (panel === 'normal') {
       setTimeout(() => this.focusScanFirst(), 0);
 
       return;
     }
-
-    // =====================================================
     // FRACTION
-    // =====================================================
-
     if (panel === 'fraction') {
       this.showFractionSection = true;
 
-      setTimeout(() => this.focusFractionFirst(), 0);
+      // Clear scanner state ก่อนเข้า panel
+      this.fractionScanForm = this.createEmptyScanForm();
+
+      this.isFractionTagScanned = false;
+
+      this.fractionTagOriginalQty = null;
+
+      this.isFractionQtyEdited = false;
+
+      // รอ Angular render
+      setTimeout(() => {
+        this.focusFractionFirst();
+      }, 120);
 
       return;
     }
-
-    // =====================================================
     // NEXT ACTION
-    // =====================================================
-
     if (panel === 'next') {
       // ป้องกัน Focus กลับเข้า Scanner
       return;
@@ -894,7 +890,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   get fractionQtyBoxValue(): number {
-    return Number(this.fractionQtyBox || this.fractionHeader?.qtyBox || 0);
+    return Number(this.fractionQtyBox ?? this.fractionHeader?.qtyBox ?? 0);
   }
 
   get totalPlanBoxQty(): number {
@@ -2798,13 +2794,41 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.focusScanFirst();
   }
 
-  private focusFractionFirst() {
-    if (!this.header || this.isEditingHeader) return;
-    if (!this.showFractionSection) return;
-    if (!this.fractionHeader) return;
-    if (this.isFractionFull) return;
+  private focusFractionFirst(): void {
+    // HEADER
+    if (!this.header || this.isEditingHeader) {
+      return;
+    }
+    // FRACTION SECTION
+    if (!this.showFractionSection) {
+      return;
+    }
+    // FRACTION PLAN
+    //
+    // TEMP       -> ใช้ fractionHeader
+    // ACTUAL TAC -> ใช้ fractionQtyBox / HeaderIssueTempTAC
+    if (!this.fractionHeader && !this.isWorkingActualTac) {
+      return;
+    }
+    // ต้องมี QTY BOX เศษ
+    if (!this.hasFractionBoxQty) {
+      return;
+    }
+    // FULL
+    if (this.isFractionFull) {
+      return;
+    }
 
-    this.focusEl(this.fractionItemNo);
+    // FOCUS ITEM NO
+    const el = this.fractionItemNo?.nativeElement;
+
+    if (!el) {
+      return;
+    }
+
+    el.focus();
+
+    el.select();
   }
 
   private goToFractionPanelFromHeaderWarning(): void {
@@ -5152,17 +5176,21 @@ export class IssueComponent implements OnInit, AfterViewInit {
       });
   }
 
-  toggleFractionSection() {
+  toggleFractionSection(): void {
     if (!this.header || this.isEditingHeader) {
       return this.toast('warning', 'กรุณาบันทึก Header หลักก่อน');
     }
 
     this.showFractionSection = !this.showFractionSection;
 
-    if (this.showFractionSection && this.fractionHeader) {
+    if (
+      this.showFractionSection &&
+      (!!this.fractionHeader || this.isWorkingActualTac) &&
+      this.hasFractionBoxQty
+    ) {
       setTimeout(() => {
         this.focusFractionFirst();
-      }, 150);
+      }, 120);
     }
   }
 
@@ -5533,7 +5561,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     if (
       !this.header ||
       this.isEditingHeader ||
-      !this.fractionHeader ||
+      (!this.fractionHeader && !this.isWorkingActualTac) ||
+      !this.hasFractionBoxQty ||
       this.isSavingFractionScan ||
       this.isFractionFull
     ) {
@@ -6955,17 +6984,23 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   clearFractionScanForm(): void {
+    // RESET FORM
     this.fractionScanForm = this.createEmptyScanForm();
-
+    // RESET SCAN STATE
     this.isFractionTagScanned = false;
 
     this.fractionTagOriginalQty = null;
 
     this.isFractionQtyEdited = false;
-
+    // REMOVE CURRENT FOCUS
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    // WAIT ANGULAR UPDATE VIEW
+    // THEN FOCUS ITEM NO
     setTimeout(() => {
       this.focusFractionFirst();
-    }, 100);
+    }, 120);
   }
 
   fetchActualTacHeaders(callback?: () => void): void {
@@ -7774,34 +7809,67 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.isSavingFractionScan = true;
 
     this.http
-      .post<any>(
-        config.apiServer + '/api/issue/mapFractionTac',
+      .post<any>(config.apiServer + '/api/issue/mapFractionTac', {
+        headTempTacId: Number(this.activeActualTacHeader.id),
 
-        {
-          headTempTacId: Number(this.activeActualTacHeader.id),
-
-          ...data,
-        }
-      )
+        ...data,
+      })
       .subscribe({
         next: (): void => {
           this.isSavingFractionScan = false;
-
-          this.fractionScanForm = this.createEmptyScanForm();
-
-          this.isFractionTagScanned = false;
-
-          this.fractionTagOriginalQty = null;
-
-          this.isFractionQtyEdited = false;
-
           this.fetchActualTacFractionBoxes();
 
-          this.toast('success', 'Scan Box เศษสำเร็จ');
+          Swal.fire({
+            icon: 'success',
 
-          setTimeout(() => {
-            this.focusFractionFirst();
-          }, 100);
+            title: 'Scan Box เศษสำเร็จ',
+
+            html: `
+              <div style="text-align:left">
+  
+                <div>
+                  <b>Item No.:</b>
+                  ${data.itemNo}
+                </div>
+  
+                <div>
+                  <b>WOS No.:</b>
+                  ${data.wosNo}
+                </div>
+  
+                <div>
+                  <b>Lot No.:</b>
+                  ${data.lotNo}
+                </div>
+  
+                <div
+                  style="
+                    margin-top:12px;
+                    padding:10px 12px;
+                    border-radius:10px;
+                    background:#fff7ed;
+                    color:#c2410c;
+                  "
+                >
+                  <b>QTY Box เศษ:</b>
+                  ${data.qty}
+                </div>
+  
+              </div>
+            `,
+
+            timer: 700,
+
+            timerProgressBar: true,
+
+            showConfirmButton: false,
+
+            allowOutsideClick: false,
+
+            returnFocus: false,
+          }).then(() => {
+            this.clearFractionScanForm();
+          });
         },
 
         error: (err: any): void => {
@@ -7809,14 +7877,24 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
           this.isSavingFractionScan = false;
 
-          Swal.fire(
-            'Error',
-            err?.error?.message ||
+          Swal.fire({
+            icon: 'error',
+
+            title: 'Scan Box เศษไม่สำเร็จ',
+
+            text:
+              err?.error?.message ||
               err?.error?.error ||
               err?.message ||
               'Map Fraction TAC fail',
-            'error'
-          );
+
+            returnFocus: false,
+          }).then(() => {
+            // หลังปิด Error
+            // ให้กลับไป Item No. เช่นกัน
+
+            this.clearFractionScanForm();
+          });
         },
       });
   }
