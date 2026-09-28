@@ -7145,6 +7145,414 @@ td small {
 }
 
 
+/* =========================================================
+   ACTUAL HEADER GROUP TITLE
+========================================================= */
+
+.actual-header-section-title {
+  width:
+    100%;
+
+  margin:
+    20px 0 12px;
+
+  padding:
+    14px 16px;
+
+  border-radius:
+    16px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    16px;
+}
+
+
+.actual-header-section-title > div {
+  min-width:
+    0;
+}
+
+
+.actual-header-section-title span {
+  display:
+    block;
+
+  font-size:
+    10px;
+
+  font-weight:
+    950;
+
+  letter-spacing:
+    1px;
+
+  text-transform:
+    uppercase;
+}
+
+
+.actual-header-section-title b {
+  display:
+    block;
+
+  margin-top:
+    3px;
+
+  font-size:
+    15px;
+
+  font-weight:
+    950;
+}
+
+
+.actual-header-section-title small {
+  display:
+    block;
+
+  margin-top:
+    3px;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  opacity:
+    0.8;
+}
+
+
+.actual-header-section-title strong {
+  min-width:
+    38px;
+
+  height:
+    38px;
+
+  padding:
+    0 10px;
+
+  border-radius:
+    12px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  font-size:
+    16px;
+
+  font-weight:
+    950;
+}
+
+
+/* =========================================================
+   EXISTING
+========================================================= */
+
+.actual-header-section-title.existing {
+  background:
+    #ecfdf5;
+
+  border:
+    1px solid #a7f3d0;
+
+  color:
+    #065f46;
+}
+
+
+.actual-header-section-title.existing strong {
+  background:
+    #ffffff;
+
+  color:
+    #047857;
+}
+
+
+/* =========================================================
+   TAC / PENDING
+========================================================= */
+
+.actual-header-section-title.tac {
+  background:
+    #fff7ed;
+
+  border:
+    1px solid #fed7aa;
+
+  color:
+    #9a3412;
+}
+
+
+.actual-header-section-title.tac strong {
+  background:
+    #ffffff;
+
+  color:
+    #ea580c;
+}
+
+
+/* =========================================================
+   TAC HEADER CARD
+========================================================= */
+
+.actual-tac-header-list {
+  margin-bottom:
+    22px;
+}
+
+
+.actual-tac-header-card {
+  border-color:
+    #fed7aa;
+}
+
+
+.header-item-icon.tac {
+  background:
+    #fff7ed;
+
+  color:
+    #ea580c;
+}
+
+
+.header-box-status-group.current.tac-pending {
+  background:
+    #fffaf5;
+
+  border-color:
+    #fed7aa;
+}
+
+
+.actual-tac-pending-text {
+  margin-top:
+    10px;
+
+  color:
+    #c2410c;
+
+  font-size:
+    12px;
+
+  font-weight:
+    850;
+}
+
+
+.actual-tac-owner {
+  color:
+    #c2410c;
+}
+
+
+
+
+/* =========================================================
+   ACTUAL TAC - SAVE TO PALLET
+========================================================= */
+
+.actual-tac-save-panel {
+  width: 100%;
+
+  margin-top: 16px;
+
+  padding: 16px 18px;
+
+  border: 1px solid #fed7aa;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff7ed,
+      #ffffff
+    );
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+
+/* INFO */
+
+.actual-tac-save-info {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.actual-tac-save-icon {
+  width: 46px;
+
+  height: 46px;
+
+  min-width: 46px;
+
+  border-radius: 14px;
+
+  background: #ffedd5;
+
+  color: #ea580c;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 18px;
+}
+
+
+.actual-tac-save-info span {
+  display: block;
+
+  color: #ea580c;
+
+  font-size: 10px;
+
+  font-weight: 950;
+
+  letter-spacing: 1px;
+}
+
+
+.actual-tac-save-info b {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7c2d12;
+
+  font-size: 15px;
+
+  font-weight: 950;
+}
+
+
+.actual-tac-save-info small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #9a3412;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* BUTTON */
+
+.actual-tac-save-btn {
+  min-height: 46px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  padding: 0 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f97316,
+      #ea580c
+    );
+
+  color: #ffffff;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 950;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  box-shadow:
+    0 7px 16px
+    rgba(234, 88, 12, 0.2);
+}
+
+
+.actual-tac-save-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  filter: brightness(1.03);
+}
+
+
+.actual-tac-save-btn:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+@media (max-width: 760px) {
+
+  .actual-tac-save-panel {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .actual-tac-save-btn {
+    width: 100%;
+  }
+
+}
 
 
 

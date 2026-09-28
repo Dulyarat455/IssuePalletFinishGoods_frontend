@@ -771,10 +771,25 @@
     <!-- =====================================================
      ACTUAL HEADER LIST
 ====================================================== -->
-
     <!-- =====================================================
-     ACTUAL HEADER LIST
+     ACTUAL : EXISTING HEADER TITLE
+     แสดงเฉพาะตอนมี TAC Header ใหม่
 ====================================================== -->
+
+    <div
+      class="actual-header-section-title existing"
+      *ngIf="issueMode === 'ACTUAL' && actualTacHeaders.length > 0"
+    >
+      <div>
+        <span>PALLET HEADERS</span>
+
+        <b>Existing Headers</b>
+      </div>
+
+      <strong>
+        {{ actualHeaders.length }}
+      </strong>
+    </div>
 
     <div class="header-card-list" *ngIf="issueMode === 'ACTUAL'">
       <div
@@ -944,6 +959,218 @@
         <span> Pallet นี้ยังไม่มี Header </span>
       </div>
     </div>
+
+    <!-- =====================================================
+     ACTUAL : NEW TAC HEADER
+     แสดงเฉพาะเมื่อ User คนนี้มี Header TAC
+====================================================== -->
+
+    <ng-container *ngIf="issueMode === 'ACTUAL' && actualTacHeaders.length > 0">
+      <!-- =================================================
+     TAC TITLE
+================================================== -->
+
+      <div class="actual-header-section-title tac">
+        <div>
+          <span> MY NEW HEADERS </span>
+
+          <b> Waiting to Add into Pallet </b>
+
+          <small> Header ใหม่ที่ยังไม่ได้รวมเข้า Pallet </small>
+        </div>
+
+        <strong>
+          {{ actualTacHeaders.length }}
+        </strong>
+      </div>
+
+      <!-- =================================================
+     TAC HEADER LIST
+================================================== -->
+
+      <div class="header-card-list actual-tac-header-list">
+        <div
+          class="header-select-card actual-header-card actual-tac-header-card"
+          *ngFor="let h of actualTacHeaders"
+        >
+          <!-- ===============================================
+         TOP
+    ================================================ -->
+
+          <div class="header-select-card-top">
+            <!-- ICON -->
+
+            <div class="header-item-icon tac">
+              <i class="fas fa-clock"></i>
+            </div>
+
+            <!-- ITEM -->
+
+            <div class="header-item-main">
+              <span class="header-item-label"> NEW HEADER · PENDING </span>
+
+              <b class="header-item-no">
+                {{ h.itemNo }}
+              </b>
+
+              <span class="header-item-name">
+                {{ h.itemName }}
+              </span>
+            </div>
+
+            <!-- ACTION -->
+
+            <div class="actual-header-card-actions">
+              <!-- DELETE TAC -->
+
+              <button
+                type="button"
+                class="actual-header-delete-btn"
+                [disabled]="isDeletingActualTacHeader"
+                (click)="deleteActualTacHeader(h)"
+              >
+                <i
+                  class="fas"
+                  [class.fa-trash-alt]="deletingActualTacHeaderId !== h.id"
+                  [class.fa-spinner]="deletingActualTacHeaderId === h.id"
+                  [class.fa-spin]="deletingActualTacHeaderId === h.id"
+                ></i>
+              </button>
+
+              <!-- OPEN TAC -->
+
+              <button
+                type="button"
+                class="header-open-icon actual-header-open-btn"
+                [disabled]="isDeletingActualTacHeader"
+                (click)="selectActualTacHeaderFromList(h)"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ===============================================
+         PLAN
+    ================================================ -->
+
+          <div
+            class="header-box-status"
+            (click)="selectActualTacHeaderFromList(h)"
+          >
+            <div class="header-box-status-group planned">
+              <div class="header-box-status-title">
+                <i class="fas fa-clipboard-list"></i>
+
+                กำหนดไว้
+              </div>
+
+              <div class="header-box-number-row">
+                <div>
+                  <span> BOX เต็ม </span>
+
+                  <b>
+                    {{ h.normalQty }}
+                  </b>
+                </div>
+
+                <div>
+                  <span> BOX เศษ </span>
+
+                  <b>
+                    {{ h.fractionQty }}
+                  </b>
+                </div>
+              </div>
+            </div>
+
+            <!-- =============================================
+           STATUS
+      ============================================== -->
+
+            <div class="header-box-status-group current tac-pending">
+              <div class="header-box-status-title">
+                <i class="fas fa-hourglass-half"></i>
+
+                Pending
+              </div>
+
+              <div class="actual-tac-pending-text">
+                Waiting to add into Pallet
+              </div>
+            </div>
+          </div>
+
+          <!-- ===============================================
+         FOOT
+    ================================================ -->
+
+          <div class="header-select-card-foot">
+            <span class="actual-tac-owner">
+              <i class="fas fa-user"></i>
+
+              My New Header
+            </span>
+
+            <button
+              type="button"
+              class="actual-header-open-link"
+              (click)="selectActualTacHeaderFromList(h)"
+            >
+              <span> Open Header </span>
+
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================
+           SAVE TAC HEADERS TO ACTUAL PALLET
+      ================================================== -->
+
+      <div class="actual-tac-save-panel">
+        <div class="actual-tac-save-info">
+          <div class="actual-tac-save-icon">
+            <i class="fas fa-pallet"></i>
+          </div>
+
+          <div>
+            <span> READY TO ADD </span>
+
+            <b> Save New Headers to Pallet </b>
+
+            <small>
+              {{ actualTacHeaders.length }}
+              Header ใหม่ รอรวมเข้า Pallet
+              {{ actualPallet?.palletNoId }}
+            </small>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="actual-tac-save-btn"
+          [disabled]="
+            isSavingActualTacToPallet || actualTacHeaders.length === 0
+          "
+          (click)="saveActualTacHeadersToPallet()"
+        >
+          <i
+            class="fas"
+            [class.fa-save]="!isSavingActualTacToPallet"
+            [class.fa-spinner]="isSavingActualTacToPallet"
+            [class.fa-spin]="isSavingActualTacToPallet"
+          ></i>
+
+          <span>
+            {{ isSavingActualTacToPallet ? "Saving..." : "Save New Headers" }}
+          </span>
+
+          <i class="fas fa-arrow-right" *ngIf="!isSavingActualTacToPallet"></i>
+        </button>
+      </div>
+    </ng-container>
 
     <!-- =====================================================
      FINAL PALLET ACTION
@@ -1678,7 +1905,7 @@
             </div>
 
             <div class="issue-menu-badge">
-              {{ fractionScanCount }} / {{ fractionHeader?.qtyBox || 0 }}
+              {{ fractionScanCount }} / {{ fractionQtyBoxValue }}
             </div>
           </div>
 
@@ -2135,16 +2362,20 @@
 
               <div>
                 <span>Status</span>
-                <b>{{
-                  fractionHeader ? "Header เศษ Saved" : "ยังไม่ได้กำหนด Box เศษ"
-                }}</b>
+                <b>
+                  {{
+                    hasFractionBoxQty
+                      ? "กำหนด Box เศษแล้ว"
+                      : "ยังไม่ได้กำหนด Box เศษ"
+                  }}
+                </b>
               </div>
             </div>
 
             <div class="fraction-divider"></div>
 
             <!-- ยังไม่มี Header เศษ -->
-            <div class="fraction-empty-state" *ngIf="!fractionHeader">
+            <div class="fraction-empty-state" *ngIf="!hasFractionBoxQty">
               <i class="fas fa-clipboard-list"></i>
 
               <div>
@@ -2157,7 +2388,7 @@
             </div>
 
             <!-- Scan Form -->
-            <ng-container *ngIf="fractionHeader && hasNormalBoxQty">
+            <ng-container *ngIf="hasFractionBoxQty && hasNormalBoxQty">
               <div class="fraction-scan-top">
                 <div>
                   <h4>Scan Data</h4>
@@ -2165,7 +2396,7 @@
                 </div>
 
                 <span class="scan-badge fraction" [class.full]="isFractionFull">
-                  {{ fractionScanCount }} / {{ fractionHeader.qtyBox }} Box
+                  {{ fractionScanCount }} / {{ fractionQtyBoxValue }} Box
                 </span>
               </div>
 
@@ -2363,8 +2594,7 @@
 
               <div class="fraction-list-actions">
                 <span class="fraction-count-pill" [class.full]="isFractionFull">
-                  {{ fractionScanCount }} /
-                  {{ fractionHeader?.qtyBox || 0 }} Box
+                  {{ fractionScanCount }} / {{ fractionQtyBoxValue }} Box
                 </span>
 
                 <button
@@ -2372,7 +2602,7 @@
                   class="fraction-clear-btn"
                   (click)="onClearAllFractionBoxTemp()"
                   [disabled]="
-                    !fractionHeader ||
+                    !hasFractionBoxQty ||
                     fractionRows.length === 0 ||
                     isClearingFractionBoxes
                   "
@@ -2699,34 +2929,23 @@
           <button
             type="button"
             class="next-action-btn print-header"
-            *ngIf="issueMode === 'ACTUAL' && actualPallet && actualHeader"
-            [disabled]="isPrinting"
-            (click)="printActualHeaderLabel()"
+            *ngIf="issueMode === 'ACTUAL' && actualHeaderSource === 'TAC'"
+            disabled
           >
             <div class="next-action-btn-icon">
-              <i
-                class="fas"
-                [class.fa-print]="!isPrinting"
-                [class.fa-spinner]="isPrinting"
-                [class.fa-spin]="isPrinting"
-              ></i>
+              <i class="fas fa-print"></i>
             </div>
 
             <div class="next-action-btn-text">
-              <span> OPTION 3 </span>
+              <span>OPTION 3</span>
 
-              <b> Print This Label </b>
+              <b>Print This Label</b>
 
-              <small> Print Label เฉพาะ Header ที่กำลังทำงานอยู่ </small>
+              <small> Save Header เข้า Pallet ก่อนจึงสามารถ Print ได้ </small>
             </div>
 
             <div class="next-action-btn-arrow">
-              <i
-                class="fas"
-                [class.fa-print]="!isPrinting"
-                [class.fa-spinner]="isPrinting"
-                [class.fa-spin]="isPrinting"
-              ></i>
+              <i class="fas fa-lock"></i>
             </div>
           </button>
         </div>
