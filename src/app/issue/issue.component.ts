@@ -570,6 +570,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   deletingActualHeaderId: number | null = null;
 
+  isDeletingActualPallet = false;
+
   isPrinting = false;
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -10711,6 +10713,544 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
   backToDashboard(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+
+
+  deleteActualPallet(): void {
+
+    // =====================================================
+    // ONLY ACTUAL MODE
+    // =====================================================
+  
+    if (
+      this.issueMode !== 'ACTUAL'
+    ) {
+      return;
+    }
+  
+  
+    // =====================================================
+    // VALIDATE PALLET
+    // =====================================================
+  
+    const palletId =
+      Number(
+        this.actualPallet?.id ||
+        this.actualPalletId ||
+        0
+      );
+  
+  
+    if (
+      !Number.isInteger(palletId) ||
+      palletId <= 0
+    ) {
+  
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Pallet',
+        text: 'ไม่สามารถลบ Pallet ได้',
+      });
+  
+      return;
+    }
+  
+  
+    if (
+      this.isDeletingActualPallet
+    ) {
+      return;
+    }
+  
+  
+    // =====================================================
+    // CURRENT PALLET INFO
+    // =====================================================
+  
+    const palletNo =
+      String(
+        this.actualPallet?.palletNoId ||
+        '-'
+      );
+  
+  
+    const headerCount =
+      Number(
+        this.actualHeaders.length ||
+        0
+      );
+  
+  
+    const totalBox =
+      Number(
+        this.actualPallet?.totalBox ||
+        0
+      );
+  
+  
+    const tacHeaderCount =
+      Number(
+        this.actualTacHeaders.length ||
+        0
+      );
+  
+  
+    // =====================================================
+    // CONFIRM DELETE
+    // =====================================================
+  
+    Swal.fire({
+  
+      icon:
+        'warning',
+  
+      title:
+        'Delete Pallet ?',
+  
+      html: `
+        <div style="text-align:left">
+  
+          <div
+            style="
+              padding:14px;
+              border-radius:12px;
+              background:#fff7f7;
+              border:1px solid #fecaca;
+            "
+          >
+  
+            <div>
+              <b>Pallet No:</b>
+              ${palletNo}
+            </div>
+  
+            <div style="margin-top:7px">
+              <b>Header:</b>
+              ${headerCount}
+            </div>
+  
+            <div style="margin-top:7px">
+              <b>Box:</b>
+              ${totalBox}
+            </div>
+  
+            ${
+              tacHeaderCount > 0
+                ? `
+                  <div style="margin-top:7px">
+                    <b>New Header TAC:</b>
+                    ${tacHeaderCount}
+                  </div>
+                `
+                : ''
+            }
+  
+          </div>
+  
+  
+          <div
+            style="
+              margin-top:14px;
+              padding:12px 14px;
+              border-radius:12px;
+              background:#fef2f2;
+              border:1px solid #fecaca;
+              color:#991b1b;
+              font-size:13px;
+              font-weight:800;
+              line-height:1.6;
+            "
+          >
+            <div>
+              <i class="fas fa-exclamation-triangle"></i>
+              การลบ Pallet จะลบข้อมูลที่เกี่ยวข้องทั้งหมด
+            </div>
+  
+            <div style="margin-top:5px">
+              Header, Box, Fraction Mapping
+              และ New Header ที่ยังไม่ได้ Save
+              จะถูกลบออกด้วย
+            </div>
+  
+            <div
+              style="
+                margin-top:8px;
+                font-weight:950;
+              "
+            >
+              การทำรายการนี้ไม่สามารถย้อนกลับได้
+            </div>
+          </div>
+  
+        </div>
+      `,
+  
+      showCancelButton:
+        true,
+  
+      confirmButtonText:
+        'Delete Pallet',
+  
+      cancelButtonText:
+        'Cancel',
+  
+      confirmButtonColor:
+        '#dc2626',
+  
+      cancelButtonColor:
+        '#64748b',
+  
+      reverseButtons:
+        true,
+  
+      focusCancel:
+        true,
+  
+      returnFocus:
+        false,
+  
+    }).then((result) => {
+  
+      if (
+        !result.isConfirmed
+      ) {
+        return;
+      }
+  
+  
+      this.callDeleteActualPallet(
+        palletId,
+        palletNo
+      );
+  
+    });
+  }
+
+  private callDeleteActualPallet(
+    palletId: number,
+    palletNo: string
+  ): void {
+  
+    // =====================================================
+    // STATE
+    // =====================================================
+  
+    this.isDeletingActualPallet =
+      true;
+  
+  
+    // =====================================================
+    // LOADING
+    // =====================================================
+  
+    Swal.fire({
+  
+      title:
+        'Deleting Pallet...',
+  
+      html: `
+        <div style="text-align:center">
+  
+          <div>
+            กำลังลบ Pallet
+            <b>${palletNo}</b>
+          </div>
+  
+          <div
+            style="
+              margin-top:8px;
+              color:#64748b;
+              font-size:12px;
+            "
+          >
+            กำลังลบ Header, Box และข้อมูลที่เกี่ยวข้อง
+          </div>
+  
+        </div>
+      `,
+  
+      allowOutsideClick:
+        false,
+  
+      allowEscapeKey:
+        false,
+  
+      showConfirmButton:
+        false,
+  
+      didOpen: () => {
+        Swal.showLoading();
+      },
+  
+    });
+  
+  
+    // =====================================================
+    // API
+    // =====================================================
+  
+    this.http
+      .post<any>(
+        config.apiServer +
+          '/api/issue/deletePallet',
+        {
+          palletId:
+            Number(palletId),
+        }
+      )
+      .subscribe({
+  
+        // ===================================================
+        // SUCCESS
+        // ===================================================
+  
+        next: (
+          res: any
+        ): void => {
+  
+          this.isDeletingActualPallet =
+            false;
+  
+  
+          const deletedHeaderCount =
+            Number(
+              res?.data?.deletedHeaderCount ||
+              0
+            );
+  
+  
+          const deletedBoxCount =
+            Number(
+              res?.data?.deletedBoxCount ||
+              0
+            );
+  
+  
+          const deletedFractionMapCount =
+            Number(
+              res?.data?.deletedFractionMapCount ||
+              0
+            );
+  
+  
+          const deletedTacHeaderCount =
+            Number(
+              res?.data?.deletedTacHeaderCount ||
+              0
+            );
+  
+  
+          // =================================================
+          // CLEAR CURRENT ACTUAL STATE
+          // =================================================
+  
+          this.actualPallet =
+            null;
+  
+          this.actualPalletId =
+            null;
+  
+          this.actualHeaders =
+            [];
+  
+          this.actualHeader =
+            null;
+  
+          this.actualTacHeaders =
+            [];
+  
+          this.activeActualTacHeader =
+            null;
+  
+          this.actualHeaderSource =
+            null;
+  
+          this.header =
+            null;
+  
+          this.savedRows =
+            [];
+  
+          this.fractionRows =
+            [];
+  
+  
+          // =================================================
+          // SUCCESS
+          // =================================================
+  
+          Swal.fire({
+  
+            icon:
+              'success',
+  
+            title:
+              'Delete Pallet Success',
+  
+            html: `
+              <div style="text-align:left">
+  
+                <div
+                  style="
+                    padding:14px;
+                    border-radius:12px;
+                    background:#f0fdf4;
+                    border:1px solid #bbf7d0;
+                  "
+                >
+  
+                  <div>
+                    <b>Pallet:</b>
+                    ${palletNo}
+                  </div>
+  
+                  <div style="margin-top:7px">
+                    <b>Header Deleted:</b>
+                    ${deletedHeaderCount}
+                  </div>
+  
+                  <div style="margin-top:7px">
+                    <b>Box Deleted:</b>
+                    ${deletedBoxCount}
+                  </div>
+  
+                  <div style="margin-top:7px">
+                    <b>Fraction Map Deleted:</b>
+                    ${deletedFractionMapCount}
+                  </div>
+  
+                  ${
+                    deletedTacHeaderCount > 0
+                      ? `
+                        <div style="margin-top:7px">
+                          <b>TAC Header Deleted:</b>
+                          ${deletedTacHeaderCount}
+                        </div>
+                      `
+                      : ''
+                  }
+  
+                </div>
+  
+                <div
+                  style="
+                    margin-top:12px;
+                    text-align:center;
+                    color:#64748b;
+                    font-size:12px;
+                  "
+                >
+                  ระบบจะกลับไปหน้า Dashboard
+                </div>
+  
+              </div>
+            `,
+  
+            confirmButtonText:
+              'OK',
+  
+            confirmButtonColor:
+              '#10b981',
+  
+            allowOutsideClick:
+              false,
+  
+            returnFocus:
+              false,
+  
+          }).then(() => {
+  
+            this.backToDashboard();
+  
+          });
+  
+        },
+  
+  
+        // ===================================================
+        // ERROR
+        // ===================================================
+  
+        error: (
+          err: any
+        ): void => {
+  
+          console.error(
+            'DELETE PALLET ERROR:',
+            err
+          );
+  
+  
+          this.isDeletingActualPallet =
+            false;
+  
+  
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Delete Pallet fail';
+  
+  
+          // ===============================================
+          // NOT FOUND
+          // ===============================================
+  
+          if (
+            msg === 'Pallet_notFound'
+          ) {
+  
+            Swal.fire({
+              icon: 'warning',
+              title: 'ไม่พบ Pallet',
+              text: 'Pallet นี้อาจถูกลบไปแล้ว',
+              confirmButtonText: 'OK',
+            }).then(() => {
+  
+              this.backToDashboard();
+  
+            });
+  
+  
+            return;
+          }
+  
+  
+          // ===============================================
+          // INVALID ID
+          // ===============================================
+  
+          if (
+            msg === 'invalid_palletId' ||
+            msg === 'missing_required_fields'
+          ) {
+  
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pallet ID ไม่ถูกต้อง',
+              text: 'ไม่สามารถลบ Pallet ได้',
+            });
+  
+  
+            return;
+          }
+  
+  
+          // ===============================================
+          // OTHER ERROR
+          // ===============================================
+  
+          Swal.fire({
+            icon: 'error',
+            title: 'Delete Pallet ไม่สำเร็จ',
+            text: msg,
+            confirmButtonText: 'OK',
+          });
+  
+        },
+  
+      });
   }
 
   deleteActualTacHeader(row: ActualTacHeaderRow): void {

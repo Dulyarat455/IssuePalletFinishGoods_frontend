@@ -1119,7 +1119,6 @@ thead th {
   box-shadow: 0 10px 22px rgba(234, 88, 12, 0.24);
 }
 
-
 /* =========================================================
    NEXT BUTTON DISABLED
 ========================================================= */
@@ -1133,15 +1132,12 @@ thead th {
   box-shadow: none;
 }
 
-
 .normal-next-panel-btn:disabled:hover,
 .fraction-next-panel-btn:disabled:hover {
   transform: none;
   filter: grayscale(0.25);
   box-shadow: none;
 }
-
-
 
 /* =========================================================
    08) Scan Box เศษ
@@ -3512,8 +3508,6 @@ td small {
   cursor: pointer;
 }
 
-
-
 /* =========================================================
    HEADER LIST - PRINT ACTUAL PALLET
 ========================================================= */
@@ -3521,107 +3515,61 @@ td small {
 .header-list-print-pallet-btn {
   min-height: 44px;
 
-  padding:
-    0 16px;
+  padding: 0 16px;
 
-  border:
-    1px solid #bfdbfe;
+  border: 1px solid #bfdbfe;
 
-  border-radius:
-    14px;
+  border-radius: 14px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #eff6ff,
-      #dbeafe
-    );
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
 
-  color:
-    #1d4ed8;
+  color: #1d4ed8;
 
-  display:
-    inline-flex;
+  display: inline-flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    center;
+  justify-content: center;
 
-  gap:
-    8px;
+  gap: 8px;
 
-  font-family:
-    inherit;
+  font-family: inherit;
 
-  font-size:
-    12px;
+  font-size: 12px;
 
-  font-weight:
-    950;
+  font-weight: 950;
 
-  white-space:
-    nowrap;
+  white-space: nowrap;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.15s ease;
 }
-
 
 .header-list-print-pallet-btn i {
-  font-size:
-    12px;
+  font-size: 12px;
 }
-
 
 .header-list-print-pallet-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
 
-  background:
-    linear-gradient(
-      135deg,
-      #dbeafe,
-      #bfdbfe
-    );
+  border-color: #93c5fd;
 
-  border-color:
-    #93c5fd;
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.14);
 
-  box-shadow:
-    0 5px 12px
-    rgba(
-      37,
-      99,
-      235,
-      0.14
-    );
-
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
-
 
 .header-list-print-pallet-btn:disabled {
-  opacity:
-    0.55;
+  opacity: 0.55;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 
-  transform:
-    none;
+  transform: none;
 
-  box-shadow:
-    none;
+  box-shadow: none;
 }
-
-
 
 /* ========================
    PALLET INFO
@@ -3969,8 +3917,7 @@ td small {
   }
 
   .header-list-count {
-    flex:
-      0 0 80px;
+    flex: 0 0 80px;
   }
 
   .header-list-print-pallet-btn,
@@ -5781,8 +5728,6 @@ td small {
   }
 }
 
-
-
 /* =========================================================
    NEXT ACTION PANEL
    หลัง Scan Header ครบ
@@ -5795,19 +5740,14 @@ td small {
 
   background: #ffffff;
 
-  border:
-    1px solid
-    rgba(15, 118, 110, 0.14);
+  border: 1px solid rgba(15, 118, 110, 0.14);
 
   border-radius: 18px;
 
-  box-shadow:
-    0 6px 16px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
 
   overflow: hidden;
 }
-
 
 /* =========================================================
    HEADER
@@ -5822,19 +5762,10 @@ td small {
 
   gap: 18px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ecfdf5,
-      #f0fdfa,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #ecfdf5, #f0fdfa, #ffffff);
 
-  border-bottom:
-    1px solid
-    rgba(20, 184, 166, 0.15);
+  border-bottom: 1px solid rgba(20, 184, 166, 0.15);
 }
-
 
 .next-action-head-left {
   min-width: 0;
@@ -5844,7 +5775,6 @@ td small {
 
   gap: 14px;
 }
-
 
 .next-action-head-icon {
   width: 50px;
@@ -5856,22 +5786,14 @@ td small {
   display: grid;
   place-items: center;
 
-  background:
-    linear-gradient(
-      135deg,
-      #10b981,
-      #14b8a6
-    );
+  background: linear-gradient(135deg, #10b981, #14b8a6);
 
   color: #ffffff;
 
   font-size: 21px;
 
-  box-shadow:
-    0 8px 18px
-    rgba(20, 184, 166, 0.2);
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.2);
 }
-
 
 .next-action-eyebrow {
   color: #059669;
@@ -5882,7 +5804,6 @@ td small {
   letter-spacing: 0.8px;
 }
 
-
 .next-action-head h3 {
   margin: 3px 0 3px;
 
@@ -5892,14 +5813,12 @@ td small {
   font-weight: 950;
 }
 
-
 .next-action-head span {
   color: #64748b;
 
   font-size: 13px;
   font-weight: 700;
 }
-
 
 .next-action-status {
   min-width: 180px;
@@ -5910,13 +5829,10 @@ td small {
 
   background: #ffffff;
 
-  border:
-    1px solid
-    #a7f3d0;
+  border: 1px solid #a7f3d0;
 
   text-align: right;
 }
-
 
 .next-action-status span {
   display: block;
@@ -5926,7 +5842,6 @@ td small {
   font-size: 10px;
   font-weight: 900;
 }
-
 
 .next-action-status b {
   display: block;
@@ -5941,7 +5856,6 @@ td small {
   word-break: break-word;
 }
 
-
 /* =========================================================
    SUMMARY
 ========================================================= */
@@ -5951,12 +5865,10 @@ td small {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 10px;
 }
-
 
 .next-action-summary > div {
   padding: 12px 14px;
@@ -5965,10 +5877,8 @@ td small {
 
   background: #f8fafc;
 
-  border:
-    1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 }
-
 
 .next-action-summary span {
   display: block;
@@ -5978,7 +5888,6 @@ td small {
   font-size: 10px;
   font-weight: 900;
 }
-
 
 .next-action-summary b {
   display: block;
@@ -5991,7 +5900,6 @@ td small {
   font-weight: 950;
 }
 
-
 /* =========================================================
    TWO LARGE ACTION BUTTONS
 ========================================================= */
@@ -6001,12 +5909,10 @@ td small {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 14px;
 }
-
 
 .next-action-btn {
   width: 100%;
@@ -6032,89 +5938,53 @@ td small {
 
   cursor: pointer;
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease, background 0.15s ease;
 }
-
 
 /* =========================================================
    HEADER LIST BUTTON
 ========================================================= */
 
 .next-action-btn.header-list {
-  border:
-    1px solid #bfdbfe;
+  border: 1px solid #bfdbfe;
 
-  background:
-    linear-gradient(
-      135deg,
-      #eff6ff,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
 
   color: #1e40af;
 }
 
-
 .next-action-btn.header-list:hover {
   border-color: #93c5fd;
 
-  background:
-    linear-gradient(
-      135deg,
-      #dbeafe,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #dbeafe, #ffffff);
 
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 
-  box-shadow:
-    0 10px 22px
-    rgba(37, 99, 235, 0.12);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.12);
 }
-
 
 /* =========================================================
    NEW HEADER BUTTON
 ========================================================= */
 
 .next-action-btn.new-header {
-  border:
-    1px solid #a7f3d0;
+  border: 1px solid #a7f3d0;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ecfdf5,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #ecfdf5, #ffffff);
 
   color: #047857;
 }
 
-
 .next-action-btn.new-header:hover {
   border-color: #6ee7b7;
 
-  background:
-    linear-gradient(
-      135deg,
-      #d1fae5,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #d1fae5, #ffffff);
 
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 
-  box-shadow:
-    0 10px 22px
-    rgba(16, 185, 129, 0.13);
+  box-shadow: 0 10px 22px rgba(16, 185, 129, 0.13);
 }
-
 
 /* =========================================================
    ICON
@@ -6132,22 +6002,17 @@ td small {
   font-size: 20px;
 }
 
-
-.next-action-btn.header-list
-.next-action-btn-icon {
+.next-action-btn.header-list .next-action-btn-icon {
   background: #dbeafe;
 
   color: #2563eb;
 }
 
-
-.next-action-btn.new-header
-.next-action-btn-icon {
+.next-action-btn.new-header .next-action-btn-icon {
   background: #d1fae5;
 
   color: #059669;
 }
-
 
 /* =========================================================
    TEXT
@@ -6156,7 +6021,6 @@ td small {
 .next-action-btn-text {
   min-width: 0;
 }
-
 
 .next-action-btn-text span {
   display: block;
@@ -6171,7 +6035,6 @@ td small {
   letter-spacing: 0.6px;
 }
 
-
 .next-action-btn-text b {
   display: block;
 
@@ -6180,7 +6043,6 @@ td small {
   font-size: 18px;
   font-weight: 950;
 }
-
 
 .next-action-btn-text small {
   display: block;
@@ -6194,7 +6056,6 @@ td small {
 
   line-height: 1.45;
 }
-
 
 /* =========================================================
    ARROW
@@ -6210,102 +6071,66 @@ td small {
   place-items: center;
 }
 
-
-.next-action-btn.header-list
-.next-action-btn-arrow {
+.next-action-btn.header-list .next-action-btn-arrow {
   background: #dbeafe;
 
   color: #2563eb;
 }
 
-
-.next-action-btn.new-header
-.next-action-btn-arrow {
+.next-action-btn.new-header .next-action-btn-arrow {
   background: #d1fae5;
 
   color: #059669;
 }
-
 
 /* =========================================================
    STEP 3 ACTIVE
 ========================================================= */
 
 .step-indicator-item.next.active {
-  border-color:
-    rgba(16, 185, 129, 0.4);
+  border-color: rgba(16, 185, 129, 0.4);
 
-  background:
-    linear-gradient(
-      135deg,
-      #ecfdf5,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #ecfdf5, #ffffff);
 }
 
-
-.step-indicator-item.next.active
-.step-number {
-  background:
-    linear-gradient(
-      135deg,
-      #10b981,
-      #14b8a6
-    );
+.step-indicator-item.next.active .step-number {
+  background: linear-gradient(135deg, #10b981, #14b8a6);
 
   border-color: #99f6e4;
 
   color: #ffffff;
 
-  box-shadow:
-    0 8px 18px
-    rgba(20, 184, 166, 0.22);
+  box-shadow: 0 8px 18px rgba(20, 184, 166, 0.22);
 }
-
 
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 
-@media (
-  max-width: 900px
-) {
-
+@media (max-width: 900px) {
   .next-action-summary {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 
   .next-action-buttons {
-    grid-template-columns:
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
-
 }
 
-
-@media (
-  max-width: 640px
-) {
-
+@media (max-width: 640px) {
   .next-action-head {
     align-items: flex-start;
     flex-direction: column;
   }
-
 
   .next-action-status {
     width: 100%;
     text-align: left;
   }
 
-
   .next-action-summary {
-    grid-template-columns:
-      minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
-
 
   .next-action-btn {
     grid-template-columns:
@@ -6318,14 +6143,11 @@ td small {
     padding: 14px;
   }
 
-
   .next-action-btn-icon {
     width: 48px;
     height: 48px;
   }
-
 }
-
 
 /* =========================================================
    NEXT ACTION - BACK TO FRACTION
@@ -6344,7 +6166,6 @@ td small {
 
   justify-content: flex-start;
 }
-
 
 .next-action-back-panel-btn {
   min-height: 44px;
@@ -6373,16 +6194,10 @@ td small {
 
   cursor: pointer;
 
-  box-shadow:
-    0 6px 14px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-
 
 .next-action-back-panel-btn i {
   width: 26px;
@@ -6404,7 +6219,6 @@ td small {
   font-size: 12px;
 }
 
-
 .next-action-back-panel-btn span {
   display: flex;
 
@@ -6415,7 +6229,6 @@ td small {
   line-height: 1.15;
 }
 
-
 .next-action-back-panel-btn span b {
   font-size: 13px;
 
@@ -6424,21 +6237,13 @@ td small {
   color: #0f172a;
 }
 
-
 .next-action-back-panel-btn:hover {
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 
-  background:
-    #f8fafc;
+  background: #f8fafc;
 
-  box-shadow:
-    0 8px 18px
-    rgba(15, 23, 42, 0.1);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
-
-
-
 
 /* =========================================================
    HEADER LIST - BACK TO CREATE PALLET
@@ -6458,7 +6263,6 @@ td small {
 
   justify-content: flex-start;
 }
-
 
 /* =========================================================
    BUTTON
@@ -6487,17 +6291,11 @@ td small {
 
   cursor: pointer;
 
-  box-shadow:
-    0 6px 14px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
 
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease, box-shadow 0.15s ease;
 }
-
 
 /* =========================================================
    ICON
@@ -6525,7 +6323,6 @@ td small {
   font-size: 12px;
 }
 
-
 /* =========================================================
    TEXT
 ========================================================= */
@@ -6542,7 +6339,6 @@ td small {
   line-height: 1.12;
 }
 
-
 .header-list-back-panel-btn small {
   color: #94a3b8;
 
@@ -6555,7 +6351,6 @@ td small {
   letter-spacing: 0.4px;
 }
 
-
 .header-list-back-panel-btn b {
   margin-top: 2px;
 
@@ -6565,7 +6360,6 @@ td small {
 
   font-weight: 950;
 }
-
 
 /* =========================================================
    HOVER
@@ -6578,11 +6372,8 @@ td small {
 
   transform: translateY(-1px);
 
-  box-shadow:
-    0 8px 18px
-    rgba(15, 23, 42, 0.1);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
-
 
 .header-list-back-panel-btn:hover > i {
   background: #e2e8f0;
@@ -6590,27 +6381,21 @@ td small {
   color: #0f172a;
 }
 
-
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 600px) {
-
   .header-list-back-panel {
     padding-top: 14px;
   }
-
 
   .header-list-back-panel-btn {
     min-height: 48px;
 
     padding-right: 17px;
   }
-
 }
-
-
 
 /* =========================================================
    NORMAL SCAN - BACK TO HEADER LIST
@@ -6629,7 +6414,6 @@ td small {
 
   justify-content: flex-start;
 }
-
 
 /* =========================================================
    BUTTON
@@ -6662,16 +6446,10 @@ td small {
 
   cursor: pointer;
 
-  box-shadow:
-    0 6px 14px
-    rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
 
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-
 
 /* =========================================================
    ICON
@@ -6697,7 +6475,6 @@ td small {
   font-size: 12px;
 }
 
-
 /* =========================================================
    TEXT
 ========================================================= */
@@ -6712,7 +6489,6 @@ td small {
   line-height: 1.15;
 }
 
-
 .normal-back-panel-btn span b {
   font-size: 13px;
 
@@ -6721,26 +6497,17 @@ td small {
   color: #0f172a;
 }
 
-
 /* =========================================================
    HOVER
 ========================================================= */
 
 .normal-back-panel-btn:hover {
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 
-  background:
-    #f8fafc;
+  background: #f8fafc;
 
-  box-shadow:
-    0 8px 18px
-    rgba(15, 23, 42, 0.1);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
-
-
-
-
 
 /* =========================================================
    CREATE PALLET - OCCUPIED LOCATION
@@ -6763,75 +6530,56 @@ td small {
 
   font-weight: 950 !important;
 
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(15, 23, 42, 0.06) !important;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
 
   transform: none !important;
 }
-
 
 /* =========================================================
    A / B / C
 ========================================================= */
 
 .create-rack-slot.occupied.occupied-abc {
-  background:
-    #ffd9c2 !important;
+  background: #ffd9c2 !important;
 
-  border-color:
-    #f3a779 !important;
+  border-color: #f3a779 !important;
 
-  color:
-    #7c2d12 !important;
+  color: #7c2d12 !important;
 }
-
 
 /* =========================================================
    D / E
 ========================================================= */
 
 .create-rack-slot.occupied.occupied-de {
-  background:
-    #f5b3ed !important;
+  background: #f5b3ed !important;
 
-  border-color:
-    #dd82d1 !important;
+  border-color: #dd82d1 !important;
 
-  color:
-    #701a75 !important;
+  color: #701a75 !important;
 }
-
 
 /* =========================================================
    F / G / H
 ========================================================= */
 
 .create-rack-slot.occupied.occupied-fgh {
-  background:
-    #d6ffb8 !important;
+  background: #d6ffb8 !important;
 
-  border-color:
-    #9fd778 !important;
+  border-color: #9fd778 !important;
 
-  color:
-    #365314 !important;
+  color: #365314 !important;
 }
-
 
 /* =========================================================
    OCCUPIED HOVER
 ========================================================= */
 
 .create-rack-slot.occupied:hover {
-  transform:
-    none !important;
+  transform: none !important;
 
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(15, 23, 42, 0.06) !important;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06) !important;
 }
-
 
 /* =========================================================
    NEXT ACTION - ACTUAL MODE
@@ -6839,536 +6587,349 @@ td small {
 ========================================================= */
 
 .next-action-buttons.actual-mode {
-  grid-template-columns:
-    repeat(
-      3,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-
-
-
-
 
 /* =========================================================
    PRINT CURRENT HEADER LABEL
 ========================================================= */
 
 .next-action-btn.print-header {
-  border:
-    1px solid #ddd6fe;
+  border: 1px solid #ddd6fe;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f5f3ff,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #f5f3ff, #ffffff);
 
-  color:
-    #6d28d9;
+  color: #6d28d9;
 }
-
 
 .next-action-btn.print-header:hover:not(:disabled) {
-  border-color:
-    #c4b5fd;
+  border-color: #c4b5fd;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ede9fe,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #ede9fe, #ffffff);
 
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 
-  box-shadow:
-    0 10px 22px
-    rgba(
-      124,
-      58,
-      237,
-      0.13
-    );
+  box-shadow: 0 10px 22px rgba(124, 58, 237, 0.13);
 }
 
+.next-action-btn.print-header .next-action-btn-icon {
+  background: #ede9fe;
 
-.next-action-btn.print-header
-.next-action-btn-icon {
-  background:
-    #ede9fe;
-
-  color:
-    #7c3aed;
+  color: #7c3aed;
 }
 
+.next-action-btn.print-header .next-action-btn-arrow {
+  background: #ede9fe;
 
-.next-action-btn.print-header
-.next-action-btn-arrow {
-  background:
-    #ede9fe;
-
-  color:
-    #7c3aed;
+  color: #7c3aed;
 }
-
 
 .next-action-btn.print-header:disabled {
-  opacity:
-    0.55;
+  opacity: 0.55;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 
-  transform:
-    none;
+  transform: none;
 
-  box-shadow:
-    none;
+  box-shadow: none;
 }
-  
-
-
-
 
 /* =========================================================
    ACTUAL HEADER CARD ACTION
 ========================================================= */
 
 .actual-header-card {
-  cursor:
-    default;
+  cursor: default;
 }
-
 
 /* =========================================================
    TOP ACTIONS
 ========================================================= */
 
 .actual-header-card-actions {
-  margin-left:
-    auto;
+  margin-left: auto;
 
-  display:
-    inline-flex;
+  display: inline-flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    8px;
+  gap: 8px;
 }
-
 
 /* =========================================================
    DELETE HEADER BUTTON
 ========================================================= */
 
 .actual-header-delete-btn {
-  width:
-    34px;
+  width: 34px;
 
-  height:
-    34px;
+  height: 34px;
 
-  min-width:
-    34px;
+  min-width: 34px;
 
-  border:
-    1px solid #fecaca;
+  border: 1px solid #fecaca;
 
-  border-radius:
-    50%;
+  border-radius: 50%;
 
-  background:
-    #fff7f7;
+  background: #fff7f7;
 
-  color:
-    #dc2626;
+  color: #dc2626;
 
-  display:
-    inline-flex;
+  display: inline-flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    center;
+  justify-content: center;
 
-  padding:
-    0;
+  padding: 0;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 
-  font-size:
-    13px;
+  font-size: 13px;
 
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.15s ease;
 }
-
 
 .actual-header-delete-btn:hover:not(:disabled) {
-  background:
-    #fee2e2;
+  background: #fee2e2;
 
-  border-color:
-    #fca5a5;
+  border-color: #fca5a5;
 
-  color:
-    #b91c1c;
+  color: #b91c1c;
 
-  box-shadow:
-    0 5px 12px
-    rgba(
-      220,
-      38,
-      38,
-      0.14
-    );
+  box-shadow: 0 5px 12px rgba(220, 38, 38, 0.14);
 
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
-
 
 .actual-header-delete-btn:disabled {
-  opacity:
-    0.5;
+  opacity: 0.5;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 
-  transform:
-    none;
+  transform: none;
 
-  box-shadow:
-    none;
+  box-shadow: none;
 }
-
 
 /* =========================================================
    OPEN HEADER ICON BUTTON
 ========================================================= */
 
 .actual-header-open-btn {
-  border:
-    0;
+  border: 0;
 
-  padding:
-    0;
+  padding: 0;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 }
-
 
 .actual-header-open-btn:disabled {
-  opacity:
-    0.5;
+  opacity: 0.5;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 }
-
 
 /* =========================================================
    ACTUAL CARD CONTENT CLICK
 ========================================================= */
 
-.actual-header-card
-.header-box-status {
-  cursor:
-    pointer;
+.actual-header-card .header-box-status {
+  cursor: pointer;
 }
-
 
 /* =========================================================
    FOOT OPEN HEADER
 ========================================================= */
 
 .actual-header-open-link {
-  border:
-    0;
+  border: 0;
 
-  background:
-    transparent;
+  background: transparent;
 
-  color:
-    #0f766e;
+  color: #0f766e;
 
-  display:
-    inline-flex;
+  display: inline-flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    6px;
+  gap: 6px;
 
-  padding:
-    4px 0;
+  padding: 4px 0;
 
-  font-family:
-    inherit;
+  font-family: inherit;
 
-  font-size:
-    11px;
+  font-size: 11px;
 
-  font-weight:
-    950;
+  font-weight: 950;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 }
-
 
 .actual-header-open-link:hover:not(:disabled) {
-  color:
-    #0d9488;
+  color: #0d9488;
 }
-
 
 .actual-header-open-link:disabled {
-  opacity:
-    0.5;
+  opacity: 0.5;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 }
-
 
 /* =========================================================
    ACTUAL HEADER GROUP TITLE
 ========================================================= */
 
 .actual-header-section-title {
-  width:
-    100%;
+  width: 100%;
 
-  margin:
-    20px 0 12px;
+  margin: 20px 0 12px;
 
-  padding:
-    14px 16px;
+  padding: 14px 16px;
 
-  border-radius:
-    16px;
+  border-radius: 16px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
-  gap:
-    16px;
+  gap: 16px;
 }
-
 
 .actual-header-section-title > div {
-  min-width:
-    0;
+  min-width: 0;
 }
-
 
 .actual-header-section-title span {
-  display:
-    block;
+  display: block;
 
-  font-size:
-    10px;
+  font-size: 10px;
 
-  font-weight:
-    950;
+  font-weight: 950;
 
-  letter-spacing:
-    1px;
+  letter-spacing: 1px;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
-
 
 .actual-header-section-title b {
-  display:
-    block;
+  display: block;
 
-  margin-top:
-    3px;
+  margin-top: 3px;
 
-  font-size:
-    15px;
+  font-size: 15px;
 
-  font-weight:
-    950;
+  font-weight: 950;
 }
-
 
 .actual-header-section-title small {
-  display:
-    block;
+  display: block;
 
-  margin-top:
-    3px;
+  margin-top: 3px;
 
-  font-size:
-    11px;
+  font-size: 11px;
 
-  font-weight:
-    700;
+  font-weight: 700;
 
-  opacity:
-    0.8;
+  opacity: 0.8;
 }
-
 
 .actual-header-section-title strong {
-  min-width:
-    38px;
+  min-width: 38px;
 
-  height:
-    38px;
+  height: 38px;
 
-  padding:
-    0 10px;
+  padding: 0 10px;
 
-  border-radius:
-    12px;
+  border-radius: 12px;
 
-  display:
-    inline-flex;
+  display: inline-flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    center;
+  justify-content: center;
 
-  font-size:
-    16px;
+  font-size: 16px;
 
-  font-weight:
-    950;
+  font-weight: 950;
 }
-
 
 /* =========================================================
    EXISTING
 ========================================================= */
 
 .actual-header-section-title.existing {
-  background:
-    #ecfdf5;
+  background: #ecfdf5;
 
-  border:
-    1px solid #a7f3d0;
+  border: 1px solid #a7f3d0;
 
-  color:
-    #065f46;
+  color: #065f46;
 }
-
 
 .actual-header-section-title.existing strong {
-  background:
-    #ffffff;
+  background: #ffffff;
 
-  color:
-    #047857;
+  color: #047857;
 }
-
 
 /* =========================================================
    TAC / PENDING
 ========================================================= */
 
 .actual-header-section-title.tac {
-  background:
-    #fff7ed;
+  background: #fff7ed;
 
-  border:
-    1px solid #fed7aa;
+  border: 1px solid #fed7aa;
 
-  color:
-    #9a3412;
+  color: #9a3412;
 }
-
 
 .actual-header-section-title.tac strong {
-  background:
-    #ffffff;
+  background: #ffffff;
 
-  color:
-    #ea580c;
+  color: #ea580c;
 }
-
 
 /* =========================================================
    TAC HEADER CARD
 ========================================================= */
 
 .actual-tac-header-list {
-  margin-bottom:
-    22px;
+  margin-bottom: 22px;
 }
-
 
 .actual-tac-header-card {
-  border-color:
-    #fed7aa;
+  border-color: #fed7aa;
 }
-
 
 .header-item-icon.tac {
-  background:
-    #fff7ed;
+  background: #fff7ed;
 
-  color:
-    #ea580c;
+  color: #ea580c;
 }
-
 
 .header-box-status-group.current.tac-pending {
-  background:
-    #fffaf5;
+  background: #fffaf5;
 
-  border-color:
-    #fed7aa;
+  border-color: #fed7aa;
 }
-
 
 .actual-tac-pending-text {
-  margin-top:
-    10px;
+  margin-top: 10px;
 
-  color:
-    #c2410c;
+  color: #c2410c;
 
-  font-size:
-    12px;
+  font-size: 12px;
 
-  font-weight:
-    850;
+  font-weight: 850;
 }
-
 
 .actual-tac-owner {
-  color:
-    #c2410c;
+  color: #c2410c;
 }
-
-
-
 
 /* =========================================================
    ACTUAL TAC - SAVE TO PALLET
@@ -7385,12 +6946,7 @@ td small {
 
   border-radius: 18px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #fff7ed,
-      #ffffff
-    );
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
 
   display: flex;
 
@@ -7400,7 +6956,6 @@ td small {
 
   gap: 18px;
 }
-
 
 /* INFO */
 
@@ -7413,7 +6968,6 @@ td small {
 
   gap: 12px;
 }
-
 
 .actual-tac-save-icon {
   width: 46px;
@@ -7437,7 +6991,6 @@ td small {
   font-size: 18px;
 }
 
-
 .actual-tac-save-info span {
   display: block;
 
@@ -7449,7 +7002,6 @@ td small {
 
   letter-spacing: 1px;
 }
-
 
 .actual-tac-save-info b {
   display: block;
@@ -7463,7 +7015,6 @@ td small {
   font-weight: 950;
 }
 
-
 .actual-tac-save-info small {
   display: block;
 
@@ -7476,7 +7027,6 @@ td small {
   font-weight: 700;
 }
 
-
 /* BUTTON */
 
 .actual-tac-save-btn {
@@ -7488,12 +7038,7 @@ td small {
 
   padding: 0 18px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f97316,
-      #ea580c
-    );
+  background: linear-gradient(135deg, #f97316, #ea580c);
 
   color: #ffffff;
 
@@ -7515,18 +7060,14 @@ td small {
 
   white-space: nowrap;
 
-  box-shadow:
-    0 7px 16px
-    rgba(234, 88, 12, 0.2);
+  box-shadow: 0 7px 16px rgba(234, 88, 12, 0.2);
 }
-
 
 .actual-tac-save-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 
   filter: brightness(1.03);
 }
-
 
 .actual-tac-save-btn:disabled {
   opacity: 0.55;
@@ -7538,24 +7079,102 @@ td small {
   box-shadow: none;
 }
 
-
 @media (max-width: 760px) {
-
   .actual-tac-save-panel {
     align-items: stretch;
 
     flex-direction: column;
   }
 
-
   .actual-tac-save-btn {
     width: 100%;
   }
-
 }
 
+/* =========================================================
+   ACTUAL : DELETE PALLET BUTTON
+========================================================= */
 
+.header-list-delete-pallet-btn {
+  min-height: 42px;
 
+  padding: 0 16px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #fff7f7, #fef2f2);
+
+  color: #dc2626;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  font-size: 13px;
+
+  font-weight: 950;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  box-shadow: 0 5px 12px rgba(220, 38, 38, 0.08);
+
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.header-list-delete-pallet-btn i {
+  font-size: 13px;
+}
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.header-list-delete-pallet-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fee2e2, #fff7f7);
+
+  border-color: #fca5a5;
+
+  color: #b91c1c;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.14);
+}
+
+/* =========================================================
+   ACTIVE
+========================================================= */
+
+.header-list-delete-pallet-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+.header-list-delete-pallet-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
 
 /* ====================
 for 2 case to center

@@ -568,6 +568,7 @@
           type="button"
           class="header-list-create-btn"
           (click)="onCreateNewHeaderByMode()"
+          [disabled]="isPrinting || isDeletingActualPallet"
         >
           <i class="fas fa-plus"></i>
 
