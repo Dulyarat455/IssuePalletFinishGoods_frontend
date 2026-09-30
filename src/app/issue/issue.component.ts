@@ -4010,6 +4010,20 @@ export class IssueComponent implements OnInit, AfterViewInit {
 
     const totalBox = normalQty + fractionQty;
 
+    // =====================================================
+    // ACTUAL TAC : EDIT EXISTING TAC HEADER
+    // =====================================================
+
+    if (
+      this.isEditingHeader &&
+      this.actualHeaderSource === 'TAC' &&
+      this.activeActualTacHeader?.id
+    ) {
+      this.editActualTacHeader(normalQty, fractionQty, totalBox);
+
+      return;
+    }
+
     this.isSavingHeader = true;
 
     const payload = {
@@ -4158,6 +4172,205 @@ export class IssueComponent implements OnInit, AfterViewInit {
               'Save Header Actual fail',
             'error'
           );
+        },
+      });
+  }
+
+  private editActualTacHeader(
+    normalQty: number,
+    fractionQty: number,
+    totalBox: number
+  ): void {
+    // VALIDATE TAC HEADER
+    const headTacId = Number(this.activeActualTacHeader?.id || 0);
+
+    if (!Number.isInteger(headTacId) || headTacId <= 0) {
+      return this.toast('warning', 'ไม่พบ Header TAC');
+    }
+
+    if (this.isSavingHeader) {
+      return;
+    }
+
+    // PAYLOAD
+    const payload = {
+      headTacId: headTacId,
+
+      itemNo: String(this.form.itemNo || '').trim(),
+
+      itemName: String(this.form.itemName || '').trim(),
+
+      groupId: Number(this.form.groupId),
+
+      controlLot: this.showHeaderControlLot
+        ? String(this.form.controlLot || '').trim()
+        : '',
+
+      moveMentThreeMonth: String(this.form.movementMonth || '').trim(),
+
+      normalQty: Number(normalQty),
+
+      fractionQty: Number(fractionQty),
+    };
+
+    // SAVE
+    this.isSavingHeader = true;
+
+    this.http
+      .post<any>(config.apiServer + '/api/issue/editHeaderTac', payload)
+      .subscribe({
+        next: (res: any): void => {
+          this.isSavingHeader = false;
+
+          const raw = res?.data;
+
+          if (!raw?.id) {
+            Swal.fire(
+              'Error',
+              'Edit Header TAC สำเร็จ แต่ไม่พบข้อมูล Header',
+              'error'
+            );
+
+            return;
+          }
+
+          // UPDATE CURRENT TAC STATE
+          const updatedTac: ActualTacHeaderRow = {
+            id: Number(raw.id),
+
+            palletId: Number(raw.palletId || this.actualPallet?.id || 0),
+
+            itemNo: String(raw.itemNo || this.form.itemNo || ''),
+
+            itemName: String(raw.itemName || this.form.itemName || ''),
+
+            normalQty: Number(raw.normalQty ?? normalQty),
+
+            fractionQty: Number(raw.fractionQty ?? fractionQty),
+
+            groupId: Number(raw.groupId ?? this.form.groupId ?? 0),
+
+            controlLot: String(raw.controlLot ?? this.form.controlLot ?? ''),
+
+            moveMentThreeMonth: String(
+              raw.moveMentThreeMonth ?? this.form.movementMonth ?? ''
+            ),
+
+            userId: Number(raw.userId || this.userId || 0),
+
+            timeStmp: String(
+              raw.timeStmp || this.activeActualTacHeader?.timeStmp || ''
+            ),
+
+            status: String(raw.status || 'use'),
+          };
+
+          this.activeActualTacHeader = updatedTac;
+
+          this.actualHeaderSource = 'TAC';
+
+          // UPDATE HEADER OBJECT ที่ UI ใช้อยู่
+          this.header = {
+            id: updatedTac.id,
+
+            issueDate: this.toYmd(this.actualPallet!.date),
+
+            shift: this.actualPallet!.shift,
+
+            groupId: updatedTac.groupId,
+
+            itemNo: updatedTac.itemNo,
+
+            itemName: updatedTac.itemName,
+
+            controlLot: updatedTac.controlLot,
+
+            movementMonth: updatedTac.moveMentThreeMonth,
+
+            totalQtyBox: totalBox,
+
+            normalQty: updatedTac.normalQty,
+
+            fractionQty: updatedTac.fractionQty,
+
+            normalScannedQty: this.savedRows.length,
+
+            fractionScannedQty: this.fractionRows.length,
+
+            palletTempId: 0,
+
+            idPallet: this.actualPallet!.palletNoId,
+
+            userId: updatedTac.userId,
+
+            status: updatedTac.status,
+          };
+
+          // SYNC FORM
+          this.form = this.mapHeaderToForm(this.header);
+
+          this.form.totalQtyBox = totalBox;
+
+          this.itemKeyword = updatedTac.itemNo;
+
+          this.fullBoxTagQty = updatedTac.normalQty;
+
+          this.fractionQtyBox = updatedTac.fractionQty;
+
+          this.showFractionSection = updatedTac.fractionQty > 0;
+
+          // TAC ไม่มี HeaderIssueFraction
+          this.fractionHeader = null;
+
+          // END EDIT MODE
+          this.isEditingHeader = false;
+
+          // RELOAD TAC HEADER LIST
+          this.fetchActualTacHeaders();
+
+          // SUCCESS
+          Swal.fire({
+            icon: 'success',
+
+            title: 'Edit Header Success',
+
+            text: 'แก้ไข Header ใหม่เรียบร้อยแล้ว',
+
+            timer: 900,
+
+            showConfirmButton: false,
+
+            returnFocus: false,
+          }).then(() => {
+            // กลับไป Scanner Box เต็ม
+            this.clearScanForm();
+          });
+        },
+
+        error: (err: any): void => {
+          console.error('EDIT HEADER TAC ERROR:', err);
+
+          this.isSavingHeader = false;
+
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            err?.message ||
+            'Edit Header TAC fail';
+
+          if (msg === 'missing_required_fields') {
+            Swal.fire('Warning', 'กรุณากรอกข้อมูล Header ให้ครบ', 'warning');
+
+            return;
+          }
+
+          if (msg === 'header_tac_notFound') {
+            Swal.fire('Warning', 'ไม่พบ Header TAC นี้ในระบบ', 'warning');
+
+            return;
+          }
+
+          Swal.fire('Error', msg, 'error');
         },
       });
   }
@@ -4633,13 +4846,22 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.isEditingHeader = true;
   }
 
-  onCancelEditHeader() {
-    if (!this.header) return;
+  onCancelEditHeader(): void {
+    if (!this.header) {
+      return;
+    }
+
     this.form = this.mapHeaderToForm(this.header);
     this.itemKeyword = this.form.itemNo;
     this.fullBoxTagQty = this.header.normalQty ?? null;
-    this.fractionQtyBox = this.fractionHeader?.qtyBox ?? null;
+
+    // TEMP ใช้ fractionHeader
+    // ACTUAL TAC ใช้ header.fractionQty
+    this.fractionQtyBox =
+      this.fractionHeader?.qtyBox ?? this.header.fractionQty ?? null;
+
     this.isEditingHeader = false;
+
     this.focusQr();
   }
 
@@ -6387,9 +6609,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
           Swal.fire({
             title: 'Error',
             text:
-              err?.error?.message ||
-              err?.message ||
-              'Confirm Scan ไม่สำเร็จ',
+              err?.error?.message || err?.message || 'Confirm Scan ไม่สำเร็จ',
             icon: 'error',
             returnFocus: false,
           }).then(() => {
@@ -6613,17 +6833,17 @@ export class IssueComponent implements OnInit, AfterViewInit {
           .subscribe({
             next: () => {
               this.isDeletingBox = false;
-            
+
               // เอา row ออกจาก UI ก่อน
               this.savedRows = this.savedRows.filter(
                 (box) => Number(box.id) !== Number(row.id)
               );
-            
+
               this.toast('success', 'Delete Box Success');
-            
+
               // reload backend
               this.fetchActualTacNormalBoxes();
-            
+
               // clear scanner + focus Item No.
               this.clearScanForm();
             },
@@ -6660,15 +6880,15 @@ export class IssueComponent implements OnInit, AfterViewInit {
         .subscribe({
           next: () => {
             this.isDeletingBox = false;
-          
+
             this.savedRows = this.savedRows.filter(
               (box) => Number(box.id) !== Number(row.id)
             );
-          
+
             this.toast('success', 'Delete Box Success');
-          
+
             this.fetchWosTemp();
-          
+
             this.clearScanForm();
           },
 
@@ -6961,7 +7181,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
           next: () => {
             this.isClearing = false;
 
-             // Clear UI ก่อน เพื่อให้ isBoxFull = false ทันที
+            // Clear UI ก่อน เพื่อให้ isBoxFull = false ทันที
             this.savedRows = [];
 
             this.toast('success', 'Clear Normal Box Success');
@@ -10603,120 +10823,65 @@ export class IssueComponent implements OnInit, AfterViewInit {
   }
 
   saveActualTacHeadersToPallet(): void {
-
     // =====================================================
     // ONLY ACTUAL MODE
     // =====================================================
-  
-    if (
-      this.issueMode !== 'ACTUAL'
-    ) {
+
+    if (this.issueMode !== 'ACTUAL') {
       return;
     }
-  
-  
+
     // =====================================================
     // VALIDATE PALLET
     // =====================================================
-  
-    const palletId =
-      Number(
-        this.actualPallet?.id ||
-        this.actualPalletId ||
-        0
-      );
-  
-  
-    if (
-      !Number.isInteger(palletId) ||
-      palletId <= 0
-    ) {
-  
-      return this.toast(
-        'warning',
-        'ไม่พบ Actual Pallet'
-      );
-  
+
+    const palletId = Number(this.actualPallet?.id || this.actualPalletId || 0);
+
+    if (!Number.isInteger(palletId) || palletId <= 0) {
+      return this.toast('warning', 'ไม่พบ Actual Pallet');
     }
-  
-  
+
     // =====================================================
     // VALIDATE TAC HEADER
     // =====================================================
-  
-    if (
-      this.actualTacHeaders.length === 0
-    ) {
-  
-      return this.toast(
-        'info',
-        'ไม่มี Header ใหม่ที่รอ Save'
-      );
-  
+
+    if (this.actualTacHeaders.length === 0) {
+      return this.toast('info', 'ไม่มี Header ใหม่ที่รอ Save');
     }
-  
-  
+
     // =====================================================
     // PREVENT DOUBLE CLICK
     // =====================================================
-  
-    if (
-      this.isSavingActualTacToPallet
-    ) {
+
+    if (this.isSavingActualTacToPallet) {
       return;
     }
-  
-  
+
     // =====================================================
     // SUMMARY
     // =====================================================
-  
-    const headerCount =
-      this.actualTacHeaders.length;
-  
-  
-    const totalNormalPlan =
-      this.actualTacHeaders.reduce(
-        (
-          sum,
-          header
-        ) =>
-          sum +
-          Number(
-            header.normalQty ||
-            0
-          ),
-        0
-      );
-  
-  
-    const totalFractionPlan =
-      this.actualTacHeaders.reduce(
-        (
-          sum,
-          header
-        ) =>
-          sum +
-          Number(
-            header.fractionQty ||
-            0
-          ),
-        0
-      );
-  
-  
+
+    const headerCount = this.actualTacHeaders.length;
+
+    const totalNormalPlan = this.actualTacHeaders.reduce(
+      (sum, header) => sum + Number(header.normalQty || 0),
+      0
+    );
+
+    const totalFractionPlan = this.actualTacHeaders.reduce(
+      (sum, header) => sum + Number(header.fractionQty || 0),
+      0
+    );
+
     // =====================================================
     // CONFIRM
     // =====================================================
-  
+
     Swal.fire({
-  
-      icon:
-        'question',
-  
-      title:
-        'Save New Headers to Pallet?',
-  
+      icon: 'question',
+
+      title: 'Save New Headers to Pallet?',
+
       html: `
         <div style="text-align:left">
   
@@ -10764,44 +10929,30 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
         </div>
       `,
-  
-      showCancelButton:
-        true,
-  
-      confirmButtonText:
-        'Save New Headers',
-  
-      cancelButtonText:
-        'Cancel',
-  
-      confirmButtonColor:
-        '#16a34a',
-  
-      reverseButtons:
-        true,
-  
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Save New Headers',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#16a34a',
+
+      reverseButtons: true,
     }).then((result) => {
-  
-      if (
-        !result.isConfirmed
-      ) {
+      if (!result.isConfirmed) {
         return;
       }
-  
-  
+
       // =====================================================
       // LOADING
       // =====================================================
-  
-      this.isSavingActualTacToPallet =
-        true;
-  
-  
+
+      this.isSavingActualTacToPallet = true;
+
       Swal.fire({
-  
-        title:
-          'Saving New Headers...',
-  
+        title: 'Saving New Headers...',
+
         html: `
           <div style="text-align:center">
   
@@ -10821,124 +10972,72 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
           </div>
         `,
-  
-        allowOutsideClick:
-          false,
-  
-        allowEscapeKey:
-          false,
-  
-        showConfirmButton:
-          false,
-  
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        showConfirmButton: false,
+
         didOpen: () => {
-  
           Swal.showLoading();
-  
         },
-  
       });
-  
-  
+
       // =====================================================
       // CALL API
       // =====================================================
-  
+
       this.http
-        .post<any>(
-          config.apiServer +
-            '/api/issue/saveNewHeaderTac',
-          {
-            palletId:
-              palletId,
-          }
-        )
+        .post<any>(config.apiServer + '/api/issue/saveNewHeaderTac', {
+          palletId: palletId,
+        })
         .subscribe({
-  
           // ===================================================
           // SUCCESS
           // ===================================================
-  
-          next: (
-            res: any
-          ): void => {
-  
-            this.isSavingActualTacToPallet =
-              false;
-  
-  
+
+          next: (res: any): void => {
+            this.isSavingActualTacToPallet = false;
+
             Swal.close();
-  
-  
-            const createdHeaderCount =
-              Number(
-                res?.data?.createdHeaderCount ||
-                0
-              );
-  
-  
-            const createdBoxCount =
-              Number(
-                res?.data?.createdBoxCount ||
-                0
-              );
-  
-  
-            const createdFractionMapCount =
-              Number(
-                res?.data?.createdFractionMapCount ||
-                0
-              );
-  
-  
+
+            const createdHeaderCount = Number(
+              res?.data?.createdHeaderCount || 0
+            );
+
+            const createdBoxCount = Number(res?.data?.createdBoxCount || 0);
+
+            const createdFractionMapCount = Number(
+              res?.data?.createdFractionMapCount || 0
+            );
+
             // =================================================
             // RESET CURRENT TAC HEADER STATE
             // =================================================
-  
-            this.activeActualTacHeader =
-              null;
-  
-  
-            this.actualHeaderSource =
-              null;
-  
-  
-            this.header =
-              null;
-  
-  
-            this.savedRows =
-              [];
-  
-  
-            this.fractionRows =
-              [];
-  
-  
-            this.scanForm =
-              this.createEmptyScanForm();
-  
-  
-            this.fractionScanForm =
-              this.createEmptyScanForm();
-  
-  
-            this.fractionHeader =
-              null;
-  
-  
-            this.fractionQtyBox =
-              null;
-  
-  
-            this.showFractionSection =
-              false;
-  
-  
-            this.activeIssuePanel =
-              'normal';
-  
-  
+
+            this.activeActualTacHeader = null;
+
+            this.actualHeaderSource = null;
+
+            this.header = null;
+
+            this.savedRows = [];
+
+            this.fractionRows = [];
+
+            this.scanForm = this.createEmptyScanForm();
+
+            this.fractionScanForm = this.createEmptyScanForm();
+
+            this.fractionHeader = null;
+
+            this.fractionQtyBox = null;
+
+            this.showFractionSection = false;
+
+            this.activeIssuePanel = 'normal';
+
             // =================================================
             // RELOAD ACTUAL PALLET
             //
@@ -10946,24 +11045,18 @@ export class IssueComponent implements OnInit, AfterViewInit {
             // API saveNewHeaderTac สร้าง HeaderIssue / Box จริงแล้ว
             // ดังนั้น reload Pallet ทั้งก้อนใหม่
             // =================================================
-  
-            this.loadActualPallet(
-              palletId
-            );
-  
-  
+
+            this.loadActualPallet(palletId);
+
             // =================================================
             // SUCCESS
             // =================================================
-  
+
             Swal.fire({
-  
-              icon:
-                'success',
-  
-              title:
-                'Save New Headers Success',
-  
+              icon: 'success',
+
+              title: 'Save New Headers Success',
+
               html: `
                 <div style="text-align:left">
   
@@ -11008,163 +11101,97 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
                 </div>
               `,
-  
-              confirmButtonText:
-                'OK',
-  
-              confirmButtonColor:
-                '#16a34a',
-  
-              returnFocus:
-                false,
-  
+
+              confirmButtonText: 'OK',
+
+              confirmButtonColor: '#16a34a',
+
+              returnFocus: false,
             });
-  
           },
-  
-  
+
           // ===================================================
           // ERROR
           // ===================================================
-  
-          error: (
-            err: any
-          ): void => {
-  
-            console.error(
-              'SAVE NEW HEADER TAC ERROR:',
-              err
-            );
-  
-  
-            this.isSavingActualTacToPallet =
-              false;
-  
-  
+
+          error: (err: any): void => {
+            console.error('SAVE NEW HEADER TAC ERROR:', err);
+
+            this.isSavingActualTacToPallet = false;
+
             Swal.close();
-  
-  
+
             const msg =
               err?.error?.message ||
               err?.error?.error ||
               err?.message ||
               'Save New Headers fail';
-  
-  
+
             // ===============================================
             // HEADER TAC NOT FOUND
             // ===============================================
-  
-            if (
-              msg ===
-              'header_tac_not_found'
-            ) {
-  
+
+            if (msg === 'header_tac_not_found') {
               Swal.fire({
-  
-                icon:
-                  'warning',
-  
-                title:
-                  'ไม่พบ Header ใหม่',
-  
-                text:
-                  'ไม่พบ Header TAC ที่รอ Save เข้า Pallet',
-  
-                confirmButtonText:
-                  'OK',
-  
+                icon: 'warning',
+
+                title: 'ไม่พบ Header ใหม่',
+
+                text: 'ไม่พบ Header TAC ที่รอ Save เข้า Pallet',
+
+                confirmButtonText: 'OK',
               }).then(() => {
-  
                 this.fetchActualTacHeaders();
-  
               });
-  
-  
+
               return;
-  
             }
-  
-  
+
             // ===============================================
             // PALLET NOT FOUND
             // ===============================================
-  
-            if (
-              msg ===
-              'Pallet_notFound' ||
-              msg ===
-              'invalid_palletId'
-            ) {
-  
+
+            if (msg === 'Pallet_notFound' || msg === 'invalid_palletId') {
               Swal.fire({
-  
-                icon:
-                  'warning',
-  
-                title:
-                  'ไม่พบ Pallet',
-  
-                text:
-                  'ไม่สามารถเพิ่ม Header ใหม่เข้า Pallet ได้',
-  
+                icon: 'warning',
+
+                title: 'ไม่พบ Pallet',
+
+                text: 'ไม่สามารถเพิ่ม Header ใหม่เข้า Pallet ได้',
               });
-  
-  
+
               return;
-  
             }
-  
-  
+
             // ===============================================
             // LABEL RUNNING FULL
             // ===============================================
-  
-            if (
-              msg ===
-              'label_daily_running_over_999'
-            ) {
-  
+
+            if (msg === 'label_daily_running_over_999') {
               Swal.fire({
-  
-                icon:
-                  'warning',
-  
-                title:
-                  'Label Running เต็ม',
-  
-                text:
-                  'Label No. ของวันนี้เกิน 999 แล้ว',
-  
+                icon: 'warning',
+
+                title: 'Label Running เต็ม',
+
+                text: 'Label No. ของวันนี้เกิน 999 แล้ว',
               });
-  
-  
+
               return;
-  
             }
-  
-  
+
             // ===============================================
             // OTHER ERROR
             // ===============================================
-  
+
             Swal.fire({
-  
-              icon:
-                'error',
-  
-              title:
-                'Save New Headers ไม่สำเร็จ',
-  
-              text:
-                msg,
-  
+              icon: 'error',
+
+              title: 'Save New Headers ไม่สำเร็จ',
+
+              text: msg,
             });
-  
           },
-  
         });
-  
     });
   }
 }

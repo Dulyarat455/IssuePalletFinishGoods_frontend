@@ -1330,7 +1330,10 @@
               <button
                 type="button"
                 class="header-saved-action-btn edit"
-                *ngIf="issueMode === 'TEMP'"
+                *ngIf="
+                  issueMode === 'TEMP' ||
+                  (issueMode === 'ACTUAL' && actualHeaderSource === 'TAC')
+                "
                 (click)="onEditHeader()"
               >
                 <i class="fas fa-pen"></i>
@@ -2859,7 +2862,11 @@
             <span> PALLET HEADER </span>
 
             <b>
-              {{ currentPalletHeaders.length }}
+              {{
+                issueMode === "ACTUAL"
+                  ? actualHeaders.length
+                  : currentPalletHeaders.length
+              }}
             </b>
           </div>
         </div>
@@ -2929,23 +2936,41 @@
           <button
             type="button"
             class="next-action-btn print-header"
-            *ngIf="issueMode === 'ACTUAL' && actualHeaderSource === 'TAC'"
-            disabled
+            *ngIf="issueMode === 'ACTUAL'"
+            [disabled]="actualHeaderSource !== 'REAL' || isPrinting"
+            (click)="printActualHeaderLabel()"
           >
             <div class="next-action-btn-icon">
-              <i class="fas fa-print"></i>
+              <i
+                class="fas"
+                [class.fa-print]="!isPrinting"
+                [class.fa-spinner]="isPrinting"
+                [class.fa-spin]="isPrinting"
+              ></i>
             </div>
 
             <div class="next-action-btn-text">
-              <span>OPTION 3</span>
+              <span> OPTION 3 </span>
 
-              <b>Print This Label</b>
+              <b>
+                {{ isPrinting ? "Printing..." : "Print This Label" }}
+              </b>
 
-              <small> Save Header เข้า Pallet ก่อนจึงสามารถ Print ได้ </small>
+              <small *ngIf="actualHeaderSource === 'REAL'">
+                Print Label ของ Header ปัจจุบัน
+              </small>
+
+              <small *ngIf="actualHeaderSource === 'TAC'">
+                Save Header เข้า Pallet ก่อนจึงสามารถ Print ได้
+              </small>
             </div>
 
             <div class="next-action-btn-arrow">
-              <i class="fas fa-lock"></i>
+              <i
+                class="fas"
+                [class.fa-print]="actualHeaderSource === 'REAL'"
+                [class.fa-lock]="actualHeaderSource !== 'REAL'"
+              ></i>
             </div>
           </button>
         </div>
