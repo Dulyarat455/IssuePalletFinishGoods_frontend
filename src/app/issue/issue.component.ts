@@ -9000,30 +9000,19 @@ export class IssueComponent implements OnInit, AfterViewInit {
   // =====================================================
 
   printActualHeaderLabel(): void {
-    // =====================================================
+   
     // ONLY ACTUAL MODE
-    // =====================================================
-
     if (this.issueMode !== 'ACTUAL') {
       return;
     }
 
-    // =====================================================
     // PALLET ID
-    // =====================================================
-
     const palletId = Number(this.actualPallet?.id || this.actualPalletId || 0);
 
-    // =====================================================
     // HEADER ID
-    // =====================================================
-
     const headerId = Number(this.actualHeader?.id || this.header?.id || 0);
 
-    // =====================================================
     // VALIDATE PALLET
-    // =====================================================
-
     if (!Number.isInteger(palletId) || palletId <= 0) {
       Swal.fire({
         icon: 'warning',
@@ -9034,10 +9023,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // =====================================================
     // VALIDATE HEADER
-    // =====================================================
-
     if (!Number.isInteger(headerId) || headerId <= 0) {
       Swal.fire({
         icon: 'warning',
