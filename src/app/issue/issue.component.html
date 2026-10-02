@@ -1259,21 +1259,81 @@
       </button>
     </div>
 
-    <div class="header-list-back-panel" *ngIf="issueMode === 'ACTUAL'">
-      <button
-        type="button"
-        class="header-list-back-panel-btn"
-        (click)="backToDashboard()"
-      >
-        <i class="fas fa-arrow-left"></i>
+  <!-- =====================================================
+     ACTUAL : BOTTOM ACTION BAR
+====================================================== -->
 
-        <span>
-          <small> Back </small>
+<div
+class="header-list-bottom-actions"
+*ngIf="issueMode === 'ACTUAL' && actualPallet"
+>
 
-          <b> Dashboard </b>
-        </span>
-      </button>
-    </div>
+<!-- =================================================
+     LEFT : BACK DASHBOARD
+================================================== -->
+
+<button
+  type="button"
+  class="header-list-back-panel-btn"
+  (click)="backToDashboard()"
+  [disabled]="isDeletingActualPallet"
+>
+  <i class="fas fa-arrow-left"></i>
+
+  <span>
+    <small> Back </small>
+
+    <b> Dashboard </b>
+  </span>
+</button>
+
+
+<!-- =================================================
+     RIGHT : DANGER ZONE
+================================================== -->
+
+<div class="actual-pallet-danger-zone">
+
+  <div class="actual-pallet-danger-text">
+    <span>
+      DANGER ZONE
+    </span>
+
+    <small>
+      Delete Pallet และข้อมูลทั้งหมดภายใน
+    </small>
+  </div>
+
+
+  <button
+    type="button"
+    class="header-list-delete-pallet-btn"
+    (click)="deleteActualPallet()"
+    [disabled]="
+      isDeletingActualPallet ||
+      isPrinting ||
+      isSavingActualTacToPallet
+    "
+  >
+    <i
+      class="fas"
+      [class.fa-trash-alt]="!isDeletingActualPallet"
+      [class.fa-spinner]="isDeletingActualPallet"
+      [class.fa-spin]="isDeletingActualPallet"
+    ></i>
+
+    <span>
+      {{
+        isDeletingActualPallet
+          ? "Deleting..."
+          : "Delete Pallet"
+      }}
+    </span>
+  </button>
+
+</div>
+
+</div>
   </section>
 
   <ng-container *ngIf="!showCreatePallet && !showHeaderList">
