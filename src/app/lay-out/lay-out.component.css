@@ -2717,3 +2717,107 @@
 }
 
 
+/* =========================================================
+   MOVE SCAN ACTIONS
+========================================================= */
+
+.move-scan-actions {
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(120px, 0.7fr)
+    minmax(160px, 1.3fr);
+
+  gap:
+    8px;
+
+  margin-top:
+    2px;
+}
+
+
+/* =========================================================
+   CLEAR FORM
+========================================================= */
+
+.move-clear-btn {
+  width:
+    100%;
+
+  min-height:
+    40px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius:
+    9px;
+
+  background:
+    #ffffff;
+
+  color:
+    #475569;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    7px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+
+  transition:
+    0.15s ease;
+}
+
+
+.move-clear-btn:hover:not(:disabled) {
+  background:
+    #f8fafc;
+
+  border-color:
+    #94a3b8;
+
+  color:
+    #111827;
+}
+
+
+.move-clear-btn:disabled,
+.move-find-btn:disabled {
+  opacity:
+    0.45;
+
+  cursor:
+    not-allowed;
+}
+
+
+@media (
+  max-width: 760px
+) {
+
+  .move-scan-actions {
+    grid-template-columns:
+      1fr;
+  }
+
+}

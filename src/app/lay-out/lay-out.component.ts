@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
@@ -151,6 +151,12 @@ export class LayOutComponent implements OnInit {
   /* =====================================================
      RACK / AREA MASTER FROM API
   ===================================================== */
+
+  @ViewChild('movePalletIdInput')
+  movePalletIdInput?: ElementRef<HTMLInputElement>;
+
+  @ViewChild('movePalletNoInput')
+  movePalletNoInput?: ElementRef<HTMLInputElement>;
 
   rackDefinitions: RackDefinition[] = [];
 
@@ -460,7 +466,15 @@ export class LayOutComponent implements OnInit {
   }
 
   setPanelMode(mode: LayoutPanelMode): void {
+    // =====================================================
+    // กด Menu เดิมซ้ำ
+    // =====================================================
+
     if (this.panelMode === mode) {
+      if (mode === 'MOVE_AREA') {
+        this.focusMovePalletId();
+      }
+
       return;
     }
 
@@ -471,8 +485,7 @@ export class LayOutComponent implements OnInit {
     // =====================================================
 
     if (mode === 'STOCK') {
-      // Reset Move Area UI
-      this.resetMoveArea();
+      this.resetMoveArea(false);
 
       return;
     }
@@ -481,17 +494,23 @@ export class LayOutComponent implements OnInit {
     // MOVE AREA
     // =====================================================
 
-    // Clear Selected ของ Stock
     this.selectedSlot = null;
 
     this.selectedPallet = null;
 
     this.selectedLabel = null;
 
-    this.resetMoveArea();
+    this.resetMoveArea(false);
+
+    // =====================================================
+    // ทุกครั้งที่เข้า Move Area
+    // Focus Pallet ID
+    // =====================================================
+
+    this.focusMovePalletId();
   }
 
-  resetMoveArea(): void {
+  resetMoveArea(focusPalletId: boolean = true): void {
     this.movePalletIdTag = '';
 
     this.movePalletNoTag = '';
@@ -501,13 +520,17 @@ export class LayOutComponent implements OnInit {
     this.moveCurrentMapAreaRackId = null;
 
     this.moveDestinationMapAreaRackId = null;
+
+    if (focusPalletId) {
+      this.focusMovePalletId();
+    }
   }
 
   // =====================================================
   // MOVE AREA : SCAN PALLET
   // =====================================================
 
-  onMovePalletScan(): void {
+  onMovePalletScan(source: 'AUTO' | 'MANUAL' = 'MANUAL'): void {
     const palletIdTag = String(this.movePalletIdTag || '')
       .trim()
       .toUpperCase();
@@ -516,12 +539,84 @@ export class LayOutComponent implements OnInit {
       .trim()
       .toUpperCase();
 
+    // =====================================================
+    // VALIDATE
+    // =====================================================
+
     if (!palletIdTag && !palletNoTag) {
+      Swal.fire({
+        icon: 'warning',
+
+        title: 'Scan Pallet',
+
+        text: 'กรุณา Scan Pallet ID และ Pallet No.',
+
+        confirmButtonText: 'OK',
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        returnFocus: false,
+      }).then(() => {
+        this.focusMovePalletId();
+      });
+
       return;
     }
 
     // =====================================================
-    // SEARCH FROM DATA ที่ FETCH มาแล้ว
+    // AUTO ต้องรอให้ครบสอง Tag
+    // =====================================================
+
+    if (source === 'AUTO') {
+      if (!palletIdTag) {
+        this.focusMovePalletId();
+
+        return;
+      }
+
+      if (!palletNoTag) {
+        this.focusMovePalletNo();
+
+        return;
+      }
+    }
+
+    // =====================================================
+    // MANUAL FIND
+    //
+    // ถ้ากดปุ่มเอง แต่ยังกรอกไม่ครบ
+    // =====================================================
+
+    if (!palletIdTag || !palletNoTag) {
+      Swal.fire({
+        icon: 'warning',
+
+        title: 'ข้อมูลไม่ครบ',
+
+        text: 'กรุณา Scan Pallet ID และ Pallet No. ให้ครบ',
+
+        confirmButtonText: 'OK',
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        returnFocus: false,
+      }).then(() => {
+        if (!palletIdTag) {
+          this.focusMovePalletId();
+        } else {
+          this.focusMovePalletNo();
+        }
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // SEARCH FROM FRONTEND DATA
     // =====================================================
 
     let foundPallet: PalletItem | null = null;
@@ -537,22 +632,18 @@ export class LayOutComponent implements OnInit {
           .toUpperCase();
 
         // ===============================================
-        // palletId Tag
-        //
-        // ตามที่บอก:
-        // PalletId จาก QR คือ palletNoId (String)
+        // PALLET ID
+        // QR Pallet ID = palletNoId
         // ===============================================
 
-        const matchPalletId = !palletIdTag || palletNoId === palletIdTag;
+        const matchPalletId = palletNoId === palletIdTag;
 
         // ===============================================
-        // palletNo Tag
+        // PALLET NO
         // ===============================================
 
         const matchPalletNo =
-          !palletNoTag ||
-          palletNo === palletNoTag ||
-          palletNoId === palletNoTag;
+          palletNo === palletNoTag || palletNoId === palletNoTag;
 
         if (matchPalletId && matchPalletNo) {
           foundPallet = pallet;
@@ -577,14 +668,67 @@ export class LayOutComponent implements OnInit {
 
       this.moveDestinationMapAreaRackId = null;
 
+      // =================================================
+      // สำคัญ:
+      // ไม่มี timer
+      // ปิดนอกไม่ได้
+      // ESC ปิดไม่ได้
+      // ต้องกด OK เท่านั้น
+      // =================================================
+
       Swal.fire({
         icon: 'warning',
 
         title: 'Pallet Not Found',
 
-        text: 'ไม่พบ Pallet จากข้อมูลที่ Scan',
+        html: `
+          <div style="text-align:left">
+  
+            <div>
+              ไม่พบ Pallet จากข้อมูลที่ Scan
+            </div>
+  
+            <div
+              style="
+                margin-top:12px;
+                padding:10px 12px;
+                border-radius:8px;
+                background:#f8fafc;
+                font-size:12px;
+              "
+            >
+  
+              <div>
+                <b>Pallet ID:</b>
+                ${this.movePalletIdTag || '-'}
+              </div>
+  
+              <div style="margin-top:5px">
+                <b>Pallet No:</b>
+                ${this.movePalletNoTag || '-'}
+              </div>
+  
+            </div>
+  
+          </div>
+        `,
 
         confirmButtonText: 'OK',
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        showConfirmButton: true,
+
+        returnFocus: false,
+      }).then(() => {
+        // ---------------------------------------------
+        // หลังปิด Warning
+        // Clear + Focus Pallet ID
+        // ---------------------------------------------
+
+        this.resetMoveArea(true);
       });
 
       return;
@@ -598,15 +742,117 @@ export class LayOutComponent implements OnInit {
 
     this.moveCurrentMapAreaRackId = Number(foundPallet.mapAreaRackId);
 
-    // Clear Destination
     this.moveDestinationMapAreaRackId = null;
 
-    // Sync Tag
+    // =====================================================
+    // SYNC VALUE
+    // =====================================================
+
     this.movePalletIdTag = String(foundPallet.palletNoId || '');
 
     this.movePalletNoTag = String(
       foundPallet.palletId || foundPallet.palletNoId || ''
     );
+
+    // =====================================================
+    // เอา Focus ออกจาก Scanner
+    //
+    // ป้องกัน scanner ยิงซ้ำหลังหาเจอ
+    // =====================================================
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }
+
+  // =====================================================
+  // MOVE AREA : PALLET ID SCAN COMPLETE
+  // =====================================================
+
+  onMovePalletIdEnter(event?: Event): void {
+    event?.preventDefault();
+
+    const value = String(this.movePalletIdTag || '').trim();
+
+    if (!value) {
+      this.focusMovePalletId();
+
+      return;
+    }
+
+    // =====================================================
+    // Pallet ID Scan เสร็จ
+    // ยังไม่ Search
+    // ไป Scan Pallet No ต่อ
+    // =====================================================
+
+    this.focusMovePalletNo();
+  }
+
+  // =====================================================
+  // MOVE AREA : PALLET NO SCAN COMPLETE
+  // =====================================================
+
+  onMovePalletNoEnter(event?: Event): void {
+    event?.preventDefault();
+
+    const palletId = String(this.movePalletIdTag || '').trim();
+
+    const palletNo = String(this.movePalletNoTag || '').trim();
+
+    // =====================================================
+    // ต้องครบ 2 ช่องก่อน Auto Search
+    // =====================================================
+
+    if (!palletId) {
+      this.focusMovePalletId();
+
+      return;
+    }
+
+    if (!palletNo) {
+      this.focusMovePalletNo();
+
+      return;
+    }
+
+    // =====================================================
+    // AUTO SEARCH
+    // =====================================================
+
+    this.onMovePalletScan('AUTO');
+  }
+
+  // =====================================================
+  // MOVE AREA : FOCUS
+  // =====================================================
+
+  private focusMovePalletId(): void {
+    setTimeout(() => {
+      const input = this.movePalletIdInput?.nativeElement;
+
+      if (!input) {
+        return;
+      }
+
+      input.focus();
+
+      input.select();
+    }, 120);
+  }
+
+  private focusMovePalletNo(): void {
+    setTimeout(() => {
+      const input = this.movePalletNoInput?.nativeElement;
+
+      if (!input) {
+        return;
+      }
+
+      input.focus();
+
+      input.select();
+    }, 80);
   }
 
   // =====================================================
@@ -646,13 +892,7 @@ export class LayOutComponent implements OnInit {
     // OCCUPIED
     // =====================================================
 
-    if (
-      location.isPending !== true &&
-      Number(
-        location.palletCount ||
-        0
-      ) > 0
-    ) {
+    if (location.isPending !== true && Number(location.palletCount || 0) > 0) {
       return;
     }
 
@@ -975,16 +1215,9 @@ export class LayOutComponent implements OnInit {
       // ห้ามเลือก
       // -----------------------------------------------
 
-      const location =
-        this.locationByMapAreaRackId.get(
-          mapId
-        );
+      const location = this.locationByMapAreaRackId.get(mapId);
 
-
-      if (
-        slot.pallets.length > 0 &&
-        location?.isPending !== true
-      ) {
+      if (slot.pallets.length > 0 && location?.isPending !== true) {
         return;
       }
 
@@ -1050,70 +1283,43 @@ export class LayOutComponent implements OnInit {
   // MOVE AREA : OCCUPIED
   // =====================================================
 
-  isMoveOccupied(
-    area: AreaRow
-  ): boolean {
-  
-    if (
-      this.panelMode !==
-      'MOVE_AREA'
-    ) {
+  isMoveOccupied(area: AreaRow): boolean {
+    if (this.panelMode !== 'MOVE_AREA') {
       return false;
     }
-  
-  
-    const location =
-      this.locationByMapAreaRackId.get(
-        Number(
-          area.mapAreaRackId
-        )
-      );
-  
-  
-    if (
-      !location
-    ) {
+
+    const location = this.locationByMapAreaRackId.get(
+      Number(area.mapAreaRackId)
+    );
+
+    if (!location) {
       return false;
     }
-  
-  
+
     // =====================================================
     // SOURCE
     // =====================================================
-  
-    if (
-      this.isMoveSource(
-        area
-      )
-    ) {
+
+    if (this.isMoveSource(area)) {
       return false;
     }
-  
-  
+
     // =====================================================
     // PENDING
     //
     // Special Case:
     // ถึงมี Pallet ก็ไม่ Lock / ไม่เทา
     // =====================================================
-  
-    if (
-      location.isPending === true
-    ) {
+
+    if (location.isPending === true) {
       return false;
     }
-  
-  
+
     // =====================================================
     // NORMAL LOCATION
     // =====================================================
-  
-    return (
-      Number(
-        location.palletCount ||
-        0
-      ) > 0
-    );
+
+    return Number(location.palletCount || 0) > 0;
   }
 
   // =====================================================

@@ -798,13 +798,16 @@
                   <i class="fas fa-qrcode"></i>
 
                   <input
-                    type="text"
-                    class="move-control"
-                    [(ngModel)]="movePalletIdTag"
-                    placeholder="Scan Pallet ID"
-                    autocomplete="off"
-                    (keydown.enter)="onMovePalletScan()"
-                  />
+                  #movePalletIdInput
+                  type="text"
+                  class="move-control"
+                  [(ngModel)]="movePalletIdTag"
+                  placeholder="Scan Pallet ID"
+                  autocomplete="off"
+                  (keydown.enter)="
+                    onMovePalletIdEnter($event)
+                  "
+                />
                 </div>
               </div>
 
@@ -814,29 +817,53 @@
                 <label> Pallet No. </label>
 
                 <div class="move-scan-input-wrap">
-                  <i class="fas fa-qrcode"></i>
+                 
 
                   <input
-                    type="text"
-                    class="move-control"
-                    [(ngModel)]="movePalletNoTag"
-                    placeholder="Scan Pallet No."
-                    autocomplete="off"
-                    (keydown.enter)="onMovePalletScan()"
-                  />
+                  #movePalletNoInput
+                  type="text"
+                  class="move-control"
+                  [(ngModel)]="movePalletNoTag"
+                  autocomplete="off"
+                  (keydown.enter)="
+                    onMovePalletNoEnter($event)
+                  "
+                />
                 </div>
               </div>
             </div>
+            <div class="move-scan-actions">
 
-            <button
-              type="button"
-              class="move-find-btn"
-              (click)="onMovePalletScan()"
-            >
-              <i class="fas fa-search"></i>
-
-              Find Pallet
-            </button>
+              <!-- CLEAR -->
+            
+              <button
+                type="button"
+                class="move-clear-btn"
+                (click)="resetMoveArea()"
+                [disabled]="isMovingPallet"
+              >
+                <i class="fas fa-eraser"></i>
+            
+                Clear Form
+              </button>
+            
+            
+              <!-- FIND -->
+            
+              <button
+                type="button"
+                class="move-find-btn"
+                (click)="
+                  onMovePalletScan('MANUAL')
+                "
+                [disabled]="isMovingPallet"
+              >
+                <i class="fas fa-search"></i>
+            
+                Find Pallet
+              </button>
+            
+            </div>
           </div>
 
           <!-- =================================================
