@@ -2612,3 +2612,108 @@
 
 
 
+
+/* =========================================================
+   MOVE FOUND : LABEL INFO
+========================================================= */
+
+.move-found-label-count {
+  display:
+    flex !important;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  margin-top:
+    5px;
+
+  color:
+    #475569 !important;
+
+  font-size:
+    10px !important;
+
+  font-weight:
+    800;
+}
+
+
+.move-found-label-count i {
+  color:
+    #16a34a;
+
+  font-size:
+    9px;
+}
+
+
+/* =========================================================
+   LABEL LIST
+========================================================= */
+
+.move-found-label-list {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    5px;
+
+  margin-top:
+    7px;
+}
+
+
+.move-found-label-chip {
+  display:
+    inline-flex !important;
+
+  align-items:
+    center;
+
+  min-height:
+    23px;
+
+  padding:
+    3px 7px;
+
+  border:
+    1px solid #bbf7d0;
+
+  border-radius:
+    6px;
+
+  background:
+    #ffffff;
+
+  color:
+    #166534 !important;
+
+  font-size:
+    9px !important;
+
+  font-weight:
+    900 !important;
+
+  letter-spacing:
+    0.02em;
+}
+
+
+.move-found-no-label {
+  margin-top:
+    5px;
+
+  color:
+    #94a3b8 !important;
+
+  font-style:
+    italic;
+}
+
+

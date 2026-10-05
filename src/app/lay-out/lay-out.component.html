@@ -849,16 +849,59 @@
             </div>
 
             <div class="move-found-detail">
-              <span> PALLET FOUND </span>
 
+              <span>
+                PALLET FOUND
+              </span>
+            
               <b>
                 {{ movePallet.palletNoId }}
               </b>
-
-              <small>
-                Internal ID:
-                {{ movePallet.id }}
+            
+            
+              <!-- LABEL COUNT -->
+            
+              <small class="move-found-label-count">
+                <i class="fas fa-tags"></i>
+            
+                {{ movePallet.labels.length }}
+                Label(s)
               </small>
+            
+            
+              <!-- LABEL NO LIST -->
+            
+              <div
+                class="move-found-label-list"
+                *ngIf="
+                  movePallet.labels.length > 0
+                "
+              >
+            
+                <span
+                  class="move-found-label-chip"
+                  *ngFor="
+                    let label
+                    of movePallet.labels
+                  "
+                >
+                  {{ label.labelId }}
+                </span>
+            
+              </div>
+            
+            
+              <!-- NO LABEL -->
+            
+              <small
+                class="move-found-no-label"
+                *ngIf="
+                  movePallet.labels.length === 0
+                "
+              >
+                No Label
+              </small>
+            
             </div>
 
             <div class="move-found-status">READY</div>
