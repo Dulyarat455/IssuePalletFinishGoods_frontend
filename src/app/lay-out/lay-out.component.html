@@ -146,18 +146,31 @@
                     class="rack-slot"
                     *ngFor="let area of areaRow; trackBy: trackByArea"
                     [ngClass]="{
-                      'has-pallet': hasPallet(rack, area),
+                      'has-pallet':
+                        panelMode === 'STOCK' && hasPallet(rack, area),
 
-                      selected: isSelected(rack, area),
+                      selected: panelMode === 'STOCK' && isSelected(rack, area),
 
                       'rack-group-abc':
-                        hasPallet(rack, area) && rack.rackGroup === 'ABC',
+                        panelMode === 'STOCK' &&
+                        hasPallet(rack, area) &&
+                        rack.rackGroup === 'ABC',
 
                       'rack-group-de':
-                        hasPallet(rack, area) && rack.rackGroup === 'DE',
+                        panelMode === 'STOCK' &&
+                        hasPallet(rack, area) &&
+                        rack.rackGroup === 'DE',
 
                       'rack-group-fgh':
-                        hasPallet(rack, area) && rack.rackGroup === 'FGH'
+                        panelMode === 'STOCK' &&
+                        hasPallet(rack, area) &&
+                        rack.rackGroup === 'FGH',
+
+                      'move-source': isMoveSource(area),
+
+                      'move-target': isMoveTarget(area),
+
+                      'move-occupied': isMoveOccupied(area)
                     }"
                     (click)="selectSlot(getSlot(rack, area))"
                   >
@@ -167,7 +180,9 @@
 
                     <span
                       class="label-count"
-                      *ngIf="getLabelCount(rack, area) > 0"
+                      *ngIf="
+                        panelMode === 'STOCK' && getLabelCount(rack, area) > 0
+                      "
                     >
                       {{ getLabelCount(rack, area) }}
                     </span>
@@ -209,18 +224,32 @@
                       class="rack-slot"
                       *ngFor="let area of areaRow; trackBy: trackByArea"
                       [ngClass]="{
-                        'has-pallet': hasPallet(rack, area),
+                        'has-pallet':
+                          panelMode === 'STOCK' && hasPallet(rack, area),
 
-                        selected: isSelected(rack, area),
+                        selected:
+                          panelMode === 'STOCK' && isSelected(rack, area),
 
                         'rack-group-abc':
-                          hasPallet(rack, area) && rack.rackGroup === 'ABC',
+                          panelMode === 'STOCK' &&
+                          hasPallet(rack, area) &&
+                          rack.rackGroup === 'ABC',
 
                         'rack-group-de':
-                          hasPallet(rack, area) && rack.rackGroup === 'DE',
+                          panelMode === 'STOCK' &&
+                          hasPallet(rack, area) &&
+                          rack.rackGroup === 'DE',
 
                         'rack-group-fgh':
-                          hasPallet(rack, area) && rack.rackGroup === 'FGH'
+                          panelMode === 'STOCK' &&
+                          hasPallet(rack, area) &&
+                          rack.rackGroup === 'FGH',
+
+                        'move-source': isMoveSource(area),
+
+                        'move-target': isMoveTarget(area),
+
+                        'move-occupied': isMoveOccupied(area)
                       }"
                       (click)="selectSlot(getSlot(rack, area))"
                     >
@@ -230,7 +259,9 @@
 
                       <span
                         class="label-count"
-                        *ngIf="getLabelCount(rack, area) > 0"
+                        *ngIf="
+                          panelMode === 'STOCK' && getLabelCount(rack, area) > 0
+                        "
                       >
                         {{ getLabelCount(rack, area) }}
                       </span>
@@ -256,15 +287,25 @@
                 type="button"
                 class="pending-area-button"
                 *ngFor="let area of pendingRack.areas; trackBy: trackByArea"
-                [class.has-pallet]="hasPallet(pendingRack, area)"
-                [class.selected]="isSelected(pendingRack, area)"
+                [class.has-pallet]="
+                  panelMode === 'STOCK' && hasPallet(pendingRack, area)
+                "
+                [class.selected]="
+                  panelMode === 'STOCK' && isSelected(pendingRack, area)
+                "
+                [class.move-source]="isMoveSource(area)"
+                [class.move-target]="isMoveTarget(area)"
+                [class.move-occupied]="isMoveOccupied(area)"
                 (click)="selectSlot(getSlot(pendingRack, area))"
               >
                 <span class="pending-area-name"> Pending </span>
 
                 <span
                   class="pending-pallet-count"
-                  *ngIf="getLabelCount(pendingRack, area) > 0"
+                  *ngIf="
+                    panelMode === 'STOCK' &&
+                    getLabelCount(pendingRack, area) > 0
+                  "
                 >
                   {{ getLabelCount(pendingRack, area) }}
                 </span>
@@ -280,403 +321,661 @@
     ==================================================== -->
 
     <div class="detail-panel">
-      <!-- =================================================
+      <!-- =====================================================
+          PANEL MENU
+      ====================================================== -->
+
+      <div class="layout-panel-menu">
+        <button
+          type="button"
+          class="layout-panel-menu-btn"
+          [class.active]="panelMode === 'STOCK'"
+          (click)="setPanelMode('STOCK')"
+        >
+          <i class="fas fa-boxes-stacked"></i>
+
+          <span> Stock </span>
+        </button>
+
+        <button
+          type="button"
+          class="layout-panel-menu-btn move"
+          [class.active]="panelMode === 'MOVE_AREA'"
+          (click)="setPanelMode('MOVE_AREA')"
+        >
+          <i class="fas fa-arrows-alt"></i>
+
+          <span> Move Area </span>
+        </button>
+      </div>
+
+      <ng-container *ngIf="panelMode === 'STOCK'">
+        <!-- =================================================
            NOTHING SELECTED
       ================================================== -->
 
-      <div class="empty-selection" *ngIf="!selectedSlot">
-        <div class="empty-icon">▦</div>
+        <div class="empty-selection" *ngIf="!selectedSlot">
+          <div class="empty-icon">▦</div>
 
-        <div class="empty-title">Select Rack Location</div>
+          <div class="empty-title">Select Rack Location</div>
 
-        <div class="empty-text">
-          Click a Rack No. to view Pallet, Label and Box details.
+          <div class="empty-text">
+            Click a Rack No. to view Pallet, Label and Box details.
+          </div>
         </div>
-      </div>
 
-      <!-- =================================================
+        <!-- =================================================
            SELECTED SLOT
       ================================================== -->
 
-      <ng-container *ngIf="selectedSlot">
-        <!-- ===============================================
+        <ng-container *ngIf="selectedSlot">
+          <!-- ===============================================
              SELECTED LOCATION
         ================================================ -->
 
-        <div class="selected-header">
-          <div>
-            <div class="selected-label">Selected Location</div>
+          <div class="selected-header">
+            <div>
+              <div class="selected-label">Selected Location</div>
 
-            <div class="selected-code">
-              <ng-container
-                *ngIf="
-                  selectedSlot.rackGroup === 'PENDING';
-                  else normalSelectedLocation
-                "
-              >
-                Pending
-              </ng-container>
+              <div class="selected-code">
+                <ng-container
+                  *ngIf="
+                    selectedSlot.rackGroup === 'PENDING';
+                    else normalSelectedLocation
+                  "
+                >
+                  Pending
+                </ng-container>
 
-              <ng-template #normalSelectedLocation>
-                {{ selectedSlot.rack }}
+                <ng-template #normalSelectedLocation>
+                  {{ selectedSlot.rack }}
 
-                <span class="selected-slash"> / </span>
+                  <span class="selected-slash"> / </span>
 
-                {{ selectedSlot.displayCode }}
-              </ng-template>
+                  {{ selectedSlot.displayCode }}
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="slot-state" [class.empty]="!selectedPallet">
+              {{ selectedPallet ? "OCCUPIED" : "EMPTY" }}
             </div>
           </div>
 
-          <div class="slot-state" [class.empty]="!selectedPallet">
-            {{ selectedPallet ? "OCCUPIED" : "EMPTY" }}
-          </div>
-        </div>
-
-        <!-- ===============================================
+          <!-- ===============================================
              SLOT EMPTY
         ================================================ -->
 
-        <div class="slot-empty-message" *ngIf="!selectedPallet">
-          <div class="empty-box-icon">□</div>
+          <div class="slot-empty-message" *ngIf="!selectedPallet">
+            <div class="empty-box-icon">□</div>
 
-          <div class="empty-slot-title">Empty Location</div>
+            <div class="empty-slot-title">Empty Location</div>
 
-          <div class="empty-slot-text">No pallet in this Rack No.</div>
-        </div>
+            <div class="empty-slot-text">No pallet in this Rack No.</div>
+          </div>
 
-        <!-- ===============================================
+          <!-- ===============================================
              HAS PALLET
         ================================================ -->
 
-        <ng-container *ngIf="selectedPallet">
-          <!-- =============================================
+          <ng-container *ngIf="selectedPallet">
+            <!-- =============================================
                SLOT SUMMARY
           ============================================== -->
 
-          <div class="slot-summary">
-            <div class="slot-summary-item">
-              <span> Pallet </span>
+            <div class="slot-summary">
+              <div class="slot-summary-item">
+                <span> Pallet </span>
 
-              <strong>
-                {{ selectedSlotPalletCount | number }}
-              </strong>
+                <strong>
+                  {{ selectedSlotPalletCount | number }}
+                </strong>
+              </div>
+
+              <div class="slot-summary-item">
+                <span> Label </span>
+
+                <strong>
+                  {{ selectedSlotLabelCount | number }}
+                </strong>
+              </div>
+
+              <div class="slot-summary-item">
+                <span> Box </span>
+
+                <strong>
+                  {{ selectedSlotBoxCount | number }}
+                </strong>
+              </div>
+
+              <div class="slot-summary-item">
+                <span> Qty </span>
+
+                <strong>
+                  {{ selectedSlotQty | number }}
+                </strong>
+              </div>
             </div>
 
-            <div class="slot-summary-item">
-              <span> Label </span>
-
-              <strong>
-                {{ selectedSlotLabelCount | number }}
-              </strong>
-            </div>
-
-            <div class="slot-summary-item">
-              <span> Box </span>
-
-              <strong>
-                {{ selectedSlotBoxCount | number }}
-              </strong>
-            </div>
-
-            <div class="slot-summary-item">
-              <span> Qty </span>
-
-              <strong>
-                {{ selectedSlotQty | number }}
-              </strong>
-            </div>
-          </div>
-
-          <!-- =============================================
+            <!-- =============================================
                PALLET INFORMATION
           ============================================== -->
 
-          <!-- =================================================
+            <!-- =================================================
      MULTIPLE PALLET
 ================================================== -->
 
-          <div
-            class="location-pallet-list"
-            *ngIf="selectedSlot && selectedSlot.pallets.length > 1"
-          >
-            <div class="location-pallet-list-title">
-              Pallets in this Location
+            <div
+              class="location-pallet-list"
+              *ngIf="selectedSlot && selectedSlot.pallets.length > 1"
+            >
+              <div class="location-pallet-list-title">
+                Pallets in this Location
+              </div>
+
+              <div class="location-pallet-buttons">
+                <button
+                  type="button"
+                  class="location-pallet-btn"
+                  *ngFor="let pallet of selectedSlot.pallets"
+                  [class.active]="selectedPallet.id === pallet.id"
+                  (click)="selectPallet(pallet)"
+                >
+                  <span> PALLET </span>
+
+                  <b>
+                    {{ pallet.palletId }}
+                  </b>
+
+                  <small>
+                    {{ pallet.labels.length }}
+                    Label(s)
+                  </small>
+                </button>
+              </div>
             </div>
 
-            <div class="location-pallet-buttons">
-              <button
-                type="button"
-                class="location-pallet-btn"
-                *ngFor="let pallet of selectedSlot.pallets"
-                [class.active]="selectedPallet.id === pallet.id"
-                (click)="selectPallet(pallet)"
-              >
-                <span> PALLET </span>
-
-                <b>
-                  {{ pallet.palletId }}
-                </b>
-
-                <small>
-                  {{ pallet.labels.length }}
-                  Label(s)
-                </small>
-              </button>
-            </div>
-          </div>
-
-          <!-- =============================================
+            <!-- =============================================
      PALLET INFORMATION
 ============================================== -->
 
-          <div class="pallet-info-card">
-            <!-- HEADER -->
+            <div class="pallet-info-card">
+              <!-- HEADER -->
 
-            <div class="pallet-info-card-head">
-              <div class="pallet-info-card-title">
-                <i class="fas fa-pallet"></i>
+              <div class="pallet-info-card-head">
+                <div class="pallet-info-card-title">
+                  <i class="fas fa-pallet"></i>
 
-                <span> Pallet Information </span>
+                  <span> Pallet Information </span>
+                </div>
+
+                <button
+                  type="button"
+                  class="layout-edit-pallet-btn"
+                  (click)="editActualPallet()"
+                >
+                  <i class="fas fa-pen"></i>
+
+                  <span> Edit Pallet </span>
+                </button>
               </div>
 
-              <button
-                type="button"
-                class="layout-edit-pallet-btn"
-                (click)="editActualPallet()"
-              >
-                <i class="fas fa-pen"></i>
+              <!-- DATA -->
 
-                <span> Edit Pallet </span>
-              </button>
-            </div>
+              <div class="pallet-info-card-body">
+                <div class="pallet-info-value">
+                  <div class="info-caption">Pallet ID</div>
 
-            <!-- DATA -->
+                  <div class="pallet-id-main">
+                    {{ selectedPallet.palletId }}
+                  </div>
+                </div>
 
-            <div class="pallet-info-card-body">
-              <div class="pallet-info-value">
-                <div class="info-caption">Pallet ID</div>
+                <div class="pallet-info-value received">
+                  <div class="info-caption">Received</div>
 
-                <div class="pallet-id-main">
-                  {{ selectedPallet.palletId }}
+                  <div class="pallet-received-value">
+                    {{ selectedPallet.receivedDate }}
+                  </div>
                 </div>
               </div>
-
-              <div class="pallet-info-value received">
-                <div class="info-caption">Received</div>
-
-                <div class="pallet-received-value">
-                  {{ selectedPallet.receivedDate }}
-                </div>
-              </div>
             </div>
-          </div>
 
-          <!-- =============================================
+            <!-- =============================================
                LABEL / MODEL
           ============================================== -->
 
-          <div class="section-title-row label-section">
-            <div class="section-title">Label / Model</div>
+            <div class="section-title-row label-section">
+              <div class="section-title">Label / Model</div>
 
-            <div class="section-count">
-              {{ selectedPallet.labels.length }}
+              <div class="section-count">
+                {{ selectedPallet.labels.length }}
 
-              model(s)
+                model(s)
+              </div>
             </div>
-          </div>
 
-          <div class="label-list">
-            <button
-              type="button"
-              class="label-card"
-              *ngFor="let label of selectedPallet.labels; trackBy: trackByLabel"
-              [class.active]="selectedLabel?.labelId === label.labelId"
-              (click)="selectLabel(label)"
-            >
-              <div class="label-top">
-                <div>
-                  <div class="label-id">
-                    Label ID :
-                    {{ label.labelId }}
+            <div class="label-list">
+              <button
+                type="button"
+                class="label-card"
+                *ngFor="
+                  let label of selectedPallet.labels;
+                  trackBy: trackByLabel
+                "
+                [class.active]="selectedLabel?.labelId === label.labelId"
+                (click)="selectLabel(label)"
+              >
+                <div class="label-top">
+                  <div>
+                    <div class="label-id">
+                      Label ID :
+                      {{ label.labelId }}
+                    </div>
+
+                    <div class="item-no">
+                      {{ label.itemNo }}
+                    </div>
                   </div>
 
-                  <div class="item-no">
-                    {{ label.itemNo }}
+                  <div class="label-qty">
+                    {{ label.qty | number }}
                   </div>
                 </div>
 
-                <div class="label-qty">
-                  {{ label.qty | number }}
+                <div class="item-name">
+                  {{ label.itemName }}
                 </div>
-              </div>
 
-              <div class="item-name">
-                {{ label.itemName }}
-              </div>
+                <div class="label-meta">
+                  <span>
+                    Die
 
-              <div class="label-meta">
-                <span>
-                  Die
+                    <strong>
+                      {{ label.dieNo }}
+                    </strong>
+                  </span>
 
-                  <strong>
-                    {{ label.dieNo }}
-                  </strong>
-                </span>
+                  <span>
+                    OQC
 
-                <span>
-                  OQC
+                    <strong>
+                      {{ label.oqcLotNo }}
+                    </strong>
+                  </span>
 
-                  <strong>
-                    {{ label.oqcLotNo }}
-                  </strong>
-                </span>
+                  <span>
+                    Full
 
-                <span>
-                  Full
+                    <strong>
+                      {{ getFullBoxCount(label) }}
+                    </strong>
+                  </span>
 
-                  <strong>
-                    {{ getFullBoxCount(label) }}
-                  </strong>
-                </span>
+                  <span>
+                    Partial
 
-                <span>
-                  Partial
+                    <strong>
+                      {{ getPartialBoxCount(label) }}
+                    </strong>
+                  </span>
+                </div>
+              </button>
+            </div>
 
-                  <strong>
-                    {{ getPartialBoxCount(label) }}
-                  </strong>
-                </span>
-              </div>
-            </button>
-          </div>
-
-          <!-- =============================================
+            <!-- =============================================
                BOX
           ============================================== -->
 
-          <ng-container *ngIf="selectedLabel">
-            <div class="section-title-row box-section">
-              <div>
-                <div class="section-title">Box Detail</div>
+            <ng-container *ngIf="selectedLabel">
+              <div class="section-title-row box-section">
+                <div>
+                  <div class="section-title">Box Detail</div>
 
-                <div class="box-description">
-                  Full box first, partial box last
+                  <div class="box-description">
+                    Full box first, partial box last
+                  </div>
+                </div>
+
+                <div class="box-count-summary">
+                  <span class="full-count">
+                    Full
+
+                    <strong>
+                      {{ getFullBoxCount(selectedLabel) }}
+                    </strong>
+                  </span>
+
+                  <span class="partial-count">
+                    Partial
+
+                    <strong>
+                      {{ getPartialBoxCount(selectedLabel) }}
+                    </strong>
+                  </span>
                 </div>
               </div>
 
-              <div class="box-count-summary">
-                <span class="full-count">
-                  Full
+              <div class="box-table-wrap">
+                <table class="box-table">
+                  <thead>
+                    <tr>
+                      <th class="col-box-no-index">No.</th>
 
-                  <strong>
-                    {{ getFullBoxCount(selectedLabel) }}
-                  </strong>
-                </span>
+                      <th class="col-item-no">Item No.</th>
 
-                <span class="partial-count">
-                  Partial
+                      <th class="col-item-name">Item Name</th>
 
-                  <strong>
-                    {{ getPartialBoxCount(selectedLabel) }}
-                  </strong>
-                </span>
+                      <th class="col-wos">WOS No.</th>
+
+                      <th class="col-dwg">DWG</th>
+
+                      <th class="col-die">Die No.</th>
+
+                      <th class="col-lot">Lot No.</th>
+
+                      <th class="qty-column">Qty</th>
+
+                      <th class="type-column">Type</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr
+                      *ngFor="
+                        let box of getSortedBoxes(selectedLabel);
+                        let i = index;
+                        trackBy: trackByBox
+                      "
+                      [ngClass]="{
+                        'partial-row': box.type === 'PARTIAL',
+
+                        'rack-group-abc':
+                          box.type === 'PARTIAL' &&
+                          selectedSlot.rackGroup === 'ABC',
+
+                        'rack-group-de':
+                          box.type === 'PARTIAL' &&
+                          selectedSlot.rackGroup === 'DE',
+
+                        'rack-group-fgh':
+                          box.type === 'PARTIAL' &&
+                          selectedSlot.rackGroup === 'FGH'
+                      }"
+                    >
+                      <td class="box-index">
+                        {{ i + 1 }}
+                      </td>
+
+                      <td class="box-item-no">
+                        {{ box.itemNo || "-" }}
+                      </td>
+
+                      <td class="box-item-name">
+                        {{ box.itemName || "-" }}
+                      </td>
+
+                      <td class="box-wos">
+                        {{ box.wosNo || "-" }}
+                      </td>
+
+                      <td class="box-dwg">
+                        {{ box.dwg || "-" }}
+                      </td>
+
+                      <td class="box-die">
+                        {{ box.dieNo || "-" }}
+                      </td>
+
+                      <td class="box-lot">
+                        {{ box.lotNo || "-" }}
+                      </td>
+
+                      <td class="qty-column">
+                        {{ box.qty | number }}
+                      </td>
+
+                      <td class="type-column">
+                        <span
+                          class="box-type"
+                          [class.full]="box.type === 'FULL'"
+                          [class.partial]="box.type === 'PARTIAL'"
+                        >
+                          {{ box.type }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <!-- =====================================================
+     MOVE AREA PANEL
+====================================================== -->
+
+      <ng-container *ngIf="panelMode === 'MOVE_AREA'">
+        <div class="move-area-panel">
+          <!-- =================================================
+       HEADER
+  ================================================== -->
+
+          <div class="move-area-head">
+            <div class="move-area-head-icon">
+              <i class="fas fa-dolly"></i>
+            </div>
+
+            <div>
+              <div class="move-area-title">Move Pallet Area</div>
+
+              <div class="move-area-subtitle">
+                Scan Pallet และเลือก Location ปลายทาง
+              </div>
+            </div>
+          </div>
+
+          <!-- =================================================
+       SCANNER
+  ================================================== -->
+
+          <div class="move-area-section">
+            <div class="move-area-section-title">
+              <span>01</span>
+
+              Scan Pallet
+            </div>
+
+            <div class="move-scan-grid">
+              <!-- PALLET ID -->
+
+              <div class="move-form-field">
+                <label> Pallet ID </label>
+
+                <div class="move-scan-input-wrap">
+                  <i class="fas fa-qrcode"></i>
+
+                  <input
+                    type="text"
+                    class="move-control"
+                    [(ngModel)]="movePalletIdTag"
+                    placeholder="Scan Pallet ID"
+                    autocomplete="off"
+                    (keydown.enter)="onMovePalletScan()"
+                  />
+                </div>
+              </div>
+
+              <!-- PALLET NO -->
+
+              <div class="move-form-field">
+                <label> Pallet No. </label>
+
+                <div class="move-scan-input-wrap">
+                  <i class="fas fa-qrcode"></i>
+
+                  <input
+                    type="text"
+                    class="move-control"
+                    [(ngModel)]="movePalletNoTag"
+                    placeholder="Scan Pallet No."
+                    autocomplete="off"
+                    (keydown.enter)="onMovePalletScan()"
+                  />
+                </div>
               </div>
             </div>
 
-            <div class="box-table-wrap">
-              <table class="box-table">
-                <thead>
-                  <tr>
-                    <th class="col-box-no-index">No.</th>
+            <button
+              type="button"
+              class="move-find-btn"
+              (click)="onMovePalletScan()"
+            >
+              <i class="fas fa-search"></i>
 
-                    <th class="col-item-no">Item No.</th>
+              Find Pallet
+            </button>
+          </div>
 
-                    <th class="col-item-name">Item Name</th>
+          <!-- =================================================
+       FOUND PALLET
+  ================================================== -->
 
-                    <th class="col-wos">WOS No.</th>
-
-                    <th class="col-dwg">DWG</th>
-
-                    <th class="col-die">Die No.</th>
-
-                    <th class="col-lot">Lot No.</th>
-
-                    <th class="qty-column">Qty</th>
-
-                    <th class="type-column">Type</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr
-                    *ngFor="
-                      let box of getSortedBoxes(selectedLabel);
-                      let i = index;
-                      trackBy: trackByBox
-                    "
-                    [ngClass]="{
-                      'partial-row': box.type === 'PARTIAL',
-
-                      'rack-group-abc':
-                        box.type === 'PARTIAL' &&
-                        selectedSlot.rackGroup === 'ABC',
-
-                      'rack-group-de':
-                        box.type === 'PARTIAL' &&
-                        selectedSlot.rackGroup === 'DE',
-
-                      'rack-group-fgh':
-                        box.type === 'PARTIAL' &&
-                        selectedSlot.rackGroup === 'FGH'
-                    }"
-                  >
-                    <td class="box-index">
-                      {{ i + 1 }}
-                    </td>
-
-                    <td class="box-item-no">
-                      {{ box.itemNo || "-" }}
-                    </td>
-
-                    <td class="box-item-name">
-                      {{ box.itemName || "-" }}
-                    </td>
-
-                    <td class="box-wos">
-                      {{ box.wosNo || "-" }}
-                    </td>
-
-                    <td class="box-dwg">
-                      {{ box.dwg || "-" }}
-                    </td>
-
-                    <td class="box-die">
-                      {{ box.dieNo || "-" }}
-                    </td>
-
-                    <td class="box-lot">
-                      {{ box.lotNo || "-" }}
-                    </td>
-
-                    <td class="qty-column">
-                      {{ box.qty | number }}
-                    </td>
-
-                    <td class="type-column">
-                      <span
-                        class="box-type"
-                        [class.full]="box.type === 'FULL'"
-                        [class.partial]="box.type === 'PARTIAL'"
-                      >
-                        {{ box.type }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="move-found-pallet" *ngIf="movePallet">
+            <div class="move-found-icon">
+              <i class="fas fa-pallet"></i>
             </div>
-          </ng-container>
-        </ng-container>
+
+            <div class="move-found-detail">
+              <span> PALLET FOUND </span>
+
+              <b>
+                {{ movePallet.palletNoId }}
+              </b>
+
+              <small>
+                Internal ID:
+                {{ movePallet.id }}
+              </small>
+            </div>
+
+            <div class="move-found-status">READY</div>
+          </div>
+
+          <!-- =================================================
+       LOCATION
+  ================================================== -->
+
+          <div class="move-area-section" *ngIf="movePallet">
+            <div class="move-area-section-title">
+              <span>02</span>
+
+              Select Destination
+            </div>
+
+            <!-- CURRENT LOCATION -->
+
+            <div class="move-form-field">
+              <label> Current Location </label>
+
+              <select class="move-control" disabled>
+                <option>
+                  {{
+                    moveCurrentLocation?.locationName ||
+                      moveCurrentLocation?.areaName ||
+                      "-"
+                  }}
+                </option>
+              </select>
+            </div>
+
+            <!-- DESTINATION -->
+
+            <div class="move-form-field">
+              <label> Move To Location </label>
+
+              <select
+                class="move-control destination"
+                [(ngModel)]="moveDestinationMapAreaRackId"
+                (ngModelChange)="selectMoveDestination($event)"
+              >
+                <option [ngValue]="null" disabled>Select Destination</option>
+
+                <option
+                  *ngFor="let location of moveAvailableLocations"
+                  [ngValue]="location.mapAreaRackId"
+                >
+                  {{ location.locationName || location.areaName }}
+                </option>
+              </select>
+
+              <small class="move-location-note">
+                สามารถเลือก Location จาก Layout ด้านซ้ายได้เช่นกัน
+              </small>
+            </div>
+          </div>
+
+          <!-- =================================================
+       MOVE SUMMARY
+  ================================================== -->
+
+          <div
+            class="move-summary"
+            *ngIf="movePallet && moveDestinationMapAreaRackId"
+          >
+            <div>
+              <span> FROM </span>
+
+              <b>
+                {{
+                  moveCurrentLocation?.locationName ||
+                    moveCurrentLocation?.areaName ||
+                    "-"
+                }}
+              </b>
+            </div>
+
+            <i class="fas fa-arrow-right"></i>
+
+            <div>
+              <span> TO </span>
+
+              <b>
+                {{
+                  moveDestinationLocation?.locationName ||
+                    moveDestinationLocation?.areaName ||
+                    "-"
+                }}
+              </b>
+            </div>
+          </div>
+
+          <!-- =================================================
+       CONFIRM
+  ================================================== -->
+
+          <button
+            type="button"
+            class="move-confirm-btn"
+            [disabled]="
+              !movePallet || !moveDestinationMapAreaRackId || isMovingPallet
+            "
+            (click)="confirmMovePallet()"
+          >
+            <i
+              class="fas"
+              [class.fa-arrows-alt]="!isMovingPallet"
+              [class.fa-spinner]="isMovingPallet"
+              [class.fa-spin]="isMovingPallet"
+            ></i>
+
+            <span>
+              {{ isMovingPallet ? "Moving..." : "Move Pallet" }}
+            </span>
+          </button>
+        </div>
       </ng-container>
     </div>
   </div>

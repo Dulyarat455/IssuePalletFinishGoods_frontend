@@ -1744,3 +1744,871 @@
 
 
 
+/* =========================================================
+   MOVE AREA : SLOT
+========================================================= */
+
+/* Source pallet */
+.rack-slot.move-source,
+.pending-area-button.move-source {
+  background:
+    #dcfce7 !important;
+
+  border:
+    2px solid #16a34a !important;
+
+  color:
+    #166534 !important;
+
+  font-weight:
+    900;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      22,
+      163,
+      74,
+      0.14
+    );
+}
+
+
+/* Destination */
+.rack-slot.move-target,
+.pending-area-button.move-target {
+  background:
+    #eff6ff !important;
+
+  border:
+    2px solid #2563eb !important;
+
+  outline:
+    3px solid
+    rgba(
+      37,
+      99,
+      235,
+      0.22
+    );
+
+  color:
+    #1d4ed8 !important;
+
+  font-weight:
+    900;
+
+  z-index:
+    5;
+}
+
+
+/* Location มี Pallet คนอื่นอยู่ */
+.rack-slot.move-occupied,
+.pending-area-button.move-occupied {
+  background:
+    #e5e7eb !important;
+
+  border-color:
+    #cbd5e1 !important;
+
+  color:
+    #94a3b8 !important;
+
+  cursor:
+    not-allowed !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+/* ไม่ให้ hover ช่องที่มีคนจอง */
+.rack-slot.move-occupied:hover,
+.pending-area-button.move-occupied:hover {
+  border-color:
+    #cbd5e1 !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+
+
+/* =========================================================
+   DETAIL PANEL MENU
+========================================================= */
+
+.layout-panel-menu {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    8px;
+
+  margin-bottom:
+    16px;
+
+  padding:
+    5px;
+
+  background:
+    #f1f5f9;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius:
+    12px;
+}
+
+
+.layout-panel-menu-btn {
+  min-height:
+    42px;
+
+  border:
+    1px solid transparent;
+
+  border-radius:
+    9px;
+
+  background:
+    transparent;
+
+  color:
+    #64748b;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    8px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    12px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+
+  transition:
+    0.15s ease;
+}
+
+
+.layout-panel-menu-btn:hover {
+  background:
+    #ffffff;
+
+  color:
+    #111827;
+}
+
+
+.layout-panel-menu-btn.active {
+  background:
+    #ffffff;
+
+  color:
+    #0f766e;
+
+  border-color:
+    #99f6e4;
+
+  box-shadow:
+    0 2px 6px
+    rgba(
+      15,
+      23,
+      42,
+      0.08
+    );
+}
+
+
+.layout-panel-menu-btn.move.active {
+  color:
+    #2563eb;
+
+  border-color:
+    #bfdbfe;
+}
+
+
+/* =========================================================
+   MOVE AREA
+========================================================= */
+
+.move-area-panel {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    14px;
+}
+
+
+.move-area-head {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  padding-bottom:
+    14px;
+
+  border-bottom:
+    1px solid #e5e7eb;
+}
+
+
+.move-area-head-icon {
+  width:
+    42px;
+
+  height:
+    42px;
+
+  border-radius:
+    11px;
+
+  background:
+    #eff6ff;
+
+  color:
+    #2563eb;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  font-size:
+    17px;
+}
+
+
+.move-area-title {
+  color:
+    #111827;
+
+  font-size:
+    17px;
+
+  font-weight:
+    900;
+}
+
+
+.move-area-subtitle {
+  margin-top:
+    3px;
+
+  color:
+    #6b7280;
+
+  font-size:
+    12px;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.move-area-section {
+  padding:
+    14px;
+
+  border:
+    1px solid #e5e7eb;
+
+  border-radius:
+    11px;
+
+  background:
+    #fafafa;
+}
+
+
+.move-area-section-title {
+  margin-bottom:
+    12px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  color:
+    #374151;
+
+  font-size:
+    12px;
+
+  font-weight:
+    900;
+}
+
+
+.move-area-section-title > span {
+  width:
+    24px;
+
+  height:
+    24px;
+
+  border-radius:
+    50%;
+
+  background:
+    #2563eb;
+
+  color:
+    #ffffff;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  font-size:
+    10px;
+}
+
+
+/* =========================================================
+   SCANNER
+========================================================= */
+
+.move-scan-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    10px;
+}
+
+
+.move-form-field {
+  margin-bottom:
+    11px;
+}
+
+
+.move-form-field label {
+  display:
+    block;
+
+  margin-bottom:
+    6px;
+
+  color:
+    #475569;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    0.04em;
+}
+
+
+.move-scan-input-wrap {
+  position:
+    relative;
+}
+
+
+.move-scan-input-wrap > i {
+  position:
+    absolute;
+
+  left:
+    11px;
+
+  top:
+    50%;
+
+  transform:
+    translateY(-50%);
+
+  color:
+    #64748b;
+
+  font-size:
+    12px;
+}
+
+
+.move-scan-input-wrap .move-control {
+  padding-left:
+    32px;
+}
+
+
+.move-control {
+  width:
+    100%;
+
+  min-height:
+    42px;
+
+  border:
+    1px solid #cbd5e1;
+
+  border-radius:
+    9px;
+
+  background:
+    #ffffff;
+
+  color:
+    #111827;
+
+  padding:
+    0 11px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  outline:
+    none;
+}
+
+
+.move-control:focus {
+  border-color:
+    #2563eb;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      37,
+      99,
+      235,
+      0.12
+    );
+}
+
+
+.move-control:disabled {
+  background:
+    #f1f5f9;
+
+  color:
+    #475569;
+
+  cursor:
+    not-allowed;
+}
+
+
+.move-control.destination {
+  color:
+    #1d4ed8;
+
+  font-weight:
+    900;
+}
+
+
+.move-location-note {
+  display:
+    block;
+
+  margin-top:
+    5px;
+
+  color:
+    #94a3b8;
+
+  font-size:
+    10px;
+}
+
+
+/* =========================================================
+   FIND BUTTON
+========================================================= */
+
+.move-find-btn {
+  width:
+    100%;
+
+  min-height:
+    40px;
+
+  border:
+    0;
+
+  border-radius:
+    9px;
+
+  background:
+    #111827;
+
+  color:
+    #ffffff;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    7px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+}
+
+
+/* =========================================================
+   FOUND PALLET
+========================================================= */
+
+.move-found-pallet {
+  padding:
+    12px;
+
+  border:
+    1px solid #bbf7d0;
+
+  border-radius:
+    11px;
+
+  background:
+    #f0fdf4;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+
+  gap:
+    10px;
+
+  align-items:
+    center;
+}
+
+
+.move-found-icon {
+  width:
+    38px;
+
+  height:
+    38px;
+
+  border-radius:
+    10px;
+
+  background:
+    #dcfce7;
+
+  color:
+    #16a34a;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+}
+
+
+.move-found-detail span,
+.move-found-detail small {
+  display:
+    block;
+}
+
+
+.move-found-detail span {
+  color:
+    #16a34a;
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+}
+
+
+.move-found-detail b {
+  display:
+    block;
+
+  margin:
+    2px 0;
+
+  color:
+    #166534;
+
+  font-size:
+    16px;
+}
+
+
+.move-found-detail small {
+  color:
+    #64748b;
+
+  font-size:
+    10px;
+}
+
+
+.move-found-status {
+  padding:
+    5px 8px;
+
+  border-radius:
+    20px;
+
+  background:
+    #dcfce7;
+
+  color:
+    #15803d;
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+}
+
+
+/* =========================================================
+   MOVE SUMMARY
+========================================================= */
+
+.move-summary {
+  padding:
+    13px;
+
+  border:
+    1px solid #bfdbfe;
+
+  border-radius:
+    11px;
+
+  background:
+    #eff6ff;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+
+  gap:
+    12px;
+
+  align-items:
+    center;
+
+  text-align:
+    center;
+}
+
+
+.move-summary span {
+  display:
+    block;
+
+  color:
+    #64748b;
+
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+}
+
+
+.move-summary b {
+  display:
+    block;
+
+  margin-top:
+    3px;
+
+  color:
+    #1d4ed8;
+
+  font-size:
+    14px;
+}
+
+
+.move-summary > i {
+  color:
+    #2563eb;
+}
+
+
+/* =========================================================
+   CONFIRM MOVE
+========================================================= */
+
+.move-confirm-btn {
+  width:
+    100%;
+
+  min-height:
+    48px;
+
+  border:
+    0;
+
+  border-radius:
+    10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #1d4ed8
+    );
+
+  color:
+    #ffffff;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    8px;
+
+  font-family:
+    inherit;
+
+  font-size:
+    13px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+
+  box-shadow:
+    0 7px 16px
+    rgba(
+      37,
+      99,
+      235,
+      0.2
+    );
+}
+
+
+.move-confirm-btn:disabled {
+  opacity:
+    0.45;
+
+  cursor:
+    not-allowed;
+
+  box-shadow:
+    none;
+}
+
+
+@media (
+  max-width:
+    760px
+) {
+
+  .move-scan-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+}
+
+
+
