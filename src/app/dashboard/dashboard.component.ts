@@ -180,8 +180,21 @@ export class DashboardComponent implements OnInit {
 
           const rows = Array.isArray(res?.results) ? res.results : [];
 
-          this.palletsAll = rows.map((row: any) => this.normalizePallet(row));
+          this.palletsAll = rows
+          .map(
+            (row: any) =>
+              this.normalizePallet(row)
+          )
+          .sort(
+            (
+              a: PalletDashboardRow,
+              b: PalletDashboardRow
+            ) =>
+              Number(b.id) -
+              Number(a.id)
+          );
 
+          
           this.summary = {
             totalPallet: Number(res?.summary?.totalPallet || 0),
 
