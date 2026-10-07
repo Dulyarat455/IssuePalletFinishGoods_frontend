@@ -10765,15 +10765,37 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
   
     // =====================================================
-    // CURRENT PALLET INFO
+    // CURRENT PALLET NO ID
+    //
+    // ตัวนี้คือค่าที่ Scanner Pallet ID ต้องตรง
     // =====================================================
   
-    const palletNo =
+    const palletNoId =
       String(
         this.actualPallet?.palletNoId ||
-        '-'
-      );
+        ''
+      )
+        .trim()
+        .toUpperCase();
   
+  
+    if (
+      !palletNoId
+    ) {
+  
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Pallet No.',
+        text: 'ไม่สามารถตรวจสอบ Pallet ก่อนลบได้',
+      });
+  
+      return;
+    }
+  
+  
+    // =====================================================
+    // SUMMARY
+    // =====================================================
   
     const headerCount =
       Number(
@@ -10797,7 +10819,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
   
   
     // =====================================================
-    // CONFIRM DELETE
+    // SCAN CONFIRM FORM
     // =====================================================
   
     Swal.fire({
@@ -10811,36 +10833,46 @@ export class IssueComponent implements OnInit, AfterViewInit {
       html: `
         <div style="text-align:left">
   
+          <!-- =========================================
+               WARNING
+          ========================================== -->
+  
           <div
             style="
-              padding:14px;
+              padding:12px 14px;
               border-radius:12px;
-              background:#fff7f7;
+              background:#fef2f2;
               border:1px solid #fecaca;
+              color:#991b1b;
+              font-size:12px;
+              line-height:1.6;
             "
           >
   
+            <div
+              style="
+                font-weight:900;
+                margin-bottom:5px;
+              "
+            >
+              <i class="fas fa-exclamation-triangle"></i>
+              Scan เพื่อยืนยันการลบ Pallet
+            </div>
+  
             <div>
-              <b>Pallet No:</b>
-              ${palletNo}
-            </div>
-  
-            <div style="margin-top:7px">
-              <b>Header:</b>
-              ${headerCount}
-            </div>
-  
-            <div style="margin-top:7px">
-              <b>Box:</b>
-              ${totalBox}
+              Header:
+              <b>${headerCount}</b>
+              &nbsp; | &nbsp;
+              Box:
+              <b>${totalBox}</b>
             </div>
   
             ${
               tacHeaderCount > 0
                 ? `
-                  <div style="margin-top:7px">
-                    <b>New Header TAC:</b>
-                    ${tacHeaderCount}
+                  <div style="margin-top:4px">
+                    New Header TAC:
+                    <b>${tacHeaderCount}</b>
                   </div>
                 `
                 : ''
@@ -10849,48 +10881,155 @@ export class IssueComponent implements OnInit, AfterViewInit {
           </div>
   
   
+          <!-- =========================================
+               PALLET ID
+          ========================================== -->
+  
           <div
             style="
-              margin-top:14px;
-              padding:12px 14px;
-              border-radius:12px;
-              background:#fef2f2;
-              border:1px solid #fecaca;
-              color:#991b1b;
-              font-size:13px;
-              font-weight:800;
-              line-height:1.6;
+              margin-top:16px;
             "
           >
-            <div>
-              <i class="fas fa-exclamation-triangle"></i>
-              การลบ Pallet จะลบข้อมูลที่เกี่ยวข้องทั้งหมด
-            </div>
   
-            <div style="margin-top:5px">
-              Header, Box, Fraction Mapping
-              และ New Header ที่ยังไม่ได้ Save
-              จะถูกลบออกด้วย
-            </div>
+            <label
+              for="deleteActualPalletIdTag"
+              style="
+                display:block;
+                margin-bottom:6px;
+                color:#475569;
+                font-size:12px;
+                font-weight:900;
+                text-transform:uppercase;
+              "
+            >
+              Pallet ID
+            </label>
+  
   
             <div
               style="
-                margin-top:8px;
-                font-weight:950;
+                position:relative;
               "
             >
-              การทำรายการนี้ไม่สามารถย้อนกลับได้
+  
+              <i
+                class="fas fa-qrcode"
+                style="
+                  position:absolute;
+                  left:13px;
+                  top:50%;
+                  transform:translateY(-50%);
+                  color:#64748b;
+                "
+              ></i>
+  
+  
+              <input
+                id="deleteActualPalletIdTag"
+                type="text"
+                autocomplete="off"
+                placeholder="Scan Pallet ID"
+                style="
+                  width:100%;
+                  height:46px;
+                  padding:0 12px 0 40px;
+                  border:1px solid #cbd5e1;
+                  border-radius:10px;
+                  outline:none;
+                  font-size:14px;
+                  font-weight:800;
+                  box-sizing:border-box;
+                "
+              />
+  
             </div>
+  
+          </div>
+  
+  
+          <!-- =========================================
+               LABEL NO
+          ========================================== -->
+  
+          <div
+            style="
+              margin-top:12px;
+            "
+          >
+  
+            <label
+              for="deleteActualLabelNoTag"
+              style="
+                display:block;
+                margin-bottom:6px;
+                color:#475569;
+                font-size:12px;
+                font-weight:900;
+                text-transform:uppercase;
+              "
+            >
+              Label No.
+            </label>
+  
+  
+            <div
+              style="
+                position:relative;
+              "
+            >
+  
+              <input
+                id="deleteActualLabelNoTag"
+                type="text"
+                autocomplete="off"
+                
+                style="
+                  width:100%;
+                  height:46px;
+                  padding:0 12px;
+                  border:1px solid #cbd5e1;
+                  border-radius:10px;
+                  outline:none;
+                  font-size:14px;
+                  font-weight:800;
+                  box-sizing:border-box;
+                "
+              />
+  
+            </div>
+  
+          </div>
+  
+  
+          <!-- =========================================
+               NOTE
+          ========================================== -->
+  
+          <div
+            style="
+              margin-top:12px;
+              padding:9px 11px;
+              border-radius:9px;
+              background:#f8fafc;
+              color:#64748b;
+              font-size:11px;
+              line-height:1.5;
+            "
+          >
+            ระบบจะตรวจสอบ
+            <b>Pallet ID</b>
+            กับ Pallet ปัจจุบันก่อนอนุญาตให้ลบ
           </div>
   
         </div>
       `,
   
+  
       showCancelButton:
         true,
   
       confirmButtonText:
-        'Delete Pallet',
+        'Confirm Delete',
   
       cancelButtonText:
         'Cancel',
@@ -10904,28 +11043,758 @@ export class IssueComponent implements OnInit, AfterViewInit {
       reverseButtons:
         true,
   
+      focusConfirm:
+        false,
+  
       focusCancel:
-        true,
+        false,
+  
+      allowOutsideClick:
+        false,
+  
+      allowEscapeKey:
+        false,
   
       returnFocus:
         false,
   
+  
+      // =====================================================
+      // OPEN POPUP
+      // =====================================================
+  
+      didOpen: () => {
+  
+        const palletInput =
+          document.getElementById(
+            'deleteActualPalletIdTag'
+          ) as HTMLInputElement | null;
+  
+  
+        const labelInput =
+          document.getElementById(
+            'deleteActualLabelNoTag'
+          ) as HTMLInputElement | null;
+  
+  
+        // ===============================================
+        // FOCUS PALLET ID FIRST
+        // ===============================================
+  
+        setTimeout(() => {
+  
+          palletInput?.focus();
+  
+          palletInput?.select();
+  
+        }, 100);
+  
+  
+        // ===============================================
+        // PALLET ID ENTER
+        //
+        // ไป Label No
+        // ยังไม่ Confirm
+        // ===============================================
+  
+        palletInput?.addEventListener(
+          'keydown',
+          (
+            event: KeyboardEvent
+          ) => {
+  
+            if (
+              event.key !== 'Enter'
+            ) {
+              return;
+            }
+  
+  
+            event.preventDefault();
+  
+  
+            const value =
+              String(
+                palletInput.value ||
+                ''
+              ).trim();
+  
+  
+            if (
+              !value
+            ) {
+  
+              palletInput.focus();
+  
+              return;
+  
+            }
+  
+  
+            labelInput?.focus();
+  
+            labelInput?.select();
+  
+          }
+        );
+  
+  
+        // ===============================================
+        // LABEL NO ENTER
+        //
+        // Scan ครบแล้ว
+        // Trigger Confirm
+        // ===============================================
+  
+        labelInput?.addEventListener(
+          'keydown',
+          (
+            event: KeyboardEvent
+          ) => {
+  
+            if (
+              event.key !== 'Enter'
+            ) {
+              return;
+            }
+  
+  
+            event.preventDefault();
+  
+  
+            const value =
+              String(
+                labelInput.value ||
+                ''
+              ).trim();
+  
+  
+            if (
+              !value
+            ) {
+  
+              labelInput.focus();
+  
+              return;
+  
+            }
+  
+  
+            Swal.clickConfirm();
+  
+          }
+        );
+  
+      },
+  
+  
+      // =====================================================
+      // VALIDATE BEFORE CONFIRM
+      // =====================================================
+  
+      preConfirm: () => {
+  
+        const palletInput =
+          document.getElementById(
+            'deleteActualPalletIdTag'
+          ) as HTMLInputElement | null;
+  
+  
+        const labelInput =
+          document.getElementById(
+            'deleteActualLabelNoTag'
+          ) as HTMLInputElement | null;
+  
+  
+        const scannedPalletId =
+          String(
+            palletInput?.value ||
+            ''
+          )
+            .trim()
+            .toUpperCase();
+  
+  
+        const scannedLabelNo =
+          String(
+            labelInput?.value ||
+            ''
+          )
+            .trim()
+            .toUpperCase();
+  
+  
+        // ===============================================
+        // PALLET ID REQUIRED
+        // ===============================================
+  
+        if (
+          !scannedPalletId
+        ) {
+  
+          Swal.showValidationMessage(
+            'กรุณา Scan Pallet ID'
+          );
+  
+  
+          setTimeout(() => {
+            palletInput?.focus();
+          }, 0);
+  
+  
+          return false;
+  
+        }
+  
+  
+        // ===============================================
+        // LABEL NO REQUIRED
+        //
+        // รับค่าอย่างเดียว
+        // ไม่เอาไป Compare
+        // ===============================================
+  
+        if (
+          !scannedLabelNo
+        ) {
+  
+          Swal.showValidationMessage(
+            'กรุณา Scan Label No.'
+          );
+  
+  
+          setTimeout(() => {
+            labelInput?.focus();
+          }, 0);
+  
+  
+          return false;
+  
+        }
+  
+  
+        // ===============================================
+        // CHECK PALLET ID ONLY
+        //
+        // Scanner Pallet ID
+        // VS
+        // actualPallet.palletNoId
+        // ===============================================
+  
+        if (
+          scannedPalletId !==
+          palletNoId
+        ) {
+        
+          Swal.showValidationMessage(
+            'Pallet ID ไม่ตรงกับ Pallet ปัจจุบัน'
+          );
+        
+        
+          if (
+            palletInput
+          ) {
+            palletInput.value = '';
+          }
+        
+        
+          if (
+            labelInput
+          ) {
+            labelInput.value = '';
+          }
+        
+        
+          setTimeout(() => {
+        
+            palletInput?.focus();
+        
+          }, 0);
+        
+        
+          return false;
+        
+        }
+  
+  
+        // ===============================================
+        // PASS
+        // ===============================================
+  
+        return {
+          palletId:
+            scannedPalletId,
+  
+          labelNo:
+            scannedLabelNo,
+        };
+  
+      },
+  
     }).then((result) => {
   
+      // =====================================================
+  // CANCEL SCAN
+  // =====================================================
+
+  if (
+    !result.isConfirmed
+  ) {
+    return;
+  }
+
+
+  // =====================================================
+  // SCAN VERIFIED
+  //
+  // ยังไม่ Delete
+  // แสดง Confirm รอบสุดท้ายก่อน
+  // =====================================================
+
+  this.confirmDeleteActualPalletAfterScan(
+    palletId,
+    palletNoId,
+    result.value?.labelNo || ''
+  );
+  
+    });
+  
+  }
+
+
+  private confirmDeleteActualPalletAfterScan(
+    palletId: number,
+    palletNoId: string,
+    scannedLabelNo: string
+  ): void {
+  
+    // =====================================================
+    // GET CURRENT PALLET
+    // =====================================================
+  
+    const pallet =
+      this.actualPallet;
+  
+  
+    if (
+      !pallet
+    ) {
+  
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไม่พบ Pallet',
+        text: 'ไม่สามารถยืนยันการลบได้',
+      });
+  
+      return;
+  
+    }
+  
+  
+    // =====================================================
+    // DATA
+    // =====================================================
+  
+    const headerCount =
+      Number(
+        pallet.totalHeader ||
+        this.actualHeaders.length ||
+        0
+      );
+  
+  
+    const totalBox =
+      Number(
+        pallet.totalBox ||
+        0
+      );
+  
+  
+    const normalBox =
+      Number(
+        pallet.normalBox ||
+        0
+      );
+  
+  
+    const fractionBox =
+      Number(
+        pallet.fractionBox ||
+        0
+      );
+  
+  
+    const totalQty =
+      Number(
+        pallet.totalQty ||
+        0
+      );
+  
+  
+    const location =
+      this.locationName(
+        pallet.mapAreaRackId
+      );
+  
+  
+    // =====================================================
+    // FINAL CONFIRM
+    // =====================================================
+  
+    Swal.fire({
+  
+      icon:
+        'warning',
+  
+      title:
+        'Confirm Delete Pallet ?',
+  
+        html: `
+        <div style="text-align:left">
+      
+          <!-- VERIFIED -->
+          <div
+            style="
+              padding:8px 10px;
+              border-radius:9px;
+              background:#f0fdf4;
+              border:1px solid #bbf7d0;
+              color:#166534;
+              font-size:11px;
+              font-weight:800;
+            "
+          >
+            <i class="fas fa-check-circle"></i>
+            Pallet ID ตรงกับ Pallet ปัจจุบัน
+          </div>
+      
+      
+          <!-- MAIN PALLET INFO -->
+          <div
+            style="
+              margin-top:10px;
+              padding:10px 12px;
+              border-radius:10px;
+              background:#f8fafc;
+              border:1px solid #e2e8f0;
+            "
+          >
+      
+            <div
+              style="
+                display:flex;
+                justify-content:space-between;
+                gap:12px;
+                align-items:flex-start;
+              "
+            >
+      
+              <div>
+                <div
+                  style="
+                    font-size:10px;
+                    color:#64748b;
+                    font-weight:800;
+                  "
+                >
+                  PALLET ID
+                </div>
+      
+                <div
+                  style="
+                    margin-top:2px;
+                    font-size:20px;
+                    font-weight:950;
+                    color:#0f172a;
+                  "
+                >
+                  ${palletNoId}
+                </div>
+              </div>
+      
+      
+              <div style="text-align:right">
+                <div
+                  style="
+                    font-size:10px;
+                    color:#64748b;
+                    font-weight:800;
+                  "
+                >
+                  LABEL NO.
+                </div>
+      
+                <div
+                  style="
+                    margin-top:2px;
+                    font-size:14px;
+                    font-weight:900;
+                    color:#0f172a;
+                  "
+                >
+                  ${scannedLabelNo || '-'}
+                </div>
+              </div>
+      
+            </div>
+      
+      
+            <!-- SMALL DETAIL -->
+            <div
+              style="
+                margin-top:8px;
+                padding-top:8px;
+                border-top:1px solid #e2e8f0;
+                display:grid;
+                grid-template-columns:repeat(4,1fr);
+                gap:6px;
+                font-size:10px;
+              "
+            >
+      
+              <div>
+                <span style="color:#64748b">DATE</span>
+                <br>
+                <b>${this.toYmd(pallet.date) || '-'}</b>
+              </div>
+      
+              <div>
+                <span style="color:#64748b">SHIFT</span>
+                <br>
+                <b>${pallet.shift || '-'}</b>
+              </div>
+      
+              <div>
+                <span style="color:#64748b">LOCATION</span>
+                <br>
+                <b>${location || '-'}</b>
+              </div>
+      
+              <div>
+                <span style="color:#64748b">TYPE</span>
+                <br>
+                <b>${pallet.labelType || '-'}</b>
+              </div>
+      
+            </div>
+      
+          </div>
+      
+      
+          <!-- SUMMARY -->
+          <div
+            style="
+              margin-top:8px;
+              display:grid;
+              grid-template-columns:repeat(4,1fr);
+              gap:6px;
+            "
+          >
+      
+            <div
+              style="
+                padding:7px 4px;
+                background:#f8fafc;
+                border:1px solid #e2e8f0;
+                border-radius:8px;
+                text-align:center;
+              "
+            >
+              <div
+                style="
+                  color:#64748b;
+                  font-size:9px;
+                  font-weight:800;
+                "
+              >
+                HEADER
+              </div>
+      
+              <b
+                style="
+                  display:block;
+                  margin-top:2px;
+                  font-size:15px;
+                "
+              >
+                ${headerCount}
+              </b>
+            </div>
+      
+      
+            <div
+              style="
+                padding:7px 4px;
+                background:#f8fafc;
+                border:1px solid #e2e8f0;
+                border-radius:8px;
+                text-align:center;
+              "
+            >
+              <div
+                style="
+                  color:#64748b;
+                  font-size:9px;
+                  font-weight:800;
+                "
+              >
+                BOX
+              </div>
+      
+              <b
+                style="
+                  display:block;
+                  margin-top:2px;
+                  font-size:15px;
+                "
+              >
+                ${totalBox}
+              </b>
+            </div>
+      
+      
+            <div
+              style="
+                padding:7px 4px;
+                background:#f8fafc;
+                border:1px solid #e2e8f0;
+                border-radius:8px;
+                text-align:center;
+              "
+            >
+              <div
+                style="
+                  color:#64748b;
+                  font-size:9px;
+                  font-weight:800;
+                "
+              >
+                N / F
+              </div>
+      
+              <b
+                style="
+                  display:block;
+                  margin-top:2px;
+                  font-size:14px;
+                "
+              >
+                ${normalBox}/${fractionBox}
+              </b>
+            </div>
+      
+      
+            <div
+              style="
+                padding:7px 4px;
+                background:#f8fafc;
+                border:1px solid #e2e8f0;
+                border-radius:8px;
+                text-align:center;
+              "
+            >
+              <div
+                style="
+                  color:#64748b;
+                  font-size:9px;
+                  font-weight:800;
+                "
+              >
+                QTY
+              </div>
+      
+              <b
+                style="
+                  display:block;
+                  margin-top:2px;
+                  font-size:15px;
+                "
+              >
+                ${totalQty.toLocaleString()}
+              </b>
+            </div>
+      
+          </div>
+      
+      
+          <!-- FINAL WARNING -->
+          <div
+            style="
+              margin-top:9px;
+              padding:8px 10px;
+              border-radius:9px;
+              background:#fef2f2;
+              border:1px solid #fecaca;
+              color:#991b1b;
+              font-size:11px;
+              font-weight:800;
+              text-align:center;
+            "
+          >
+            <i class="fas fa-exclamation-triangle"></i>
+            ต้องการลบ Pallet นี้จริงหรือไม่?
+          </div>
+      
+        </div>
+      `,
+  
+  
+      showCancelButton:
+        true,
+  
+      confirmButtonText:
+        'Confirm Delete',
+  
+      cancelButtonText:
+        'Cancel',
+  
+      confirmButtonColor:
+        '#dc2626',
+  
+      cancelButtonColor:
+        '#64748b',
+  
+      reverseButtons:
+        true,
+  
+      allowOutsideClick:
+        false,
+  
+      allowEscapeKey:
+        false,
+  
+      returnFocus:
+        false,
+  
+    }).then((confirmResult) => {
+  
+      // =====================================================
+      // USER CANCEL
+      // =====================================================
+  
       if (
-        !result.isConfirmed
+        !confirmResult.isConfirmed
       ) {
         return;
       }
   
   
+      // =====================================================
+      // FINAL CONFIRM
+      //
+      // ตรงนี้เท่านั้นถึงจะยิง Delete API
+      // =====================================================
+  
       this.callDeleteActualPallet(
         palletId,
-        palletNo
+        palletNoId
       );
   
     });
+  
   }
+
+
 
   private callDeleteActualPallet(
     palletId: number,
