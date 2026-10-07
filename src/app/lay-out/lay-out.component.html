@@ -811,25 +811,31 @@
                 </div>
               </div>
 
-              <!-- PALLET NO -->
+             <!-- LABEL NO -->
 
               <div class="move-form-field">
-                <label> Pallet No. </label>
+
+                <label>
+                  Label No.
+                </label>
 
                 <div class="move-scan-input-wrap">
+
                  
 
                   <input
-                  #movePalletNoInput
-                  type="text"
-                  class="move-control"
-                  [(ngModel)]="movePalletNoTag"
-                  autocomplete="off"
-                  (keydown.enter)="
-                    onMovePalletNoEnter($event)
-                  "
-                />
+                    #moveLabelNoInput
+                    type="text"
+                    class="move-control"
+                    [(ngModel)]="moveLabelNoTag"
+                    autocomplete="off"
+                    (keydown.enter)="
+                      onMoveLabelNoEnter($event)
+                    "
+                  />
+
                 </div>
+
               </div>
             </div>
             <div class="move-scan-actions">
