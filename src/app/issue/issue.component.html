@@ -369,17 +369,17 @@
 
           <div
             class="create-label-type-group"
-            [class.readonly-state]="isPalletFormLocked"
+            [class.readonly-state]="isPalletLabelTypeLocked"
           >
-            <button
+           <button
               type="button"
               class="fg"
               [class.selected]="palletCreateForm.labelType === 'FG'"
-              [disabled]="isPalletFormLocked || isSavingPalletTemp"
+              [disabled]="isPalletLabelTypeLocked"
               (click)="palletCreateForm.labelType = 'FG'"
             >
               <i class="fas fa-box"></i>
-
+            
               FG
             </button>
 
@@ -387,7 +387,7 @@
               type="button"
               class="wip"
               [class.selected]="palletCreateForm.labelType === 'WIP'"
-              [disabled]="isPalletFormLocked || isSavingPalletTemp"
+              [disabled]="isPalletLabelTypeLocked"
               (click)="palletCreateForm.labelType = 'WIP'"
             >
               <i class="fas fa-industry"></i>
@@ -395,6 +395,18 @@
               WIP
             </button>
           </div>
+
+          <small
+            class="create-label-type-lock-note"
+            *ngIf="
+              isEditingPalletTemp &&
+              hasCurrentPalletTempHeader
+            "
+          >
+            <i class="fas fa-lock"></i>
+
+            Label Type cannot be changed because this Pallet already has Header data.
+          </small>
         </div>
 
         <!-- SUMMARY -->

@@ -767,6 +767,69 @@ export class IssueComponent implements OnInit, AfterViewInit {
     return this.issueMode === 'TEMP';
   }
 
+  // =====================================================
+  // PALLET LABEL TYPE EDIT PERMISSION
+  // TEMP:
+  // - ยังไม่มี Header Temp -> แก้ FG / WIP ได้
+  // - มี Header Temp แล้ว -> Lock Label Type
+  // =====================================================
+
+  get hasCurrentPalletTempHeader(): boolean {
+
+    if (
+      this.issueMode !== 'TEMP'
+    ) {
+      return false;
+    }
+
+
+    if (
+      !this.palletTemp
+    ) {
+      return false;
+    }
+
+
+    return (
+      this.currentPalletHeaders.length > 0
+    );
+
+  }
+
+
+get isPalletLabelTypeLocked(): boolean {
+
+  // ตอนไม่ได้ Edit Pallet
+  // Lock ตาม behavior เดิม
+  if (
+    this.isPalletFormLocked
+  ) {
+    return true;
+  }
+
+
+  // ระหว่าง Save
+  if (
+    this.isSavingPalletTemp
+  ) {
+    return true;
+  }
+
+
+  // TEMP มี Header แล้ว
+  // ห้ามแก้ Label Type
+  if (
+    this.issueMode === 'TEMP' &&
+    this.hasCurrentPalletTempHeader
+  ) {
+    return true;
+  }
+
+
+  return false;
+
+  }
+
   get currentActualHeaderCount(): number {
     return this.actualHeaders.length;
   }

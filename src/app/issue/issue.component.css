@@ -7284,6 +7284,24 @@ td small {
   }
 }
 
+
+.create-label-type-lock-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 7px;
+
+  color: #b45309;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.create-label-type-lock-note i {
+  font-size: 10px;
+}
+
 /* ====================
 for 2 case to center
 ==================== */
