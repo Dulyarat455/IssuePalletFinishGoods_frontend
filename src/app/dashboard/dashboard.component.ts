@@ -150,10 +150,7 @@ export class DashboardComponent implements OnInit {
 
   isLoading = false;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.fetchLocations();
@@ -181,19 +178,11 @@ export class DashboardComponent implements OnInit {
           const rows = Array.isArray(res?.results) ? res.results : [];
 
           this.palletsAll = rows
-          .map(
-            (row: any) =>
-              this.normalizePallet(row)
-          )
-          .sort(
-            (
-              a: PalletDashboardRow,
-              b: PalletDashboardRow
-            ) =>
-              Number(b.id) -
-              Number(a.id)
-          );
-
+            .map((row: any) => this.normalizePallet(row))
+            .sort(
+              (a: PalletDashboardRow, b: PalletDashboardRow) =>
+                Number(b.id) - Number(a.id)
+            );
 
           this.applyFilters();
 
@@ -401,10 +390,30 @@ export class DashboardComponent implements OnInit {
   // =====================================================
 
   createDefaultFilters(): DashboardFilter {
-    return {
-      dateFrom: '',
+    const today = new Date();
 
-      dateTo: '',
+    const yesterday = new Date(today);
+
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // =====================================================
+    // FORMAT YYYY-MM-DD
+    // =====================================================
+
+    const formatDateInput = (date: Date): string => {
+      const year = date.getFullYear();
+
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+
+      const day = String(date.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    };
+
+    return {
+      dateFrom: formatDateInput(yesterday),
+
+      dateTo: formatDateInput(today),
 
       keyword: '',
 
@@ -415,86 +424,55 @@ export class DashboardComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const keyword =
-      this.norm(
-        this.filters.keyword
-      );
-  
-    this.pallets =
-      this.palletsAll.filter(
-        (pallet) => {
-  
-          // ===============================================
-          // DATE FROM
-          // ===============================================
-  
-          const palletDate =
-            this.toYmd(
-              pallet.date
-            );
-  
-          if (
-            this.filters.dateFrom &&
-            palletDate <
-              this.filters.dateFrom
-          ) {
-            return false;
-          }
-  
-  
-          // ===============================================
-          // DATE TO
-          // ===============================================
-  
-          if (
-            this.filters.dateTo &&
-            palletDate >
-              this.filters.dateTo
-          ) {
-            return false;
-          }
-  
-  
-          // ===============================================
-          // SHIFT
-          // ===============================================
-  
-          if (
-            this.filters.shift !==
-              'ALL' &&
-            pallet.shift !==
-              this.filters.shift
-          ) {
-            return false;
-          }
-  
-  
-          // ===============================================
-          // LABEL TYPE
-          // ===============================================
-  
-          if (
-            this.filters.labelType !==
-              'ALL' &&
-            pallet.labelType !==
-              this.filters.labelType
-          ) {
-            return false;
-          }
-  
-  
-          // ===============================================
-          // KEYWORD
-          // ===============================================
-  
-          if (
-            !keyword
-          ) {
-            return true;
-          }
-  
-  
-          let searchText = `
+    const keyword = this.norm(this.filters.keyword);
+
+    this.pallets = this.palletsAll.filter((pallet) => {
+      // ===============================================
+      // DATE FROM
+      // ===============================================
+
+      const palletDate = this.toYmd(pallet.date);
+
+      if (this.filters.dateFrom && palletDate < this.filters.dateFrom) {
+        return false;
+      }
+
+      // ===============================================
+      // DATE TO
+      // ===============================================
+
+      if (this.filters.dateTo && palletDate > this.filters.dateTo) {
+        return false;
+      }
+
+      // ===============================================
+      // SHIFT
+      // ===============================================
+
+      if (this.filters.shift !== 'ALL' && pallet.shift !== this.filters.shift) {
+        return false;
+      }
+
+      // ===============================================
+      // LABEL TYPE
+      // ===============================================
+
+      if (
+        this.filters.labelType !== 'ALL' &&
+        pallet.labelType !== this.filters.labelType
+      ) {
+        return false;
+      }
+
+      // ===============================================
+      // KEYWORD
+      // ===============================================
+
+      if (!keyword) {
+        return true;
+      }
+
+      let searchText = `
   
             ${pallet.palletNoId}
   
@@ -504,19 +482,12 @@ export class DashboardComponent implements OnInit {
   
             ${pallet.mapAreaRackId}
   
-            ${this.getLocationName(
-              pallet.mapAreaRackId
-            )}
+            ${this.getLocationName(pallet.mapAreaRackId)}
   
           `;
-  
-  
-          for (
-            const header
-            of pallet.headers
-          ) {
-  
-            searchText += `
+
+      for (const header of pallet.headers) {
+        searchText += `
   
               ${header.itemNo}
   
@@ -527,14 +498,9 @@ export class DashboardComponent implements OnInit {
               ${header.moveMentThreeMonth}
   
             `;
-  
-  
-            for (
-              const box
-              of header.boxes
-            ) {
-  
-              searchText += `
+
+        for (const box of header.boxes) {
+          searchText += `
   
                 ${box.wosNo}
   
@@ -549,133 +515,59 @@ export class DashboardComponent implements OnInit {
                 ${box.lotNo}
   
               `;
-  
-            }
-  
-          }
-  
-  
-          return this
-            .norm(
-              searchText
-            )
-            .includes(
-              keyword
-            );
-  
         }
-      );
-  
-  
+      }
+
+      return this.norm(searchText).includes(keyword);
+    });
+
     // =====================================================
     // SUMMARY ต้องอ้างอิงจาก Pallet ที่ Filter แล้วเท่านั้น
     // =====================================================
-  
+
     this.calculateSummary();
   }
 
-
   private calculateSummary(): void {
+    const totalPallet = this.pallets.length;
 
-    const totalPallet =
-      this.pallets.length;
-  
-  
-    const totalHeader =
-      this.pallets.reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          Number(
-            pallet.totalHeader ||
-            0
-          ),
-        0
-      );
-  
-  
-    const totalBox =
-      this.pallets.reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          Number(
-            pallet.totalBox ||
-            0
-          ),
-        0
-      );
-  
-  
-    const normalBox =
-      this.pallets.reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          Number(
-            pallet.normalBox ||
-            0
-          ),
-        0
-      );
-  
-  
-    const fractionBox =
-      this.pallets.reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          Number(
-            pallet.fractionBox ||
-            0
-          ),
-        0
-      );
-  
-  
-    const totalQty =
-      this.pallets.reduce(
-        (
-          sum,
-          pallet
-        ) =>
-          sum +
-          Number(
-            pallet.totalQty ||
-            0
-          ),
-        0
-      );
-  
-  
+    const totalHeader = this.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.totalHeader || 0),
+      0
+    );
+
+    const totalBox = this.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.totalBox || 0),
+      0
+    );
+
+    const normalBox = this.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.normalBox || 0),
+      0
+    );
+
+    const fractionBox = this.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.fractionBox || 0),
+      0
+    );
+
+    const totalQty = this.pallets.reduce(
+      (sum, pallet) => sum + Number(pallet.totalQty || 0),
+      0
+    );
+
     this.summary = {
-  
-      totalPallet:
-        totalPallet,
-  
-      totalHeader:
-        totalHeader,
-  
-      totalBox:
-        totalBox,
-  
-      normalBox:
-        normalBox,
-  
-      fractionBox:
-        fractionBox,
-  
-      totalQty:
-        totalQty,
-  
+      totalPallet: totalPallet,
+
+      totalHeader: totalHeader,
+
+      totalBox: totalBox,
+
+      normalBox: normalBox,
+
+      fractionBox: fractionBox,
+
+      totalQty: totalQty,
     };
   }
 
@@ -737,46 +629,27 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-
-
   // =====================================================
-// EDIT ACTUAL PALLET
-// =====================================================
+  // EDIT ACTUAL PALLET
+  // =====================================================
 
-    editActualPallet(
-      pallet: PalletDashboardRow
-    ): void {
-
-      if (
-        !pallet ||
-        !pallet.id
-      ) {
-        return;
-      }
-
-
-      this.router.navigate(
-        ['/issue'],
-        {
-          state: {
-
-            fromDashboard: true,
-
-            mode: 'ACTUAL_PALLET',
-
-            palletId:
-              Number(
-                pallet.id
-              ),
-
-            palletNoId:
-              pallet.palletNoId,
-
-          },
-        }
-      );
+  editActualPallet(pallet: PalletDashboardRow): void {
+    if (!pallet || !pallet.id) {
+      return;
     }
 
+    this.router.navigate(['/issue'], {
+      state: {
+        fromDashboard: true,
+
+        mode: 'ACTUAL_PALLET',
+
+        palletId: Number(pallet.id),
+
+        palletNoId: pallet.palletNoId,
+      },
+    });
+  }
 
   // =====================================================
   // UTIL
