@@ -117,73 +117,110 @@
     </div>
 
     <div class="filter-grid">
+
       <div class="filter-field">
         <label> DATE FROM </label>
-
-        <input type="date" [(ngModel)]="filters.dateFrom" />
+    
+        <input
+          type="date"
+          [(ngModel)]="filters.dateFrom"
+          (ngModelChange)="applyFilters()"
+        />
       </div>
-
+    
+    
       <div class="filter-field">
         <label> DATE TO </label>
-
-        <input type="date" [(ngModel)]="filters.dateTo" />
+    
+        <input
+          type="date"
+          [(ngModel)]="filters.dateTo"
+          (ngModelChange)="applyFilters()"
+        />
       </div>
-
+    
+    
       <div class="filter-field">
         <label> SHIFT </label>
-
-        <select [(ngModel)]="filters.shift">
-          <option value="ALL">All</option>
-
-          <option value="A">A</option>
-
-          <option value="B">B</option>
-
-          <option value="C">C</option>
+    
+        <select
+          [(ngModel)]="filters.shift"
+          (ngModelChange)="applyFilters()"
+        >
+          <option value="ALL">
+            All
+          </option>
+    
+          <option value="A">
+            A
+          </option>
+    
+          <option value="B">
+            B
+          </option>
+    
+          <option value="C">
+            C
+          </option>
         </select>
       </div>
-
+    
+    
       <div class="filter-field">
         <label> LABEL TYPE </label>
-
-        <select [(ngModel)]="filters.labelType">
-          <option value="ALL">All</option>
-
-          <option value="FG">FG</option>
-
-          <option value="WIP">WIP</option>
+    
+        <select
+          [(ngModel)]="filters.labelType"
+          (ngModelChange)="applyFilters()"
+        >
+          <option value="ALL">
+            All
+          </option>
+    
+          <option value="FG">
+            FG
+          </option>
+    
+          <option value="WIP">
+            WIP
+          </option>
         </select>
       </div>
-
+    
+    
       <div class="filter-field keyword">
-        <label> KEYWORD </label>
-
+    
+        <label>
+          KEYWORD
+        </label>
+    
         <input
           type="text"
           placeholder="Pallet / Item / WOS / Lot / Die..."
           [(ngModel)]="filters.keyword"
-          (keydown.enter)="applyFilters()"
+          (ngModelChange)="applyFilters()"
         />
+    
       </div>
-
+    
+    
       <div class="filter-actions">
+    
         <button
           type="button"
-          class="filter-search-btn"
-          (click)="applyFilters()"
+          class="filter-reset-btn"
+          (click)="resetFilters()"
         >
-          <i class="fas fa-search"></i>
-
-          Search
-        </button>
-
-        <button type="button" class="filter-reset-btn" (click)="resetFilters()">
           <i class="fas fa-rotate-left"></i>
-
+    
           Reset
         </button>
+    
       </div>
+    
     </div>
+
+
   </section>
 
   <!-- =====================================================

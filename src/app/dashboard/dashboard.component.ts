@@ -194,20 +194,6 @@ export class DashboardComponent implements OnInit {
               Number(a.id)
           );
 
-          
-          this.summary = {
-            totalPallet: Number(res?.summary?.totalPallet || 0),
-
-            totalHeader: Number(res?.summary?.totalHeader || 0),
-
-            totalBox: Number(res?.summary?.totalBox || 0),
-
-            normalBox: Number(res?.summary?.normalBox || 0),
-
-            fractionBox: Number(res?.summary?.fractionBox || 0),
-
-            totalQty: Number(res?.summary?.totalQty || 0),
-          };
 
           this.applyFilters();
 
@@ -429,100 +415,268 @@ export class DashboardComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const keyword = this.norm(this.filters.keyword);
-
-    this.pallets = this.palletsAll.filter((pallet) => {
-      // ===============================================
-      // DATE FROM
-      // ===============================================
-
-      const palletDate = this.toYmd(pallet.date);
-
-      if (this.filters.dateFrom && palletDate < this.filters.dateFrom) {
-        return false;
-      }
-
-      // ===============================================
-      // DATE TO
-      // ===============================================
-
-      if (this.filters.dateTo && palletDate > this.filters.dateTo) {
-        return false;
-      }
-
-      // ===============================================
-      // SHIFT
-      // ===============================================
-
-      if (this.filters.shift !== 'ALL' && pallet.shift !== this.filters.shift) {
-        return false;
-      }
-
-      // ===============================================
-      // LABEL TYPE
-      // ===============================================
-
-      if (
-        this.filters.labelType !== 'ALL' &&
-        pallet.labelType !== this.filters.labelType
-      ) {
-        return false;
-      }
-
-      // ===============================================
-      // KEYWORD
-      // ===============================================
-
-      if (!keyword) {
-        return true;
-      }
-
-      let searchText = `
-
+    const keyword =
+      this.norm(
+        this.filters.keyword
+      );
+  
+    this.pallets =
+      this.palletsAll.filter(
+        (pallet) => {
+  
+          // ===============================================
+          // DATE FROM
+          // ===============================================
+  
+          const palletDate =
+            this.toYmd(
+              pallet.date
+            );
+  
+          if (
+            this.filters.dateFrom &&
+            palletDate <
+              this.filters.dateFrom
+          ) {
+            return false;
+          }
+  
+  
+          // ===============================================
+          // DATE TO
+          // ===============================================
+  
+          if (
+            this.filters.dateTo &&
+            palletDate >
+              this.filters.dateTo
+          ) {
+            return false;
+          }
+  
+  
+          // ===============================================
+          // SHIFT
+          // ===============================================
+  
+          if (
+            this.filters.shift !==
+              'ALL' &&
+            pallet.shift !==
+              this.filters.shift
+          ) {
+            return false;
+          }
+  
+  
+          // ===============================================
+          // LABEL TYPE
+          // ===============================================
+  
+          if (
+            this.filters.labelType !==
+              'ALL' &&
+            pallet.labelType !==
+              this.filters.labelType
+          ) {
+            return false;
+          }
+  
+  
+          // ===============================================
+          // KEYWORD
+          // ===============================================
+  
+          if (
+            !keyword
+          ) {
+            return true;
+          }
+  
+  
+          let searchText = `
+  
             ${pallet.palletNoId}
-
+  
             ${pallet.shift}
-
+  
             ${pallet.labelType}
-
+  
             ${pallet.mapAreaRackId}
-
+  
+            ${this.getLocationName(
+              pallet.mapAreaRackId
+            )}
+  
           `;
-
-      for (const header of pallet.headers) {
-        searchText += `
-
+  
+  
+          for (
+            const header
+            of pallet.headers
+          ) {
+  
+            searchText += `
+  
               ${header.itemNo}
-
+  
               ${header.itemName}
-
+  
               ${header.controlLot}
-
+  
               ${header.moveMentThreeMonth}
-
+  
             `;
-
-        for (const box of header.boxes) {
-          searchText += `
-
+  
+  
+            for (
+              const box
+              of header.boxes
+            ) {
+  
+              searchText += `
+  
                 ${box.wosNo}
-
+  
                 ${box.itemNo}
-
+  
                 ${box.itemName}
-
+  
                 ${box.dwg}
-
+  
                 ${box.dieNo}
-
+  
                 ${box.lotNo}
-
+  
               `;
+  
+            }
+  
+          }
+  
+  
+          return this
+            .norm(
+              searchText
+            )
+            .includes(
+              keyword
+            );
+  
         }
-      }
+      );
+  
+  
+    // =====================================================
+    // SUMMARY ต้องอ้างอิงจาก Pallet ที่ Filter แล้วเท่านั้น
+    // =====================================================
+  
+    this.calculateSummary();
+  }
 
-      return this.norm(searchText).includes(keyword);
-    });
+
+  private calculateSummary(): void {
+
+    const totalPallet =
+      this.pallets.length;
+  
+  
+    const totalHeader =
+      this.pallets.reduce(
+        (
+          sum,
+          pallet
+        ) =>
+          sum +
+          Number(
+            pallet.totalHeader ||
+            0
+          ),
+        0
+      );
+  
+  
+    const totalBox =
+      this.pallets.reduce(
+        (
+          sum,
+          pallet
+        ) =>
+          sum +
+          Number(
+            pallet.totalBox ||
+            0
+          ),
+        0
+      );
+  
+  
+    const normalBox =
+      this.pallets.reduce(
+        (
+          sum,
+          pallet
+        ) =>
+          sum +
+          Number(
+            pallet.normalBox ||
+            0
+          ),
+        0
+      );
+  
+  
+    const fractionBox =
+      this.pallets.reduce(
+        (
+          sum,
+          pallet
+        ) =>
+          sum +
+          Number(
+            pallet.fractionBox ||
+            0
+          ),
+        0
+      );
+  
+  
+    const totalQty =
+      this.pallets.reduce(
+        (
+          sum,
+          pallet
+        ) =>
+          sum +
+          Number(
+            pallet.totalQty ||
+            0
+          ),
+        0
+      );
+  
+  
+    this.summary = {
+  
+      totalPallet:
+        totalPallet,
+  
+      totalHeader:
+        totalHeader,
+  
+      totalBox:
+        totalBox,
+  
+      normalBox:
+        normalBox,
+  
+      fractionBox:
+        fractionBox,
+  
+      totalQty:
+        totalQty,
+  
+    };
   }
 
   resetFilters(): void {
