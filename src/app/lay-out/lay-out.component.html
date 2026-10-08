@@ -147,22 +147,29 @@
                     *ngFor="let area of areaRow; trackBy: trackByArea"
                     [ngClass]="{
                       'has-pallet':
-                        panelMode === 'STOCK' && hasPallet(rack, area),
+                          (
+                            panelMode === 'STOCK' ||
+                            panelMode === 'MOVE_LAYOUT'
+                          ) &&
+                          hasPallet(rack, area),
 
                       selected: panelMode === 'STOCK' && isSelected(rack, area),
 
                       'rack-group-abc':
-                        panelMode === 'STOCK' &&
+                        (panelMode === 'STOCK' || 
+                        panelMode === 'MOVE_LAYOUT') &&
                         hasPallet(rack, area) &&
                         rack.rackGroup === 'ABC',
 
                       'rack-group-de':
-                        panelMode === 'STOCK' &&
+                        (panelMode === 'STOCK' || 
+                        panelMode === 'MOVE_LAYOUT') &&
                         hasPallet(rack, area) &&
                         rack.rackGroup === 'DE',
 
                       'rack-group-fgh':
-                        panelMode === 'STOCK' &&
+                        (panelMode === 'STOCK' ||
+                        panelMode === 'MOVE_LAYOUT') &&
                         hasPallet(rack, area) &&
                         rack.rackGroup === 'FGH',
 
@@ -170,7 +177,20 @@
 
                       'move-target': isMoveTarget(area),
 
-                      'move-occupied': isMoveOccupied(area)
+                      'move-occupied': isMoveOccupied(area),
+
+                      'layout-move-source':
+                          isLayoutMoveSource(area),
+
+                        'layout-move-target':
+                          isLayoutMoveTarget(area),
+
+                        'layout-move-empty':
+                          isLayoutMoveEmptyCandidate(area),
+
+                        'layout-move-locked':
+                          isLayoutMoveLocked(area)
+
                     }"
                     (click)="selectSlot(getSlot(rack, area))"
                   >
@@ -225,23 +245,30 @@
                       *ngFor="let area of areaRow; trackBy: trackByArea"
                       [ngClass]="{
                         'has-pallet':
-                          panelMode === 'STOCK' && hasPallet(rack, area),
+                            (
+                              panelMode === 'STOCK' ||
+                              panelMode === 'MOVE_LAYOUT'
+                            ) &&
+                            hasPallet(rack, area),
 
                         selected:
                           panelMode === 'STOCK' && isSelected(rack, area),
 
                         'rack-group-abc':
-                          panelMode === 'STOCK' &&
+                          (panelMode === 'STOCK' || 
+                          panelMode === 'MOVE_LAYOUT')&&
                           hasPallet(rack, area) &&
                           rack.rackGroup === 'ABC',
 
                         'rack-group-de':
-                          panelMode === 'STOCK' &&
+                          (panelMode === 'STOCK' || 
+                          panelMode === 'MOVE_LAYOUT')&&
                           hasPallet(rack, area) &&
                           rack.rackGroup === 'DE',
 
                         'rack-group-fgh':
-                          panelMode === 'STOCK' &&
+                          (panelMode === 'STOCK' || 
+                          panelMode === 'MOVE_LAYOUT')&&
                           hasPallet(rack, area) &&
                           rack.rackGroup === 'FGH',
 
@@ -249,7 +276,20 @@
 
                         'move-target': isMoveTarget(area),
 
-                        'move-occupied': isMoveOccupied(area)
+                        'move-occupied': isMoveOccupied(area),
+
+                        'layout-move-source':
+                          isLayoutMoveSource(area),
+
+                        'layout-move-target':
+                          isLayoutMoveTarget(area),
+
+                        'layout-move-empty':
+                          isLayoutMoveEmptyCandidate(area),
+
+                        'layout-move-locked':
+                          isLayoutMoveLocked(area)
+
                       }"
                       (click)="selectSlot(getSlot(rack, area))"
                     >
@@ -284,32 +324,86 @@
               *ngIf="getPendingRack() as pendingRack"
             >
               <button
-                type="button"
-                class="pending-area-button"
-                *ngFor="let area of pendingRack.areas; trackBy: trackByArea"
-                [class.has-pallet]="
-                  panelMode === 'STOCK' && hasPallet(pendingRack, area)
+              type="button"
+              class="pending-area-button"
+              *ngFor="let area of pendingRack.areas; trackBy: trackByArea"
+            
+              [class.has-pallet]="
+                (
+                  panelMode === 'STOCK' ||
+                  panelMode === 'MOVE_LAYOUT'
+                ) &&
+                hasPallet(pendingRack, area)
+              "
+            
+              [class.selected]="
+                panelMode === 'STOCK' &&
+                isSelected(pendingRack, area)
+              "
+            
+              [class.move-source]="
+                isMoveSource(area)
+              "
+            
+              [class.move-target]="
+                isMoveTarget(area)
+              "
+            
+              [class.move-occupied]="
+                isMoveOccupied(area)
+              "
+            
+              [class.layout-move-source]="
+                isLayoutMoveSource(area)
+              "
+            
+              [class.layout-move-target]="
+                isLayoutMoveTarget(area)
+              "
+            
+              [class.layout-move-empty]="
+                isLayoutMoveEmptyCandidate(area)
+              "
+            
+              [class.layout-move-locked]="
+                isLayoutMoveLocked(area)
+              "
+            
+              (click)="
+                selectSlot(
+                  getSlot(
+                    pendingRack,
+                    area
+                  )
+                )
+              "
+            >
+              <span class="pending-area-name">
+                Pending
+              </span>
+            
+              <span
+                class="pending-pallet-count"
+                *ngIf="
+                  (
+                    panelMode === 'STOCK' ||
+                    panelMode === 'MOVE_LAYOUT'
+                  ) &&
+                  getLabelCount(
+                    pendingRack,
+                    area
+                  ) > 0
                 "
-                [class.selected]="
-                  panelMode === 'STOCK' && isSelected(pendingRack, area)
-                "
-                [class.move-source]="isMoveSource(area)"
-                [class.move-target]="isMoveTarget(area)"
-                [class.move-occupied]="isMoveOccupied(area)"
-                (click)="selectSlot(getSlot(pendingRack, area))"
               >
-                <span class="pending-area-name"> Pending </span>
+                {{
+                  getLabelCount(
+                    pendingRack,
+                    area
+                  )
+                }}
+              </span>
+            </button>
 
-                <span
-                  class="pending-pallet-count"
-                  *ngIf="
-                    panelMode === 'STOCK' &&
-                    getLabelCount(pendingRack, area) > 0
-                  "
-                >
-                  {{ getLabelCount(pendingRack, area) }}
-                </span>
-              </button>
             </div>
           </div>
         </div>
@@ -347,6 +441,20 @@
 
           <span> Move Area </span>
         </button>
+
+        <button
+          type="button"
+          class="layout-panel-menu-btn move-layout"
+          [class.active]="panelMode === 'MOVE_LAYOUT'"
+          (click)="setPanelMode('MOVE_LAYOUT')"
+        >
+          <i class="fas fa-hand-pointer"></i>
+
+          <span>
+            Move by Layout
+          </span>
+        </button>
+
       </div>
 
       <ng-container *ngIf="panelMode === 'STOCK'">
@@ -1053,6 +1161,371 @@
           </button>
         </div>
       </ng-container>
+
+
+      <!-- =====================================================
+          MOVE BY LAYOUT PANEL
+      ====================================================== -->
+
+    <ng-container *ngIf="panelMode === 'MOVE_LAYOUT'">
+
+      <div class="layout-move-panel">
+
+        <!-- HEADER -->
+
+        <div class="layout-move-head">
+
+          <div class="layout-move-head-icon">
+            <i class="fas fa-hand-pointer"></i>
+          </div>
+
+          <div>
+            <div class="layout-move-title">
+              Move Pallet by Layout
+            </div>
+
+            <div class="layout-move-subtitle">
+              Select source Pallet and move to an empty Location
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+            STEP
+        ================================================== -->
+
+        <div class="layout-move-step-bar">
+
+          <div
+            class="layout-move-step"
+            [class.active]="!layoutMoveSourceConfirmed"
+            [class.done]="layoutMoveSourceConfirmed"
+          >
+            <span>1</span>
+
+            Select Pallet
+          </div>
+
+
+          <i class="fas fa-arrow-right"></i>
+
+
+          <div
+            class="layout-move-step"
+            [class.active]="
+              layoutMoveSourceConfirmed &&
+              !layoutMoveDestinationMapAreaRackId
+            "
+            [class.done]="layoutMoveDestinationMapAreaRackId"
+          >
+            <span>2</span>
+
+            Select Destination
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+            STEP 1 : SOURCE
+        ================================================== -->
+
+        <ng-container *ngIf="!layoutMoveSourceConfirmed">
+
+          <div
+            class="layout-move-empty"
+            *ngIf="!layoutMoveSourceSlot"
+          >
+
+            <div class="layout-move-empty-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+
+            <b>
+              Select Source Location
+            </b>
+
+            <span>
+              Click an Area that contains a Pallet
+            </span>
+
+          </div>
+
+
+          <!-- SOURCE SELECTED -->
+
+          <ng-container *ngIf="layoutMoveSourceSlot">
+
+            <div class="layout-move-source-card">
+
+              <div>
+                <span>
+                  SOURCE LOCATION
+                </span>
+
+                <b>
+                  {{
+                    layoutMoveSourceLocation?.locationName ||
+                    layoutMoveSourceLocation?.areaName ||
+                    "-"
+                  }}
+                </b>
+              </div>
+
+              <div class="layout-move-source-status">
+                OCCUPIED
+              </div>
+
+            </div>
+
+
+            <!-- MULTIPLE PALLET -->
+
+            <div
+              class="layout-move-pallet-list"
+              *ngIf="layoutMoveSourceSlot.pallets.length > 1"
+            >
+
+              <div class="layout-move-section-label">
+                Select Pallet
+              </div>
+
+              <button
+                type="button"
+                class="layout-move-pallet-option"
+                *ngFor="let pallet of layoutMoveSourceSlot.pallets"
+                [class.active]="layoutMovePallet?.id === pallet.id"
+                (click)="selectLayoutMovePallet(pallet)"
+              >
+
+                <i class="fas fa-pallet"></i>
+
+                <span>
+                  <small>
+                    PALLET ID
+                  </small>
+
+                  <b>
+                    {{ pallet.palletNoId }}
+                  </b>
+                </span>
+
+              </button>
+
+            </div>
+
+
+            <!-- PALLET SELECTED -->
+
+            <div
+              class="layout-move-selected-pallet"
+              *ngIf="layoutMovePallet"
+            >
+
+              <div class="layout-move-selected-icon">
+                <i class="fas fa-pallet"></i>
+              </div>
+
+              <div>
+                <span>
+                  PALLET TO MOVE
+                </span>
+
+                <b>
+                  {{ layoutMovePallet.palletNoId }}
+                </b>
+
+                <small>
+                  {{ layoutMovePallet.labels.length }}
+                  Label(s)
+                  ·
+                  {{ layoutMovePallet.qty | number }}
+                  Qty
+                </small>
+              </div>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="layout-move-confirm-source-btn"
+              [disabled]="!layoutMovePallet"
+              (click)="confirmLayoutMoveSource()"
+            >
+
+              <i class="fas fa-check"></i>
+
+              Confirm Pallet
+
+            </button>
+
+          </ng-container>
+
+        </ng-container>
+
+
+        <!-- =================================================
+            STEP 2 : DESTINATION
+        ================================================== -->
+
+        <ng-container *ngIf="layoutMoveSourceConfirmed">
+
+          <div class="layout-move-confirmed-source">
+
+            <div>
+              <span>
+                PALLET
+              </span>
+
+              <b>
+                {{ layoutMovePallet?.palletNoId }}
+              </b>
+            </div>
+
+            <div>
+              <span>
+                FROM
+              </span>
+
+              <b>
+                {{
+                  layoutMoveSourceLocation?.locationName ||
+                  layoutMoveSourceLocation?.areaName ||
+                  "-"
+                }}
+              </b>
+            </div>
+
+          </div>
+
+
+          <div
+            class="layout-move-destination-hint"
+            *ngIf="!layoutMoveDestinationMapAreaRackId"
+          >
+
+            <i class="fas fa-mouse-pointer"></i>
+
+            Click an empty Area on Rack Layout
+
+          </div>
+
+
+          <!-- DESTINATION -->
+
+          <div
+            class="layout-move-destination-card"
+            *ngIf="layoutMoveDestinationMapAreaRackId"
+          >
+
+            <span>
+              DESTINATION
+            </span>
+
+            <b>
+              {{
+                layoutMoveDestinationLocation?.locationName ||
+                layoutMoveDestinationLocation?.areaName ||
+                "-"
+              }}
+            </b>
+
+            <small>
+              EMPTY LOCATION
+            </small>
+
+          </div>
+
+
+          <!-- MOVE SUMMARY -->
+
+          <div
+            class="layout-move-summary"
+            *ngIf="layoutMoveDestinationMapAreaRackId"
+          >
+
+            <div>
+              <span>FROM</span>
+
+              <b>
+                {{
+                  layoutMoveSourceLocation?.locationName ||
+                  layoutMoveSourceLocation?.areaName ||
+                  "-"
+                }}
+              </b>
+            </div>
+
+
+            <i class="fas fa-arrow-right"></i>
+
+
+            <div>
+              <span>TO</span>
+
+              <b>
+                {{
+                  layoutMoveDestinationLocation?.locationName ||
+                  layoutMoveDestinationLocation?.areaName ||
+                  "-"
+                }}
+              </b>
+            </div>
+
+          </div>
+
+
+          <div class="layout-move-actions">
+
+            <button
+              type="button"
+              class="layout-move-change-btn"
+              [disabled]="isMovingPallet"
+              (click)="resetLayoutMove()"
+            >
+              <i class="fas fa-undo"></i>
+
+              Change Pallet
+            </button>
+
+
+            <button
+              type="button"
+              class="layout-move-submit-btn"
+              [disabled]="
+                !layoutMoveDestinationMapAreaRackId ||
+                isMovingPallet
+              "
+              (click)="confirmLayoutMovePallet()"
+            >
+
+              <i
+                class="fas"
+                [class.fa-dolly]="!isMovingPallet"
+                [class.fa-spinner]="isMovingPallet"
+                [class.fa-spin]="isMovingPallet"
+              ></i>
+
+              {{
+                isMovingPallet
+                  ? "Moving..."
+                  : "Move Pallet"
+              }}
+
+            </button>
+
+          </div>
+
+        </ng-container>
+
+      </div>
+
+    </ng-container>
+
+
     </div>
   </div>
 </div>
