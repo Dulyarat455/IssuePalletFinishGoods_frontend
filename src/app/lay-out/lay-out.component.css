@@ -3101,27 +3101,20 @@
 }
 
 
-.layout-move-empty {
-  min-height:
-    240px;
+.layout-move-empty-state {
+  min-height: 240px;
 
-  display:
-    flex;
+  display: flex;
 
-  flex-direction:
-    column;
+  flex-direction: column;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    center;
+  justify-content: center;
 
-  text-align:
-    center;
+  text-align: center;
 
-  color:
-    #64748b;
+  color: #64748b;
 }
 
 
@@ -3155,21 +3148,14 @@
 }
 
 
-.layout-move-empty b {
-  color:
-    #334155;
-
-  font-size:
-    14px;
+.layout-move-empty-state b {
+  color: #334155;
+  font-size: 14px;
 }
 
-
-.layout-move-empty span {
-  margin-top:
-    5px;
-
-  font-size:
-    11px;
+.layout-move-empty-state span {
+  margin-top: 5px;
+  font-size: 11px;
 }
 
 

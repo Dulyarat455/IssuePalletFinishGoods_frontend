@@ -201,7 +201,8 @@
                     <span
                       class="label-count"
                       *ngIf="
-                        panelMode === 'STOCK' && getLabelCount(rack, area) > 0
+                        (panelMode === 'STOCK' || 
+                        panelMode === 'MOVE_LAYOUT' )&& getLabelCount(rack, area) > 0
                       "
                     >
                       {{ getLabelCount(rack, area) }}
@@ -300,7 +301,8 @@
                       <span
                         class="label-count"
                         *ngIf="
-                          panelMode === 'STOCK' && getLabelCount(rack, area) > 0
+                          (panelMode === 'STOCK' ||  panelMode === 'MOVE_LAYOUT') 
+                          && getLabelCount(rack, area) > 0
                         "
                       >
                         {{ getLabelCount(rack, area) }}
@@ -1235,7 +1237,7 @@
         <ng-container *ngIf="!layoutMoveSourceConfirmed">
 
           <div
-            class="layout-move-empty"
+            class="layout-move-empty-state"
             *ngIf="!layoutMoveSourceSlot"
           >
 
