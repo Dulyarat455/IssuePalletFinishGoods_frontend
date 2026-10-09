@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { CallSocketService } from '../services/call-socket.service';
+
+
 
 import Swal from 'sweetalert2';
 import config from '../../config';
@@ -148,6 +152,15 @@ type MapLocationPalletBoxRow = {
   styleUrl: './lay-out.component.css',
 })
 export class LayOutComponent implements OnInit {
+
+  wsSub?: Subscription;
+
+  constructor(
+      private http: HttpClient,
+      private router: Router,
+      private callSocket: CallSocketService,
+  ){}
+
   /* =====================================================
      RACK / AREA MASTER FROM API
   ===================================================== */
@@ -219,10 +232,21 @@ export class LayOutComponent implements OnInit {
   layoutMoveDestinationMapAreaRackId: number | null = null;
 
 
-  constructor(private http: HttpClient, private router: Router) {}
+  
 
   ngOnInit(): void {
+
     this.fetchLayoutData();
+
+    // ✅ ฟัง event จาก websocket
+    this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
+    const type = payload?.type as 'palletLabelChange' | undefined;
+     
+      if(type === 'palletLabelChange'){
+        this.fetchLayoutData();
+      }
+    })
+
   }
 
   /* =====================================================
@@ -1592,19 +1616,24 @@ export class LayOutComponent implements OnInit {
       }
   
   
-      // ===================================================
-      // DESTINATION ต้อง EMPTY เท่านั้น
+     // ===================================================
+      // DESTINATION
       //
-      // Panel ใหม่นี้ไม่ใช้ Special Pending แบบ Move Area
-      // ตาม Requirement:
-      // "เลือก Area ที่ยังว่าง"
+      // NORMAL LOCATION
+      // -> ต้องว่างเท่านั้น
+      //
+      // PENDING
+      // -> ถึงมี Pallet อยู่แล้วก็เลือกได้
       // ===================================================
   
       if (
-        Number(
-          location.palletCount || 0
-        ) > 0 ||
-        slot.pallets.length > 0
+        location.isPending !== true &&
+        (
+          Number(
+            location.palletCount || 0
+          ) > 0 ||
+          slot.pallets.length > 0
+        )
       ) {
         return;
       }
@@ -2167,22 +2196,45 @@ export class LayOutComponent implements OnInit {
       );
   
   
-    if (
-      !destination ||
-      Number(
-        destination.palletCount ||
-        0
-      ) > 0
-    ) {
-  
-      Swal.fire({
-        icon: 'warning',
-        title: 'Location ไม่ว่าง',
-        text: 'Location ปลายทางมี Pallet อยู่แล้ว',
-      });
-  
-      return;
-    }
+      if (
+        !destination
+      ) {
+      
+        Swal.fire({
+          icon: 'warning',
+          title: 'Location Not Found',
+          text: 'ไม่พบ Location ปลายทาง',
+        });
+      
+        return;
+      }
+      
+      
+      // =====================================================
+      // NORMAL LOCATION
+      //
+      // มี Pallet อยู่แล้ว = ห้าม Move
+      //
+      // PENDING
+      // มี Pallet อยู่แล้ว = อนุญาต
+      // =====================================================
+      
+      if (
+        destination.isPending !== true &&
+        Number(
+          destination.palletCount ||
+          0
+        ) > 0
+      ) {
+      
+        Swal.fire({
+          icon: 'warning',
+          title: 'Location ไม่ว่าง',
+          text: 'Location ปลายทางมี Pallet อยู่แล้ว',
+        });
+      
+        return;
+      }
   
   
     const fromName =
@@ -2711,6 +2763,8 @@ isLayoutMoveEmptyCandidate(
   }
 
 
+  // Source เดิม
+  // ห้ามเลือกซ้ำ
   if (
     this.isLayoutMoveSource(
       area
@@ -2720,6 +2774,15 @@ isLayoutMoveEmptyCandidate(
   }
 
 
+  // Pending เลือกได้เสมอ
+  if (
+    location.isPending === true
+  ) {
+    return true;
+  }
+
+
+  // Normal Location ต้องว่าง
   return (
     Number(
       location.palletCount ||
@@ -2757,8 +2820,12 @@ isLayoutMoveLocked(
   }
 
 
-  // ก่อน Confirm Source
-  // Empty Area ยังเลือกไม่ได้
+  // =====================================================
+  // BEFORE CONFIRM SOURCE
+  //
+  // ต้องเลือก Area ที่มี Pallet เป็น Source
+  // =====================================================
+
   if (
     !this.layoutMoveSourceConfirmed
   ) {
@@ -2769,11 +2836,14 @@ isLayoutMoveLocked(
         0
       ) === 0
     );
+
   }
 
 
-  // หลัง Confirm Source
-  // Occupied Area เลือกเป็นปลายทางไม่ได้
+  // =====================================================
+  // SOURCE
+  // =====================================================
+
   if (
     this.isLayoutMoveSource(
       area
@@ -2782,6 +2852,25 @@ isLayoutMoveLocked(
     return false;
   }
 
+
+  // =====================================================
+  // PENDING
+  //
+  // ถึงมี Pallet อยู่แล้วก็ไม่ Lock
+  // =====================================================
+
+  if (
+    location.isPending === true
+  ) {
+    return false;
+  }
+
+
+  // =====================================================
+  // NORMAL LOCATION
+  //
+  // Occupied = Lock
+  // =====================================================
 
   return (
     Number(
@@ -2816,4 +2905,11 @@ isLayoutMoveLocked(
   trackByBox(index: number, box: BoxItem): string {
     return box.boxNo;
   }
+
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+  }
+
+
 }

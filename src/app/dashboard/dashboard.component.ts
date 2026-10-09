@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { CallSocketService } from '../services/call-socket.service';
 
 import Swal from 'sweetalert2';
 import config from '../../config';
@@ -114,6 +116,15 @@ type DashboardLocationRow = {
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
+
+  wsSub?: Subscription;
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private callSocket: CallSocketService,
+  ) {}
+
   // =====================================================
   // DATA
   // =====================================================
@@ -150,12 +161,24 @@ export class DashboardComponent implements OnInit {
 
   isLoading = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+ 
 
   ngOnInit(): void {
     this.fetchLocations();
-
     this.fetchPallet();
+
+
+     // ✅ ฟัง event จาก websocket
+     this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
+      const type = payload?.type as 'palletLabelChange' | undefined;
+
+      if(type === 'palletLabelChange'){
+        this.fetchLocations();
+        this.fetchPallet();
+      }
+
+    })
+
   }
 
   // =====================================================
@@ -720,4 +743,12 @@ export class DashboardComponent implements OnInit {
       .trim()
       .toUpperCase();
   }
+
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+  }
+
+
+
 }
