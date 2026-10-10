@@ -423,6 +423,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
   @ViewChild('fractionQty') fractionQty!: ElementRef<HTMLInputElement>;
 
   userId: number | null = null;
+  role: string = '';
+
 
   userGroupName = '';
   userSectionName = '';
@@ -582,6 +584,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     // =====================================================
 
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
+    
+    this.role = localStorage.getItem('finish_goods_role') || '';
 
     const now = new Date();
 
@@ -1279,6 +1283,15 @@ get isPalletLabelTypeLocked(): boolean {
   get isWorkingActualReal(): boolean {
     return this.issueMode === 'ACTUAL' && this.actualHeaderSource === 'REAL';
   }
+
+
+
+  get isAdmin(): boolean {
+    return String(this.role || '')
+      .trim()
+      .toUpperCase() === 'ADMIN';
+  }
+  
 
   buildCreatePalletSlotCode(column: number, row: number): string {
     return `${column}` + `${row.toString().padStart(2, '0')}`;

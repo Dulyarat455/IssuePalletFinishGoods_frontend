@@ -1304,7 +1304,9 @@ class="header-list-bottom-actions"
      RIGHT : DANGER ZONE
 ================================================== -->
 
-<div class="actual-pallet-danger-zone">
+<div class="actual-pallet-danger-zone"
+  *ngIf="isAdmin"
+>
 
   <div class="actual-pallet-danger-text">
     <span>
