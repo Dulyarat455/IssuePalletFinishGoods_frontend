@@ -1846,6 +1846,34 @@ export class LayOutComponent implements OnInit {
     );
   }
 
+
+
+
+  getPalletCount(
+    rack: RackDefinition,
+    area: AreaRow
+  ): number {
+  
+    const location =
+      this.locationByMapAreaRackId.get(
+        Number(area.mapAreaRackId)
+      );
+  
+    if (!location) {
+      return 0;
+    }
+  
+    return Number(
+      location.palletCount || 0
+    );
+  
+  }
+
+
+
+
+
+
   /* =====================================================
      SELECTED
   ===================================================== */

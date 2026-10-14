@@ -199,14 +199,17 @@
                     </span>
 
                     <span
-                      class="label-count"
-                      *ngIf="
-                        (panelMode === 'STOCK' || 
-                        panelMode === 'MOVE_LAYOUT' )&& getLabelCount(rack, area) > 0
-                      "
-                    >
-                      {{ getLabelCount(rack, area) }}
-                    </span>
+                    class="label-count"
+                    *ngIf="
+                      (
+                        panelMode === 'STOCK' ||
+                        panelMode === 'MOVE_LAYOUT'
+                      ) &&
+                      getPalletCount(rack, area) > 0
+                    "
+                  >
+                    {{ getPalletCount(rack, area) }}
+                  </span>
                   </button>
                 </div>
               </div>
@@ -299,14 +302,17 @@
                       </span>
 
                       <span
-                        class="label-count"
-                        *ngIf="
-                          (panelMode === 'STOCK' ||  panelMode === 'MOVE_LAYOUT') 
-                          && getLabelCount(rack, area) > 0
-                        "
-                      >
-                        {{ getLabelCount(rack, area) }}
-                      </span>
+                          class="label-count"
+                          *ngIf="
+                            (
+                              panelMode === 'STOCK' ||
+                              panelMode === 'MOVE_LAYOUT'
+                            ) &&
+                            getPalletCount(rack, area) > 0
+                          "
+                        >
+                          {{ getPalletCount(rack, area) }}
+                        </span>
                     </button>
                   </div>
                 </div>
@@ -385,25 +391,25 @@
               </span>
             
               <span
-                class="pending-pallet-count"
-                *ngIf="
-                  (
-                    panelMode === 'STOCK' ||
-                    panelMode === 'MOVE_LAYOUT'
-                  ) &&
-                  getLabelCount(
-                    pendingRack,
-                    area
-                  ) > 0
-                "
-              >
-                {{
-                  getLabelCount(
-                    pendingRack,
-                    area
-                  )
-                }}
-              </span>
+              class="pending-pallet-count"
+              *ngIf="
+                (
+                  panelMode === 'STOCK' ||
+                  panelMode === 'MOVE_LAYOUT'
+                ) &&
+                getPalletCount(
+                  pendingRack,
+                  area
+                ) > 0
+              "
+            >
+              {{
+                getPalletCount(
+                  pendingRack,
+                  area
+                )
+              }}
+            </span>
             </button>
 
             </div>
