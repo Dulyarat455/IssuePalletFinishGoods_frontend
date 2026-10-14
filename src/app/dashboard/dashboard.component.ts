@@ -116,6 +116,8 @@ type DashboardLocationRow = {
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
+  groupName: string = '';
+  groupId: number | null = null;
 
   wsSub?: Subscription;
 
@@ -167,6 +169,10 @@ export class DashboardComponent implements OnInit {
     this.fetchLocations();
     this.fetchPallet();
 
+
+
+    this.groupId = Number(localStorage.getItem('finish_goods_groupId')) || null;
+    this.groupName = localStorage.getItem('finish_goods_groupName') || '';
 
      // ✅ ฟัง event จาก websocket
      this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
