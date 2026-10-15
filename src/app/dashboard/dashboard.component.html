@@ -116,6 +116,81 @@
       </div>
     </div>
 
+
+
+        <!-- =====================================================
+        GROUP FILTER
+      ====================================================== -->
+
+      <div class="group-filter-panel">
+
+        <div class="group-filter-head">
+
+          <div>
+
+            <span class="group-filter-label">
+              GROUP
+            </span>
+
+            <small>
+              Filter Pallet by Header Group
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div class="group-filter-buttons">
+
+          <!-- ALL -->
+
+          <button
+            type="button"
+            class="group-filter-btn"
+            [class.active]="
+              selectedGroupId === null
+            "
+            (click)="
+              selectGroupFilter(null)
+            "
+          >
+
+            <i class="fas fa-layer-group"></i>
+
+            <span>
+              All
+            </span>
+
+          </button>
+
+
+          <!-- DYNAMIC GROUP -->
+
+          <button
+            type="button"
+            class="group-filter-btn"
+            *ngFor="let group of groups"
+            [class.active]="
+              selectedGroupId === group.id
+            "
+            (click)="
+              selectGroupFilter(group.id)
+            "
+          >
+
+            <span>
+              {{ group.name }}
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+
     <div class="filter-grid">
 
       <div class="filter-field">

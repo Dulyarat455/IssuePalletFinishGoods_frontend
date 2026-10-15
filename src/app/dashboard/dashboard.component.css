@@ -285,6 +285,142 @@
   font-weight: 700;
 }
 
+
+
+
+/* =========================================================
+   GROUP FILTER
+========================================================= */
+
+.group-filter-panel {
+  margin-bottom: 16px;
+  padding: 13px 14px;
+
+  border: 1px solid #dbe5e1;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fffb,
+      #ffffff
+    );
+}
+
+
+.group-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 10px;
+}
+
+
+.group-filter-label {
+  display: block;
+
+  color: #0f766e;
+
+  font-size: 10px;
+  font-weight: 950;
+
+  letter-spacing: 0.8px;
+}
+
+
+.group-filter-head small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.group-filter-buttons {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+
+.group-filter-btn {
+  min-height: 38px;
+
+  padding: 0 15px;
+
+  border:
+    1px solid
+    #cbd5e1;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.group-filter-btn:hover {
+  border-color: #14b8a6;
+
+  color: #0f766e;
+
+  transform:
+    translateY(-1px);
+}
+
+
+.group-filter-btn.active {
+  border-color: #0f766e;
+
+  background:
+    linear-gradient(
+      135deg,
+      #10b981,
+      #0d9488
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 12px
+    rgba(
+      15,
+      118,
+      110,
+      0.18
+    );
+}
+
+
 .filter-grid {
   display: grid;
 

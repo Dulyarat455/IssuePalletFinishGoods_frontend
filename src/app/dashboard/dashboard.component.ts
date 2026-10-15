@@ -84,6 +84,11 @@ type PalletDashboardRow = {
   headers: PalletHeaderRow[];
 };
 
+type GroupRow = {
+  id: number;
+  name: string;
+};
+
 type DashboardSummary = {
   totalPallet: number;
   totalHeader: number;
@@ -119,12 +124,19 @@ export class DashboardComponent implements OnInit {
   groupName: string = '';
   groupId: number | null = null;
 
+  groups: GroupRow[] = [];
+
+  // null = ALL
+  selectedGroupId: number | null = null;
+
+  isLoadingGroups = false;
+
   wsSub?: Subscription;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private callSocket: CallSocketService,
+    private callSocket: CallSocketService
   ) {}
 
   // =====================================================
@@ -163,28 +175,37 @@ export class DashboardComponent implements OnInit {
 
   isLoading = false;
 
- 
-
   ngOnInit(): void {
-    this.fetchLocations();
-    this.fetchPallet();
-
-
-
     this.groupId = Number(localStorage.getItem('finish_goods_groupId')) || null;
+
     this.groupName = localStorage.getItem('finish_goods_groupName') || '';
 
-     // ✅ ฟัง event จาก websocket
-     this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
+    // =====================================================
+    // DEFAULT GROUP FILTER
+    //
+    // Login User มี Group
+    // -> Default เลือก Group ของ User
+    //
+    // ไม่มี Group
+    // -> Default ALL
+    // =====================================================
+
+    this.selectedGroupId = this.groupId;
+
+    this.fetchGroups();
+
+    this.fetchLocations();
+
+    this.fetchPallet();
+    // ✅ ฟัง event จาก websocket
+    this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
       const type = payload?.type as 'palletLabelChange' | undefined;
 
-      if(type === 'palletLabelChange'){
+      if (type === 'palletLabelChange') {
         this.fetchLocations();
         this.fetchPallet();
       }
-
-    })
-
+    });
   }
 
   // =====================================================
@@ -287,6 +308,75 @@ export class DashboardComponent implements OnInit {
         this.locationByMapAreaRackId = new Map<number, DashboardLocationRow>();
       },
     });
+  }
+
+
+
+
+
+
+  fetchGroups(): void {
+
+    this.isLoadingGroups = true;
+  
+  
+    this.http
+      .get<any>(
+        config.apiServer +
+        '/api/group/list'
+      )
+      .subscribe({
+  
+        next: (res: any): void => {
+  
+          const rows =
+            Array.isArray(res?.results)
+              ? res.results
+              : [];
+  
+  
+          this.groups =
+            rows
+              .map(
+                (row: any): GroupRow => ({
+                  id: Number(row.id),
+  
+                  name:
+                    String(
+                      row.name || ''
+                    ).trim(),
+                })
+              )
+              .filter(
+                (group: GroupRow) =>
+                  Number.isInteger(group.id) &&
+                  group.id > 0
+              );
+  
+  
+          this.isLoadingGroups =
+            false;
+  
+        },
+  
+  
+        error: (err: any): void => {
+  
+          console.error(
+            'Load Group Error:',
+            err
+          );
+  
+  
+          this.groups = [];
+  
+          this.isLoadingGroups =
+            false;
+  
+        },
+  
+      });
+  
   }
 
   // =====================================================
@@ -493,6 +583,43 @@ export class DashboardComponent implements OnInit {
         return false;
       }
 
+
+
+              // ===============================================
+        // GROUP
+        //
+        // null = ALL
+        //
+        // ถ้าเลือก Group:
+        // Pallet จะผ่านถ้ามี Header อย่างน้อย 1 ตัว
+        // ที่ groupId ตรงกับ Group ที่เลือก
+        //
+        // IMPORTANT:
+        // ไม่ Filter pallet.headers
+        // เพราะต้องแสดง Header ทั้งหมดใน Pallet
+        // ===============================================
+
+        if (
+          this.selectedGroupId != null
+        ) {
+
+          const hasGroup =
+            pallet.headers.some(
+              (header) =>
+                Number(header.groupId) ===
+                Number(
+                  this.selectedGroupId
+                )
+            );
+
+
+          if (!hasGroup) {
+            return false;
+          }
+
+        }
+
+
       // ===============================================
       // KEYWORD
       // ===============================================
@@ -600,10 +727,72 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  resetFilters(): void {
-    this.filters = this.createDefaultFilters();
 
+
+
+  selectGroupFilter(
+    groupId: number | null
+  ): void {
+  
+    this.selectedGroupId =
+      groupId;
+  
+  
+    // Clear expanded state
+    // เพื่อไม่ให้ state จากรายการเก่าค้าง
+    this.expandedPalletIds.clear();
+  
+    this.expandedHeaderIds.clear();
+  
+  
+    // Apply Filter ใหม่
     this.applyFilters();
+  
+  
+    // เปิด Pallet แรกหลัง Filter
+    if (
+      this.pallets.length > 0
+    ) {
+  
+      this.expandedPalletIds.add(
+        this.pallets[0].id
+      );
+  
+    }
+  
+  }
+
+  resetFilters(): void {
+
+    // Reset filter ปกติ
+    this.filters =
+      this.createDefaultFilters();
+  
+  
+    // Reset Group
+    // กลับไป Group ของ User
+    this.selectedGroupId =
+      this.groupId;
+  
+  
+    this.expandedPalletIds.clear();
+  
+    this.expandedHeaderIds.clear();
+  
+  
+    this.applyFilters();
+  
+  
+    if (
+      this.pallets.length > 0
+    ) {
+  
+      this.expandedPalletIds.add(
+        this.pallets[0].id
+      );
+  
+    }
+  
   }
 
   // =====================================================
@@ -750,11 +939,7 @@ export class DashboardComponent implements OnInit {
       .toUpperCase();
   }
 
-
   ngOnDestroy() {
     this.wsSub?.unsubscribe();
   }
-
-
-
 }
