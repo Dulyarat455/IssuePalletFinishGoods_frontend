@@ -7302,6 +7302,64 @@ td small {
   font-size: 10px;
 }
 
+
+
+/* =========================================================
+   SCAN ITEM NO INPUT
+   Box เต็ม / Box เศษ
+========================================================= */
+
+.scan-item-input-wrap {
+  position: relative;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+}
+
+
+.scan-item-input-icon {
+  position: absolute;
+
+  left: 13px;
+
+  z-index: 2;
+
+  color: #059669;
+
+  font-size: 16px;
+
+  pointer-events: none;
+}
+
+
+.scan-item-input {
+  padding-left: 42px !important;
+
+  font-weight: 850;
+}
+
+
+.scan-item-input::placeholder {
+  color: #94a3b8;
+
+  font-weight: 700;
+
+  opacity: 1;
+}
+
+
+.scan-item-input:focus {
+  border-color: #10b981;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(16, 185, 129, 0.12);
+}
+
+
+
 /* ====================
 for 2 case to center
 ==================== */

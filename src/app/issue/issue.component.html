@@ -2103,15 +2103,24 @@ class="header-list-bottom-actions"
             <div class="manual-grid">
               <div class="form-field">
                 <label>Item No.</label>
-                <input
-                  #scanItemNo
-                  class="control"
-                  type="text"
-                  name="scan_itemNo"
-                  [(ngModel)]="scanForm.itemNo"
-                  [disabled]="!header || isEditingHeader || isSavingScan"
-                  (keydown.enter)="onScanEnter('itemNo', $event)"
-                />
+              
+                <div class="scan-item-input-wrap">
+              
+                  <i class="fas fa-qrcode scan-item-input-icon"></i>
+              
+                  <input
+                    #scanItemNo
+                    class="control scan-item-input"
+                    type="text"
+                    name="scan_itemNo"
+                    placeholder="Scan Item No."
+                    autocomplete="off"
+                    [(ngModel)]="scanForm.itemNo"
+                    [disabled]="!header || isEditingHeader || isSavingScan"
+                    (keydown.enter)="onScanEnter('itemNo', $event)"
+                  />
+              
+                </div>
               </div>
 
               <div class="form-field">
@@ -2489,17 +2498,28 @@ class="header-list-bottom-actions"
               <div class="fraction-scan-form-grid" *ngIf="!isFractionFull">
                 <div class="form-field">
                   <label>Item No.</label>
-                  <input
-                    #fractionItemNo
-                    class="control"
-                    type="text"
-                    name="fraction_itemNo"
-                    [(ngModel)]="fractionScanForm.itemNo"
-                    [disabled]="
-                      isEditingHeader || isSavingFractionScan || isFractionFull
-                    "
-                    (keydown.enter)="onFractionScanEnter('itemNo', $event)"
-                  />
+                
+                  <div class="scan-item-input-wrap">
+                
+                    <i class="fas fa-qrcode scan-item-input-icon"></i>
+                
+                    <input
+                      #fractionItemNo
+                      class="control scan-item-input"
+                      type="text"
+                      name="fraction_itemNo"
+                      placeholder="Scan Item No."
+                      autocomplete="off"
+                      [(ngModel)]="fractionScanForm.itemNo"
+                      [disabled]="
+                        isEditingHeader ||
+                        isSavingFractionScan ||
+                        isFractionFull
+                      "
+                      (keydown.enter)="onFractionScanEnter('itemNo', $event)"
+                    />
+                
+                  </div>
                 </div>
 
                 <div class="form-field">
