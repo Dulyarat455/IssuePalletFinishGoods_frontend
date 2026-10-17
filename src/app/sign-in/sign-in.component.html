@@ -275,13 +275,16 @@
         <div class="input-wrap rfid-wrap">
           <i class="fas fa-id-card"></i>
           <input
-            #rfidInput
-            type="password"
-            placeholder="Scan your RFID card"
-            autocomplete="off"
-            [disabled]="isLoading"
-            (input)="onRFIDInput($event)"
-          />
+          #rfidInput
+          type="password"
+          placeholder="Scan your RFID card"
+          autocomplete="off"
+          autofocus
+          maxlength="10"
+          [(ngModel)]="rfid"
+          [disabled]="isLoading"
+          (input)="onRFIDInput($event)"
+        />
         </div>
 
         @if (isLoading) {
