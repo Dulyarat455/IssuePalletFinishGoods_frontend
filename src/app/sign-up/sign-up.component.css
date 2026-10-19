@@ -538,3 +538,562 @@
   .btn-detail:hover {
     background: #d1fae5;
   }
+
+
+
+
+  /* =========================================================
+   USER ACTIVE WORK
+========================================================= */
+
+.member-user-row {
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.member-user-row.has-active-scan {
+  cursor: pointer;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff7ed 0%,
+      #ffffff 32%
+    );
+}
+
+
+.member-user-row.has-active-scan:hover {
+  background: #fffaf5;
+}
+
+
+.member-user-row.has-active-scan.expanded {
+  background: #fff7ed;
+}
+
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.user-name-block {
+  min-width: 0;
+}
+
+
+.user-name-block > b {
+  display: block;
+}
+
+
+/* =========================================================
+   ACTIVE STATUS
+========================================================= */
+
+.user-work-status {
+  width: fit-content;
+
+  margin-bottom: 5px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  font-size: 9px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.5px;
+}
+
+
+.user-work-status.active {
+  padding: 4px 7px;
+
+  border-radius: 999px;
+
+  background: #fff7ed;
+
+  border: 1px solid #fed7aa;
+
+  color: #c2410c;
+}
+
+
+.user-work-status.loading {
+  color: #94a3b8;
+}
+
+
+/* =========================================================
+   LIVE DOT
+========================================================= */
+
+.work-live-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 7px;
+
+  border-radius: 50%;
+
+  background: #f97316;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      249,
+      115,
+      22,
+      0.14
+    );
+
+  animation:
+    memberWorkPulse
+    1.2s infinite;
+}
+
+
+@keyframes memberWorkPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+}
+
+
+/* =========================================================
+   ARROW
+========================================================= */
+
+.work-expand-arrow {
+  margin-left: 2px;
+
+  font-size: 8px;
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+.work-expand-arrow.open {
+  transform:
+    rotate(180deg);
+}
+
+
+/* =========================================================
+   EXPAND ROW
+========================================================= */
+
+.user-work-expand-row td {
+  padding: 0 !important;
+
+  border-bottom:
+    1px solid #e2e8f0 !important;
+
+  background: #f8fafc;
+}
+
+
+.user-work-panel {
+  padding: 18px 22px 22px;
+
+  border-top:
+    1px solid #fed7aa;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9,
+      #f8fafc
+    );
+}
+
+
+/* =========================================================
+   PANEL HEADER
+========================================================= */
+
+.user-work-panel-head {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 15px;
+}
+
+
+.user-work-eyebrow {
+  display: block;
+
+  color: #f97316;
+
+  font-size: 9px;
+
+  font-weight: 950;
+
+  letter-spacing: 1.2px;
+}
+
+
+.user-work-panel-head h4 {
+  margin: 3px 0 2px;
+
+  color: #0f172a;
+
+  font-size: 16px;
+
+  font-weight: 950;
+}
+
+
+.user-work-panel-head small {
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   MODE CHIP
+========================================================= */
+
+.work-mode-chip {
+  padding: 7px 11px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+
+  font-weight: 950;
+}
+
+
+.work-mode-chip.temp {
+  background: #ecfdf5;
+
+  color: #047857;
+
+  border:
+    1px solid #bbf7d0;
+}
+
+
+.work-mode-chip.tac {
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  border:
+    1px solid #bfdbfe;
+}
+
+
+.work-mode-chip.both {
+  background: #fff7ed;
+
+  color: #c2410c;
+
+  border:
+    1px solid #fed7aa;
+}
+
+
+/* =========================================================
+   MODE PANEL
+========================================================= */
+
+.work-mode-panel {
+  padding: 14px;
+
+  border-radius: 16px;
+
+  border:
+    1px solid #e2e8f0;
+
+  background: #ffffff;
+}
+
+
+.work-mode-panel +
+.work-mode-panel {
+  margin-top: 12px;
+}
+
+
+/* =========================================================
+   MODE HEAD
+========================================================= */
+
+.work-mode-head {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 11px;
+}
+
+
+.work-mode-head-icon {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 13px;
+
+  font-size: 15px;
+}
+
+
+.work-mode-panel.temp
+.work-mode-head-icon {
+  background: #ecfdf5;
+
+  color: #059669;
+}
+
+
+.work-mode-panel.tac
+.work-mode-head-icon {
+  background: #eff6ff;
+
+  color: #2563eb;
+}
+
+
+.work-mode-head b {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 13px;
+
+  font-weight: 950;
+}
+
+
+.work-mode-head span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   WORK ITEM
+========================================================= */
+
+.work-item-card {
+  padding: 12px 14px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+
+  border:
+    1px solid #e2e8f0;
+}
+
+
+.work-item-card +
+.work-item-card {
+  margin-top: 9px;
+}
+
+
+.work-item-info {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 18px;
+}
+
+
+.work-item-info span,
+.work-progress span {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  font-weight: 950;
+
+  letter-spacing: 0.4px;
+}
+
+
+.work-item-info b {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #0f172a;
+
+  font-size: 14px;
+
+  font-weight: 950;
+}
+
+
+.work-item-info small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.work-progress {
+  margin-top: 11px;
+
+  padding-top: 11px;
+
+  border-top:
+    1px solid #e2e8f0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+}
+
+
+.work-progress > div {
+  padding: 8px 10px;
+
+  border-radius: 11px;
+
+  border:
+    1px solid #e2e8f0;
+
+  background: #ffffff;
+}
+
+
+.work-progress b {
+  display: inline-block;
+
+  margin-top: 3px;
+
+  color: #0f172a;
+
+  font-size: 17px;
+
+  font-weight: 950;
+}
+
+
+.work-progress small {
+  margin-left: 3px;
+
+  color: #64748b;
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+
+.work-progress .remaining {
+  background: #fff7ed;
+
+  border-color: #fed7aa;
+}
+
+
+.work-progress
+.remaining b {
+  color: #c2410c;
+}
+
+
+/* =========================================================
+   REFRESH DISABLED
+========================================================= */
+
+.btn-refresh:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .user-work-panel {
+    padding: 14px;
+  }
+
+
+  .user-work-panel-head {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .work-item-info {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+
+  .work-progress {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+}

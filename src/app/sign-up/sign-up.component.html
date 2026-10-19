@@ -119,10 +119,30 @@
           <span>{{ filteredUsers.length }} records</span>
         </div>
   
-        <button type="button" class="btn-refresh" (click)="fetchUsers()">
-          <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i>
-          Refresh
-        </button>
+        <button
+        type="button"
+        class="btn-refresh"
+        (click)="fetchUsers()"
+        [disabled]="
+          isLoading ||
+          isLoadingUserStatus
+        "
+      >
+      
+        <i
+          class="fas fa-sync-alt"
+          [class.fa-spin]="
+            isLoading ||
+            isLoadingUserStatus
+          "
+        ></i>
+      
+        Refresh
+      
+      </button>
+
+
+      
       </div>
   
       <div class="table-wrap">
@@ -139,62 +159,636 @@
               <th>Detail</th>
             </tr>
           </thead>
+
+
+          
   
           <tbody>
+
+            <!-- =====================================================
+                 LOADING
+            ====================================================== -->
+          
             <tr *ngIf="isLoading">
-              <td colspan="8" class="empty-row">
-                <i class="fas fa-spinner fa-spin"></i>
+          
+              <td
+                colspan="8"
+                class="empty-row"
+              >
+          
+                <i
+                  class="fas
+                         fa-spinner
+                         fa-spin"
+                ></i>
+          
                 Loading members...
+          
               </td>
+          
             </tr>
-  
-            <tr *ngIf="!isLoading && filteredUsers.length === 0">
-              <td colspan="8" class="empty-row">
+          
+          
+            <!-- =====================================================
+                 EMPTY
+            ====================================================== -->
+          
+            <tr
+              *ngIf="
+                !isLoading &&
+                filteredUsers.length === 0
+              "
+            >
+          
+              <td
+                colspan="8"
+                class="empty-row"
+              >
                 No member data
               </td>
+          
             </tr>
-  
-            <tr *ngFor="let u of filteredUsers; let i = index">
-              <td class="mono">{{ i + 1 }}</td>
-  
-              <td>
-                <div class="user-cell">
-                  <div class="avatar-mini">
-                    {{ u.name ? u.name.charAt(0).toUpperCase() : 'U' }}
+          
+          
+            <!-- =====================================================
+                 USER
+            ====================================================== -->
+          
+            <ng-container
+              *ngFor="
+                let u of filteredUsers;
+                let i = index
+              "
+            >
+          
+              <!-- ===================================================
+                   MAIN ROW
+              ==================================================== -->
+          
+              <tr
+                class="member-user-row"
+                [class.has-active-scan]="
+                  hasUserActiveScan(u.id)
+                "
+                [class.expanded]="
+                  expandedUserId === u.id
+                "
+                (click)="toggleUserStatusRow(u)"
+              >
+          
+                <!-- # -->
+          
+                <td class="mono">
+                  {{ i + 1 }}
+                </td>
+          
+          
+                <!-- NAME -->
+          
+                <td>
+          
+                  <div class="user-cell">
+          
+                    <div class="avatar-mini">
+          
+                      {{
+                        u.name
+                          ? u.name
+                              .charAt(0)
+                              .toUpperCase()
+                          : "U"
+                      }}
+          
+                    </div>
+          
+          
+                    <div class="user-name-block">
+          
+                      <!-- =========================================
+                           STATUS LOADING
+                      ========================================== -->
+          
+                      <div
+                        class="user-work-status loading"
+                        *ngIf="
+                          isLoadingUserStatus
+                        "
+                      >
+          
+                        <i
+                          class="fas
+                                 fa-spinner
+                                 fa-spin"
+                        ></i>
+          
+                        Checking...
+          
+                      </div>
+          
+          
+                      <!-- =========================================
+                           ACTIVE SCAN
+                      ========================================== -->
+          
+                      <div
+                        class="user-work-status active"
+                        *ngIf="
+                          !isLoadingUserStatus &&
+                          hasUserActiveScan(u.id)
+                        "
+                      >
+          
+                        <span
+                          class="work-live-dot"
+                        ></span>
+          
+                        <i
+                          class="fas
+                                 fa-qrcode"
+                        ></i>
+          
+          
+                        <span>
+                          SCANNING
+                        </span>
+          
+          
+                        <i
+                          class="fas
+                                 fa-chevron-down
+                                 work-expand-arrow"
+                          [class.open]="
+                            expandedUserId ===
+                            u.id
+                          "
+                        ></i>
+          
+                      </div>
+          
+          
+                      <b>
+                        {{ u.name }}
+                      </b>
+          
+                    </div>
+          
                   </div>
-                  <div>
-                    <b>{{ u.name }}</b>
-                    
+          
+                </td>
+          
+          
+                <!-- EMP NO -->
+          
+                <td class="mono strong">
+                  {{ u.empNo }}
+                </td>
+          
+          
+                <!-- RFID -->
+          
+                <td>
+          
+                  <span class="rfid-chip">
+          
+                    <i
+                      class="fas
+                             fa-id-card"
+                    ></i>
+          
+                    {{ u.rfId }}
+          
+                  </span>
+          
+                </td>
+          
+          
+                <!-- ROLE -->
+          
+                <td>
+          
+                  <span
+                    class="role-chip"
+                    [ngClass]="
+                      u.role === 'admin'
+                        ? 'admin'
+                        : 'user'
+                    "
+                  >
+          
+                    {{ u.role }}
+          
+                  </span>
+          
+                </td>
+          
+          
+                <!-- GROUP -->
+          
+                <td>
+                  {{ u.groupName || "-" }}
+                </td>
+          
+          
+                <!-- SECTION -->
+          
+                <td>
+                  {{ u.sectionName || "-" }}
+                </td>
+          
+          
+                <!-- DETAIL -->
+          
+                <td>
+          
+                  <button
+                    type="button"
+                    class="btn-detail"
+                    (click)="
+                      $event.stopPropagation();
+                      openUserDetailModal(u)
+                    "
+                  >
+          
+                    <i
+                      class="fas
+                             fa-eye"
+                    ></i>
+          
+                    Detail
+          
+                  </button>
+          
+                </td>
+          
+              </tr>
+          
+          
+              <!-- ===================================================
+                   EXPAND ACTIVE WORK
+              ==================================================== -->
+          
+              <tr
+                class="user-work-expand-row"
+                *ngIf="
+                  expandedUserId === u.id &&
+                  hasUserActiveScan(u.id)
+                "
+              >
+          
+                <td colspan="8">
+          
+                  <div
+                    class="user-work-panel"
+                    *ngIf="
+                      getUserStatus(u.id)
+                        as status
+                    "
+                  >
+          
+                    <!-- =============================================
+                         HEADER
+                    ============================================== -->
+          
+                    <div class="user-work-panel-head">
+          
+                      <div>
+          
+                        <span class="user-work-eyebrow">
+                          ACTIVE SCAN
+                        </span>
+          
+          
+                        <h4>
+                          Current Employee Action
+                        </h4>
+          
+          
+                        <small>
+                          งาน Scan ที่พนักงานกำลังทำค้างอยู่
+                        </small>
+          
+                      </div>
+          
+          
+                      <span
+                        class="work-mode-chip"
+                        [class.temp]="
+                          status.activeMode ===
+                          'TEMP'
+                        "
+                        [class.tac]="
+                          status.activeMode ===
+                          'TAC'
+                        "
+                        [class.both]="
+                          status.activeMode ===
+                          'TEMP_AND_TAC'
+                        "
+                      >
+          
+                        {{ status.activeMode }}
+          
+                      </span>
+          
+                    </div>
+          
+          
+                    <!-- =============================================
+                         TEMP
+                    ============================================== -->
+          
+                    <section
+                      class="work-mode-panel temp"
+                      *ngIf="
+                        status.pending.temp.length >
+                        0
+                      "
+                    >
+          
+                      <div class="work-mode-head">
+          
+                        <div class="work-mode-head-icon">
+          
+                          <i
+                            class="fas
+                                   fa-pallet"
+                          ></i>
+          
+                        </div>
+          
+          
+                        <div>
+          
+                          <b>
+                            Create New Pallet
+                          </b>
+          
+                          <span>
+                            TEMP — Scan เพื่อสร้าง Pallet ใหม่
+                          </span>
+          
+                        </div>
+          
+                      </div>
+          
+          
+                      <div
+                        class="work-item-card"
+                        *ngFor="
+                          let work of
+                            status.pending.temp
+                        "
+                      >
+          
+                        <div class="work-item-info">
+          
+                          <div>
+          
+                            <span>
+                              ITEM NO.
+                            </span>
+          
+                            <b>
+                              {{ work.itemNo }}
+                            </b>
+          
+                            <small>
+                              {{ work.itemName }}
+                            </small>
+          
+                          </div>
+          
+          
+                          <div>
+          
+                            <span>
+                              PALLET TEMP ID
+                            </span>
+          
+                            <b>
+                              #{{ work.palletTempId }}
+                            </b>
+          
+                          </div>
+          
+                        </div>
+          
+          
+                        <!-- PROGRESS -->
+          
+                        <div class="work-progress">
+          
+                          <div>
+          
+                            <span>
+                              PLAN
+                            </span>
+          
+                            <b>
+                              {{ work.requiredBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+          
+                          <div>
+          
+                            <span>
+                              SCANNED
+                            </span>
+          
+                            <b>
+                              {{ work.scannedBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+          
+                          <div class="remaining">
+          
+                            <span>
+                              REMAINING
+                            </span>
+          
+                            <b>
+                              {{ work.remainingBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+                        </div>
+          
+                      </div>
+          
+                    </section>
+          
+          
+                    <!-- =============================================
+                         TAC
+                    ============================================== -->
+          
+                    <section
+                      class="work-mode-panel tac"
+                      *ngIf="
+                        status.pending.tac.length >
+                        0
+                      "
+                    >
+          
+                      <div class="work-mode-head">
+          
+                        <div class="work-mode-head-icon">
+          
+                          <i
+                            class="fas
+                                   fa-boxes-stacked"
+                          ></i>
+          
+                        </div>
+          
+          
+                        <div>
+          
+                          <b>
+                            Add To Existing Pallet
+                          </b>
+          
+                          <span>
+                            TAC — Scan เพิ่มเข้า Pallet เดิม
+                          </span>
+          
+                        </div>
+          
+                      </div>
+          
+          
+                      <div
+                        class="work-item-card"
+                        *ngFor="
+                          let work of
+                            status.pending.tac
+                        "
+                      >
+          
+                        <div class="work-item-info">
+          
+                          <div>
+          
+                            <span>
+                              ITEM NO.
+                            </span>
+          
+                            <b>
+                              {{ work.itemNo }}
+                            </b>
+          
+                            <small>
+                              {{ work.itemName }}
+                            </small>
+          
+                          </div>
+          
+          
+                          <div>
+          
+                            <span>
+                              PALLET ID
+                            </span>
+          
+                            <b>
+                              #{{ work.palletId }}
+                            </b>
+          
+                          </div>
+          
+                        </div>
+          
+          
+                        <!-- PROGRESS -->
+          
+                        <div class="work-progress">
+          
+                          <div>
+          
+                            <span>
+                              PLAN
+                            </span>
+          
+                            <b>
+                              {{ work.requiredBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+          
+                          <div>
+          
+                            <span>
+                              SCANNED
+                            </span>
+          
+                            <b>
+                              {{ work.scannedBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+          
+                          <div class="remaining">
+          
+                            <span>
+                              REMAINING
+                            </span>
+          
+                            <b>
+                              {{ work.remainingBox }}
+                            </b>
+          
+                            <small>
+                              Box
+                            </small>
+          
+                          </div>
+          
+                        </div>
+          
+                      </div>
+          
+                    </section>
+          
                   </div>
-                </div>
-              </td>
-  
-              <td class="mono strong">{{ u.empNo }}</td>
-  
-              <td>
-                <span class="rfid-chip">
-                  <i class="fas fa-id-card"></i>
-                  {{ u.rfId }}
-                </span>
-              </td>
-  
-              <td>
-                <span class="role-chip" [ngClass]="u.role === 'admin' ? 'admin' : 'user'">
-                  {{ u.role }}
-                </span>
-              </td>
-  
-              <td>{{ u.groupName || '-' }}</td>
-              <td>{{ u.sectionName || '-' }}</td>
-  
-              <td >
-                <button type="button" class="btn-detail" (click)="openUserDetailModal(u)">
-                  <i class="fas fa-eye"></i>
-                  Detail
-                </button>
-              </td>
-            </tr>
+          
+                </td>
+          
+              </tr>
+          
+            </ng-container>
+          
           </tbody>
+
+
+
+
         </table>
       </div>
     </section>

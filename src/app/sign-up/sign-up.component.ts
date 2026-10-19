@@ -50,6 +50,94 @@ type UserListResp = {
   results: UserRow[];
 };
 
+
+type UserScanAction = {
+  mode: 'TEMP' | 'TAC';
+
+  userId: number;
+
+  headerId: number;
+
+  palletTempId?: number;
+  palletId?: number;
+
+  itemNo: string;
+  itemName: string;
+
+  groupId: number;
+
+  controlLot?: string | null;
+  movementMonth?: string | null;
+
+  normalQty?: number;
+  fractionQty?: number;
+
+  requiredBox: number;
+  scannedBox: number;
+  remainingBox: number;
+
+  isPending: boolean;
+
+  headerTime: string;
+  latestScanTime?: string | null;
+};
+
+
+type UserStatusRow = {
+  user: {
+    id: number;
+    empNo: string;
+    name: string;
+    role: string;
+    rfId: string;
+  };
+
+  hasActiveScan: boolean;
+
+  activeMode:
+    | 'TEMP'
+    | 'TAC'
+    | 'TEMP_AND_TAC'
+    | null;
+
+  summary: {
+    tempHeader: number;
+    tempPending: number;
+    tempBox: number;
+
+    tacHeader: number;
+    tacPending: number;
+    tacBox: number;
+
+    totalHeader: number;
+    totalPending: number;
+    totalBox: number;
+  };
+
+  latestAction:
+    | UserScanAction
+    | null;
+
+  pending: {
+    temp: UserScanAction[];
+    tac: UserScanAction[];
+  };
+};
+
+
+type UserStatusResp = {
+  message: string;
+
+  chunkSize: number;
+
+  totalUser: number;
+
+  activeUserCount: number;
+
+  results: UserStatusRow[];
+};
+
+
 @Component({
   selector: 'app-sign-up',
   standalone: true,
@@ -62,8 +150,24 @@ export class SignUpComponent implements OnInit {
   groups: GroupRow[] = [];
   sections: SectionRow[] = [];
 
+
+  // =====================================================
+  // USER STATUS
+  // =====================================================
+
+  userStatusMap =
+  new Map<number, UserStatusRow>();
+
+  expandedUserId: number | null = null;
+
+  isLoadingUserStatus = false;
+
+  activeUserCount = 0;
+
+
   isLoading = false;
   isSaving = false;
+
   isLoadingGroup = false;
   isLoadingSection = false;
 
@@ -178,43 +282,196 @@ export class SignUpComponent implements OnInit {
     });
   }
 
-  fetchUsers() {
+  fetchUsers(): void {
+
     this.isLoading = true;
+  
+    this.expandedUserId = null;
+  
+  
+    this.http
+      .post<UserListResp>(
+        config.apiServer +
+          '/api/user/list',
+        {}
+      )
+      .subscribe({
+  
+        next: (
+          res: UserListResp
+        ): void => {
+  
+          this.users =
+            (res.results || []).map(
+              (r: any) => ({
+  
+                id: r.id,
+  
+                name: r.name,
+  
+                empNo: r.empNo,
+  
+                password: r.password,
+  
+                rfId: r.rfId,
+  
+                role: r.role,
+  
+                status: r.status,
+  
+                mapGroupSectionUserId:
+                  r.mapGroupSectionUserId ??
+                  null,
+  
+                groupId:
+                  r.groupId ?? null,
+  
+                groupName:
+                  r.groupName || '-',
+  
+                sectionId:
+                  r.sectionId ?? null,
+  
+                sectionName:
+                  r.sectionName || '-',
+  
+                mapGroupSectionUsers:
+                  r.mapGroupSectionUsers ||
+                  [],
+  
+              })
+            );
+  
+  
+          this.isLoading = false;
+  
+  
+          // ===============================================
+          // โหลดสถานะ Scan ของ User ทุกคน
+          // API ยิงครั้งเดียว
+          // ===============================================
+  
+          this.fetchUserStatus();
+  
+        },
+  
+  
+        error: (err: any): void => {
+  
+          this.isLoading = false;
+  
+  
+          Swal.fire({
+            title: 'Error',
+  
+            text:
+              err?.error?.message ||
+              err.message ||
+              'Load user list fail',
+  
+            icon: 'error',
+          });
+  
+        },
+  
+      });
+  
+  }
 
-    this.http.post<UserListResp>(config.apiServer + '/api/user/list', {}).subscribe({
-      next: (res: UserListResp) => {
-        this.users = (res.results || []).map((r: any) => ({
-          id: r.id,
-          name: r.name,
-          empNo: r.empNo,
-          password: r.password,
-          rfId: r.rfId,
-          role: r.role,
-          status: r.status,
 
-          mapGroupSectionUserId: r.mapGroupSectionUserId ?? null,
+  fetchUserStatus(): void {
 
-          groupId: r.groupId ?? null,
-          groupName: r.groupName || '-',
-
-          sectionId: r.sectionId ?? null,
-          sectionName: r.sectionName || '-',
-
-          mapGroupSectionUsers: r.mapGroupSectionUsers || [],
-        }));
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-
-        Swal.fire({
-          title: 'Error',
-          text: err?.error?.message || err.message || 'Load user list fail',
-          icon: 'error',
-        });
-      },
-    });
+    this.isLoadingUserStatus = true;
+  
+  
+    // Clear ค่าเก่าก่อน
+    this.userStatusMap.clear();
+  
+    this.activeUserCount = 0;
+  
+  
+    this.http
+      .get<UserStatusResp>(
+        config.apiServer +
+          '/api/user/getStatusUser'
+      )
+      .subscribe({
+  
+        next: (
+          res: UserStatusResp
+        ): void => {
+  
+          console.log(
+            'GET STATUS USER RESPONSE:',
+            res
+          );
+  
+  
+          const rows =
+            Array.isArray(res?.results)
+              ? res.results
+              : [];
+  
+  
+          for (
+            const row of rows
+          ) {
+  
+            const userId =
+              Number(
+                row?.user?.id
+              );
+  
+  
+            if (
+              !Number.isInteger(userId) ||
+              userId <= 0
+            ) {
+              continue;
+            }
+  
+  
+            this.userStatusMap.set(
+              userId,
+              row
+            );
+  
+          }
+  
+  
+          this.activeUserCount =
+            Number(
+              res?.activeUserCount || 0
+            );
+  
+  
+          this.isLoadingUserStatus =
+            false;
+  
+        },
+  
+  
+        error: (
+          err: any
+        ): void => {
+  
+          console.error(
+            'Load User Status Error:',
+            err
+          );
+  
+  
+          this.userStatusMap.clear();
+  
+          this.activeUserCount = 0;
+  
+          this.isLoadingUserStatus =
+            false;
+  
+        },
+  
+      });
+  
   }
 
   resetFilters() {
@@ -726,6 +983,70 @@ export class SignUpComponent implements OnInit {
         Swal.fire('Error', msg, 'error');
       },
     });
+  }
+
+
+  getUserStatus(
+    userId: number
+  ): UserStatusRow | null {
+  
+    return (
+      this.userStatusMap.get(
+        Number(userId)
+      ) || null
+    );
+  
+  }
+  
+  
+  hasUserActiveScan(
+    userId: number
+  ): boolean {
+  
+    return (
+      this.getUserStatus(userId)
+        ?.hasActiveScan === true
+    );
+  
+  }
+  
+  
+  toggleUserStatusRow(
+    user: UserRow
+  ): void {
+  
+    const userId =
+      Number(user.id);
+  
+  
+    // ไม่มีงานค้าง ไม่ต้อง Expand
+    if (
+      !this.hasUserActiveScan(
+        userId
+      )
+    ) {
+      return;
+    }
+  
+  
+    // กด Row เดิม = ปิด
+    if (
+      this.expandedUserId ===
+      userId
+    ) {
+  
+      this.expandedUserId =
+        null;
+  
+      return;
+  
+    }
+  
+  
+    // เปิด Row
+    this.expandedUserId =
+      userId;
+  
   }
 
 
