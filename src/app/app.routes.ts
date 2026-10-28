@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { ItemMasterComponent } from './item-master/item-master.component';
 import { LayOutComponent } from './lay-out/lay-out.component';
+import { ReportComponent } from './report/report.component';
 
 export const routes: Routes = [
   {
@@ -37,6 +38,12 @@ export const routes: Routes = [
   {
     path: 'layOut',
     component: LayOutComponent
+  },
+
+
+  {
+    path: 'report',
+    component: ReportComponent
   },
 
   {

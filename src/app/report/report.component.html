@@ -1,1 +1,609 @@
-<p>report works!</p>
+<div class="report-page">
+  <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+  <div class="hero-card">
+    <div class="hero-left">
+      <div class="hero-eyebrow">FINISH GOODS PALLET CONTROL</div>
+
+      <div class="hero-title">Transaction Report</div>
+
+      <div class="hero-description">
+        Monitor pallet creation, header addition and location movement history.
+      </div>
+    </div>
+
+    <div class="hero-badge">
+      <span> LOCATION HISTORY </span>
+
+      <strong> Pallet Transaction Log </strong>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+  <div class="summary-grid">
+    <!-- TOTAL -->
+
+    <div class="summary-card">
+      <div class="summary-icon total-icon">▦</div>
+
+      <div>
+        <div class="summary-label">TOTAL TRANSACTION</div>
+
+        <div class="summary-value">
+          {{ rows.length | number }}
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE -->
+
+    <div class="summary-card">
+      <div class="summary-icon create-icon">+</div>
+
+      <div>
+        <div class="summary-label">CREATE PALLET</div>
+
+        <div class="summary-value">
+          {{ totalCreate | number }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD -->
+
+    <div class="summary-card">
+      <div class="summary-icon add-icon">H</div>
+
+      <div>
+        <div class="summary-label">ADD HEADER</div>
+
+        <div class="summary-value">
+          {{ totalAdd | number }}
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVE -->
+
+    <div class="summary-card">
+      <div class="summary-icon move-icon">→</div>
+
+      <div>
+        <div class="summary-label">MOVE PALLET</div>
+
+        <div class="summary-value">
+          {{ totalMove | number }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         FILTER
+    ====================================================== -->
+
+  <div class="filter-card">
+    <div class="filter-header">
+      <div>
+        <div class="filter-title">Report Filter</div>
+
+        <div class="filter-subtitle">
+          Search pallet transaction history by pallet, type, location, user or
+          date.
+        </div>
+      </div>
+
+      <button type="button" class="reset-button" (click)="clearFilter()">
+        Reset
+      </button>
+    </div>
+
+    <div class="filter-grid">
+      <!-- PALLET -->
+
+      <div class="form-group">
+        <label> PALLET NO. </label>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search Pallet No."
+          [(ngModel)]="searchPalletNo"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+
+      <!-- TYPE -->
+
+      <div class="form-group">
+        <label> TRANSACTION TYPE </label>
+
+        <select
+          class="form-control"
+          [(ngModel)]="searchType"
+          (ngModelChange)="applyFilter()"
+        >
+          <option value="">All Type</option>
+
+          <option value="create">Create Pallet</option>
+
+          <option value="add">Add Header</option>
+
+          <option value="move">Move Pallet</option>
+        </select>
+      </div>
+
+      <!-- RACK -->
+
+      <div class="form-group">
+        <label> RACK </label>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search Rack"
+          [(ngModel)]="searchRack"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+
+      <!-- AREA -->
+
+      <div class="form-group">
+        <label> AREA </label>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search Area"
+          [(ngModel)]="searchArea"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+
+      <!-- USER -->
+
+      <div class="form-group">
+        <label> USER </label>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Emp No. / Name"
+          [(ngModel)]="searchUser"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+
+      <!-- START DATE -->
+
+      <div class="form-group">
+        <label> START DATE </label>
+
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="startDate"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+
+      <!-- END DATE -->
+
+      <div class="form-group">
+        <label> END DATE </label>
+
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="endDate"
+          (ngModelChange)="applyFilter()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+  <div class="table-card">
+    <!-- TOOLBAR -->
+
+    <div class="table-toolbar">
+      <div>
+        <div class="table-title">Transaction History</div>
+
+        <div class="table-subtitle">
+          Showing
+
+          <strong>
+            {{ filteredRows.length | number }}
+          </strong>
+
+          of
+
+          <strong>
+            {{ rows.length | number }}
+          </strong>
+
+          transactions
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <button
+          type="button"
+          class="refresh-button"
+          [disabled]="isLoading"
+          (click)="fetchData()"
+        >
+          <span class="refresh-icon" [class.spin]="isLoading"> ↻ </span>
+
+          {{ isLoading ? "Loading..." : "Refresh" }}
+        </button>
+
+        <div class="record-pill">
+          <span> RECORDS </span>
+
+          <strong>
+            {{ filteredRows.length | number }}
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================
+           LOADING
+      ==================================================== -->
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+
+      <div class="loading-title">Loading Transaction Report</div>
+
+      <div class="loading-subtitle">Please wait...</div>
+    </div>
+
+    <!-- ===================================================
+           TABLE DATA
+      ==================================================== -->
+
+    <div class="table-wrapper" *ngIf="!isLoading">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th class="col-no">#</th>
+
+            <th class="col-type">TYPE</th>
+
+            <th class="col-pallet">PALLET NO.</th>
+
+            <th>FROM LOCATION</th>
+
+            <th>TO LOCATION</th>
+
+            <th class="col-label">LABEL TYPE</th>
+
+            <th class="col-header">HEADER</th>
+
+            <th class="col-user">USER</th>
+
+            <th class="col-time">UPDATE TIME</th>
+
+            <th class="col-detail">DETAIL</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <ng-container
+            *ngFor="let row of filteredRows; let i = index; trackBy: trackByRow"
+          >
+            <!-- =============================================
+                   MAIN ROW
+              ============================================== -->
+
+            <tr
+              class="transaction-row"
+              [class.row-create]="row.typeCase === 'create'"
+              [class.row-add]="row.typeCase === 'add'"
+              [class.row-move]="row.typeCase === 'move'"
+            >
+              <!-- NO -->
+
+              <td class="row-no">
+                {{ i + 1 }}
+              </td>
+
+              <!-- TYPE -->
+
+              <td>
+                <span
+                  class="type-badge type-create"
+                  *ngIf="row.typeCase === 'create'"
+                >
+                  <span class="type-dot"></span>
+
+                  CREATE
+                </span>
+
+                <span
+                  class="type-badge type-add"
+                  *ngIf="row.typeCase === 'add'"
+                >
+                  <span class="type-dot"></span>
+
+                  ADD
+                </span>
+
+                <span
+                  class="type-badge type-move"
+                  *ngIf="row.typeCase === 'move'"
+                >
+                  <span class="type-dot"></span>
+
+                  MOVE
+                </span>
+              </td>
+
+              <!-- PALLET -->
+
+              <td>
+                <div class="pallet-no">
+                  {{ row.palletNoId || "-" }}
+                </div>
+
+                <div class="small-id">ID: {{ row.palletId }}</div>
+              </td>
+
+              <!-- FROM -->
+
+              <td>
+                <div class="location-main">
+                  {{ getLocationText(row) }}
+                </div>
+
+                <div class="location-id">
+                  Map ID:
+                  {{ row.mapAreaRackId }}
+                </div>
+              </td>
+
+              <!-- TO -->
+
+              <td>
+                <ng-container
+                  *ngIf="row.typeCase === 'move'; else noDestination"
+                >
+                  <div class="move-location">
+                    <span class="move-arrow"> → </span>
+
+                    <div>
+                      <div class="location-main">
+                        {{ getEndLocationText(row) }}
+                      </div>
+
+                      <div class="location-id">
+                        Map ID:
+                        {{ row.endAreaRackId }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <ng-template #noDestination>
+                  <span class="not-applicable"> - </span>
+                </ng-template>
+              </td>
+
+              <!-- LABEL -->
+
+              <td>
+                <span class="label-type">
+                  {{ row.labelType || "-" }}
+                </span>
+              </td>
+
+              <!-- HEADER -->
+
+              <td>
+                <ng-container
+                  *ngIf="row.typeCase !== 'move'; else moveNoHeader"
+                >
+                  <span class="header-count">
+                    {{ getHeaderCount(row) | number }}
+
+                    Header
+                  </span>
+                </ng-container>
+
+                <ng-template #moveNoHeader>
+                  <span class="not-applicable"> - </span>
+                </ng-template>
+              </td>
+
+              <!-- USER -->
+
+              <td>
+                <div class="user-name">
+                  {{ row.name || "-" }}
+                </div>
+
+                <div class="user-emp">
+                  {{ row.empNo || "-" }}
+                </div>
+              </td>
+
+              <!-- TIME -->
+
+              <td>
+                <div class="update-time">
+                  {{ formatDate(row.updateTimeStmp) }}
+                </div>
+              </td>
+
+              <!-- DETAIL -->
+
+              <td class="detail-cell">
+                <button
+                  type="button"
+                  class="detail-button"
+                  *ngIf="row.header && row.header.length > 0"
+                  (click)="toggleRow(row, i)"
+                  [class.active]="isExpanded(row, i)"
+                  title="View Header Detail"
+                >
+                  <span>
+                    {{ isExpanded(row, i) ? "−" : "+" }}
+                  </span>
+                </button>
+
+                <span
+                  class="not-applicable"
+                  *ngIf="!row.header || row.header.length === 0"
+                >
+                  -
+                </span>
+              </td>
+            </tr>
+
+            <!-- =============================================
+                   EXPANDED HEADER
+              ============================================== -->
+
+            <tr
+              class="expanded-row"
+              *ngIf="isExpanded(row, i) && row.header && row.header.length > 0"
+            >
+              <td colspan="10">
+                <div class="header-detail-card">
+                  <div class="header-detail-top">
+                    <div>
+                      <div class="header-detail-title">Header Detail</div>
+
+                      <div class="header-detail-subtitle">
+                        Pallet
+
+                        <strong>
+                          {{ row.palletNoId }}
+                        </strong>
+
+                        ·
+
+                        {{ getTypeText(row.typeCase) }}
+                      </div>
+                    </div>
+
+                    <div class="header-total-pill">
+                      {{ row.header.length | number }}
+
+                      Header
+                    </div>
+                  </div>
+
+                  <div class="header-table-wrapper">
+                    <table class="header-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+
+                          <th>LABEL NO.</th>
+
+                          <th>ITEM NO.</th>
+
+                          <th>ITEM NAME</th>
+
+                          <th>NORMAL</th>
+
+                          <th>FRACTION</th>
+
+                          <th>CONTROL LOT</th>
+
+                          <th>GROUP</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr
+                          *ngFor="
+                            let header of row.header;
+                            let h = index;
+                            trackBy: trackByHeader
+                          "
+                        >
+                          <td class="header-no">
+                            {{ h + 1 }}
+                          </td>
+
+                          <td>
+                            <div class="header-label-no">
+                              {{ header.labelNo || "-" }}
+                            </div>
+
+                            <div class="small-id">
+                              Head ID:
+                              {{ header.headId }}
+                            </div>
+                          </td>
+
+                          <td class="header-item-no">
+                            {{ header.itemNo || "-" }}
+                          </td>
+
+                          <td>
+                            {{ header.itemName || "-" }}
+                          </td>
+
+                          <td class="qty-cell">
+                            {{ header.normalQty | number }}
+                          </td>
+
+                          <td class="qty-cell">
+                            {{ header.fractionQty | number }}
+                          </td>
+
+                          <td>
+                            {{ header.controlLot || "-" }}
+                          </td>
+
+                          <td>
+                            <span class="group-badge">
+                              {{ header.groupName || "-" }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- =================================================
+                 EMPTY
+            ================================================== -->
+
+          <tr *ngIf="filteredRows.length === 0">
+            <td colspan="10" class="empty-table">
+              <div class="empty-state">
+                <div class="empty-icon">⌕</div>
+
+                <div class="empty-title">No Transaction Found</div>
+
+                <div class="empty-subtitle">
+                  Try changing your filter conditions.
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
