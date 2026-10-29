@@ -300,296 +300,293 @@
           </tr>
         </thead>
 
-        <tbody>
-          <ng-container
-            *ngFor="let row of filteredRows; let i = index; trackBy: trackByRow"
-          >
-            <!-- =============================================
-                   MAIN ROW
-              ============================================== -->
-
-            <tr
-              class="transaction-row"
-              [class.row-create]="row.typeCase === 'create'"
-              [class.row-add]="row.typeCase === 'add'"
-              [class.row-move]="row.typeCase === 'move'"
-            >
-              <!-- NO -->
-
-              <td class="row-no">
-                {{ i + 1 }}
-              </td>
-
-              <!-- TYPE -->
-
-              <td>
-                <span
-                  class="type-badge type-create"
-                  *ngIf="row.typeCase === 'create'"
-                >
-                  <span class="type-dot"></span>
-
-                  CREATE
-                </span>
-
-                <span
-                  class="type-badge type-add"
-                  *ngIf="row.typeCase === 'add'"
-                >
-                  <span class="type-dot"></span>
-
-                  ADD
-                </span>
-
-                <span
-                  class="type-badge type-move"
-                  *ngIf="row.typeCase === 'move'"
-                >
-                  <span class="type-dot"></span>
-
-                  MOVE
-                </span>
-              </td>
-
-              <!-- PALLET -->
-
-              <td>
-                <div class="pallet-no">
-                  {{ row.palletNoId || "-" }}
-                </div>
-
-                <div class="small-id">ID: {{ row.palletId }}</div>
-              </td>
-
-              <!-- FROM -->
-
-              <td>
-                <div class="location-main">
-                  {{ getLocationText(row) }}
-                </div>
-
-                <div class="location-id">
-                  Map ID:
-                  {{ row.mapAreaRackId }}
-                </div>
-              </td>
-
-              <!-- TO -->
-
-              <td>
-                <ng-container
-                  *ngIf="row.typeCase === 'move'; else noDestination"
-                >
-                  <div class="move-location">
-                    <span class="move-arrow"> → </span>
-
-                    <div>
-                      <div class="location-main">
-                        {{ getEndLocationText(row) }}
-                      </div>
-
-                      <div class="location-id">
-                        Map ID:
-                        {{ row.endAreaRackId }}
-                      </div>
-                    </div>
-                  </div>
-                </ng-container>
-
-                <ng-template #noDestination>
-                  <span class="not-applicable"> - </span>
-                </ng-template>
-              </td>
-
-              <!-- LABEL -->
-
-              <td>
-                <span class="label-type">
-                  {{ row.labelType || "-" }}
-                </span>
-              </td>
-
-              <!-- HEADER -->
-
-              <td>
-                <ng-container
-                  *ngIf="row.typeCase !== 'move'; else moveNoHeader"
-                >
-                  <span class="header-count">
-                    {{ getHeaderCount(row) | number }}
-
-                    Header
-                  </span>
-                </ng-container>
-
-                <ng-template #moveNoHeader>
-                  <span class="not-applicable"> - </span>
-                </ng-template>
-              </td>
-
-              <!-- USER -->
-
-              <td>
-                <div class="user-name">
-                  {{ row.name || "-" }}
-                </div>
-
-                <div class="user-emp">
-                  {{ row.empNo || "-" }}
-                </div>
-              </td>
-
-              <!-- TIME -->
-
-              <td>
-                <div class="update-time">
-                  {{ formatDate(row.updateTimeStmp) }}
-                </div>
-              </td>
-
-              <!-- DETAIL -->
-
-              <td class="detail-cell">
-                <button
-                  type="button"
-                  class="detail-button"
-                  *ngIf="row.header && row.header.length > 0"
-                  (click)="toggleRow(row, i)"
-                  [class.active]="isExpanded(row, i)"
-                  title="View Header Detail"
-                >
-                  <span>
-                    {{ isExpanded(row, i) ? "−" : "+" }}
-                  </span>
-                </button>
-
-                <span
-                  class="not-applicable"
-                  *ngIf="!row.header || row.header.length === 0"
-                >
-                  -
-                </span>
-              </td>
-            </tr>
-
-            <!-- =============================================
-                   EXPANDED HEADER
-              ============================================== -->
-
-            <tr
-              class="expanded-row"
-              *ngIf="isExpanded(row, i) && row.header && row.header.length > 0"
-            >
-              <td colspan="10">
-                <div class="header-detail-card">
-                  <div class="header-detail-top">
-                    <div>
-                      <div class="header-detail-title">Header Detail</div>
-
-                      <div class="header-detail-subtitle">
-                        Pallet
-
-                        <strong>
-                          {{ row.palletNoId }}
-                        </strong>
-
-                        ·
-
-                        {{ getTypeText(row.typeCase) }}
-                      </div>
-                    </div>
-
-                    <div class="header-total-pill">
-                      {{ row.header.length | number }}
-
-                      Header
-                    </div>
-                  </div>
-
-                  <div class="header-table-wrapper">
-                    <table class="header-table">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-
-                          <th>LABEL NO.</th>
-
-                          <th>ITEM NO.</th>
-
-                          <th>ITEM NAME</th>
-
-                          <th>NORMAL</th>
-
-                          <th>FRACTION</th>
-
-                          <th>CONTROL LOT</th>
-
-                          <th>GROUP</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr
-                          *ngFor="
-                            let header of row.header;
-                            let h = index;
-                            trackBy: trackByHeader
-                          "
-                        >
-                          <td class="header-no">
-                            {{ h + 1 }}
-                          </td>
-
-                          <td>
-                            <div class="header-label-no">
-                              {{ header.labelNo || "-" }}
-                            </div>
-
-                            <div class="small-id">
-                              Head ID:
-                              {{ header.headId }}
-                            </div>
-                          </td>
-
-                          <td class="header-item-no">
-                            {{ header.itemNo || "-" }}
-                          </td>
-
-                          <td>
-                            {{ header.itemName || "-" }}
-                          </td>
-
-                          <td class="qty-cell">
-                            {{ header.normalQty | number }}
-                          </td>
-
-                          <td class="qty-cell">
-                            {{ header.fractionQty | number }}
-                          </td>
-
-                          <td>
-                            {{ header.controlLot || "-" }}
-                          </td>
-
-                          <td>
-                            <span class="group-badge">
-                              {{ header.groupName || "-" }}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </ng-container>
-
-          <!-- =================================================
-                 EMPTY
+        <!-- =================================================
+                DATA
             ================================================== -->
 
-          <tr *ngIf="filteredRows.length === 0">
+        <tbody
+          *ngFor="let row of filteredRows; let i = index; trackBy: trackByRow"
+        >
+          <!-- =============================================
+                MAIN ROW
+            ============================================== -->
+
+          <tr
+            class="transaction-row"
+            [class.row-create]="row.typeCase === 'create'"
+            [class.row-add]="row.typeCase === 'add'"
+            [class.row-move]="row.typeCase === 'move'"
+          >
+            <!-- NO -->
+
+            <td class="row-no">
+              {{ i + 1 }}
+            </td>
+
+            <!-- TYPE -->
+
+            <td>
+              <span
+                class="type-badge type-create"
+                *ngIf="row.typeCase === 'create'"
+              >
+                <span class="type-dot"></span>
+
+                CREATE
+              </span>
+
+              <span class="type-badge type-add" *ngIf="row.typeCase === 'add'">
+                <span class="type-dot"></span>
+
+                ADD
+              </span>
+
+              <span
+                class="type-badge type-move"
+                *ngIf="row.typeCase === 'move'"
+              >
+                <span class="type-dot"></span>
+
+                MOVE
+              </span>
+            </td>
+
+            <!-- PALLET -->
+
+            <td>
+              <div class="pallet-no">
+                {{ row.palletNoId || "-" }}
+              </div>
+
+              <div class="small-id">ID: {{ row.palletId }}</div>
+            </td>
+
+            <!-- FROM -->
+
+            <td>
+              <div class="location-main">
+                {{ getLocationText(row) }}
+              </div>
+
+              <div class="location-id">
+                Map ID:
+                {{ row.mapAreaRackId }}
+              </div>
+            </td>
+
+            <!-- TO -->
+
+            <td>
+              <ng-container *ngIf="row.typeCase === 'move'; else noDestination">
+                <div class="move-location">
+                  <span class="move-arrow"> → </span>
+
+                  <div>
+                    <div class="location-main">
+                      {{ getEndLocationText(row) }}
+                    </div>
+
+                    <div class="location-id">
+                      Map ID:
+                      {{ row.endAreaRackId }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #noDestination>
+                <span class="not-applicable"> - </span>
+              </ng-template>
+            </td>
+
+            <!-- LABEL TYPE -->
+
+            <td>
+              <span class="label-type">
+                {{ row.labelType || "-" }}
+              </span>
+            </td>
+
+            <!-- HEADER -->
+
+            <td>
+              <ng-container *ngIf="row.typeCase !== 'move'; else moveNoHeader">
+                <span class="header-count">
+                  {{ getHeaderCount(row) | number }}
+
+                  Header
+                </span>
+              </ng-container>
+
+              <ng-template #moveNoHeader>
+                <span class="not-applicable"> - </span>
+              </ng-template>
+            </td>
+
+            <!-- USER -->
+
+            <td>
+              <div class="user-name">
+                {{ row.name || "-" }}
+              </div>
+
+              <div class="user-emp">
+                {{ row.empNo || "-" }}
+              </div>
+            </td>
+
+            <!-- UPDATE TIME -->
+
+            <td>
+              <div class="update-time">
+                {{ formatDate(row.updateTimeStmp) }}
+              </div>
+            </td>
+
+            <!-- DETAIL -->
+
+            <td class="detail-cell">
+              <button
+                type="button"
+                class="detail-button"
+                *ngIf="row.header && row.header.length > 0"
+                (click)="toggleRow(row, i)"
+                [class.active]="isExpanded(row, i)"
+                title="View Header Detail"
+              >
+                <span>
+                  {{ isExpanded(row, i) ? "−" : "+" }}
+                </span>
+              </button>
+
+              <span
+                class="not-applicable"
+                *ngIf="!row.header || row.header.length === 0"
+              >
+                -
+              </span>
+            </td>
+          </tr>
+
+          <!-- =============================================
+                EXPANDED HEADER
+            ============================================== -->
+
+          <tr
+            class="expanded-row"
+            *ngIf="isExpanded(row, i) && row.header && row.header.length > 0"
+          >
+            <td colspan="10">
+              <div class="header-detail-card">
+                <div class="header-detail-top">
+                  <div>
+                    <div class="header-detail-title">Header Detail</div>
+
+                    <div class="header-detail-subtitle">
+                      Pallet
+
+                      <strong>
+                        {{ row.palletNoId }}
+                      </strong>
+
+                      ·
+
+                      {{ getTypeText(row.typeCase) }}
+                    </div>
+                  </div>
+
+                  <div class="header-total-pill">
+                    {{ row.header.length | number }}
+
+                    Header
+                  </div>
+                </div>
+
+                <div class="header-table-wrapper">
+                  <table class="header-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+
+                        <th>LABEL NO.</th>
+
+                        <th>ITEM NO.</th>
+
+                        <th>ITEM NAME</th>
+
+                        <th>NORMAL</th>
+
+                        <th>FRACTION</th>
+
+                        <th>CONTROL LOT</th>
+
+                        <th>GROUP</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let header of row.header;
+                          let h = index;
+                          trackBy: trackByHeader
+                        "
+                      >
+                        <td class="header-no">
+                          {{ h + 1 }}
+                        </td>
+
+                        <td>
+                          <div class="header-label-no">
+                            {{ header.labelNo || "-" }}
+                          </div>
+
+                          <div class="small-id">
+                            Head ID:
+                            {{ header.headId }}
+                          </div>
+                        </td>
+
+                        <td class="header-item-no">
+                          {{ header.itemNo || "-" }}
+                        </td>
+
+                        <td>
+                          {{ header.itemName || "-" }}
+                        </td>
+
+                        <td class="qty-cell">
+                          {{ header.normalQty | number }}
+                        </td>
+
+                        <td class="qty-cell">
+                          {{ header.fractionQty | number }}
+                        </td>
+
+                        <td>
+                          {{ header.controlLot || "-" }}
+                        </td>
+
+                        <td>
+                          <span class="group-badge">
+                            {{ header.groupName || "-" }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- =================================================
+            EMPTY
+            ================================================== -->
+
+        <tbody *ngIf="filteredRows.length === 0">
+          <tr>
             <td colspan="10" class="empty-table">
               <div class="empty-state">
                 <div class="empty-icon">⌕</div>
