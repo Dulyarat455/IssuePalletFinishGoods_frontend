@@ -194,6 +194,8 @@ export class LayOutComponent implements OnInit {
   // MOVE PALLET
   // =====================================================
 
+  userId: number | null = null;
+
   // Scanner Tag
   movePalletIdTag = '';
 
@@ -229,6 +231,8 @@ export class LayOutComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchLayoutData();
+
+    this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
 
     // ✅ ฟัง event จาก websocket
     this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
@@ -1968,6 +1972,38 @@ export class LayOutComponent implements OnInit {
     palletNoOverride: string = '',
     sourceMode: 'SCAN' | 'LAYOUT' = 'SCAN'
   ): void {
+
+
+     // =====================================================
+    // CHECK LOGIN USER
+    // =====================================================
+
+    const userId =
+    Number(this.userId || 0);
+
+
+    if (
+      !Number.isInteger(userId) ||
+      userId <= 0
+    ) {
+
+      Swal.fire({
+        icon: 'warning',
+
+        title: 'User Not Found',
+
+        text:
+          'ไม่พบข้อมูล User ที่ Login กรุณา Sign In ใหม่',
+      });
+
+      return;
+    }
+
+
+    // =====================================================
+    // MOVING
+    // =====================================================
+
     this.isMovingPallet = true;
 
     Swal.fire({
@@ -1989,8 +2025,8 @@ export class LayOutComponent implements OnInit {
     this.http
       .post<any>(config.apiServer + '/api/location/movePallet', {
         palletId: palletId,
-
         mapAreaRackId: mapAreaRackId,
+        userId: userId,
       })
       .subscribe({
         // =================================================
