@@ -427,6 +427,10 @@
               <th class="col-lot">
                 LOT SIZE
               </th>
+
+              <th class="col-special-code">
+                SPECIAL CODE
+              </th>
           
               <th class="col-update">
                 LAST UPDATE
@@ -569,7 +573,40 @@
                 }}
   
               </td>
-  
+
+
+              <!-- SPECIAL CODE -->
+
+              <td class="special-code-cell">
+
+                <button
+                  type="button"
+                  class="special-code-button"
+                  [disabled]="isSyncing"
+                  (click)="openSpecialCode(row)"
+                  title="View Special Code"
+                >
+
+                  <i class="fas fa-tags"></i>
+
+                  <span>
+                    Special Code
+                  </span>
+
+                  <span
+                    class="special-code-count"
+                    *ngIf="
+                      row.specialCodes &&
+                      row.specialCodes.length > 0
+                    "
+                  >
+                    {{ row.specialCodes.length }}
+                  </span>
+
+                </button>
+
+              </td>
+                
   
               <!-- UPDATE -->
   
@@ -633,7 +670,7 @@
             >
   
               <td
-                colspan="6"
+                colspan="9"
                 class="empty-table"
               >
   

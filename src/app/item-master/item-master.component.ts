@@ -6,6 +6,14 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import config from '../../config';
 
+type SpecialCodeRow = {
+  id: number;
+  specialCodeName: string;
+  partMasterId: number;
+  timeStmp?: string | null;
+  status?: string | null;
+};
+
 type PartMasterRow = {
   id: number;
   itemNo: string;
@@ -14,6 +22,8 @@ type PartMasterRow = {
   lotSize?: number | null;
   timeStmp?: string | null;
   status?: string | null;
+  // Special Code ที่ Map เข้ามาจากอีก API
+  specialCodes?: SpecialCodeRow[];
 };
 
 type SyncPbassResponse = {
@@ -44,15 +54,11 @@ type SyncPbassResponse = {
 @Component({
   selector: 'app-item-master',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './item-master.component.html',
-  styleUrl: './item-master.component.css'
+  styleUrl: './item-master.component.css',
 })
 export class ItemMasterComponent implements OnInit {
-
   rows: PartMasterRow[] = [];
   filteredRows: PartMasterRow[] = [];
 
@@ -64,9 +70,7 @@ export class ItemMasterComponent implements OnInit {
   searchItemClass = '';
   searchLotSize = '';
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.fetchData();
@@ -77,75 +81,139 @@ export class ItemMasterComponent implements OnInit {
   ===================================================== */
   fetchData(): void {
     this.isLoading = true;
-  
-    this.http
-      .get<any>(
-        config.apiServer +
-        '/api/partMaster/list'
-      )
-      .subscribe({
-        next: (res) => {
-          const data: PartMasterRow[] =
-            Array.isArray(res?.results)
-              ? res.results
-              : [];
-  
-          const classOrder: Record<string, number> = {
-            G: 1,
-            L: 2,
-            S: 3
-          };
-  
-          this.rows = data.sort((a, b) => {
-            const classA =
-              String(a.itemClass || '').toUpperCase();
-  
-            const classB =
-              String(b.itemClass || '').toUpperCase();
-  
-            const orderA =
-              classOrder[classA] ?? 99;
-  
-            const orderB =
-              classOrder[classB] ?? 99;
-  
-            // 1. Sort ตาม Item Class
-            if (orderA !== orderB) {
-              return orderA - orderB;
-            }
-  
-            // 2. ถ้า Class เดียวกัน Sort Item No.
-            return String(a.itemNo || '').localeCompare(
-              String(b.itemNo || ''),
-              undefined,
-              {
-                numeric: true,
-                sensitivity: 'base'
+
+    // =====================================================
+    // 1. LOAD PART MASTER
+    // =====================================================
+
+    this.http.get<any>(config.apiServer + '/api/partMaster/list').subscribe({
+      next: (res) => {
+        const data: PartMasterRow[] = Array.isArray(res?.results)
+          ? res.results
+          : [];
+
+        // =================================================
+        // 2. LOAD SPECIAL CODE
+        // =================================================
+
+        this.http
+          .get<any>(
+            config.apiServer + '/api/partMaster/getMapSpecialCodePartModel'
+          )
+          .subscribe({
+            next: (specialRes) => {
+              const specialRows: SpecialCodeRow[] = Array.isArray(
+                specialRes?.results
+              )
+                ? specialRes.results
+                : [];
+
+              // ===========================================
+              // GROUP SPECIAL CODE BY partMasterId
+              // ===========================================
+
+              const specialCodeMap = new Map<number, SpecialCodeRow[]>();
+
+              for (const special of specialRows) {
+                const partMasterId = Number(special.partMasterId);
+
+                if (!specialCodeMap.has(partMasterId)) {
+                  specialCodeMap.set(partMasterId, []);
+                }
+
+                specialCodeMap.get(partMasterId)!.push(special);
               }
-            );
+
+              // ===========================================
+              // MAP INTO PART MASTER ROW
+              // ===========================================
+
+              const mappedData: PartMasterRow[] = data.map((row) => ({
+                ...row,
+
+                specialCodes: specialCodeMap.get(Number(row.id)) || [],
+              }));
+
+              // ===========================================
+              // SORT เดิม
+              // ===========================================
+
+              const classOrder: Record<string, number> = {
+                G: 1,
+                L: 2,
+                S: 3,
+              };
+
+              this.rows = mappedData.sort((a, b) => {
+                const classA = String(a.itemClass || '').toUpperCase();
+
+                const classB = String(b.itemClass || '').toUpperCase();
+
+                const orderA = classOrder[classA] ?? 99;
+
+                const orderB = classOrder[classB] ?? 99;
+
+                if (orderA !== orderB) {
+                  return orderA - orderB;
+                }
+
+                return String(a.itemNo || '').localeCompare(
+                  String(b.itemNo || ''),
+                  undefined,
+                  {
+                    numeric: true,
+                    sensitivity: 'base',
+                  }
+                );
+              });
+
+              this.applyFilter();
+
+              this.isLoading = false;
+            },
+
+            error: (err) => {
+              this.isLoading = false;
+
+              Swal.fire({
+                title: 'Load Special Code Failed',
+
+                text:
+                  err?.error?.error ||
+                  err?.error?.message ||
+                  err?.message ||
+                  'Cannot load Special Code',
+
+                icon: 'error',
+
+                confirmButtonText: 'OK',
+
+                confirmButtonColor: '#14b89a',
+              });
+            },
           });
-  
-          this.applyFilter();
-  
-          this.isLoading = false;
-        },
-  
-        error: (err) => {
-          this.isLoading = false;
-  
-          Swal.fire({
-            title: 'Load Data Failed',
-            text:
-              err?.error?.error ||
-              err?.error?.message ||
-              err?.message ||
-              'Cannot load Part Master',
-            icon: 'error',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#14b89a'
-          });
-        }
-      });
+      },
+
+      error: (err) => {
+        this.isLoading = false;
+
+        Swal.fire({
+          title: 'Load Data Failed',
+
+          text:
+            err?.error?.error ||
+            err?.error?.message ||
+            err?.message ||
+            'Cannot load Part Master',
+
+          icon: 'error',
+
+          confirmButtonText: 'OK',
+
+          confirmButtonColor: '#14b89a',
+        });
+      },
+    });
   }
 
   /* =====================================================
@@ -153,65 +221,31 @@ export class ItemMasterComponent implements OnInit {
   ===================================================== */
 
   applyFilter(): void {
-    const itemNo =
-      this.searchItemNo
-        .trim()
-        .toLowerCase();
+    const itemNo = this.searchItemNo.trim().toLowerCase();
 
-    const itemName =
-      this.searchItemName
-        .trim()
-        .toLowerCase();
+    const itemName = this.searchItemName.trim().toLowerCase();
 
-    const itemClass =
-      this.searchItemClass
-        .trim()
-        .toUpperCase();
+    const itemClass = this.searchItemClass.trim().toUpperCase();
 
-    const lotSize =
-      this.searchLotSize
-        .trim()
-        .toLowerCase();
+    const lotSize = this.searchLotSize.trim().toLowerCase();
 
-    this.filteredRows =
-      this.rows.filter(row => {
+    this.filteredRows = this.rows.filter((row) => {
+      const rowItemNo = String(row.itemNo ?? '').toLowerCase();
 
-        const rowItemNo =
-          String(
-            row.itemNo ?? ''
-          ).toLowerCase();
+      const rowItemName = String(row.itemName ?? '').toLowerCase();
 
-        const rowItemName =
-          String(
-            row.itemName ?? ''
-          ).toLowerCase();
+      const rowItemClass = String(row.itemClass ?? '').toUpperCase();
 
-        const rowItemClass =
-          String(
-            row.itemClass ?? ''
-          ).toUpperCase();
+      const rowLotSize =
+        row.lotSize == null ? '' : String(row.lotSize).toLowerCase();
 
-        const rowLotSize =
-          row.lotSize == null
-            ? ''
-            : String(
-                row.lotSize
-              ).toLowerCase();
-
-        return (
-          (!itemNo ||
-            rowItemNo.includes(itemNo)) &&
-
-          (!itemName ||
-            rowItemName.includes(itemName)) &&
-
-          (!itemClass ||
-            rowItemClass === itemClass) &&
-
-          (!lotSize ||
-            rowLotSize.includes(lotSize))
-        );
-      });
+      return (
+        (!itemNo || rowItemNo.includes(itemNo)) &&
+        (!itemName || rowItemName.includes(itemName)) &&
+        (!itemClass || rowItemClass === itemClass) &&
+        (!lotSize || rowLotSize.includes(lotSize))
+      );
+    });
   }
 
   /* =====================================================
@@ -233,28 +267,19 @@ export class ItemMasterComponent implements OnInit {
 
   get totalGeneral(): number {
     return this.rows.filter(
-      row =>
-        String(
-          row.itemClass || ''
-        ).toUpperCase() === 'G'
+      (row) => String(row.itemClass || '').toUpperCase() === 'G'
     ).length;
   }
 
   get totalLamination(): number {
     return this.rows.filter(
-      row =>
-        String(
-          row.itemClass || ''
-        ).toUpperCase() === 'L'
+      (row) => String(row.itemClass || '').toUpperCase() === 'L'
     ).length;
   }
 
   get totalStator(): number {
     return this.rows.filter(
-      row =>
-        String(
-          row.itemClass || ''
-        ).toUpperCase() === 'S'
+      (row) => String(row.itemClass || '').toUpperCase() === 'S'
     ).length;
   }
 
@@ -266,7 +291,7 @@ export class ItemMasterComponent implements OnInit {
     if (this.isSyncing) {
       return;
     }
-  
+
     Swal.fire({
       width: 560,
       title: 'Add Item Master',
@@ -276,7 +301,7 @@ export class ItemMasterComponent implements OnInit {
       confirmButtonColor: '#14b89a',
       cancelButtonColor: '#6c757d',
       allowOutsideClick: false,
-  
+
       html: `
         <div style="
           font-family: Arial, sans-serif;
@@ -409,64 +434,50 @@ export class ItemMasterComponent implements OnInit {
   
         </div>
       `,
-  
+
       preConfirm: () => {
-        const itemNo =
-          (document.getElementById('swal-item-no') as HTMLInputElement)
-            ?.value
-            ?.trim();
-  
-        const itemName =
-          (document.getElementById('swal-item-name') as HTMLInputElement)
-            ?.value
-            ?.trim();
-  
-        const itemClass =
-          (document.getElementById('swal-item-class') as HTMLSelectElement)
-            ?.value;
-  
-        const lotSize =
-          (document.getElementById('swal-lot-size') as HTMLInputElement)
-            ?.value;
-  
-        if (
-          !itemNo ||
-          !itemName ||
-          !itemClass ||
-          lotSize === ''
-        ) {
-          Swal.showValidationMessage(
-            'Please fill in all required fields.'
-          );
-  
+        const itemNo = (
+          document.getElementById('swal-item-no') as HTMLInputElement
+        )?.value?.trim();
+
+        const itemName = (
+          document.getElementById('swal-item-name') as HTMLInputElement
+        )?.value?.trim();
+
+        const itemClass = (
+          document.getElementById('swal-item-class') as HTMLSelectElement
+        )?.value;
+
+        const lotSize = (
+          document.getElementById('swal-lot-size') as HTMLInputElement
+        )?.value;
+
+        if (!itemNo || !itemName || !itemClass || lotSize === '') {
+          Swal.showValidationMessage('Please fill in all required fields.');
+
           return false;
         }
-  
-        if (
-          Number.isNaN(Number(lotSize)) ||
-          Number(lotSize) < 0
-        ) {
-          Swal.showValidationMessage(
-            'Lot Size must be a valid number.'
-          );
-  
+
+        if (Number.isNaN(Number(lotSize)) || Number(lotSize) < 0) {
+          Swal.showValidationMessage('Lot Size must be a valid number.');
+
           return false;
         }
-  
+
         return {
           itemNo,
           itemName,
           itemClass,
-          lotSize: Number(lotSize)
+          lotSize: Number(lotSize),
         };
-      }
-    }).then(result => {
+      },
+    }).then((result) => {
       if (!result.isConfirmed || !result.value) {
         return;
       }
-  
+
       const payload = result.value;
-  
+
       Swal.fire({
         title: 'Saving Item...',
         text: 'Please wait',
@@ -475,42 +486,37 @@ export class ItemMasterComponent implements OnInit {
         showConfirmButton: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
-  
+
       this.http
-        .post(
-          config.apiServer +
-          '/api/partMaster/add',
-          payload
-        )
+        .post(config.apiServer + '/api/partMaster/add', payload)
         .subscribe({
           next: () => {
             Swal.fire({
               title: 'Success',
               text: 'Item Master has been added successfully.',
               icon: 'success',
-              confirmButtonColor: '#14b89a'
+              confirmButtonColor: '#14b89a',
             });
-  
+
             this.fetchData();
           },
-  
+
           error: (err) => {
-            const message =
-              err?.error?.message;
-  
+            const message = err?.error?.message;
+
             if (message === 'Part_Master_already') {
               Swal.fire({
                 title: 'Duplicate Item',
                 text: 'This Item Master already exists.',
                 icon: 'warning',
-                confirmButtonColor: '#14b89a'
+                confirmButtonColor: '#14b89a',
               });
-  
+
               return;
             }
-  
+
             Swal.fire({
               title: 'Add Item Failed',
               text:
@@ -519,33 +525,26 @@ export class ItemMasterComponent implements OnInit {
                 err?.message ||
                 'Cannot add Item Master',
               icon: 'error',
-              confirmButtonColor: '#dc3545'
+              confirmButtonColor: '#dc3545',
             });
-          }
+          },
         });
     });
   }
-
 
   editItem(row: PartMasterRow): void {
     if (this.isSyncing) {
       return;
     }
-  
-    const currentItemNo =
-      String(row.itemNo || '');
-  
-    const currentItemName =
-      String(row.itemName || '');
-  
-    const currentItemClass =
-      String(row.itemClass || '');
-  
-    const currentLotSize =
-      row.lotSize == null
-        ? ''
-        : String(row.lotSize);
-  
+
+    const currentItemNo = String(row.itemNo || '');
+
+    const currentItemName = String(row.itemName || '');
+
+    const currentItemClass = String(row.itemClass || '');
+
+    const currentLotSize = row.lotSize == null ? '' : String(row.lotSize);
+
     Swal.fire({
       width: 560,
       title: 'Edit Item Master',
@@ -555,7 +554,7 @@ export class ItemMasterComponent implements OnInit {
       confirmButtonColor: '#3c8dbc',
       cancelButtonColor: '#6c757d',
       allowOutsideClick: false,
-  
+
       html: `
         <div style="
           font-family:Arial,sans-serif;
@@ -702,52 +701,43 @@ export class ItemMasterComponent implements OnInit {
   
         </div>
       `,
-  
+
       preConfirm: () => {
-        const itemNo =
-          (document.getElementById('swal-edit-item-no') as HTMLInputElement)
-            ?.value
-            ?.trim();
-  
-        const itemName =
-          (document.getElementById('swal-edit-item-name') as HTMLInputElement)
-            ?.value
-            ?.trim();
-  
-        const itemClass =
-          (document.getElementById('swal-edit-item-class') as HTMLSelectElement)
-            ?.value;
-  
-        const lotSize =
-          (document.getElementById('swal-edit-lot-size') as HTMLInputElement)
-            ?.value;
-  
-        if (
-          !itemNo ||
-          !itemName ||
-          !itemClass ||
-          lotSize === ''
-        ) {
-          Swal.showValidationMessage(
-            'Please fill in all required fields.'
-          );
-  
+        const itemNo = (
+          document.getElementById('swal-edit-item-no') as HTMLInputElement
+        )?.value?.trim();
+
+        const itemName = (
+          document.getElementById('swal-edit-item-name') as HTMLInputElement
+        )?.value?.trim();
+
+        const itemClass = (
+          document.getElementById('swal-edit-item-class') as HTMLSelectElement
+        )?.value;
+
+        const lotSize = (
+          document.getElementById('swal-edit-lot-size') as HTMLInputElement
+        )?.value;
+
+        if (!itemNo || !itemName || !itemClass || lotSize === '') {
+          Swal.showValidationMessage('Please fill in all required fields.');
+
           return false;
         }
-  
+
         return {
           partMasterId: row.id,
           itemNo,
           itemName,
           itemClass,
-          lotSize: Number(lotSize)
+          lotSize: Number(lotSize),
         };
-      }
-    }).then(result => {
+      },
+    }).then((result) => {
       if (!result.isConfirmed || !result.value) {
         return;
       }
-  
+
       Swal.fire({
         title: 'Updating Item...',
         text: 'Please wait',
@@ -756,27 +746,23 @@ export class ItemMasterComponent implements OnInit {
         showConfirmButton: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
-  
+
       this.http
-        .post(
-          config.apiServer +
-          '/api/partMaster/updateMaster',
-          result.value
-        )
+        .post(config.apiServer + '/api/partMaster/updateMaster', result.value)
         .subscribe({
           next: () => {
             Swal.fire({
               title: 'Updated',
               text: 'Item Master has been updated successfully.',
               icon: 'success',
-              confirmButtonColor: '#14b89a'
+              confirmButtonColor: '#14b89a',
             });
-  
+
             this.fetchData();
           },
-  
+
           error: (err) => {
             Swal.fire({
               title: 'Update Failed',
@@ -786,22 +772,18 @@ export class ItemMasterComponent implements OnInit {
                 err?.message ||
                 'Cannot update Item Master',
               icon: 'error',
-              confirmButtonColor: '#dc3545'
+              confirmButtonColor: '#dc3545',
             });
-          }
+          },
         });
     });
   }
-
-
-
-
 
   deleteItem(row: PartMasterRow): void {
     if (this.isSyncing) {
       return;
     }
-  
+
     Swal.fire({
       title: 'Delete Item Master?',
       html: `
@@ -835,43 +817,39 @@ export class ItemMasterComponent implements OnInit {
       cancelButtonText: 'Cancel',
       confirmButtonColor: '#dc3545',
       cancelButtonColor: '#6c757d',
-      reverseButtons: true
-    }).then(result => {
+      reverseButtons: true,
+    }).then((result) => {
       if (!result.isConfirmed) {
         return;
       }
-  
+
       Swal.fire({
         title: 'Deleting...',
         allowOutsideClick: false,
         allowEscapeKey: false,
         showConfirmButton: false,
-  
+
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
-  
+
       this.http
-        .post(
-          config.apiServer +
-          '/api/partMaster/delete',
-          {
-            partMasterId: row.id
-          }
-        )
+        .post(config.apiServer + '/api/partMaster/delete', {
+          partMasterId: row.id,
+        })
         .subscribe({
           next: () => {
             Swal.fire({
               title: 'Deleted',
               text: 'Item Master has been deleted successfully.',
               icon: 'success',
-              confirmButtonColor: '#14b89a'
+              confirmButtonColor: '#14b89a',
             });
-  
+
             this.fetchData();
           },
-  
+
           error: (err) => {
             Swal.fire({
               title: 'Delete Failed',
@@ -881,14 +859,12 @@ export class ItemMasterComponent implements OnInit {
                 err?.message ||
                 'Cannot delete Item Master',
               icon: 'error',
-              confirmButtonColor: '#dc3545'
+              confirmButtonColor: '#dc3545',
             });
-          }
+          },
         });
     });
   }
-
-
 
   /* =====================================================
      SYNC PBASS
@@ -1048,7 +1024,7 @@ export class ItemMasterComponent implements OnInit {
           </style>
 
         </div>
-      `
+      `,
     });
 
     /* ===================================================
@@ -1057,8 +1033,7 @@ export class ItemMasterComponent implements OnInit {
 
     this.http
       .get<SyncPbassResponse>(
-        config.apiServer +
-        '/api/partMaster/syncMasterPbass'
+        config.apiServer + '/api/partMaster/syncMasterPbass'
       )
       .subscribe({
         next: (res) => {
@@ -1066,30 +1041,15 @@ export class ItemMasterComponent implements OnInit {
 
           Swal.close();
 
-          const totalFromPbass =
-            Number(
-              res?.totalFromPbass || 0
-            );
+          const totalFromPbass = Number(res?.totalFromPbass || 0);
 
-          const validRows =
-            Number(
-              res?.validRows || 0
-            );
+          const validRows = Number(res?.validRows || 0);
 
-          const createdCount =
-            Number(
-              res?.createdCount || 0
-            );
+          const createdCount = Number(res?.createdCount || 0);
 
-          const updatedCount =
-            Number(
-              res?.updatedCount || 0
-            );
+          const updatedCount = Number(res?.updatedCount || 0);
 
-          const skippedCount =
-            Number(
-              res?.skippedCount || 0
-            );
+          const skippedCount = Number(res?.skippedCount || 0);
 
           /* =================================================
              RESULT MODAL
@@ -1431,9 +1391,8 @@ export class ItemMasterComponent implements OnInit {
                 </div>
 
               </div>
-            `
-          })
-          .then(() => {
+            `,
+          }).then(() => {
             this.fetchData();
           });
         },
@@ -1446,8 +1405,7 @@ export class ItemMasterComponent implements OnInit {
           Swal.fire({
             width: 450,
 
-            title:
-              'PBASS Sync Failed',
+            title: 'PBASS Sync Failed',
 
             text:
               err?.error?.error ||
@@ -1455,22 +1413,17 @@ export class ItemMasterComponent implements OnInit {
               err?.message ||
               'Cannot synchronize Part Master from PBASS',
 
-            icon:
-              'error',
+            icon: 'error',
 
-            confirmButtonText:
-              'OK',
+            confirmButtonText: 'OK',
 
-            confirmButtonColor:
-              '#d9534f',
+            confirmButtonColor: '#d9534f',
 
-            allowOutsideClick:
-              false
+            allowOutsideClick: false,
           });
-        }
+        },
       });
   }
-
 
   escapeHtml(value: any): string {
     return String(value ?? '')
@@ -1481,23 +1434,12 @@ export class ItemMasterComponent implements OnInit {
       .replace(/'/g, '&#039;');
   }
 
-
-
-
   /* =====================================================
      ITEM CLASS DISPLAY
   ===================================================== */
 
-  getItemClassName(
-    itemClass?: string | null
-  ): string {
-
-    switch (
-      String(
-        itemClass || ''
-      ).toUpperCase()
-    ) {
-
+  getItemClassName(itemClass?: string | null): string {
+    switch (String(itemClass || '').toUpperCase()) {
       case 'G':
         return 'General';
 
@@ -1516,46 +1458,394 @@ export class ItemMasterComponent implements OnInit {
      FORMAT DATE
   ===================================================== */
 
-  formatDate(
-    value?: string | null
-  ): string {
-
+  formatDate(value?: string | null): string {
     if (!value) {
       return '-';
     }
 
-    const date =
-      new Date(value);
+    const date = new Date(value);
 
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
+    if (Number.isNaN(date.getTime())) {
       return '-';
     }
 
-    return date.toLocaleString(
-      'en-GB',
-      {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+    return date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  openSpecialCode(row: PartMasterRow): void {
+    const specialCodes = Array.isArray(row.specialCodes)
+      ? row.specialCodes
+      : [];
+
+    // =====================================================
+    // BUILD CURRENT SPECIAL CODE LIST
+    // =====================================================
+
+    const specialCodeHtml =
+      specialCodes.length > 0
+        ? specialCodes
+            .map(
+              (special, index) => `
+                <div
+                  style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    gap:10px;
+                    padding:9px 12px;
+                    margin-bottom:7px;
+                    border:1px solid #dce5eb;
+                    border-radius:8px;
+                    background:#f8fafc;
+                  "
+                >
+  
+                  <div
+                    style="
+                      display:flex;
+                      align-items:center;
+                      gap:10px;
+                    "
+                  >
+  
+                    <div
+                      style="
+                        width:26px;
+                        height:26px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border-radius:6px;
+                        background:#eaf9f5;
+                        color:#087b68;
+                        font-size:10px;
+                        font-weight:900;
+                      "
+                    >
+                      ${index + 1}
+                    </div>
+  
+                    <strong
+                      style="
+                        color:#1f2937;
+                        font-size:13px;
+                      "
+                    >
+                      ${this.escapeHtml(special.specialCodeName)}
+                    </strong>
+  
+                  </div>
+  
+                </div>
+              `
+            )
+            .join('')
+        : `
+            <div
+              style="
+                padding:18px;
+                text-align:center;
+                border:1px dashed #cbd5e1;
+                border-radius:8px;
+                color:#94a3b8;
+                font-size:12px;
+              "
+            >
+              No Special Code
+            </div>
+          `;
+
+    // =====================================================
+    // POPUP
+    // =====================================================
+
+    Swal.fire({
+      width: 600,
+
+      title: 'Special Code',
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Add Special Code',
+
+      cancelButtonText: 'Close',
+
+      confirmButtonColor: '#14b89a',
+
+      cancelButtonColor: '#6c757d',
+
+      focusConfirm: false,
+
+      html: `
+  
+        <div
+          style="
+            text-align:left;
+            font-family:Arial,sans-serif;
+          "
+        >
+  
+          <!-- PART INFO -->
+  
+          <div
+            style="
+              padding:12px 14px;
+              margin-bottom:16px;
+              border-radius:10px;
+              background:#eef9f6;
+              border:1px solid #c8ece4;
+            "
+          >
+  
+            <div
+              style="
+                font-size:10px;
+                font-weight:800;
+                color:#64748b;
+              "
+            >
+              ITEM
+            </div>
+  
+            <div
+              style="
+                margin-top:3px;
+                font-size:16px;
+                font-weight:900;
+                color:#0f172a;
+              "
+            >
+              ${this.escapeHtml(row.itemNo)}
+            </div>
+  
+            <div
+              style="
+                margin-top:3px;
+                color:#64748b;
+                font-size:11px;
+              "
+            >
+              ${this.escapeHtml(row.itemName)}
+            </div>
+  
+          </div>
+  
+  
+          <!-- CURRENT SPECIAL CODE -->
+  
+          <div
+            style="
+              margin-bottom:16px;
+            "
+          >
+  
+            <div
+              style="
+                margin-bottom:8px;
+                font-size:11px;
+                font-weight:900;
+                color:#374151;
+              "
+            >
+              CURRENT SPECIAL CODE
+              (${specialCodes.length})
+            </div>
+  
+            <div
+              style="
+                max-height:220px;
+                overflow:auto;
+              "
+            >
+              ${specialCodeHtml}
+            </div>
+  
+          </div>
+  
+  
+          <!-- ADD NEW -->
+  
+          <div>
+  
+            <label
+              style="
+                display:block;
+                margin-bottom:6px;
+                font-size:11px;
+                font-weight:900;
+                color:#374151;
+              "
+            >
+              ADD NEW SPECIAL CODE
+            </label>
+  
+            <input
+              id="swal-special-code"
+              class="swal2-input"
+              placeholder="Enter Special Code"
+              autocomplete="off"
+              style="
+                width:100%;
+                height:42px;
+                margin:0;
+                padding:8px 11px;
+                font-size:13px;
+                border:1px solid #ced4da;
+                border-radius:7px;
+                box-sizing:border-box;
+              "
+            />
+  
+          </div>
+  
+        </div>
+  
+      `,
+
+      preConfirm: () => {
+        const input = document.getElementById(
+          'swal-special-code'
+        ) as HTMLInputElement;
+
+        const specialCodeName = String(input?.value || '').trim();
+
+        if (!specialCodeName) {
+          Swal.showValidationMessage('Please enter Special Code.');
+
+          return false;
+        }
+
+        // ===============================================
+        // CHECK DUPLICATE FRONTEND
+        // ===============================================
+
+        const duplicated = specialCodes.some(
+          (code) =>
+            String(code.specialCodeName || '')
+              .trim()
+              .toUpperCase() === specialCodeName.toUpperCase()
+        );
+
+        if (duplicated) {
+          Swal.showValidationMessage('This Special Code already exists.');
+
+          return false;
+        }
+
+        return {
+          specialCodeName,
+        };
+      },
+    }).then((result) => {
+      if (!result.isConfirmed || !result.value) {
+        return;
       }
-    );
+
+      const payload = {
+        partMasterId: Number(row.id),
+
+        specialCodeName: result.value.specialCodeName,
+      };
+
+      // =====================================================
+      // SAVING
+      // =====================================================
+
+      Swal.fire({
+        title: 'Adding Special Code...',
+
+        allowOutsideClick: false,
+
+        allowEscapeKey: false,
+
+        showConfirmButton: false,
+
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      this.http
+        .post(
+          config.apiServer + '/api/partMaster/mapSpecialCodePartModel',
+          payload
+        )
+        .subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Success',
+
+              text: 'Special Code has been added successfully.',
+
+              icon: 'success',
+
+              confirmButtonColor: '#14b89a',
+            });
+
+            // โหลดใหม่ทั้ง Part + Special Code
+            this.fetchData();
+          },
+
+          error: (err) => {
+            const message = err?.error?.message;
+
+            if (message === 'map_specialCodeModel_already') {
+              Swal.fire({
+                title: 'Duplicate Special Code',
+
+                text: 'This Special Code already exists.',
+
+                icon: 'warning',
+
+                confirmButtonColor: '#14b89a',
+              });
+
+              return;
+            }
+
+            if (message === 'Part_Master_notFound') {
+              Swal.fire({
+                title: 'Part Master Not Found',
+
+                text: 'This Part Master does not exist.',
+
+                icon: 'warning',
+
+                confirmButtonColor: '#14b89a',
+              });
+
+              return;
+            }
+
+            Swal.fire({
+              title: 'Add Special Code Failed',
+
+              text:
+                err?.error?.error ||
+                message ||
+                err?.message ||
+                'Cannot add Special Code',
+
+              icon: 'error',
+
+              confirmButtonColor: '#dc3545',
+            });
+          },
+        });
+    });
   }
 
   /* =====================================================
      TRACK BY
   ===================================================== */
 
-  trackById(
-    index: number,
-    row: PartMasterRow
-  ): number {
-
+  trackById(index: number, row: PartMasterRow): number {
     return row.id;
   }
 }
