@@ -1374,17 +1374,25 @@ class="header-list-bottom-actions"
 
               <div>
                 <div class="header-saved-eyebrow">SAVED HEADER</div>
-
+              
                 <div class="header-saved-title">
                   {{ header.itemNo }}
                 </div>
-
+              
                 <div class="header-saved-subtitle">
                   <span class="header-ready-dot"></span>
-
-                  {{ header.itemName }}
+              
+                  <span>{{ header.itemName }}</span>
+              
+                  <b
+                    class="header-saved-special-code"
+                    *ngIf="header.specialCode"
+                  >
+                    {{ header.specialCode }}
+                  </b>
                 </div>
               </div>
+              
             </div>
 
             <!-- ACTION -->
@@ -1795,6 +1803,34 @@ class="header-list-bottom-actions"
               </div>
 
               <div
+                class="form-field header-field-special-code"
+                *ngIf="specialCodeOptions.length > 0"
+              >
+                <label>
+                  Special Code
+                </label>
+
+                <select
+                  class="control"
+                  name="headerSpecialCode"
+                  [(ngModel)]="form.specialCode"
+                  [disabled]="isSavingHeader"
+                >
+                  <option value="" disabled>
+                    Select Special Code
+                  </option>
+
+                  <option
+                    *ngFor="let code of specialCodeOptions"
+                    [value]="code.specialCodeName"
+                  >
+                    {{ code.specialCodeName }}
+                  </option>
+                </select>
+              </div>
+
+
+              <div
                 class="form-field header-field-control-lot"
                 *ngIf="showHeaderControlLot"
               >
@@ -1806,7 +1842,8 @@ class="header-list-bottom-actions"
                   name="headerControlLot"
                   autocomplete="off"
                   placeholder="Input Control Lot OQC"
-                  [(ngModel)]="form.controlLot"
+                  [ngModel]="form.controlLot"
+                  (ngModelChange)="form.controlLot = ($event || '').toUpperCase()"
                   [disabled]="isSavingHeader"
                 />
               </div>

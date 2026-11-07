@@ -7359,6 +7359,19 @@ td small {
 }
 
 
+.header-saved-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-saved-special-code {
+  color: #fde68a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+
 
 /* ====================
 for 2 case to center

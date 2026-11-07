@@ -22,6 +22,13 @@ type GroupRow = {
   name: string;
 };
 
+type MapSpecialCodeRow = {
+  id: number;
+  specialCodeName: string;
+  partMasterId: number;
+  status?: string;
+};
+
 type ItemMasterRow = {
   id: number;
   itemNo: string;
@@ -156,6 +163,8 @@ type HeaderIssuePalletTemp = {
   userId: number;
 
   status: string;
+
+  specialCode: string;
 };
 
 type HeaderForm = {
@@ -164,6 +173,7 @@ type HeaderForm = {
   groupId: number | null;
   itemNo: string;
   itemName: string;
+  specialCode: string;
   controlLot: string;
   locationId: number | null;
   movementMonth: string;
@@ -308,6 +318,8 @@ type ActualPalletHeaderRow = {
   totalQty: number;
 
   boxes: ActualPalletBoxRow[];
+
+  specialCode: string;
 };
 
 type ActualTacHeaderRow = {
@@ -334,6 +346,8 @@ type ActualTacHeaderRow = {
   timeStmp: string;
 
   status: string;
+
+  specialCode: string;
 };
 
 // =====================================================
@@ -425,7 +439,6 @@ export class IssueComponent implements OnInit, AfterViewInit {
   userId: number | null = null;
   role: string = '';
 
-
   userGroupName = '';
   userSectionName = '';
 
@@ -460,6 +473,13 @@ export class IssueComponent implements OnInit, AfterViewInit {
   groups: GroupRow[] = [];
   items: ItemMasterRow[] = [];
   locations: LocationRow[] = [];
+
+  mapSpecialCodes: MapSpecialCodeRow[] = [];
+
+  specialCodeOptions: MapSpecialCodeRow[] = [];
+
+  isLoadingSpecialCode = false;
+
   savedRows: WosTempRow[] = [];
 
   fullBoxTagQty: number | null = null;
@@ -584,7 +604,7 @@ export class IssueComponent implements OnInit, AfterViewInit {
     // =====================================================
 
     this.userId = Number(localStorage.getItem('finish_goods_userId')) || null;
-    
+
     this.role = localStorage.getItem('finish_goods_role') || '';
 
     const now = new Date();
@@ -620,6 +640,8 @@ export class IssueComponent implements OnInit, AfterViewInit {
     this.fetchGroups();
 
     this.fetchItems();
+
+    this.fetchMapSpecialCodePartModel();
 
     this.fetchLocations();
 
@@ -779,59 +801,36 @@ export class IssueComponent implements OnInit, AfterViewInit {
   // =====================================================
 
   get hasCurrentPalletTempHeader(): boolean {
-
-    if (
-      this.issueMode !== 'TEMP'
-    ) {
+    if (this.issueMode !== 'TEMP') {
       return false;
     }
 
-
-    if (
-      !this.palletTemp
-    ) {
+    if (!this.palletTemp) {
       return false;
     }
 
-
-    return (
-      this.currentPalletHeaders.length > 0
-    );
-
+    return this.currentPalletHeaders.length > 0;
   }
 
+  get isPalletLabelTypeLocked(): boolean {
+    // ตอนไม่ได้ Edit Pallet
+    // Lock ตาม behavior เดิม
+    if (this.isPalletFormLocked) {
+      return true;
+    }
 
-get isPalletLabelTypeLocked(): boolean {
+    // ระหว่าง Save
+    if (this.isSavingPalletTemp) {
+      return true;
+    }
 
-  // ตอนไม่ได้ Edit Pallet
-  // Lock ตาม behavior เดิม
-  if (
-    this.isPalletFormLocked
-  ) {
-    return true;
-  }
+    // TEMP มี Header แล้ว
+    // ห้ามแก้ Label Type
+    if (this.issueMode === 'TEMP' && this.hasCurrentPalletTempHeader) {
+      return true;
+    }
 
-
-  // ระหว่าง Save
-  if (
-    this.isSavingPalletTemp
-  ) {
-    return true;
-  }
-
-
-  // TEMP มี Header แล้ว
-  // ห้ามแก้ Label Type
-  if (
-    this.issueMode === 'TEMP' &&
-    this.hasCurrentPalletTempHeader
-  ) {
-    return true;
-  }
-
-
-  return false;
-
+    return false;
   }
 
   get currentActualHeaderCount(): number {
@@ -1284,14 +1283,13 @@ get isPalletLabelTypeLocked(): boolean {
     return this.issueMode === 'ACTUAL' && this.actualHeaderSource === 'REAL';
   }
 
-
-
   get isAdmin(): boolean {
-    return String(this.role || '')
-      .trim()
-      .toUpperCase() === 'ADMIN';
+    return (
+      String(this.role || '')
+        .trim()
+        .toUpperCase() === 'ADMIN'
+    );
   }
-  
 
   buildCreatePalletSlotCode(column: number, row: number): string {
     return `${column}` + `${row.toString().padStart(2, '0')}`;
@@ -2828,6 +2826,7 @@ get isPalletLabelTypeLocked(): boolean {
       groupId: null,
       itemNo: '',
       itemName: '',
+      specialCode: '',
       controlLot: '',
       locationId: null,
       movementMonth: '',
@@ -3005,6 +3004,8 @@ get isPalletLabelTypeLocked(): boolean {
 
       itemName: raw.itemName || '',
 
+      specialCode: String(raw.specialCode || ''),
+
       controlLot: String(raw.controlLot || ''),
 
       palletTempId: Number(raw.palletTempId),
@@ -3044,6 +3045,8 @@ get isPalletLabelTypeLocked(): boolean {
       itemNo: h.itemNo,
 
       itemName: h.itemName,
+
+      specialCode: h.specialCode || '',
 
       controlLot: h.controlLot || '',
 
@@ -3478,6 +3481,71 @@ get isPalletLabelTypeLocked(): boolean {
     });
   }
 
+  fetchMapSpecialCodePartModel(): void {
+    this.isLoadingSpecialCode = true;
+
+    this.http
+      .get<any>(config.apiServer + '/api/partMaster/getMapSpecialCodePartModel')
+      .subscribe({
+        next: (res: any): void => {
+          const rows = Array.isArray(res?.results) ? res.results : [];
+
+          this.mapSpecialCodes = rows
+            .map(
+              (row: any): MapSpecialCodeRow => ({
+                id: Number(row?.id || 0),
+
+                specialCodeName: String(row?.specialCodeName || '').trim(),
+
+                partMasterId: Number(row?.partMasterId || 0),
+
+                status: String(row?.status || 'use'),
+              })
+            )
+            .filter(
+              (row: MapSpecialCodeRow) =>
+                row.partMasterId > 0 &&
+                !!row.specialCodeName &&
+                row.status === 'use'
+            );
+
+          this.isLoadingSpecialCode = false;
+        },
+
+        error: (err: any): void => {
+          console.error('LOAD SPECIAL CODE ERROR:', err);
+
+          this.mapSpecialCodes = [];
+          this.specialCodeOptions = [];
+
+          this.isLoadingSpecialCode = false;
+        },
+      });
+  }
+
+  private loadSpecialCodeOptionsByItem(
+    item: ItemMasterRow | null,
+    keepCurrent: boolean = false
+  ): void {
+    if (!item?.id) {
+      this.specialCodeOptions = [];
+
+      if (!keepCurrent) {
+        this.form.specialCode = '';
+      }
+
+      return;
+    }
+
+    this.specialCodeOptions = this.mapSpecialCodes.filter(
+      (row) => Number(row.partMasterId) === Number(item.id)
+    );
+
+    if (!keepCurrent) {
+      this.form.specialCode = '';
+    }
+  }
+
   private checkMasterLoadingDone() {
     this.isLoadingMaster = false;
   }
@@ -3502,6 +3570,7 @@ get isPalletLabelTypeLocked(): boolean {
     this.itemKeyword = it.itemNo;
     this.form.itemNo = it.itemNo;
     this.form.itemName = it.itemName || '';
+    this.loadSpecialCodeOptionsByItem(it);
     this.showItemDrop = false;
   }
 
@@ -3591,6 +3660,10 @@ get isPalletLabelTypeLocked(): boolean {
 
     this.form.itemName = '';
 
+    this.form.specialCode = '';
+
+    this.specialCodeOptions = [];
+
     this.headerItemClass = '';
 
     this.form.groupId = null;
@@ -3644,6 +3717,21 @@ get isPalletLabelTypeLocked(): boolean {
 
       return;
     }
+
+
+    if (
+      this.specialCodeOptions.length > 0 &&
+      !String(this.form.specialCode || '').trim()
+    ) {
+      this.toast(
+        'warning',
+        'กรุณาเลือก Special Code'
+      );
+  
+      return;
+    }
+
+    
 
     if (this.issueMode === 'ACTUAL') {
       this.saveActualTacHeader();
@@ -3865,6 +3953,8 @@ get isPalletLabelTypeLocked(): boolean {
       normalQty: normalQty,
 
       palletTempId: Number(this.palletTemp.id),
+
+      specialCode: String(this.form.specialCode || '').trim(),
     };
 
     // =====================================================
@@ -4025,6 +4115,8 @@ get isPalletLabelTypeLocked(): boolean {
 
     this.headerItemClass = '';
 
+    this.specialCodeOptions = [];
+
     this.isHeaderTagLocked = false;
 
     this.fullBoxTagQty = null;
@@ -4124,6 +4216,8 @@ get isPalletLabelTypeLocked(): boolean {
       fractionQty: fractionQty,
 
       userId: Number(this.userId),
+
+      specialCode: String(this.form.specialCode || '').trim(),
     };
 
     this.http
@@ -4152,6 +4246,8 @@ get isPalletLabelTypeLocked(): boolean {
             itemNo: String(raw.itemNo || ''),
 
             itemName: String(raw.itemName || ''),
+
+            specialCode: String(raw.specialCode || this.form.specialCode || ''),
 
             normalQty: Number(raw.normalQty || normalQty),
 
@@ -4191,6 +4287,8 @@ get isPalletLabelTypeLocked(): boolean {
             itemNo: tacHeader.itemNo,
 
             itemName: tacHeader.itemName,
+
+            specialCode: tacHeader.specialCode || '',
 
             controlLot: tacHeader.controlLot,
 
@@ -4289,6 +4387,8 @@ get isPalletLabelTypeLocked(): boolean {
       normalQty: Number(normalQty),
 
       fractionQty: Number(fractionQty),
+
+      specialCode: String(this.form.specialCode || '').trim(),
     };
 
     // SAVE
@@ -4321,6 +4421,8 @@ get isPalletLabelTypeLocked(): boolean {
             itemNo: String(raw.itemNo || this.form.itemNo || ''),
 
             itemName: String(raw.itemName || this.form.itemName || ''),
+
+            specialCode: String(raw.specialCode ?? this.form.specialCode ?? ''),
 
             normalQty: Number(raw.normalQty ?? normalQty),
 
@@ -4361,6 +4463,8 @@ get isPalletLabelTypeLocked(): boolean {
 
             itemName: updatedTac.itemName,
 
+            specialCode: updatedTac.specialCode || '',
+
             controlLot: updatedTac.controlLot,
 
             movementMonth: updatedTac.moveMentThreeMonth,
@@ -4385,7 +4489,7 @@ get isPalletLabelTypeLocked(): boolean {
           };
 
           // SYNC FORM
-          this.form = this.mapHeaderToForm(this.header);
+          this.form = this.mapHeaderToForm(this.header!);
 
           this.form.totalQtyBox = totalBox;
 
@@ -4498,6 +4602,14 @@ get isPalletLabelTypeLocked(): boolean {
     // =========================
 
     this.form = this.mapHeaderToForm(selectedHeader);
+
+    const master =
+      this.items.find(
+        (item) =>
+          String(item.itemNo).trim() === String(selectedHeader.itemNo).trim()
+      ) || null;
+
+    this.loadSpecialCodeOptionsByItem(master, true);
 
     this.itemKeyword = this.form.itemNo;
 
@@ -4747,6 +4859,10 @@ get isPalletLabelTypeLocked(): boolean {
 
           this.form.itemName = '';
 
+          this.form.specialCode = '';
+
+          this.specialCodeOptions = [];
+
           this.form.groupId = null;
 
           this.headerItemClass = '';
@@ -4761,6 +4877,8 @@ get isPalletLabelTypeLocked(): boolean {
         }
 
         this.form.itemNo = itemNo;
+
+        this.loadSpecialCodeOptionsByItem(master);
 
         this.applyHeaderGroupFromItemClass(master.itemClass);
 
@@ -4882,6 +5000,8 @@ get isPalletLabelTypeLocked(): boolean {
         this.form.itemNo = itemNo;
 
         this.form.itemName = itemName;
+
+        this.loadSpecialCodeOptionsByItem(master);
 
         // ==========================================
         // Item Class
@@ -7337,6 +7457,8 @@ get isPalletLabelTypeLocked(): boolean {
 
               itemName: String(raw?.itemName || ''),
 
+              specialCode: String(raw?.specialCode || ''),
+
               normalQty: Number(raw?.normalQty || 0),
 
               fractionQty: Number(raw?.fractionQty || 0),
@@ -8287,6 +8409,8 @@ get isPalletLabelTypeLocked(): boolean {
 
       itemName: selectedHeader.itemName,
 
+      specialCode: selectedHeader.specialCode || '',
+
       controlLot: selectedHeader.controlLot,
 
       movementMonth: selectedHeader.moveMentThreeMonth,
@@ -8322,6 +8446,8 @@ get isPalletLabelTypeLocked(): boolean {
       itemNo: selectedHeader.itemNo,
 
       itemName: selectedHeader.itemName,
+
+      specialCode: selectedHeader.specialCode || '',
 
       controlLot: selectedHeader.controlLot,
 
@@ -9078,7 +9204,6 @@ get isPalletLabelTypeLocked(): boolean {
   // =====================================================
 
   printActualHeaderLabel(): void {
-   
     // ONLY ACTUAL MODE
     if (this.issueMode !== 'ACTUAL') {
       return;
@@ -10498,6 +10623,8 @@ get isPalletLabelTypeLocked(): boolean {
 
       itemName: String(raw?.itemName || ''),
 
+      specialCode: String(raw?.specialCode || ''),
+
       normalQty: Number(raw?.normalQty || 0),
 
       fractionQty: Number(raw?.fractionQty || 0),
@@ -10598,6 +10725,8 @@ get isPalletLabelTypeLocked(): boolean {
 
       itemName: selectedHeader.itemName,
 
+      specialCode: selectedHeader.specialCode || '',
+
       controlLot: selectedHeader.controlLot,
 
       movementMonth: selectedHeader.moveMentThreeMonth,
@@ -10638,6 +10767,8 @@ get isPalletLabelTypeLocked(): boolean {
       itemNo: selectedHeader.itemNo,
 
       itemName: selectedHeader.itemName,
+
+      specialCode: selectedHeader.specialCode || '',
 
       controlLot: selectedHeader.controlLot,
 
@@ -10791,121 +10922,74 @@ get isPalletLabelTypeLocked(): boolean {
     this.router.navigate(['/dashboard']);
   }
 
-
-
   deleteActualPallet(): void {
-
     // =====================================================
     // ONLY ACTUAL MODE
     // =====================================================
-  
-    if (
-      this.issueMode !== 'ACTUAL'
-    ) {
+
+    if (this.issueMode !== 'ACTUAL') {
       return;
     }
-  
-  
+
     // =====================================================
     // VALIDATE PALLET
     // =====================================================
-  
-    const palletId =
-      Number(
-        this.actualPallet?.id ||
-        this.actualPalletId ||
-        0
-      );
-  
-  
-    if (
-      !Number.isInteger(palletId) ||
-      palletId <= 0
-    ) {
-  
+
+    const palletId = Number(this.actualPallet?.id || this.actualPalletId || 0);
+
+    if (!Number.isInteger(palletId) || palletId <= 0) {
       Swal.fire({
         icon: 'warning',
         title: 'ไม่พบ Pallet',
         text: 'ไม่สามารถลบ Pallet ได้',
       });
-  
+
       return;
     }
-  
-  
-    if (
-      this.isDeletingActualPallet
-    ) {
+
+    if (this.isDeletingActualPallet) {
       return;
     }
-  
-  
+
     // =====================================================
     // CURRENT PALLET NO ID
     //
     // ตัวนี้คือค่าที่ Scanner Pallet ID ต้องตรง
     // =====================================================
-  
-    const palletNoId =
-      String(
-        this.actualPallet?.palletNoId ||
-        ''
-      )
-        .trim()
-        .toUpperCase();
-  
-  
-    if (
-      !palletNoId
-    ) {
-  
+
+    const palletNoId = String(this.actualPallet?.palletNoId || '')
+      .trim()
+      .toUpperCase();
+
+    if (!palletNoId) {
       Swal.fire({
         icon: 'warning',
         title: 'ไม่พบ Pallet No.',
         text: 'ไม่สามารถตรวจสอบ Pallet ก่อนลบได้',
       });
-  
+
       return;
     }
-  
-  
+
     // =====================================================
     // SUMMARY
     // =====================================================
-  
-    const headerCount =
-      Number(
-        this.actualHeaders.length ||
-        0
-      );
-  
-  
-    const totalBox =
-      Number(
-        this.actualPallet?.totalBox ||
-        0
-      );
-  
-  
-    const tacHeaderCount =
-      Number(
-        this.actualTacHeaders.length ||
-        0
-      );
-  
-  
+
+    const headerCount = Number(this.actualHeaders.length || 0);
+
+    const totalBox = Number(this.actualPallet?.totalBox || 0);
+
+    const tacHeaderCount = Number(this.actualTacHeaders.length || 0);
+
     // =====================================================
     // SCAN CONFIRM FORM
     // =====================================================
-  
+
     Swal.fire({
-  
-      icon:
-        'warning',
-  
-      title:
-        'Delete Pallet ?',
-  
+      icon: 'warning',
+
+      title: 'Delete Pallet ?',
+
       html: `
         <div style="text-align:left">
   
@@ -11099,256 +11183,157 @@ get isPalletLabelTypeLocked(): boolean {
   
         </div>
       `,
-  
-  
-      showCancelButton:
-        true,
-  
-      confirmButtonText:
-        'Confirm Delete',
-  
-      cancelButtonText:
-        'Cancel',
-  
-      confirmButtonColor:
-        '#dc2626',
-  
-      cancelButtonColor:
-        '#64748b',
-  
-      reverseButtons:
-        true,
-  
-      focusConfirm:
-        false,
-  
-      focusCancel:
-        false,
-  
-      allowOutsideClick:
-        false,
-  
-      allowEscapeKey:
-        false,
-  
-      returnFocus:
-        false,
-  
-  
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Confirm Delete',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#dc2626',
+
+      cancelButtonColor: '#64748b',
+
+      reverseButtons: true,
+
+      focusConfirm: false,
+
+      focusCancel: false,
+
+      allowOutsideClick: false,
+
+      allowEscapeKey: false,
+
+      returnFocus: false,
+
       // =====================================================
       // OPEN POPUP
       // =====================================================
-  
+
       didOpen: () => {
-  
-        const palletInput =
-          document.getElementById(
-            'deleteActualPalletIdTag'
-          ) as HTMLInputElement | null;
-  
-  
-        const labelInput =
-          document.getElementById(
-            'deleteActualLabelNoTag'
-          ) as HTMLInputElement | null;
-  
-  
+        const palletInput = document.getElementById(
+          'deleteActualPalletIdTag'
+        ) as HTMLInputElement | null;
+
+        const labelInput = document.getElementById(
+          'deleteActualLabelNoTag'
+        ) as HTMLInputElement | null;
+
         // ===============================================
         // FOCUS PALLET ID FIRST
         // ===============================================
-  
+
         setTimeout(() => {
-  
           palletInput?.focus();
-  
+
           palletInput?.select();
-  
         }, 100);
-  
-  
+
         // ===============================================
         // PALLET ID ENTER
         //
         // ไป Label No
         // ยังไม่ Confirm
         // ===============================================
-  
-        palletInput?.addEventListener(
-          'keydown',
-          (
-            event: KeyboardEvent
-          ) => {
-  
-            if (
-              event.key !== 'Enter'
-            ) {
-              return;
-            }
-  
-  
-            event.preventDefault();
-  
-  
-            const value =
-              String(
-                palletInput.value ||
-                ''
-              ).trim();
-  
-  
-            if (
-              !value
-            ) {
-  
-              palletInput.focus();
-  
-              return;
-  
-            }
-  
-  
-            labelInput?.focus();
-  
-            labelInput?.select();
-  
+
+        palletInput?.addEventListener('keydown', (event: KeyboardEvent) => {
+          if (event.key !== 'Enter') {
+            return;
           }
-        );
-  
-  
+
+          event.preventDefault();
+
+          const value = String(palletInput.value || '').trim();
+
+          if (!value) {
+            palletInput.focus();
+
+            return;
+          }
+
+          labelInput?.focus();
+
+          labelInput?.select();
+        });
+
         // ===============================================
         // LABEL NO ENTER
         //
         // Scan ครบแล้ว
         // Trigger Confirm
         // ===============================================
-  
-        labelInput?.addEventListener(
-          'keydown',
-          (
-            event: KeyboardEvent
-          ) => {
-  
-            if (
-              event.key !== 'Enter'
-            ) {
-              return;
-            }
-  
-  
-            event.preventDefault();
-  
-  
-            const value =
-              String(
-                labelInput.value ||
-                ''
-              ).trim();
-  
-  
-            if (
-              !value
-            ) {
-  
-              labelInput.focus();
-  
-              return;
-  
-            }
-  
-  
-            Swal.clickConfirm();
-  
+
+        labelInput?.addEventListener('keydown', (event: KeyboardEvent) => {
+          if (event.key !== 'Enter') {
+            return;
           }
-        );
-  
+
+          event.preventDefault();
+
+          const value = String(labelInput.value || '').trim();
+
+          if (!value) {
+            labelInput.focus();
+
+            return;
+          }
+
+          Swal.clickConfirm();
+        });
       },
-  
-  
+
       // =====================================================
       // VALIDATE BEFORE CONFIRM
       // =====================================================
-  
+
       preConfirm: () => {
-  
-        const palletInput =
-          document.getElementById(
-            'deleteActualPalletIdTag'
-          ) as HTMLInputElement | null;
-  
-  
-        const labelInput =
-          document.getElementById(
-            'deleteActualLabelNoTag'
-          ) as HTMLInputElement | null;
-  
-  
-        const scannedPalletId =
-          String(
-            palletInput?.value ||
-            ''
-          )
-            .trim()
-            .toUpperCase();
-  
-  
-        const scannedLabelNo =
-          String(
-            labelInput?.value ||
-            ''
-          )
-            .trim()
-            .toUpperCase();
-  
-  
+        const palletInput = document.getElementById(
+          'deleteActualPalletIdTag'
+        ) as HTMLInputElement | null;
+
+        const labelInput = document.getElementById(
+          'deleteActualLabelNoTag'
+        ) as HTMLInputElement | null;
+
+        const scannedPalletId = String(palletInput?.value || '')
+          .trim()
+          .toUpperCase();
+
+        const scannedLabelNo = String(labelInput?.value || '')
+          .trim()
+          .toUpperCase();
+
         // ===============================================
         // PALLET ID REQUIRED
         // ===============================================
-  
-        if (
-          !scannedPalletId
-        ) {
-  
-          Swal.showValidationMessage(
-            'กรุณา Scan Pallet ID'
-          );
-  
-  
+
+        if (!scannedPalletId) {
+          Swal.showValidationMessage('กรุณา Scan Pallet ID');
+
           setTimeout(() => {
             palletInput?.focus();
           }, 0);
-  
-  
+
           return false;
-  
         }
-  
-  
+
         // ===============================================
         // LABEL NO REQUIRED
         //
         // รับค่าอย่างเดียว
         // ไม่เอาไป Compare
         // ===============================================
-  
-        if (
-          !scannedLabelNo
-        ) {
-  
-          Swal.showValidationMessage(
-            'กรุณา Scan Label No.'
-          );
-  
-  
+
+        if (!scannedLabelNo) {
+          Swal.showValidationMessage('กรุณา Scan Label No.');
+
           setTimeout(() => {
             labelInput?.focus();
           }, 0);
-  
-  
+
           return false;
-  
         }
-  
-  
+
         // ===============================================
         // CHECK PALLET ID ONLY
         //
@@ -11356,176 +11341,108 @@ get isPalletLabelTypeLocked(): boolean {
         // VS
         // actualPallet.palletNoId
         // ===============================================
-  
-        if (
-          scannedPalletId !==
-          palletNoId
-        ) {
-        
-          Swal.showValidationMessage(
-            'Pallet ID ไม่ตรงกับ Pallet ปัจจุบัน'
-          );
-        
-        
-          if (
-            palletInput
-          ) {
+
+        if (scannedPalletId !== palletNoId) {
+          Swal.showValidationMessage('Pallet ID ไม่ตรงกับ Pallet ปัจจุบัน');
+
+          if (palletInput) {
             palletInput.value = '';
           }
-        
-        
-          if (
-            labelInput
-          ) {
+
+          if (labelInput) {
             labelInput.value = '';
           }
-        
-        
+
           setTimeout(() => {
-        
             palletInput?.focus();
-        
           }, 0);
-        
-        
+
           return false;
-        
         }
-  
-  
+
         // ===============================================
         // PASS
         // ===============================================
-  
+
         return {
-          palletId:
-            scannedPalletId,
-  
-          labelNo:
-            scannedLabelNo,
+          palletId: scannedPalletId,
+
+          labelNo: scannedLabelNo,
         };
-  
       },
-  
     }).then((result) => {
-  
       // =====================================================
-  // CANCEL SCAN
-  // =====================================================
+      // CANCEL SCAN
+      // =====================================================
 
-  if (
-    !result.isConfirmed
-  ) {
-    return;
-  }
+      if (!result.isConfirmed) {
+        return;
+      }
 
+      // =====================================================
+      // SCAN VERIFIED
+      //
+      // ยังไม่ Delete
+      // แสดง Confirm รอบสุดท้ายก่อน
+      // =====================================================
 
-  // =====================================================
-  // SCAN VERIFIED
-  //
-  // ยังไม่ Delete
-  // แสดง Confirm รอบสุดท้ายก่อน
-  // =====================================================
-
-  this.confirmDeleteActualPalletAfterScan(
-    palletId,
-    palletNoId,
-    result.value?.labelNo || ''
-  );
-  
+      this.confirmDeleteActualPalletAfterScan(
+        palletId,
+        palletNoId,
+        result.value?.labelNo || ''
+      );
     });
-  
   }
-
 
   private confirmDeleteActualPalletAfterScan(
     palletId: number,
     palletNoId: string,
     scannedLabelNo: string
   ): void {
-  
     // =====================================================
     // GET CURRENT PALLET
     // =====================================================
-  
-    const pallet =
-      this.actualPallet;
-  
-  
-    if (
-      !pallet
-    ) {
-  
+
+    const pallet = this.actualPallet;
+
+    if (!pallet) {
       Swal.fire({
         icon: 'warning',
         title: 'ไม่พบ Pallet',
         text: 'ไม่สามารถยืนยันการลบได้',
       });
-  
+
       return;
-  
     }
-  
-  
+
     // =====================================================
     // DATA
     // =====================================================
-  
-    const headerCount =
-      Number(
-        pallet.totalHeader ||
-        this.actualHeaders.length ||
-        0
-      );
-  
-  
-    const totalBox =
-      Number(
-        pallet.totalBox ||
-        0
-      );
-  
-  
-    const normalBox =
-      Number(
-        pallet.normalBox ||
-        0
-      );
-  
-  
-    const fractionBox =
-      Number(
-        pallet.fractionBox ||
-        0
-      );
-  
-  
-    const totalQty =
-      Number(
-        pallet.totalQty ||
-        0
-      );
-  
-  
-    const location =
-      this.locationName(
-        pallet.mapAreaRackId
-      );
-  
-  
+
+    const headerCount = Number(
+      pallet.totalHeader || this.actualHeaders.length || 0
+    );
+
+    const totalBox = Number(pallet.totalBox || 0);
+
+    const normalBox = Number(pallet.normalBox || 0);
+
+    const fractionBox = Number(pallet.fractionBox || 0);
+
+    const totalQty = Number(pallet.totalQty || 0);
+
+    const location = this.locationName(pallet.mapAreaRackId);
+
     // =====================================================
     // FINAL CONFIRM
     // =====================================================
-  
+
     Swal.fire({
-  
-      icon:
-        'warning',
-  
-      title:
-        'Confirm Delete Pallet ?',
-  
-        html: `
+      icon: 'warning',
+
+      title: 'Confirm Delete Pallet ?',
+
+      html: `
         <div style="text-align:left">
       
           <!-- VERIFIED -->
@@ -11813,87 +11730,57 @@ get isPalletLabelTypeLocked(): boolean {
       
         </div>
       `,
-  
-  
-      showCancelButton:
-        true,
-  
-      confirmButtonText:
-        'Confirm Delete',
-  
-      cancelButtonText:
-        'Cancel',
-  
-      confirmButtonColor:
-        '#dc2626',
-  
-      cancelButtonColor:
-        '#64748b',
-  
-      reverseButtons:
-        true,
-  
-      allowOutsideClick:
-        false,
-  
-      allowEscapeKey:
-        false,
-  
-      returnFocus:
-        false,
-  
+
+      showCancelButton: true,
+
+      confirmButtonText: 'Confirm Delete',
+
+      cancelButtonText: 'Cancel',
+
+      confirmButtonColor: '#dc2626',
+
+      cancelButtonColor: '#64748b',
+
+      reverseButtons: true,
+
+      allowOutsideClick: false,
+
+      allowEscapeKey: false,
+
+      returnFocus: false,
     }).then((confirmResult) => {
-  
       // =====================================================
       // USER CANCEL
       // =====================================================
-  
-      if (
-        !confirmResult.isConfirmed
-      ) {
+
+      if (!confirmResult.isConfirmed) {
         return;
       }
-  
-  
+
       // =====================================================
       // FINAL CONFIRM
       //
       // ตรงนี้เท่านั้นถึงจะยิง Delete API
       // =====================================================
-  
-      this.callDeleteActualPallet(
-        palletId,
-        palletNoId
-      );
-  
+
+      this.callDeleteActualPallet(palletId, palletNoId);
     });
-  
   }
 
-
-
-  private callDeleteActualPallet(
-    palletId: number,
-    palletNo: string
-  ): void {
-  
+  private callDeleteActualPallet(palletId: number, palletNo: string): void {
     // =====================================================
     // STATE
     // =====================================================
-  
-    this.isDeletingActualPallet =
-      true;
-  
-  
+
+    this.isDeletingActualPallet = true;
+
     // =====================================================
     // LOADING
     // =====================================================
-  
+
     Swal.fire({
-  
-      title:
-        'Deleting Pallet...',
-  
+      title: 'Deleting Pallet...',
+
       html: `
         <div style="text-align:center">
   
@@ -11914,125 +11801,79 @@ get isPalletLabelTypeLocked(): boolean {
   
         </div>
       `,
-  
-      allowOutsideClick:
-        false,
-  
-      allowEscapeKey:
-        false,
-  
-      showConfirmButton:
-        false,
-  
+
+      allowOutsideClick: false,
+
+      allowEscapeKey: false,
+
+      showConfirmButton: false,
+
       didOpen: () => {
         Swal.showLoading();
       },
-  
     });
-  
-  
+
     // =====================================================
     // API
     // =====================================================
-  
+
     this.http
-      .post<any>(
-        config.apiServer +
-          '/api/issue/deletePallet',
-        {
-          palletId:
-            Number(palletId),
-        }
-      )
+      .post<any>(config.apiServer + '/api/issue/deletePallet', {
+        palletId: Number(palletId),
+      })
       .subscribe({
-  
         // ===================================================
         // SUCCESS
         // ===================================================
-  
-        next: (
-          res: any
-        ): void => {
-  
-          this.isDeletingActualPallet =
-            false;
-  
-  
-          const deletedHeaderCount =
-            Number(
-              res?.data?.deletedHeaderCount ||
-              0
-            );
-  
-  
-          const deletedBoxCount =
-            Number(
-              res?.data?.deletedBoxCount ||
-              0
-            );
-  
-  
-          const deletedFractionMapCount =
-            Number(
-              res?.data?.deletedFractionMapCount ||
-              0
-            );
-  
-  
-          const deletedTacHeaderCount =
-            Number(
-              res?.data?.deletedTacHeaderCount ||
-              0
-            );
-  
-  
+
+        next: (res: any): void => {
+          this.isDeletingActualPallet = false;
+
+          const deletedHeaderCount = Number(res?.data?.deletedHeaderCount || 0);
+
+          const deletedBoxCount = Number(res?.data?.deletedBoxCount || 0);
+
+          const deletedFractionMapCount = Number(
+            res?.data?.deletedFractionMapCount || 0
+          );
+
+          const deletedTacHeaderCount = Number(
+            res?.data?.deletedTacHeaderCount || 0
+          );
+
           // =================================================
           // CLEAR CURRENT ACTUAL STATE
           // =================================================
-  
-          this.actualPallet =
-            null;
-  
-          this.actualPalletId =
-            null;
-  
-          this.actualHeaders =
-            [];
-  
-          this.actualHeader =
-            null;
-  
-          this.actualTacHeaders =
-            [];
-  
-          this.activeActualTacHeader =
-            null;
-  
-          this.actualHeaderSource =
-            null;
-  
-          this.header =
-            null;
-  
-          this.savedRows =
-            [];
-  
-          this.fractionRows =
-            [];
-  
-  
+
+          this.actualPallet = null;
+
+          this.actualPalletId = null;
+
+          this.actualHeaders = [];
+
+          this.actualHeader = null;
+
+          this.actualTacHeaders = [];
+
+          this.activeActualTacHeader = null;
+
+          this.actualHeaderSource = null;
+
+          this.header = null;
+
+          this.savedRows = [];
+
+          this.fractionRows = [];
+
           // =================================================
           // SUCCESS
           // =================================================
-  
+
           Swal.fire({
-  
-            icon:
-              'success',
-  
-            title:
-              'Delete Pallet Success',
-  
+            icon: 'success',
+
+            title: 'Delete Pallet Success',
+
             html: `
               <div style="text-align:left">
   
@@ -12091,110 +11932,76 @@ get isPalletLabelTypeLocked(): boolean {
   
               </div>
             `,
-  
-            confirmButtonText:
-              'OK',
-  
-            confirmButtonColor:
-              '#10b981',
-  
-            allowOutsideClick:
-              false,
-  
-            returnFocus:
-              false,
-  
+
+            confirmButtonText: 'OK',
+
+            confirmButtonColor: '#10b981',
+
+            allowOutsideClick: false,
+
+            returnFocus: false,
           }).then(() => {
-  
             this.backToDashboard();
-  
           });
-  
         },
-  
-  
+
         // ===================================================
         // ERROR
         // ===================================================
-  
-        error: (
-          err: any
-        ): void => {
-  
-          console.error(
-            'DELETE PALLET ERROR:',
-            err
-          );
-  
-  
-          this.isDeletingActualPallet =
-            false;
-  
-  
+
+        error: (err: any): void => {
+          console.error('DELETE PALLET ERROR:', err);
+
+          this.isDeletingActualPallet = false;
+
           const msg =
             err?.error?.message ||
             err?.error?.error ||
             err?.message ||
             'Delete Pallet fail';
-  
-  
+
           // ===============================================
           // NOT FOUND
           // ===============================================
-  
-          if (
-            msg === 'Pallet_notFound'
-          ) {
-  
+
+          if (msg === 'Pallet_notFound') {
             Swal.fire({
               icon: 'warning',
               title: 'ไม่พบ Pallet',
               text: 'Pallet นี้อาจถูกลบไปแล้ว',
               confirmButtonText: 'OK',
             }).then(() => {
-  
               this.backToDashboard();
-  
             });
-  
-  
+
             return;
           }
-  
-  
+
           // ===============================================
           // INVALID ID
           // ===============================================
-  
-          if (
-            msg === 'invalid_palletId' ||
-            msg === 'missing_required_fields'
-          ) {
-  
+
+          if (msg === 'invalid_palletId' || msg === 'missing_required_fields') {
             Swal.fire({
               icon: 'warning',
               title: 'Pallet ID ไม่ถูกต้อง',
               text: 'ไม่สามารถลบ Pallet ได้',
             });
-  
-  
+
             return;
           }
-  
-  
+
           // ===============================================
           // OTHER ERROR
           // ===============================================
-  
+
           Swal.fire({
             icon: 'error',
             title: 'Delete Pallet ไม่สำเร็จ',
             text: msg,
             confirmButtonText: 'OK',
           });
-  
         },
-  
       });
   }
 
