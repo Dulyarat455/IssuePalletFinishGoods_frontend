@@ -699,9 +699,20 @@
                   </div>
                 </div>
 
+                
                 <div class="item-name">
-                  {{ label.itemName }}
+                  <span>
+                    {{ label.itemName }}
+                  </span>
+                
+                  <span
+                    class="item-special-code"
+                    *ngIf="label.specialCode"
+                  >
+                    {{ label.specialCode }}
+                  </span>
                 </div>
+
 
                 <div class="label-meta">
                   <span>

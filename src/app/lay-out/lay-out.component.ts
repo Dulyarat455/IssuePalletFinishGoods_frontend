@@ -47,6 +47,8 @@ type LabelItem = {
 
   itemName: string;
 
+  specialCode: string;
+
   dieNo: string;
 
   oqcLotNo: string;
@@ -302,6 +304,8 @@ export class LayOutComponent implements OnInit {
                               itemNo: String(label.itemNo || ''),
 
                               itemName: String(label.itemName || ''),
+
+                              specialCode: String(label.specialCode || '').trim(),
 
                               dieNo: String(label.dieNo || ''),
 
