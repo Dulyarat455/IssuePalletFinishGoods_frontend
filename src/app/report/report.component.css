@@ -1267,7 +1267,7 @@
   
   
   .qty-cell {
-    text-align: right;
+    text-align: center;
   
     color: #182238 !important;
   
@@ -1436,3 +1436,34 @@
     }
   
   }
+
+
+
+
+  /* ==============================
+   HEADER DETAIL COLUMN ALIGNMENT
+================================ */
+
+.header-table .header-col-qty,
+.header-table .qty-cell {
+  width: 110px;
+  text-align: center;
+}
+
+.header-table .header-col-control,
+.header-table .control-lot-cell {
+  width: 150px;
+  text-align: center;
+}
+
+.header-table .header-col-group,
+.header-table .group-cell {
+  width: 130px;
+  text-align: center;
+}
+
+
+.header-table .header-col-item-name,
+.header-table .header-item-name-cell {
+  width: 360px;
+}

@@ -128,6 +128,14 @@ export class ReportComponent implements OnInit {
   // =====================================================
 
   ngOnInit(): void {
+    const today = new Date();
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    this.startDate = this.toDateInputValue(yesterday);
+    this.endDate = this.toDateInputValue(today);
+
     this.fetchData();
   }
 
@@ -268,19 +276,19 @@ export class ReportComponent implements OnInit {
 
   clearFilter(): void {
     this.searchPalletNo = '';
-
     this.searchType = '';
-
     this.searchRack = '';
-
     this.searchArea = '';
-
     this.searchUser = '';
-
-    this.startDate = '';
-
-    this.endDate = '';
-
+  
+    const today = new Date();
+  
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+  
+    this.startDate = this.toDateInputValue(yesterday);
+    this.endDate = this.toDateInputValue(today);
+  
     this.applyFilter();
   }
 
@@ -416,6 +424,15 @@ export class ReportComponent implements OnInit {
     const second = String(date.getSeconds()).padStart(2, '0');
 
     return `${day}/${month}/${year} ` + `${hour}:${minute}:${second}`;
+  }
+
+
+  private toDateInputValue(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
   }
 
   // =====================================================

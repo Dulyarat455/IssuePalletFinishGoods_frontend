@@ -612,15 +612,15 @@
             
                                 <th>ITEM NO.</th>
             
-                                <th>ITEM NAME</th>
+                                <th class="header-col-item-name">ITEM NAME</th>
             
-                                <th>NORMAL</th>
-            
-                                <th>FRACTION</th>
-            
-                                <th>CONTROL LOT</th>
-            
-                                <th>GROUP</th>
+                                <th class="header-col-qty">NORMAL</th>
+
+                                <th class="header-col-qty">FRACTION</th>
+                                
+                                <th class="header-col-control">CONTROL LOT</th>
+                                
+                                <th class="header-col-group">GROUP</th>
             
                               </tr>
             
@@ -658,7 +658,7 @@
                                   </td>
             
             
-                                  <td>
+                                  <td class="header-item-name-cell">
                                     {{ header.itemName || '-' }}
                                   </td>
             
@@ -666,24 +666,19 @@
                                   <td class="qty-cell">
                                     {{ header.normalQty | number }}
                                   </td>
-            
-            
+                                  
                                   <td class="qty-cell">
                                     {{ header.fractionQty | number }}
                                   </td>
-            
-            
-                                  <td>
+                                  
+                                  <td class="control-lot-cell">
                                     {{ header.controlLot || '-' }}
                                   </td>
-            
-            
-                                  <td>
-            
+                                  
+                                  <td class="group-cell">
                                     <span class="group-badge">
                                       {{ header.groupName || '-' }}
                                     </span>
-            
                                   </td>
             
                                 </tr>
